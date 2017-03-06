@@ -1,0 +1,101 @@
+#!python
+
+include: '../preprocess/join_reads.snake'
+include: '../reference/indices/faidx.snake'
+
+THREADS = 32
+SAMPLES, = glob_wildcards('reads/original/{sample}_R1.fastq.gz')
+
+
+rule run_all2:
+    input:
+        expand('spades-standard/{sample}/contigs.fasta.fai', sample=SAMPLES)
+
+rule assembly:
+    input:
+        r1 = 'reads/joined/{sample}_R1.fastq.gz',
+        r2 = 'reads/joined/{sample}_R2.fastq.gz',
+        rm = 'reads/joined/{sample}_RM.fastq.gz'
+    params:
+        outdir = 'spades-standard/{sample}'
+    output:
+        graph = 'spades-standard/{sample}/assembly_graph.fastg',
+        contigs = 'spades-standard/{sample}/contigs.fasta'
+    threads:
+        THREADS
+    log:
+        'spades-standard/{sample}/log/spades.log'
+    shell:
+        '''
+        mkdir -p {params.outdir}
+
+        /usr/local/tools/spades-3.10.0/bin/spades.py \
+            -1 {input.r1} \
+            -2 {input.r2} \
+            -s {input.rm} \
+            --careful \
+            --threads {threads} \
+            -o {params.outdir} \
+            -k 21,33,55,77 \
+        >  {log} \
+        2> {log}
+        '''
+
+rule assembly_meta:
+    input:
+        r1 = 'reads/joined/{sample}_R1.fastq.gz',
+        r2 = 'reads/joined/{sample}_R2.fastq.gz',
+        rm = 'reads/joined/{sample}_RM.fastq.gz'
+    params:
+        outdir = 'spades-meta/{sample}'
+    output:
+        graph = 'spades-meta/{sample}/assembly_graph.fastg',
+        contigs = 'spades-meta/{sample}/contigs.fasta'
+    threads:
+        THREADS
+    log:
+        'spades-meta/{sample}/log/spades.log'
+    shell:
+        '''
+        mkdir -p {params.outdir}
+
+        /usr/local/tools/spades-3.10.0/bin/spades.py \
+            --meta \
+            -1 {input.r1} \
+            -2 {input.r2} \
+            -s {input.rm} \
+            --threads {threads} \
+            -o {params.outdir} \
+        >  {log} \
+        2> {log}
+        '''
+
+rule assembly_plasmid:
+    input:
+        r1 = 'reads/joined/{sample}_R1.fastq.gz',
+        r2 = 'reads/joined/{sample}_R2.fastq.gz',
+        rm = 'reads/joined/{sample}_RM.fastq.gz'
+    params:
+        outdir = 'spades-plasmid/{sample}'
+    output:
+        graph = 'spades-plasmid/{sample}/assembly_graph.fastg',
+        contigs = 'spades-plasmid/{sample}/contigs.fasta'
+    threads:
+        THREADS
+    log:
+        'spades-plasmid/{sample}/log/spades.log'
+    shell:
+        '''
+        mkdir -p {params.outdir}
+
+        /usr/local/tools/spades-3.10.0/bin/spades.py \
+            --plasmid \
+            --careful \
+            -1 {input.r1} \
+            -2 {input.r2} \
+            -s {input.rm} \
+            --threads {threads} \
+            -o {params.outdir} \
+        >  {log} \
+        2> {log}
+        '''

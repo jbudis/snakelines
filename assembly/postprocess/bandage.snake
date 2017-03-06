@@ -1,0 +1,13 @@
+#!python
+
+rule assembly_plot:
+    input:
+        '{path}/{sample}.fastg'
+    output:
+        '{path}/bandage/{sample}.png'
+    shell:
+        '''
+        bandage image \
+            {input} \
+            {output}
+        '''

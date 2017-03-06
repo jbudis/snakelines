@@ -1,0 +1,30 @@
+#!python
+
+include: '../mapping/calibration.snake'
+include: '../mapping/postprocess/bam_index.snake'
+
+rule call_variants:
+    input:
+        bam = '{mapper}/{reference}/{sample}.dup.realign.bam',
+        bai = '{mapper}/{reference}/{sample}.dup.realign.bam.bai',
+        bed = 'reference/{reference}/annotation/{panel}/regions.bed',
+        reffasta = 'reference/{reference}/{reference}.fa',
+        reffaidx = 'reference/{reference}/{reference}.fa.fai'
+    output:
+        '{mapper}/{reference}/variants/{sample}.{panel}.mpileup.germline.vcf'
+    shell:
+        '''
+        samtools mpileup \
+            --max-depth 10000 \
+            --min-BQ 20 \
+            --positions {input.bed} \
+            --uncompressed \
+            --fasta-ref {input.reffasta} \
+            --output-tags DP,AD,ADF,ADR,SP,INFO/AD,INFO/ADF,INFO/ADR \
+            {input.bam} \
+        | bcftools call \
+            --consensus-caller \
+            --output-type v \
+            - \
+        > {output}
+        '''

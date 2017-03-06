@@ -1,0 +1,43 @@
+#!python
+
+THREADS = 32
+fasta = config['fasta']
+directory = '/'.join(config['fasta'].split('/')[0:-1])
+
+print(fasta, directory)
+
+rule blast:
+    input:
+        fasta = fasta
+    output:
+        blast = directory + '/blast/fasta.blast'
+    threads:
+        THREADS
+    shell:
+        '''
+        mkdir -p {directory}/blast
+
+        blastn \
+            -db /data/genome/metagenome/blast/nt/17-01-17/blast_nt_db/nt \
+            -query {input.fasta} \
+            -out {output.blast} \
+            -max_target_seqs 1 \
+            -outfmt 6 \
+            -num_threads {threads} \
+            -max_target_seqs 1       
+        '''
+
+
+#include:
+#    'classification/blast.snake'
+#    'assembly/spades.snake'
+#
+#rule process:
+#    input:
+#        'unicycler/blast/assembly.blast'
+#        'unicycler/assembly.fasta'
+#        'reads/joined/'
+#
+#        'spades-standard/blast/contigs.blast'
+#        'spades-standard/contigs.fasta'
+#        'reads/joined/'

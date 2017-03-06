@@ -1,0 +1,24 @@
+#!python
+
+rule bowtie_index:
+    input:
+        'reference/{genome}/{genome}.fa'
+    output:
+        protected('reference/{genome}/bowtie_index/{genome}.1.ebwt'),
+        protected('reference/{genome}/bowtie_index/{genome}.2.ebwt'),
+        protected('reference/{genome}/bowtie_index/{genome}.3.ebwt'),
+        protected('reference/{genome}/bowtie_index/{genome}.4.ebwt'),
+        protected('reference/{genome}/bowtie_index/{genome}.rev.1.ebwt'),
+        protected('reference/{genome}/bowtie_index/{genome}.rev.2.ebwt')
+    params:
+        index = 'reference/{genome}/bowtie_index/{genome}'
+    log:
+        'reference/{genome}/log/bowtie.log'
+    shell:
+        '''
+        bowtie-build \
+            {input} \
+            {params.index} \
+        > {log}
+        '''
+    

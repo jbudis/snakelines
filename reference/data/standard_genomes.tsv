@@ -1,0 +1,3 @@
+#Reference id	Path to genome
+hg19	/data/genome/human/hg19
+hg38	/data/genome/human/hg38

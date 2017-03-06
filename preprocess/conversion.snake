@@ -1,0 +1,29 @@
+#!python
+
+rule fastq_to_fasta:
+    input:
+        '{path}/{sample}.fastq'
+    output:
+        '{path}/{sample}.fa'
+    shell:
+        '''
+        fastq_to_fasta \
+            -i {input} \
+            -o {output}
+        '''
+
+
+rule fastq_to_fasta_gzip:
+    input:
+        '{path}/{sample}.fastq.gz'
+    output:
+        '{path}/{sample}.fa.gz'
+    shell:
+        '''
+        gzip \
+            --decompress \
+            --stdout \
+        | fastq_to_fasta \
+            -z \
+            -o {output}
+        '''

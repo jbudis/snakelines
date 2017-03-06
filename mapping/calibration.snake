@@ -1,0 +1,66 @@
+#!python
+
+#include: 'bowtie2.snake',
+include: 'postprocess/bam_index.snake'
+include: '../reference/indices/gatk_dict.snake'
+
+THREADS = 32
+
+rule mark_duplicates:
+    input:
+        bam = '{mapper}/{reference}/{sample}.bam',
+        bai = '{mapper}/{reference}/{sample}.bam.bai'
+    output:
+        bam = '{mapper}/{reference}/{sample}.dup.bam'
+    log:
+        proc = '{mapper}/{reference}/log/{sample}.dup',
+        stat = '{mapper}/{reference}/log/{sample}.dup.stats'
+    shell:
+        '''
+        picard MarkDuplicates \
+            I={input.bam} \
+            O={output.bam} \
+            M={log.stat} \
+        >  {log.proc}
+        '''
+
+rule intervals_for_realign:
+    input:
+        bam = '{mapper}/{reference}/{sample}.dup.bam',
+        bai = '{mapper}/{reference}/{sample}.dup.bam.bai',
+        refdict = 'reference/{reference}/{reference}.dict',
+        reffasta = 'reference/{reference}/{reference}.fa'
+    output:
+        '{mapper}/{reference}/{sample}.dup.intervals'
+    threads:
+        THREADS
+    log:
+        '{mapper}/{reference}/log/{sample}.intervals'
+    shell:
+        '''
+        gatk RealignerTargetCreator \
+            -R {input.reffasta} \
+            -nt {threads} \
+            -I {input.bam} \
+            -o {output} \
+        > {log}
+        '''
+
+rule realign:
+    input:
+        bam = '{mapper}/{reference}/{sample}.dup.bam',
+        intervals = '{mapper}/{reference}/{sample}.dup.intervals',
+        reffasta = 'reference/{reference}/{reference}.fa'
+    output:
+        bam = '{mapper}/{reference}/{sample}.dup.realign.bam',
+    log:
+        '{mapper}/{reference}/log/{sample}.realign'
+    shell:
+        '''
+        gatk IndelRealigner \
+            -R {input.reffasta} \
+            -I {input.bam} \
+            -targetIntervals {input.intervals} \
+            -o {output.bam} \
+        > {log}
+        '''

@@ -1,0 +1,63 @@
+#!python
+
+include: './dedup_reads.snake'
+include: './gzip.snake'
+
+shell.executable('bash')
+
+THREADS=32
+SAMPLES, = glob_wildcards('reads/original/{sample}_R1.fastq.gz')
+
+rule join_and_report:
+    input:
+        'reads/joined/stats/summary.html',
+        expand('reads/joined/{sample}_R1.fastq.gz', sample=SAMPLES),
+        expand('reads/joined/{sample}_R2.fastq.gz', sample=SAMPLES),
+        expand('reads/joined/{sample}_RM.fastq.gz', sample=SAMPLES)
+    
+
+rule join_all:
+    input:
+        expand('reads/joined/{sample}_R1.fastq.gz', sample=SAMPLES),
+        expand('reads/joined/{sample}_R2.fastq.gz', sample=SAMPLES),
+        expand('reads/joined/{sample}_RM.fastq.gz', sample=SAMPLES)
+
+rule join:
+    input:
+        r1 = 'reads/deduplicated/{sample}_R1.fastq',
+        r2 = 'reads/deduplicated/{sample}_R2.fastq'
+    output:
+        r1 = 'reads/joined/{sample}_R1.fastq.gz',
+        r2 = 'reads/joined/{sample}_R2.fastq.gz',
+        rm = 'reads/joined/{sample}_RM.fastq.gz'
+    params:
+        tmp_r1 = 'reads/joined/{sample}.unassembled.forward.fastq',
+        tmp_r2 = 'reads/joined/{sample}.unassembled.reverse.fastq',
+        tmp_rm = 'reads/joined/{sample}.assembled.fastq',
+        tmp_rd = 'reads/joined/{sample}.discarded.fastq',
+        outpref = 'reads/joined/{sample}'
+    threads:
+        THREADS
+    log:
+        'reads/joined/log/{sample}.log'
+    shell:
+        '''
+        pear \
+            --forward-fastq {input.r1} \
+            --reverse-fastq {input.r2} \
+            --output {params.outpref} \
+            --threads {threads} \
+        >  {log}
+
+        pigz \
+            --processes {threads} \
+            {params.tmp_r1} \
+            {params.tmp_r2} \
+            {params.tmp_rm}
+
+        mv {params.tmp_r1}.gz {output.r1}
+        mv {params.tmp_r2}.gz {output.r2}
+        mv {params.tmp_rm}.gz {output.rm}
+
+        rm {params.tmp_rd}
+        '''

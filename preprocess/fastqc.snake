@@ -1,0 +1,48 @@
+#!python
+
+THREADS = 32
+
+
+FASTQ_SUFFIX = '.fastq.gz'
+FASTQS, = glob_wildcards("reads/original/{fastq}.fastq.gz")
+
+rule fastqc_original:
+    input:
+        'reads/original/stats/summary.html'
+
+rule fastqc_trimmed:
+    input:
+        'reads/trimmed/stats/summary.html'
+
+rule fastqc_summary:
+    input:
+        lambda wildcards: expand('reads/{read_type}/stats/{fastq}_fastqc.html', fastq=FASTQS, read_type=wildcards.read_type)
+    output:
+        'reads/{read_type}/stats/summary.html'
+    params:
+        report_dir = 'reads/{read_type}/stats',
+        summary_script = srcdir("scripts/fastqc-summary.py")
+    shell:
+        """
+        cd {params.report_dir}
+        {params.summary_script} \
+            . \
+            summary.html
+        """
+
+rule fastqc:
+    input:
+        'reads/{read_type}/{fastq}.fastq.gz' 
+    output:
+        'reads/{read_type}/stats/{fastq}_fastqc.html'
+    threads:
+        THREADS
+    shell:
+        """
+        fastqc \
+            -o reads/{wildcards.read_type}/stats \
+            --extract \
+            --threads {threads} \
+            {input}
+        """
+

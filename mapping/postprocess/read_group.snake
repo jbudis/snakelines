@@ -1,0 +1,13 @@
+#!python
+
+# TODO
+
+rule infer_read_groups:
+    input:
+        '{path}/{sample}.bam'
+    output:
+        '{path}/{sample}.rg.bam'
+    shell:
+        '''
+        
+        '''

@@ -1,0 +1,47 @@
+#!python
+
+include: 'bam_index.snake'
+
+THREADS = 32
+
+rule qualimap_wgs_report:
+    input:
+        bam = '{mapper}/{reference}/{sample}.bam',
+        bai = '{mapper}/{reference}/{sample}.bam.bai'
+    output:
+        '{mapper}/{reference}/stats-wgs/{sample}/qualimapReport.html'
+    params:
+        outdir = '{mapper}/{reference}/stats-wgs/{sample}'
+    threads:
+        THREADS
+    shell:
+        '''
+        qualimap bamqc \
+            --java-mem-size=100G \
+            -bam {input.bam} \
+            --paint-chromosome-limits \
+            -outdir {params.outdir} \
+            -nt {threads}
+        '''
+
+rule qualimap_panel_report:
+    input:
+        bam = '{mapper}/{reference}/{sample}.bam',
+        bai = '{mapper}/{reference}/{sample}.bam.bai',
+        bed = 'reference/{reference}/annotation/{panel}/regions.bed'
+    output:
+        '{mapper}/{reference}/stats-{panel}/{sample}/qualimapReport.html'
+    params:
+        outdir = '{mapper}/{reference}/stats-{panel}/{sample}'
+    threads:
+        THREADS
+    shell:
+        '''
+        qualimap bamqc \
+            --java-mem-size=100G \
+            -bam {input.bam} \
+            --feature-file {input.bed} \
+            -nt {threads} \
+            -outdir {params.outdir}
+        '''
+        

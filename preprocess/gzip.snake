@@ -1,0 +1,17 @@
+#!python
+        
+rule unzip_fastq:
+    input:
+        '{file}.fastq.gz'
+    output:
+        temp('{file}.fastq')
+    threads:
+        THREADS
+    shell:
+        '''
+        pigz \
+            --decompress \
+            --keep \
+            --processes {threads} \
+            {input}
+        '''

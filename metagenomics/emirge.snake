@@ -1,0 +1,128 @@
+#!python
+
+shell.executable('bash')
+
+#include: '../preprocess/trim_reads.snake'
+include: '../preprocess/gzip.snake'
+include: '../reference/indices/bowtie.snake'
+
+THREADS=32
+
+#wildcards = glob_wildcards('reads/original/{sample}_R1.fastq.gz')
+
+#rule summary_krona_report:
+#    input:
+#        expand('emirge/{reference}/report/individual/{sample}.txt', sample=wildcards.sample)
+#    output:
+#        'emirge/{reference}/report/krona/index.html'
+#    log:
+#        'emirge/{reference}/report/krona/log/krona.log'
+#    shell:
+#        '''
+#        ktImportText \
+#            -o {output} \
+#            {input} \
+#        > {log}
+#        '''
+
+rule emirge_classification:
+    input:
+        r1 = 'reads/trimmed/{sample}_R1.fastq',
+        r2 = 'reads/trimmed/{sample}_R2.fastq',
+        reffasta = 'reference/{reference}/{reference}.emirge.fa',
+        refindex = 'reference/{reference}/bowtie_index/{reference}.emirge.1.ebwt'
+    output:
+        bam = 'emirge/{reference}/iterations/{sample}/iter.40/bowtie.iter.40.PE.bam'
+    params:
+        refindex = 'reference/{reference}/bowtie_index/{reference}.emirge',
+        emirge_dir = 'emirge/{reference}/iterations/{sample}'
+    log:
+        'emirge/{reference}/iterations/{sample}/log/emirge.log'
+    threads:
+        THREADS
+    shell:
+        '''
+        emirge \
+            {params.emirge_dir} \
+            -1 {input.r1} \
+            -2 {input.r2} \
+            --fasta_db {input.reffasta} \
+            --bowtie_db {params.refindex} \
+            --max_read_length 200 \
+            --insert_mean 300 \
+            --insert_stddev 1000 \
+            --processors {threads} \
+            --phred33 \
+        > {log}
+        '''
+
+rule extract_emirge_results:
+    input:
+        rules.emirge_classification.output
+    output:
+        'emirge/{reference}/iterations/{sample}/{sample}.fa'
+    params:
+        final_dir = 'emirge/{reference}/iterations/{sample}/iter.40'
+    shell:
+        '''
+        emirge_rename_fasta \
+            {params.final_dir} \
+        > {output}
+        '''
+
+rule find_chimeras_uchime:
+    input:
+        reffasta = 'reference/{reference}/{reference}.gold.fa',
+        seqs = 'emirge/{reference}/iterations/{sample}/{sample}.fa'
+    output:
+        summary = 'emirge/{reference}/iterations/{sample}/{sample}.uchime',
+        alignments = 'emirge/{reference}/iterations/{sample}/{sample}.alns'
+    log:
+        'emirge/{reference}/iterations/{sample}/log/uchime.log'
+    shell:
+        '''
+        uchime \
+            --input {input.seqs} \
+            --db {input.reffasta} \
+            --uchimeout {output.summary} \
+            --uchimealns {output.alignments} \
+        > {log}
+        '''
+
+rule prepare_nonchimeric_for_krona:
+    input:
+        tax = 'reference/{reference}/{reference}.tax',
+        summary = 'emirge/{reference}/iterations/{sample}/{sample}.uchime',
+    output:
+        krona_txt = 'emirge/{reference}/report/individual/{sample}.krn'
+    run:
+        import os
+
+        taxonomies = {line.split()[0]: line.split()[1].replace(';', '\t') for line in open(input.tax)}
+
+        with open(input.summary) as summary, open(output.krona_txt, 'w') as krona:
+            res = []
+            for line in summary:
+                params = line.strip().split('\t')
+                if params[-1] == 'Y':
+                    continue
+                info = params[1].split('|')[1].split()
+                tid = info[0]
+                tabund = float(info[1].split('=')[1])
+                taxes = taxonomies[tid.split('_m')[0]]
+                krona.write('%s\t%s\n'%(tabund, taxes))
+
+rule emirge_krona_report:
+    input:
+        'emirge/{reference}/report/individual/{sample}.krn'
+    output:
+        'emirge/{reference}/report/individual/{sample}.html'
+    log:
+        'emirge/{reference}/report/individual/log/{sample}.krona'
+    shell:
+        '''
+        ktImportText \
+            -o {output} \
+            {input} \
+        > {log}
+        '''

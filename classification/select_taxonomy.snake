@@ -1,0 +1,51 @@
+#!python
+
+include: '/usr/local/snake/classification/blast_kingdom.snake'
+
+THREADS = 32
+
+rule select:
+    input:
+        '{indir}/blast/{name}.annotated'
+    output:
+        '{indir}/blast/{selection}/{name}.list'
+    params:
+        directory = '{indir}/blast/{selection}',
+        selection = '{selection}'
+    shell:
+        '''
+        mkdir -p {params.directory}
+
+        /usr/local/snake/classification/scripts/select_taxonomy.py {input} {params.selection} {output}
+        '''
+rule copy_contigs:
+    input:
+        contigs = '{indir}/{name}',
+        selected_list = '{indir}/blast/{selection}/{name}.list'
+    output:
+        '{indir}/blast/{selection}/{name}',
+    threads:
+        THREADS
+    shell:
+        '''
+        /usr/local/snake/classification/scripts/select_contigs.py {input[0]} {input[1]} {output[0]}
+        ''' 
+
+rule blast:
+    input:
+        '{indir}/blast/{selection}/{name}'
+    output:
+        '{indir}/blast/{selection}/{name}.blast'
+    threads:
+        THREADS
+    shell:
+        '''
+        blastn \
+            -db /data/genome/metagenome/blast/nt/17-01-17/nt \
+            -query {input} \
+            -out {output} \
+            -outfmt 5 \
+            -num_threads {threads} \
+            -max_target_seqs 25
+        '''
+

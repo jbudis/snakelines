@@ -1,0 +1,24 @@
+#!python
+
+include: '../mapping/calibration.snake'
+
+rule call_germline:
+    input:
+        bam = '{mapper}/{reference}/{sample}.dup.realign.bam',
+        bai = '{mapper}/{reference}/{sample}.dup.realign.bam.bai',
+        bed = 'reference/{reference}/annotation/{panel}/regions.interval_list',
+        reffasta = 'reference/{reference}/{reference}.fa',
+        reffaidx = 'reference/{reference}/{reference}.fa.fai'
+    output:
+        '{mapper}/{reference}/variants/{sample}.{panel}.gatk.germline.vcf'
+    log:
+        '{mapper}/{reference}/variants/log/{sample}.{panel}.gatk.germline.log'
+    shell:
+        '''
+        gatk HaplotypeCaller \
+            -R {input.reffasta} \
+            -I {input.bam} \
+            -L {input.bed} \
+            -o {output} \
+        > {log}
+        '''

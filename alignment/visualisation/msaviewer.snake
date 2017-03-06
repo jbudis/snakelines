@@ -1,0 +1,45 @@
+#!python
+
+TEMPLATE = '''
+<html>
+<head>
+    <title>{sample}</title>
+    <script src="http://cdn.bio.sh.s3.eu-central-1.amazonaws.com/msa/latest/msa.min.gz.js"></script>
+</head>
+<body>
+    <h1>{sample}</h1>
+    <div id="alignment">press "Run with JS"</div>
+    <script type="text/javascript">
+        var fasta = "{seqs}";
+        var seqs = msa.io.fasta.parse(fasta);
+        var opts = {{
+            el: document.getElementById("alignment"),
+            vis: {{
+                conserv: false,
+                metaIdentity: true,
+                overviewbox: true,
+                seqlogo: true
+            }},
+            seqs: seqs,
+            colorscheme: {{"scheme": "nucleotide"}},
+            // smaller menu for JSBin
+            menu: "small",
+            bootstrapMenu: true
+        }};
+        var m = new msa.msa(opts);
+        m.render()
+    </script>
+</body>
+'''
+
+rule html_report:
+    input:
+        '{path}/{sample}.alignfa'
+    output:
+        '{path}/{sample}.html'
+    run:
+        seq_list = map(str.strip, open(input[0]))
+        seqs = '\\n\\\n'.join(seq_list)
+        html = TEMPLATE.format(sample=wildcards.sample, seqs=seqs)
+        with open(output[0], 'w') as out:
+            out.write(html)

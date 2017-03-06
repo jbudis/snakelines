@@ -1,0 +1,84 @@
+#!python
+
+#include: '../preprocess/trim_reads.snake'
+include: '../preprocess/gzip.snake'
+
+THREADS = 16
+
+rule metaxa2_classification:
+    input:
+        r1 = 'reads/trimmed/{sample}_R1.fastq',
+        r2 = 'reads/trimmed/{sample}_R2.fastq'
+    output:
+        taxonomy = 'metaxa2/classification/{sample}/{sample}.taxonomy.txt'
+    params:
+        outpref = 'metaxa2/classification/{sample}/{sample}'
+    log:
+        'metaxa2/classification/{sample}/log/metaxa2.log'
+    threads:
+        THREADS
+    shell:
+        '''
+        /usr/local/tools/metaxa-2.1.3/metaxa2 \
+            -1 {input.r1} \
+            -2 {input.r2} \
+            -o {params.outpref} \
+            -g ssu \
+            --plus T \
+            --cpu {threads} \
+        > {log}
+        '''
+
+rule summarize_classification:
+    input:
+        taxonomy = 'metaxa2/classification/{sample}/{sample}.taxonomy.txt'
+    output:
+        summary = 'metaxa2/classification/{sample}/{sample}.level_7.txt'   
+    params:
+        outpref = 'metaxa2/classification/{sample}/{sample}'
+    log:
+        'metaxa2/classification/{sample}/log/metaxa2_ttt.log'
+    shell:
+        '''
+        metaxa2_ttt \
+                -i {input.taxonomy} \
+                -o {params.outpref} \
+        > {log}
+        '''
+
+rule prepare_for_krona:
+    input:
+        'metaxa2/classification/{sample}/{sample}.level_7.txt'   
+    output:
+        'metaxa2/report/individual/{sample}.krn'   
+    shell:
+        '''
+        cat \
+            {input} \
+        | sed \
+            's/ /@/g' \
+        | awk \
+            '{{print $2 "\t" $1}}' \
+        | sed \
+            's/@/ /g' \
+        | sed \
+            's/;/\t/g' \
+        | sed \
+            's/Unclassified //g' \
+        > {output}
+        '''
+
+rule metaxa2_krona_report:
+    input:
+        'metaxa2/report/individual/{sample}.krn'   
+    output:
+        'metaxa2/report/individual/{sample}.html'
+    log:
+        'metaxa2/report/individual/log/{sample}.krona'
+    shell:
+        '''
+        ktImportText \
+            -o {output} \
+            {input} \
+        > {log}
+        '''

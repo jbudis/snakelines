@@ -1,0 +1,46 @@
+#!python
+
+include:
+    '/usr/local/snake/preprocess/trim_reads.snake'
+
+THREADS = 32
+SAMPLES = glob_wildcards('reads/original/{sample}_R1.fastq.gz')
+
+rule run_all:
+    input:
+        expand('reads/trimmed/{sample}_R1.fastq', sample=SAMPLES)
+
+rule fastuniq:
+    input:
+        r1 = 'reads/trimmed/{sample}_R1.fastq.gz',
+        r2 = 'reads/trimmed/{sample}_R2.fastq.gz'
+    params:
+        r1_ungz = 'reads/deduplicated/{sample}.tmp_R1.fastq',
+        r2_ungz = 'reads/deduplicated/{sample}.tmp_R2.fastq',
+        in_file = 'reads/deduplicated/{sample}.txt'
+    output:
+        r1 = 'reads/deduplicated/{sample}_R1.fastq',
+        r2 = 'reads/deduplicated/{sample}_R2.fastq'
+    threads:
+        THREADS
+    shell:
+        '''
+        mkdir -p 'reads/deduplicated'
+
+        gzip -cd {input.r1} > {params.r1_ungz}
+        gzip -cd {input.r2} > {params.r2_ungz}
+
+        echo "{params.r1_ungz}\n{params.r2_ungz}" > {params.in_file}
+
+        fastuniq \
+            -i {params.in_file} \
+            -o {output.r1} \
+            -p {output.r2}
+
+        rm {params.r1_ungz}
+        rm {params.r2_ungz}
+        rm {params.in_file}
+        '''
+
+
+    

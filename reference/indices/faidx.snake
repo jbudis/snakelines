@@ -1,0 +1,21 @@
+#!python
+
+rule faidx_fa:
+    input:
+        '{path}/{genome}.fa'
+    output:
+        '{path}/{genome}.fa.fai'
+    shell:
+        '''
+        samtools faidx {input}
+        '''
+
+rule faidx_fasta:
+    input:
+        '{path}/{genome}.fasta'
+    output:
+        '{path}/{genome}.fasta.fai'
+    shell:
+        '''
+        samtools faidx {input}
+        '''

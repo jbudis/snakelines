@@ -1,0 +1,26 @@
+#!python
+
+rule zip:
+    input:
+        '{path}/{sample}.vcf'
+    output:
+        '{path}/{sample}.vcf.gz'
+    shell:
+        '''
+        bgzip \
+            --stdout \
+            {input} \
+        > {output}
+        '''
+
+rule index:
+    input:
+        '{path}/{sample}.vcf.gz'
+    output:
+        '{path}/{sample}.vcf.gz.tbi'
+    shell:
+        '''
+        tabix \
+            --preset vcf \
+            {input}
+        '''

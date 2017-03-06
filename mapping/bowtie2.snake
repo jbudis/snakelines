@@ -1,0 +1,50 @@
+#!python
+
+THREADS = 32
+
+include: '../preprocess/trim_reads.snake'
+include: '../reference/indices/bowtie2.snake'
+
+wildcards = glob_wildcards('reads/original/{sample}_R1.fastq.gz')
+
+
+rule map_reads:
+    input:
+        r1 = 'reads/trimmed/{sample}_R1.fastq.gz',
+        r2 = 'reads/trimmed/{sample}_R2.fastq.gz',
+        index = 'reference/{reference}/bowtie2_index/{reference}.1.bt2',
+        reffasta = 'reference/{reference}/{reference}.fa'
+    output:
+        bam = 'bowtie2/{reference}/{sample}.bam',
+    log:
+        'bowtie2/{reference}/log/{sample}.map'
+    params:
+        index = 'reference/{reference}/bowtie2_index/{reference}',
+        tmpdir = 'bowtie2/{reference}/tmp/'
+    threads:
+        THREADS
+    shell:
+        '''
+        bowtie2 \
+            -x {params.index} \
+            -1 {input.r1} \
+            -2 {input.r2} \
+            --very-sensitive \
+            --threads {threads} \
+            --rg-id {wildcards.sample} \
+            --rg PL:illumina \
+            --rg LB:{wildcards.sample} \
+            --rg SM:{wildcards.sample} \
+        | samtools view \
+            -b \
+            --reference {input.reffasta} \
+            --threads {threads} \
+            - \
+        | samtools sort \
+            --threads {threads} \
+            -o {output.bam} \
+            -T {params.tmpdir} \
+            -m 5G \
+            - \
+        '''
+

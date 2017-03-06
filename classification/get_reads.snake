@@ -1,0 +1,47 @@
+#!python
+
+THREADS = 16
+
+rule make_build:
+    input:
+        '{indir}/{sample}/blast/{organism}/{name}',
+    output:
+        '{indir}/{sample}/blast/{organism}/bowtie_build/{name}.rev.2.bt2'
+    params:
+        '{indir}/{sample}/blast/{organism}/bowtie_build',
+        '{indir}/{sample}/blast/{organism}/bowtie_build/{name}'
+    threads:
+        THREADS
+    shell:
+        '''
+        mkdir -p {params[0]}
+
+        bowtie2-build \
+            {input} \
+            {params[1]}
+        '''
+
+rule get_reads:
+    input:
+        '{indir}/{sample}/blast/{organism}/bowtie_build/{name}.rev.2.bt2',
+        'reads/deduplicated/{sample}_R1.fastq',
+        'reads/deduplicated/{sample}_R2.fastq'
+    output:
+        '{indir}/{sample}/blast/{organism}/{name}.reads.1.fq.gz',
+        '{indir}/{sample}/blast/{organism}/{name}.reads.2.fq.gz'
+    params:
+        '{indir}/{sample}/blast/{organism}/reads.%.fq.gz',
+        '{indir}/{sample}/blast/{organism}/bowtie_build/{name}'
+    threads:
+        THREADS
+    shell:
+        '''
+        bowtie2 \
+            -x {params[1]} \
+            -1 {input[1]} \
+            -2 {input[2]} \
+            --al-conc-gz {params[0]} \
+            -p {threads} \
+            >/dev/null
+        '''
+

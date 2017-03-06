@@ -1,0 +1,17 @@
+#!python
+
+rule gatk_dict_index:
+    input:
+        'reference/{genome}/{genome}.fa'
+    output:
+        protected('reference/{genome}/{genome}.dict')
+    log:
+        'reference/{genome}/log/gatk_dict.log'
+    shell:
+        '''
+        picard CreateSequenceDictionary \
+            R={input} \
+            O={output} \
+        > {log}
+        '''
+    

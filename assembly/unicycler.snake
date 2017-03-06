@@ -1,0 +1,44 @@
+#!python
+    
+include:
+    '/usr/local/snake/preprocess/dedup_reads.snake'
+
+workdir:
+    '/data/projects/plasmid'
+
+THREADS = 32
+SAMPLES = ['listeria-26']
+# ['LP-4', 'pTE53-200', 'pTE53-20']
+# ['LP-2']
+#           , 'LP-3', 'LP-4', 'pTE53-200', 'pTE53-20', 'listeria-26']
+#           , 'listeria-2', 'smv-kl53', 'smv-pl53', 'smv']
+
+### how to use this??? ###
+# wildcards = glob_wildcards('reads/original/{sample}_R1.fastq.gz')
+# print(wildcards.sample)
+
+rule run_samples:
+    input:
+        expand('unicycler/{sample}/assembly.fasta', sample=SAMPLES)
+
+rule unicycler:
+    input:
+        r1 = 'reads/deduplicated/{sample}_R1.fastq',
+        r2 = 'reads/deduplicated/{sample}_R2.fastq',
+    params:
+        outdir = 'unicycler/{sample}'
+    output:
+        contigs = 'unicycler/{sample}/assembly.fasta'
+    threads:
+        THREADS
+    shell:
+        '''
+        mkdir -p {params.outdir}
+
+        unicycler \
+            -1 {input.r1} \
+            -2 {input.r2} \
+            -o {params.outdir} \
+            -t {threads} \
+            --spades_path /usr/local/bin/spades
+        '''

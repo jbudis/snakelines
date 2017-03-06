@@ -1,0 +1,34 @@
+#!python
+
+THREADS = 16
+
+rule multiple_alignment_clustal:
+    input:
+        '{path}/{genome}.fa'
+    output:
+        '{path}/alignment/mafft/{genome}.clustal'
+    threads:
+        THREADS
+    shell:
+        '''
+        mafft \
+            --thread {threads} \
+            --clustalout \
+            {input} \
+        > {output}
+        '''
+
+rule multiple_alignment_fa:
+    input:
+        '{path}/{genome}.fa'
+    output:
+        '{path}/alignment/mafft/{genome}.alignfa'
+    threads:
+        THREADS
+    shell:
+        '''
+        mafft \
+            --thread {threads} \
+            {input} \
+        > {output}
+        '''

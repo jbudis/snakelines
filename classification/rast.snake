@@ -1,0 +1,29 @@
+#!python
+
+### unfinished ###
+
+THREADS = 32
+
+rule rast:
+    input:
+        contigs = 
+        reference =
+    output:
+        report = 'unicycler/{sample}/rast.txt'
+    params:
+        username = 'budis'
+        password = 'K8LT7TCa'
+    threads:
+        THREADS
+    shell:
+        '''
+        BIONAME=<reference>
+
+        svr_submit_RAST_job \
+            --user {params.username} \
+            --passwd {params.password} \
+            --fasta {input.contigs} \
+            --domain Bacteria \
+            --bioname "$BIONAME" \
+            > {output.report} 2> {output.report}
+        '''
