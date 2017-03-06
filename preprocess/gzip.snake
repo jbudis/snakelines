@@ -1,5 +1,7 @@
 #!python
-        
+
+THREADS = 32
+       
 rule unzip_fastq:
     input:
         '{file}.fastq.gz'
