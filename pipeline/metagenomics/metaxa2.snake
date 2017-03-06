@@ -1,0 +1,25 @@
+#!python
+
+include: '../../metagenomics/metaxa2.snake'
+#include: '../preprocess/trim_reads.snake'
+
+wildcards = glob_wildcards('reads/original/{sample}_R1.fastq.gz')
+
+rule process:
+    input:
+        'metaxa2/report/krona/index.html',
+        'reads/trimmed/stats/summary.html',
+        'reads/original/stats/summary.html'
+
+rule final_krona_report:
+    input:
+        expand('metaxa2/report/individual/{sample}.krn', sample=wildcards.sample)
+    output:
+       'metaxa2/report/krona/index.html'
+    shell:
+        '''
+        ktImportText \
+            -o {output} \
+            {input}
+        '''
+
