@@ -1,5 +1,3 @@
-#!python
-
 THREADS = 32
 fasta = config['fasta']
 directory = '/'.join(config['fasta'].split('/')[0:-1])

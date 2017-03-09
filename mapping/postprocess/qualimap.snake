@@ -1,5 +1,3 @@
-#!python
-
 include: 'bam_index.snake'
 
 THREADS = 32

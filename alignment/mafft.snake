@@ -1,5 +1,3 @@
-#!python
-
 THREADS = 16
 
 rule multiple_alignment_clustal:

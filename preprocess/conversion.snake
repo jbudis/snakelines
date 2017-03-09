@@ -1,5 +1,3 @@
-#!python
-
 rule fastq_to_fasta:
     input:
         '{path}/{sample}.fastq'

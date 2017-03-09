@@ -1,5 +1,3 @@
-#!python
-
 #include: 'bowtie2.snake',
 include: 'postprocess/bam_index.snake'
 include: '../reference/indices/gatk_dict.snake'

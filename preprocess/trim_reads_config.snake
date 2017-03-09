@@ -1,5 +1,3 @@
-#!python
-
 import yaml
 
 include: "../preprocess/fastqc.snake"

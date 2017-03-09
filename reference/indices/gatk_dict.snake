@@ -1,5 +1,3 @@
-#!python
-
 rule gatk_dict_index:
     input:
         'reference/{genome}/{genome}.fa'

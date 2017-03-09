@@ -1,5 +1,3 @@
-#!python
-
 rule assembly_plot:
     input:
         '{path}/{sample}.fastg'

@@ -1,5 +1,3 @@
-#!python
-
 rule bam_index:
     input:
         '{path}/{sample}.bam'

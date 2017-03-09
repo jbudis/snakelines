@@ -1,5 +1,3 @@
-#!python
-
 rule faidx_fa:
     input:
         '{path}/{genome}.fa'

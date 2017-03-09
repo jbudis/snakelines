@@ -1,5 +1,3 @@
-#!python
-
 rule bowtie2_index:
     input:
         'reference/{genome}/{genome}.fa'

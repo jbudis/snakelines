@@ -1,5 +1,3 @@
-#!python
-
 THREADS = 32
 
 include: '../preprocess/trim_reads.snake'

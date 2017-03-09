@@ -1,5 +1,3 @@
-#!python
-
 include: '../../metagenomics/emirge.snake'
 include: '../../preprocess/trim_reads.snake'
 

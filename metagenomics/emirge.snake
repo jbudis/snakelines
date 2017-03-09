@@ -1,5 +1,3 @@
-#!python
-
 shell.executable('bash')
 
 #include: '../preprocess/trim_reads.snake'
