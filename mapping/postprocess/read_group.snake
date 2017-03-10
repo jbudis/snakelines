@@ -1,11 +1,19 @@
-# TODO
-
 rule infer_read_groups:
     input:
         '{path}/{sample}.bam'
     output:
         '{path}/{sample}.rg.bam'
+    params:
+        infer_script = srcdir("scripts/infer_read_groups.py")
     shell:
         '''
-        
+        samtools view \
+            -h \
+            {input} \
+        | {params.infer_script} \
+            4916 \
+            - \
+        | samtools view \
+            -bS \
+        > {output}
         '''
