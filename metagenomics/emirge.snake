@@ -46,7 +46,7 @@ rule emirge_classification:
             -2 {input.r2} \
             --fasta_db {input.reffasta} \
             --bowtie_db {params.refindex} \
-            --max_read_length 200 \
+            --max_read_length 0 \
             --insert_mean 300 \
             --insert_stddev 1000 \
             --processors {threads} \
