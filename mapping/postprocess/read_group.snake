@@ -11,7 +11,7 @@ rule infer_read_groups:
             -h \
             {input} \
         | {params.infer_script} \
-            4916 \
+            {wildcards.sample} \
             - \
         | samtools view \
             -bS \

@@ -15,7 +15,13 @@ def is_rg_header(line):
     return line.startswith('@RG')
 
 
-TEMPLATE = '@RG ID:{rgid}    PL:illumina PU:{flowcell}.{lane}.{barcode}  LB:{flowcell}.{barcode} SM:{sid}'
+TEMPLATE = '\t'.join(['@RG',
+                      'ID:{rgid}', 
+                      'PL:illumina', 
+                      'LB:{flowcell}.{barcode}',
+                      'PU:{flowcell}.{barcode}.{lane}',
+                      'SM:{sid}'])
+
 def infer_read_groups(line):
 
     rid = line[:line.find('\t')]
@@ -26,7 +32,7 @@ def infer_read_groups(line):
     rgids = {}
     rgs = []
     for lane in [1,2,3,4]:
-        rgid = '%s_l%d' % (args.sid, lane)
+        rgid = '%s.l%d' % (args.sid, lane)
         rg = TEMPLATE.format(rgid=rgid, sid=args.sid, flowcell=flowcell, lane=lane, barcode=args.sid)
         rgs.append(rg)
         rgids['%s:%s' % (prefix, lane)] = rgid
