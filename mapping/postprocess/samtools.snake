@@ -1,13 +1,3 @@
-rule bam_index:
-    input:
-        '{path}/{sample}.bam'
-    output:
-        '{path}/{sample}.bam.bai'
-    shell:
-        '''
-        samtools index {input}
-        '''
-
 rule convert_to_bam:
     input:
         '{path}/{sample}.sam'
