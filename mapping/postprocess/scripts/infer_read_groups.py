@@ -19,7 +19,7 @@ TEMPLATE = '\t'.join(['@RG',
                       'ID:{rgid}', 
                       'PL:illumina', 
                       'LB:{flowcell}.{barcode}',
-                      'PU:{flowcell}.{barcode}.{lane}',
+                      'PU:{flowcell}.{lane}',
                       'SM:{sid}'])
 
 def infer_read_groups(line):
