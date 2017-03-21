@@ -15,11 +15,16 @@ rule mark_duplicates:
         stat = '{mapper}/{reference}/log/{sample}.dup.stats'
     shell:
         '''
+        TEMP_DIR=$(mktemp -d /data/tmp/XXXXXXXXXXX)
+
         picard MarkDuplicates \
             I={input.bam} \
             O={output.bam} \
             M={log.stat} \
+            TMP_DIR=$TEMP_DIR \
         >  {log.proc}
+
+        rm -r $TEMP_DIR
         '''
 
 rule intervals_for_realign:
