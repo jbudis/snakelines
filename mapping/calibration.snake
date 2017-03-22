@@ -2,6 +2,8 @@
 include: 'postprocess/bam_index.snake'
 include: '../reference/indices/gatk_dict.snake'
 
+shell.executable('/bin/bash')
+
 THREADS = 32
 
 rule mark_duplicates:
@@ -22,6 +24,7 @@ rule mark_duplicates:
             O={output.bam} \
             M={log.stat} \
             TMP_DIR=$TEMP_DIR \
+            VALIDATION_STRINGENCY=SILENT \
         >  {log.proc}
 
         rm -r $TEMP_DIR
