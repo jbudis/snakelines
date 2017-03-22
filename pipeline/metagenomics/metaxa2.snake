@@ -1,5 +1,5 @@
 include: '../../metagenomics/metaxa2.snake'
-#include: '../preprocess/trim_reads.snake'
+include: '../../preprocess/trim_reads.snake'
 
 wildcards = glob_wildcards('reads/original/{sample}_R1.fastq.gz')
 
