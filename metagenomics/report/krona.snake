@@ -1,8 +1,11 @@
+def individual_krn_files(analysis_dir):
+      return expand('%s/report/krona/individual/{sample}.krn' % analysis_dir, sample=wildcards.sample)
+
 rule krona_report:
     input:
-        '{path}/{sample}.krn'
+        '{path}/report/krona/individual/{sample}.krn'
     output:
-        '{path}/{sample}.html'
+        '{path}/report/krona/individual/{sample}.html'
     log:
         '{path}/log/{sample}.krona'
     shell:
@@ -15,9 +18,9 @@ rule krona_report:
 
 rule final_krona_report:
     input:
-        expand('metaxa2/report/individual/{sample}.krn', sample=wildcards.sample)
+        individual_krn_files
     output:
-       'metaxa2/report/krona/krona.html'
+        '{analysis_dir}/report/krona/krona.html'
     shell:
         '''
         ktImportText \

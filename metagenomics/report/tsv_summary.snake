@@ -1,16 +1,16 @@
-def individual_krn_files(report_dir):
-      return expand('%s/individual/{sample}.krn' % report_dir, sample=wildcards.sample)
+def individual_krn_files(analysis_dir):
+      return expand('%s/report/krona/individual/{sample}.krn' % analysis_dir, sample=wildcards.sample)
 
 rule summarize_single:
     input:
         individual_krn_files
     output:
-        summary_xlsx = '{report_dir}/summary.xlsx',
-        summary_tsv  = '{report_dir}/summary.tsv',
-        subtax_xlsx  = '{report_dir}/subtaxes.xlsx',
-        subtax_tsv   = '{report_dir}/subtaxes.tsv',
-        normed_xlsx  = '{report_dir}/subtaxes.norm.xlsx',
-        normed_tsv   = '{report_dir}/subtaxes.norm.tsv'
+        summary_xlsx = '{analysis_dir}/report/krona/summary.xlsx',
+        summary_tsv  = '{analysis_dir}/report/krona/summary.tsv',
+        subtax_xlsx  = '{analysis_dir}/report/krona/subtaxes.xlsx',
+        subtax_tsv   = '{analysis_dir}/report/krona/subtaxes.tsv',
+        normed_xlsx  = '{analysis_dir}/report/krona/subtaxes.norm.xlsx',
+        normed_tsv   = '{analysis_dir}/report/krona/subtaxes.norm.tsv'
     run:
 
         tax_ranks = ['domain', 'kingdom', 'phylum', 'class', 'order', 'family',
