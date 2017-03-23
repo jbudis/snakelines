@@ -5,12 +5,12 @@ rule summarize_single:
     input:
         individual_krn_files
     output:
-        summary_xlsx = '{analysis_dir}/report/krona/summary.xlsx',
-        summary_tsv  = '{analysis_dir}/report/krona/summary.tsv',
-        subtax_xlsx  = '{analysis_dir}/report/krona/subtaxes.xlsx',
-        subtax_tsv   = '{analysis_dir}/report/krona/subtaxes.tsv',
-        normed_xlsx  = '{analysis_dir}/report/krona/subtaxes.norm.xlsx',
-        normed_tsv   = '{analysis_dir}/report/krona/subtaxes.norm.tsv'
+        summary_xlsx = '{analysis_dir}/report/tsv/summary.xlsx',
+        summary_tsv  = '{analysis_dir}/report/tsv/summary.tsv',
+        subtax_xlsx  = '{analysis_dir}/report/tsv/subtaxes.xlsx',
+        subtax_tsv   = '{analysis_dir}/report/tsv/subtaxes.tsv',
+        normed_xlsx  = '{analysis_dir}/report/tsv/subtaxes.norm.xlsx',
+        normed_tsv   = '{analysis_dir}/report/tsv/subtaxes.norm.tsv'
     run:
 
         tax_ranks = ['domain', 'kingdom', 'phylum', 'class', 'order', 'family',

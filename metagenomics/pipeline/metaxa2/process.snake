@@ -13,9 +13,9 @@ rule process:
         'reads/original/stats/summary.html',
         'reads/trimmed/stats/summary.html',
         'metaxa2/report/krona/krona.html',
-        'metaxa2/report/summary.tsv',
-        'metaxa2/report/summary.xlsx',
-        'metaxa2/report/subtaxes.tsv',
-        'metaxa2/report/subtaxes.xlsx',
-        'metaxa2/report/subtaxes.norm.xlsx',
-        'metaxa2/report/subtaxes.norm.tsv'
+        'metaxa2/report/tsv/summary.tsv',
+        'metaxa2/report/tsv/summary.xlsx',
+        'metaxa2/report/tsv/subtaxes.tsv',
+        'metaxa2/report/tsv/subtaxes.xlsx',
+        'metaxa2/report/tsv/subtaxes.norm.xlsx',
+        'metaxa2/report/tsv/subtaxes.norm.tsv'
