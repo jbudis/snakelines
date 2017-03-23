@@ -1,0 +1,106 @@
+def individual_krn_files(report_dir):
+      return expand('%s/individual/{sample}.krn' % report_dir, sample=wildcards.sample)
+
+rule summarize_single:
+    input:
+        individual_krn_files
+    output:
+        summary_xlsx = '{report_dir}/summary.xlsx',
+        summary_tsv  = '{report_dir}/summary.tsv',
+        subtax_xlsx  = '{report_dir}/subtaxes.xlsx',
+        subtax_tsv   = '{report_dir}/subtaxes.tsv',
+        normed_xlsx  = '{report_dir}/subtaxes.norm.xlsx',
+        normed_tsv   = '{report_dir}/subtaxes.norm.tsv'
+    run:
+
+        tax_ranks = ['domain', 'kingdom', 'phylum', 'class', 'order', 'family',
+                     'genus', 'species', 'subspecies', 'subsubspecies', 'variety', 'form']
+
+
+        # Load stored taxonomic abundances from Emirge analysis step
+
+        def load_abundances(sample_file):
+            taxes = {}
+            with open(sample_file) as sf:
+                for line in sf:
+                    tax, count = line[line.find('\t')+1:].strip(), float(line.split('\t')[0])
+                    taxes[tax] = taxes.get(tax, 0) + count
+            return taxes
+
+        samples = [af.split('/')[-1][:-4] for af in input]
+        abundances = list(map(load_abundances, input))
+
+        # Aggregate abundances into summary table
+
+        dupl_taxonomies = [sample_abundance.keys() for sample_abundance in abundances]
+        taxonomies = set()
+        for sample_taxes in dupl_taxonomies:
+            taxonomies = taxonomies | set(sample_taxes)
+        taxonomies = sorted(list(taxonomies))
+
+        # Convert into vectors
+
+        max_tax = -1
+        for tax in taxonomies:
+            max_tax = max(max_tax, tax.count('\t') + 1)
+        tax_ranks = tax_ranks[:max_tax]
+
+
+        def split_tax(taxonomy):
+            taxes = taxonomy.split('\t')
+            taxes.extend([np.nan]*(len(tax_ranks) - len(taxes)))
+            return taxes
+
+        split_taxonomies = [split_tax(tax) for tax in taxonomies]
+
+        # Store into summary table
+
+        tax_table = pd.DataFrame(split_taxonomies, columns=tax_ranks)
+        tax_table.dropna(axis=1, how='all', inplace=True)
+        tax_ranks = [tr for tr in tax_ranks if tr in tax_table.columns]
+
+        for sample, sample_abundance in zip(samples, abundances):
+            tax_table[sample] = [sample_abundance.get(tax, 0) for tax in taxonomies]
+            tax_table[sample] = tax_table[sample].apply(pd.to_numeric)
+
+        tax_table.sort_values(tax_ranks, ascending=True, na_position='first', inplace=True)
+
+        tax_table.to_excel(output.summary_xlsx, index=False)
+        tax_table.to_csv(output.summary_tsv, sep='\t', index=False)
+
+        # Generate rows for aggregated taxes, for example all Bacteria, all Actinobacteria ...
+
+        next_index = max(tax_table.index + 1)
+        sub_tables = []
+
+        for i, tax_rank in enumerate(tax_ranks[:-1]):
+            sub_ranks = tax_ranks[:i+1]
+            sub_counts = tax_table.groupby(sub_ranks).sum()
+            sub_indices = range(next_index, next_index + len(sub_counts))
+            next_index = sub_indices[-1] + 1
+            sub_counts.reset_index(inplace=True)
+            sub_counts['i'] = sub_indices
+            sub_counts.set_index('i', inplace=True)
+            sub_tables.append(sub_counts)
+
+        join_table = pd.concat([tax_table] + sub_tables)[tax_ranks + samples]
+        join_table.drop_duplicates(inplace=True)
+        join_table.sort_values(tax_ranks, ascending=True, na_position='first', inplace=True)
+
+        # Remove marginal taxes, e.g Bacteria from 28S samples
+        tax_sums = list(join_table.sum(axis=1))
+        root_counts = join_table.iloc[np.argmax(tax_sums)]
+        domain = tax_ranks[0]
+        join_table = join_table[join_table[domain] == root_counts[domain]]
+
+        join_table.to_excel(output.subtax_xlsx, index=False)
+        join_table.to_csv(output.subtax_tsv, sep='\t', index=False)
+
+        # Normalise join table
+        normed = join_table[tax_ranks]
+        for sample in samples:
+            root_count = root_counts[sample]
+            normed[sample] = join_table[sample].apply(lambda x: x / root_count)
+
+        normed.to_excel(output.normed_xlsx, index=False)
+        normed.to_csv(output.normed_tsv, sep='\t', index=False)

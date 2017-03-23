@@ -1,5 +1,6 @@
-include: '../preprocess/trim_reads.snake'
-include: '../preprocess/gzip.snake'
+snake_dir = '../..'
+
+include: snake_dir + '/preprocess/gzip.snake'
 
 THREADS = 16
 
