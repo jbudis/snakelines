@@ -1,8 +1,4 @@
-snake_dir = '../..'
-
-include: snake_dir + '/preprocess/gzip.snake'
-
-THREADS = 16
+include: config['snake_dir'] + '/preprocess/gzip.snake'
 
 rule metaxa2_classification:
     input:
@@ -15,7 +11,7 @@ rule metaxa2_classification:
     log:
         'metaxa2/classification/{sample}/log/metaxa2.log'
     threads:
-        THREADS
+        int(config['threads'])
     shell:
         '''
         /usr/local/tools/metaxa-2.1.3/metaxa2 \
