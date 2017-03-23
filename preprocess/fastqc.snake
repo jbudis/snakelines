@@ -23,7 +23,7 @@ rule fastqc_summary:
     shell:
         """
         cd {params.report_dir}
-        {params.summary_script} \
+        python {params.summary_script} \
             . \
             summary.html
         """
