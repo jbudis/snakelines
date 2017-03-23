@@ -72,7 +72,7 @@ rule prepare_nonchimeric_for_krona:
         tax = 'reference/{reference}/{reference}.tax',
         summary = 'emirge/{reference}/iterations/{sample}/{sample}.uchime',
     output:
-        krona_txt = 'emirge/{reference}/report/individual/{sample}.krn'
+        krona_txt = 'emirge/{reference}/report/krona/individual/{sample}.krn'
     run:
         import os
 
@@ -92,11 +92,11 @@ rule prepare_nonchimeric_for_krona:
 
 rule emirge_krona_report:
     input:
-        'emirge/{reference}/report/individual/{sample}.krn'
+        'emirge/{reference}/report/krona/individual/{sample}.krn'
     output:
-        'emirge/{reference}/report/individual/{sample}.html'
+        'emirge/{reference}/report/krona/individual/{sample}.html'
     log:
-        'emirge/{reference}/report/individual/log/{sample}.krona'
+        'emirge/{reference}/report/krona/individual/log/{sample}.krona'
     shell:
         '''
         ktImportText \
