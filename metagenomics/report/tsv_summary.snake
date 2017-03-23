@@ -1,3 +1,9 @@
+import os
+
+import pandas as pd
+import csv
+import numpy as np
+
 def individual_krn_files(analysis_dir):
       return expand('%s/report/krona/individual/{sample}.krn' % analysis_dir, sample=wildcards.sample)
 
