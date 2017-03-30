@@ -48,7 +48,8 @@ rule assembly_standard:
     threads:
         THREADS
     log:
-        'spades_{type}/{sample}/log/spades.log'
+        'spades_{type}/{sample}/log/spades.log',
+        'spades_{type}/{sample}/log/spades.err'
     shell:
         '''
         mkdir -p {params.outdir}
@@ -59,8 +60,8 @@ rule assembly_standard:
             --careful \
             --threads {threads} \
             -o {params.outdir} \
-        > {log} \
-        2> {log}
+        > {log[0]} \
+        2> {log[1]}
         '''
 
 rule assembly_meta:
