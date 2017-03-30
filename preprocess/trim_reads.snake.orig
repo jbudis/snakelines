@@ -8,7 +8,7 @@ SAMPLES, = glob_wildcards("reads/original/{sample}_R1.fastq.gz")
 
 rule trim_and_report:
 	input:
-                'reads/trimmed/stats/summary.html',
+		'reads/trimmed/stats/summary.html',
 		expand('reads/trimmed/{sample}_R1.fastq.gz', sample=SAMPLES),
 		expand('reads/trimmed/{sample}_R2.fastq.gz', sample=SAMPLES)
 
