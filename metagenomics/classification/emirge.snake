@@ -1,27 +1,7 @@
 shell.executable('bash')
 
-#include: '../preprocess/trim_reads.snake'
-include: '../preprocess/gzip.snake'
-include: '../reference/indices/bowtie.snake'
-
-THREADS=32
-
-#wildcards = glob_wildcards('reads/original/{sample}_R1.fastq.gz')
-
-#rule summary_krona_report:
-#    input:
-#        expand('emirge/{reference}/report/individual/{sample}.txt', sample=wildcards.sample)
-#    output:
-#        'emirge/{reference}/report/krona/index.html'
-#    log:
-#        'emirge/{reference}/report/krona/log/krona.log'
-#    shell:
-#        '''
-#        ktImportText \
-#            -o {output} \
-#            {input} \
-#        > {log}
-#        '''
+include: config['snake_dir'] + '/preprocess/gzip.snake'
+include: config['snake_dir'] + '/reference/indices/bowtie.snake'
 
 rule emirge_classification:
     input:
@@ -37,7 +17,7 @@ rule emirge_classification:
     log:
         'emirge/{reference}/iterations/{sample}/log/emirge.log'
     threads:
-        THREADS
+        int(config['threads'])
     shell:
         '''
         emirge \
@@ -92,7 +72,7 @@ rule prepare_nonchimeric_for_krona:
         tax = 'reference/{reference}/{reference}.tax',
         summary = 'emirge/{reference}/iterations/{sample}/{sample}.uchime',
     output:
-        krona_txt = 'emirge/{reference}/report/individual/{sample}.krn'
+        krona_txt = 'emirge/{reference}/report/krona/individual/{sample}.krn'
     run:
         import os
 
@@ -112,11 +92,11 @@ rule prepare_nonchimeric_for_krona:
 
 rule emirge_krona_report:
     input:
-        'emirge/{reference}/report/individual/{sample}.krn'
+        'emirge/{reference}/report/krona/individual/{sample}.krn'
     output:
-        'emirge/{reference}/report/individual/{sample}.html'
+        'emirge/{reference}/report/krona/individual/{sample}.html'
     log:
-        'emirge/{reference}/report/individual/log/{sample}.krona'
+        'emirge/{reference}/report/krona/individual/log/{sample}.krona'
     shell:
         '''
         ktImportText \

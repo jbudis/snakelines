@@ -1,0 +1,21 @@
+configfile: srcdir('config.yaml')
+
+wildcards = glob_wildcards('reads/original/{sample}_R1.fastq.gz')
+
+include: config['snake_dir'] + '/preprocess/trim_reads_config.snake'
+include: config['snake_dir'] + '/preprocess/fastqc.snake'
+include: config['snake_dir'] + '/metagenomics/classification/metaxa2.snake'
+include: config['snake_dir'] + '/metagenomics/report/krona.snake'
+include: config['snake_dir'] + '/metagenomics/report/tsv_summary.snake'
+
+rule process:
+    input:
+        'reads/original/stats/summary.html',
+        'reads/trimmed/stats/summary.html',
+        'metaxa2/report/krona/krona.html',
+        'metaxa2/report/tsv/summary.tsv',
+        'metaxa2/report/tsv/summary.xlsx',
+        'metaxa2/report/tsv/subtaxes.tsv',
+        'metaxa2/report/tsv/subtaxes.xlsx',
+        'metaxa2/report/tsv/subtaxes.norm.xlsx',
+        'metaxa2/report/tsv/subtaxes.norm.tsv'

@@ -1,0 +1,6 @@
+trim:
+    crop: 170
+    quality: 20
+    headcrop: 20
+    minlen: 35
+

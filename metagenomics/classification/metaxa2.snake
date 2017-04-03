@@ -1,7 +1,4 @@
-include: '../preprocess/trim_reads.snake'
-include: '../preprocess/gzip.snake'
-
-THREADS = 16
+include: config['snake_dir'] + '/preprocess/gzip.snake'
 
 rule metaxa2_classification:
     input:
@@ -14,7 +11,7 @@ rule metaxa2_classification:
     log:
         'metaxa2/classification/{sample}/log/metaxa2.log'
     threads:
-        THREADS
+        int(config['threads'])
     shell:
         '''
         /usr/local/tools/metaxa-2.1.3/metaxa2 \
@@ -48,7 +45,7 @@ rule prepare_for_krona:
     input:
         'metaxa2/classification/{sample}/{sample}.level_7.txt'   
     output:
-        'metaxa2/report/individual/{sample}.krn'   
+        'metaxa2/report/krona/individual/{sample}.krn'
     shell:
         '''
         cat \
@@ -68,11 +65,11 @@ rule prepare_for_krona:
 
 rule metaxa2_krona_report:
     input:
-        'metaxa2/report/individual/{sample}.krn'   
+        'metaxa2/report/krona/individual/{sample}.krn'
     output:
-        'metaxa2/report/individual/{sample}.html'
+        'metaxa2/report/krona/individual/{sample}.html'
     log:
-        'metaxa2/report/individual/log/{sample}.krona'
+        'metaxa2/report/krona/individual/log/{sample}.krona'
     shell:
         '''
         ktImportText \
