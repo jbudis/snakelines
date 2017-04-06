@@ -1,4 +1,4 @@
-THREADS = 32
+THREADS = 16
 
 rule blast_kingdom:
     input:
@@ -20,6 +20,32 @@ rule blast_kingdom:
             -out {output} \
             -outfmt "6 qseqid sskingdoms sskingdom staxids staxid" \
             -max_target_seqs 25 \
+            -max_hsps 1 \
+            -num_threads {threads}
+        '''
+
+rule blast_taxonomy_extra_reliable:
+    input:
+        '{indir}/{name}'
+    output:
+        '{indir}/blast/{name}.reliable_taxonomy'
+    threads:
+        THREADS
+    priority:
+        100
+    shell:
+        '''
+        mkdir -p {wildcards.indir}/blast
+
+        export BLASTDB=/data/genome/metagenome/blast/nt/17-01-17
+
+        blastn \
+            -db /data/genome/metagenome/blast/nt/17-01-17/nt \
+            -query {input} \
+            -out {output} \
+            -outfmt "6 qseqid sskingdoms sskingdom staxids staxid" \
+            -qcov_hsp_perc 100 \
+            -perc_identity 97 \
             -max_hsps 1 \
             -num_threads {threads}
         '''
