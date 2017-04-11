@@ -5,10 +5,10 @@ rule clark:
         r1 = 'reads/{type}/{sample}_R1.fastq.gz',
         r2 = 'reads/{type}/{sample}_R2.fastq.gz'
     output:
-        'clark/{type}/{sample}/reads.csv'
+        'clark/{type}/classification/{sample}/reads.csv'
     params:
-        prefix='clark/{type}/{sample}/reads'
-        dir='clark/{type}/{sample}'
+        prefix='clark/{type}/classification/{sample}/reads',
+        dir='clark/{type}/classification/{sample}'
     threads:
         THREADS
     shell:
@@ -25,3 +25,36 @@ rule clark:
             -m 1 \
             -n {threads}
         '''
+
+rule clark_summary:
+    input:
+        'clark/{type}/classification/{sample}/reads.csv'
+    output:
+        'clark/{type}/classification/{sample}/summary.csv'
+    shell:
+        '''
+        /usr/local/tools/clark-1.2.3/estimate_abundance.sh \
+            -F {input} \
+            -D /data/genome/metagenome/clark/17-01-18 \
+        > {output}
+        '''
+
+rule krona_all_txt:
+    input:
+        'clark/{type}/classification/{sample}/summary.csv'
+    output:
+        'clark/{type}/report/krona/individual/{sample}.krn'
+    shell:
+        '''
+        awk \
+            -F, \
+            '!/UNKNOWN/ {{ \
+                gsub(";", "\t", $3); \
+                print $4 "\t" $3 "\t" $1\
+            }}' \
+            {input} \
+        | tail \
+            -n +2 \
+        > {output}
+        '''
+
