@@ -45,8 +45,9 @@ rule blast_taxonomy_extra_reliable:
             -out {output} \
             -outfmt "6 qseqid sskingdoms sskingdom staxids staxid" \
             -qcov_hsp_perc 100 \
-            -perc_identity 97 \
+            -perc_identity 99 \
             -max_hsps 1 \
+            -max_target_seqs 25 \
             -num_threads {threads}
         '''
 
