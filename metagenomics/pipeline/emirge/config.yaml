@@ -1,4 +1,5 @@
 trim:
+    read_type: original
     crop: 170
     quality: 20
     headcrop: 20

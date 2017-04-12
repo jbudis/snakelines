@@ -1,6 +1,7 @@
 sample_pattern: test
 
 trim:
+    read_type: original
     crop: 500
     quality: 20
     headcrop: 0

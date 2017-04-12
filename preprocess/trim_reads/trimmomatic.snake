@@ -5,22 +5,12 @@ include: "../report/fastqc.snake"
 THREADS = 32
 wildcards = glob_wildcards("reads/original/{sample}_R1.fastq.gz")
 
-rule trim_and_report:
-    input:
-        'reads/trimmed/stats/summary.html',
-        expand('reads/trimmed/{sample}_R1.fastq.gz', sample=wildcards.sample),
-        expand('reads/trimmed/{sample}_R2.fastq.gz', sample=wildcards.sample)
-
-rule trim_all:
-    input:
-        expand('reads/trimmed/{sample}_R1.fastq.gz', sample=wildcards.sample),
-        expand('reads/trimmed/{sample}_R2.fastq.gz', sample=wildcards.sample)
-
+read_type = config['trim']['read_type']
 
 rule trim:
     input:
-        r1 = 'reads/original/{sample}_R1.fastq.gz',
-        r2 = 'reads/original/{sample}_R2.fastq.gz'
+        r1 = 'reads/%s/{sample}_R1.fastq.gz' % read_type,
+        r2 = 'reads/%s/{sample}_R2.fastq.gz' % read_type
     output:
         r1 = 'reads/trimmed/{sample}_R1.fastq.gz',
         r2 = 'reads/trimmed/{sample}_R2.fastq.gz'
