@@ -1,4 +1,4 @@
-include: '../preprocess/dedup_reads.snake'
+include: '../preprocess/deduplication/fastuniq.snake'
 include: '../reference/indices/faidx.snake'
 
 THREADS = 32

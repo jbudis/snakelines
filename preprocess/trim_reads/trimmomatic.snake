@@ -1,6 +1,6 @@
 import yaml
 
-include: "../preprocess/fastqc.snake"
+include: "../report/fastqc.snake"
 
 THREADS = 32
 wildcards = glob_wildcards("reads/original/{sample}_R1.fastq.gz")

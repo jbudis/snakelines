@@ -1,4 +1,4 @@
-include: config['snake_dir'] + '/preprocess/gzip.snake'
+include: config['snake_dir'] + '/preprocess/conversion/gzip.snake'
 
 rule metaxa2_classification:
     input:

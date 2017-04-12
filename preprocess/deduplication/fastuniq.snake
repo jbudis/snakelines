@@ -1,5 +1,4 @@
-include:
-    '/usr/local/snake/preprocess/trim_reads.snake'
+include: '../trim_reads/trimmomatic.snake'
 
 THREADS = 32
 SAMPLES = glob_wildcards('reads/original/{sample}_R1.fastq.gz')

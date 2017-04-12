@@ -2,8 +2,8 @@ configfile: srcdir('config.yaml')
 
 wildcards = glob_wildcards('reads/original/{sample}_R1.fastq.gz')
 
-include: config['snake_dir'] + '/preprocess/trim_reads_config.snake'
-include: config['snake_dir'] + '/preprocess/fastqc.snake'
+include: config['snake_dir'] + '/preprocess/trim_reads/trimmomatic.snake'
+include: config['snake_dir'] + '/preprocess/report/fastqc.snake'
 include: config['snake_dir'] + '/metagenomics/classification/emirge.snake'
 include: config['snake_dir'] + '/metagenomics/report/krona.snake'
 include: config['snake_dir'] + '/metagenomics/report/tsv_summary.snake'
