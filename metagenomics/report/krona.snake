@@ -1,5 +1,5 @@
 def individual_krn_files(analysis_dir):
-      return expand('%s/report/krona/individual/{sample}.krn' % analysis_dir, sample=wildcards.sample)
+      return expand('%s/report/krona/individual/{sample}.krn' % analysis_dir, sample=pipeline.sample)
 
 rule krona_report:
     input:
