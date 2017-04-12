@@ -1,6 +1,3 @@
-include: '../../preprocess/deduplication/fastuniq.snake'
-include: '../../reference/indices/faidx.snake'
-
 read_type = config['assembly']['read_type']
 
 rule assembly:
