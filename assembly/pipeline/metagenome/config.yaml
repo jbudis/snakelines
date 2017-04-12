@@ -1,0 +1,10 @@
+sample_pattern: test
+
+trim:
+    crop: 500
+    quality: 20
+    headcrop: 0
+    minlen: 35
+
+assembly:
+    read_type: trimmed
