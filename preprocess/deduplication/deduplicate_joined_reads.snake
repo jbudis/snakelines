@@ -1,5 +1,5 @@
 #include:
-#    '/usr/local/snake/preprocess/join_reads.snake'
+#    '/usr/local/snake/preprocess/pear.snake'
 workdir:
     '/data/projects/virseq'
 
@@ -30,19 +30,19 @@ rule fastuniq:
     shell:
         '''
         mkdir -p reads/deduplicated
-        
+
         gzip -cd {input.r1} > {params.r1_ungz}
         gzip -cd {input.r2} > {params.r2_ungz}
-        
+
         echo "{params.r1_ungz}\n{params.r2_ungz}" > {params.in_file}
 
         fastuniq \
             -i {params.in_file} \
             -o {output.r1} \
             -p {output.r2}
-        
+
         rm {params.r1_ungz}
         rm {params.r2_ungz}
         '''
 
-        
+
