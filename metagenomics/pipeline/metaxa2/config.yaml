@@ -1,3 +1,5 @@
+sample_pattern: .*
+
 trim:
     read_type: original
     crop: 170
