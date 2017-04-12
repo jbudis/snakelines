@@ -1,0 +1,9 @@
+configfile: srcdir('config.yaml')
+
+pipeline = glob_wildcards('reads/%s/{sample}_R1.fastq.gz' % config['read_type'])
+
+include: config['snake_dir'] + '/preprocess/report/fastqc.snake'
+
+rule process:
+    input:
+        'reads/%s/stats/summary.html' % config['read_type']

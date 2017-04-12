@@ -2,14 +2,6 @@ def fastq_files(read_type):
     return expand('reads/%s/stats/{sample}_R1_fastqc.html' % read_type, sample=pipeline.sample) + \
            expand('reads/%s/stats/{sample}_R2_fastqc.html' % read_type, sample=pipeline.sample)
 
-rule fastqc_original:
-    input:
-        'reads/original/stats/summary.html'
-
-rule fastqc_trimmed:
-    input:
-        'reads/trimmed/stats/summary.html'
-
 rule fastqc_summary:
     input:
         fastq_files
