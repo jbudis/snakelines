@@ -6,8 +6,10 @@ include: config['snake_dir'] + '/preprocess/report/fastqc.snake'
 include: config['snake_dir'] + '/preprocess/trim_reads/trimmomatic.snake'
 include: config['snake_dir'] + '/assembly/assemblers/spades.snake'
 
+assembly_type = config['assembly']['analysis_type']
+
 rule process:
     input:
         'reads/original/stats/summary.html',
         'reads/trimmed/stats/summary.html',
-        expand('spades-meta/{sample}/contigs.fasta', sample=pipeline.sample)
+        expand('spades-%s/{sample}/contigs.fasta' % assembly_type, sample=pipeline.sample)

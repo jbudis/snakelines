@@ -9,3 +9,4 @@ trim:
 
 assembly:
     read_type: trimmed
+    analysis_type: meta
