@@ -1,8 +1,6 @@
-THREADS = 32
-
-
-FASTQ_SUFFIX = '.fastq.gz'
-FASTQS, = glob_wildcards("reads/original/{fastq}.fastq.gz")
+def fastq_files(read_type):
+    return expand('reads/%s/stats/{sample}_R1_fastqc.html' % read_type, sample=pipeline.sample) + \
+           expand('reads/%s/stats/{sample}_R2_fastqc.html' % read_type, sample=pipeline.sample)
 
 rule fastqc_original:
     input:
@@ -14,18 +12,16 @@ rule fastqc_trimmed:
 
 rule fastqc_summary:
     input:
-        lambda wildcards: expand('reads/{read_type}/stats/{fastq}_fastqc.html', fastq=FASTQS, read_type=wildcards.read_type)
+        fastq_files
     output:
         'reads/{read_type}/stats/summary.html'
     params:
-        report_dir = 'reads/{read_type}/stats',
         summary_script = srcdir("scripts/fastqc-summary.py")
     shell:
         """
-        cd {params.report_dir}
         python {params.summary_script} \
-            . \
-            summary.html
+            {output} \
+            {input}
         """
 
 rule fastqc:
@@ -34,7 +30,7 @@ rule fastqc:
     output:
         'reads/{read_type}/stats/{fastq}_fastqc.html'
     threads:
-        THREADS
+        int(config['threads'])
     shell:
         """
         fastqc \
