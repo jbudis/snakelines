@@ -1,4 +1,4 @@
-include: './dedup_reads.snake'
+include: './fastuniq.snake'
 include: './gzip.snake'
 
 shell.executable('bash')

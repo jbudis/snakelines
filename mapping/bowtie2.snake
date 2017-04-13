@@ -1,6 +1,6 @@
 THREADS = 32
 
-include: '../preprocess/trim_reads.snake'
+include: '../preprocess/trim_reads/trimmomatic.snake'
 include: '../reference/indices/bowtie2.snake'
 
 wildcards = glob_wildcards('reads/original/{sample}_R1.fastq.gz')

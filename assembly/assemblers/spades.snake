@@ -1,31 +1,20 @@
-include: '../preprocess/dedup_reads.snake'
-include: '../reference/indices/faidx.snake'
-
-THREADS = 16
-SAMPLES, = glob_wildcards('reads/original/{sample}_R1.fastq.gz')
-
-
-rule run_all2:
-    input:
-        expand('spades-standard/{sample}/contigs.fasta.fai', sample=SAMPLES)
+read_type = config['assembly']['read_type']
 
 rule assembly:
     input:
-        r1 = 'reads/deduplicated/{sample}_R1.fastq',
-        r2 = 'reads/deduplicated/{sample}_R2.fastq',
+        r1 = 'reads/%s/{sample}_R1.fastq.gz' % read_type,
+        r2 = 'reads/%s/{sample}_R2.fastq.gz' % read_type
     params:
         outdir = 'spades-standard/{sample}'
     output:
         graph = 'spades-standard/{sample}/assembly_graph.fastg',
         contigs = 'spades-standard/{sample}/contigs.fasta'
     threads:
-        THREADS
+        int(config['threads'])
     log:
         'spades-standard/{sample}/log/spades.log'
     shell:
         '''
-        mkdir -p {params.outdir}
-
         /usr/local/tools/spades-3.10.0/bin/spades.py \
             -1 {input.r1} \
             -2 {input.r2} \
@@ -39,21 +28,19 @@ rule assembly:
 
 rule assembly_standard:
     input:
-        r1 = 'reads/{type}/{sample}_R1.fastq.gz',
-        r2 = 'reads/{type}/{sample}_R2.fastq.gz'
+        r1 = 'reads/%s/{sample}_R1.fastq.gz' % read_type,
+        r2 = 'reads/%s/{sample}_R2.fastq.gz' % read_type
     params:
         outdir = 'spades_{type}/{sample}'
     output:
         contigs = 'spades_{type}/{sample}/contigs.fasta'
     threads:
-        THREADS
+        int(config['threads'])
     log:
         'spades_{type}/{sample}/log/spades.log',
         'spades_{type}/{sample}/log/spades.err'
     shell:
         '''
-        mkdir -p {params.outdir}
-
         /usr/local/tools/spades-3.10.0/bin/spades.py \
             -1 {input.r1} \
             -2 {input.r2} \
@@ -66,21 +53,19 @@ rule assembly_standard:
 
 rule assembly_meta:
     input:
-        r1 = 'reads/deduplicated/{sample}_R1.fastq',
-        r2 = 'reads/deduplicated/{sample}_R2.fastq',
+        r1 = 'reads/%s/{sample}_R1.fastq.gz' % read_type,
+        r2 = 'reads/%s/{sample}_R2.fastq.gz' % read_type
     params:
         outdir = 'spades-meta/{sample}'
     output:
         graph = 'spades-meta/{sample}/assembly_graph.fastg',
         contigs = 'spades-meta/{sample}/contigs.fasta'
     threads:
-        THREADS
+        int(config['threads'])
     log:
         'spades-meta/{sample}/log/spades.log'
     shell:
         '''
-        mkdir -p {params.outdir}
-
         /usr/local/tools/spades-3.10.0/bin/spades.py \
             --meta \
             -1 {input.r1} \
@@ -93,21 +78,19 @@ rule assembly_meta:
 
 rule assembly_plasmid:
     input:
-        r1 = 'reads/deduplicated/{sample}_R1.fastq',
-        r2 = 'reads/deduplicated/{sample}_R2.fastq',
+        r1 = 'reads/%s/{sample}_R1.fastq.gz' % read_type,
+        r2 = 'reads/%s/{sample}_R2.fastq.gz' % read_type
     params:
         outdir = 'spades-plasmid/{sample}'
     output:
         graph = 'spades-plasmid/{sample}/assembly_graph.fastg',
         contigs = 'spades-plasmid/{sample}/contigs.fasta'
     threads:
-        THREADS
+        int(config['threads'])
     log:
         'spades-plasmid/{sample}/log/spades.log'
     shell:
         '''
-        mkdir -p {params.outdir}
-
         /usr/local/tools/spades-3.10.0/bin/spades.py \
             --plasmid \
             --careful \

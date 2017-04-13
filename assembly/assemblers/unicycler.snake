@@ -1,5 +1,5 @@
 
-include: '../preprocess/dedup_reads.snake'
+include: '../preprocess/deduplication/fastuniq.snake'
 
 workdir:
     '/data/projects/plasmid'

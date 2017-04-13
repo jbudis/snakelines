@@ -1,6 +1,6 @@
 shell.executable('bash')
 
-include: config['snake_dir'] + '/preprocess/gzip.snake'
+include: config['snake_dir'] + '/preprocess/conversion/gzip.snake'
 include: config['snake_dir'] + '/reference/indices/bowtie.snake'
 
 rule emirge_classification:
