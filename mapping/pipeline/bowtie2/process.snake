@@ -1,0 +1,17 @@
+configfile: srcdir('config.yaml')
+
+pipeline = glob_wildcards('reads/original/{sample,%s}_R1.fastq.gz' % config['sample_pattern'])
+
+include: config['snake_dir'] + '/preprocess/report/fastqc.snake'
+include: config['snake_dir'] + '/preprocess/trim_reads/trimmomatic.snake'
+include: config['snake_dir'] + '/mapping/mappers/bowtie2.snake'
+include: config['snake_dir'] + '/mapping/postprocess/bam_index.snake'
+
+reference = config['mapping']['reference']
+
+rule process:
+    input:
+        'reads/original/stats/summary.html',
+        'reads/trimmed/stats/summary.html',
+        expand('bowtie2/{reference}/{sample}.bam'    , reference=reference, sample=pipeline.sample),
+        expand('bowtie2/{reference}/{sample}.bam.bai', reference=reference, sample=pipeline.sample)

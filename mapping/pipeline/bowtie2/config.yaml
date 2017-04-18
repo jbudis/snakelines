@@ -1,0 +1,12 @@
+sample_pattern: .*
+
+trim:
+    read_type: original
+    crop: 500
+    quality: 20
+    headcrop: 0
+    minlen: 35
+
+mapping:
+    read_type: trimmed
+    reference: pacnes
