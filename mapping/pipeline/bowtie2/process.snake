@@ -6,7 +6,7 @@ include: config['snake_dir'] + '/preprocess/report/fastqc.snake'
 include: config['snake_dir'] + '/preprocess/trim_reads/trimmomatic.snake'
 include: config['snake_dir'] + '/mapping/mappers/bowtie2.snake'
 include: config['snake_dir'] + '/mapping/postprocess/bam_index.snake'
-include: config['snake_dir'] + '/mapping/postprocess/qualimap.snake'
+include: config['snake_dir'] + '/mapping/report/qualimap.snake'
 
 reference = config['mapping']['reference']
 
