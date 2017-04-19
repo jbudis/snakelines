@@ -1,17 +1,23 @@
 include: 'bam_index.snake'
 
-THREADS = 32
+import pandas as pd
+import os
+
+def qualimap_files(wildcards):
+      return expand('%s/%s/stats-wgs/{sample}/genome_results.txt' % (wildcards.mapper, wildcards.reference), \
+                     sample=pipeline.sample)
 
 rule qualimap_wgs_report:
     input:
         bam = '{mapper}/{reference}/{sample}.bam',
         bai = '{mapper}/{reference}/{sample}.bam.bai'
     output:
-        '{mapper}/{reference}/stats-wgs/{sample}/qualimapReport.html'
+        html = '{mapper}/{reference}/stats-wgs/{sample}/qualimapReport.html',
+        text = '{mapper}/{reference}/stats-wgs/{sample}/genome_results.txt'
     params:
         outdir = '{mapper}/{reference}/stats-wgs/{sample}'
     threads:
-        THREADS
+        int(config['threads'])
     shell:
         '''
         qualimap bamqc \
@@ -28,11 +34,12 @@ rule qualimap_panel_report:
         bai = '{mapper}/{reference}/{sample}.bam.bai',
         bed = 'reference/{reference}/annotation/{panel}/regions.bed'
     output:
-        '{mapper}/{reference}/stats-{panel}/{sample}/qualimapReport.html'
+        html = '{mapper}/{reference}/stats-{panel}/{sample}/qualimapReport.html',
+        text = '{mapper}/{reference}/stats-{panel}/{sample}/genome_results.txt'
     params:
         outdir = '{mapper}/{reference}/stats-{panel}/{sample}'
     threads:
-        THREADS
+        int(config['threads'])
     shell:
         '''
         qualimap bamqc \
@@ -43,3 +50,31 @@ rule qualimap_panel_report:
             -outdir {params.outdir}
         '''
         
+rule summary_qualimap_report:
+    input:
+        qualimap_files
+    output:
+        '{mapper}/{reference}/stats-wgs/summary.tsv'
+    run:
+        def percent(text):
+            return '%.4f' % (float(text[text.find('(') + 1: text.rfind('%')]) / 100)
+
+        def extract_attribute(qualimap, attribute, convert):
+            with open(qualimap) as report:
+                for line in report:
+                    if ' = ' not in line:
+                        continue
+                    line = line.strip()
+                    key, value = line.split(' = ')
+                    if key == attribute:
+                        return convert(value)
+
+        percents = []
+        for qualimap in input:
+            percents.append(extract_attribute(qualimap, 'number of mapped reads', percent))
+
+        sids = [os.path.basename(os.path.dirname(qualimap)) for qualimap in input]
+
+        table = pd.DataFrame(index=sids)
+        table['mapped'] = percents
+        table.to_csv(output[0], sep='\t')
