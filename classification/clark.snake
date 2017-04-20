@@ -2,8 +2,8 @@ THREADS = 16
 
 rule clark:
     input:
-        r1 = 'reads/{type}/{sample}_R1.fastq.gz',
-        r2 = 'reads/{type}/{sample}_R2.fastq.gz'
+        r1 = 'reads/{type}/{sample}_R1.fastq',
+        r2 = 'reads/{type}/{sample}_R2.fastq'
     output:
         'clark/{type}/classification/{sample}/reads.csv'
     params:
