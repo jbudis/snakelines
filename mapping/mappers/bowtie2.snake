@@ -1,15 +1,11 @@
-THREADS = 32
+include: '../../reference/indices/bowtie2.snake'
 
-include: '../preprocess/trim_reads/trimmomatic.snake'
-include: '../reference/indices/bowtie2.snake'
-
-wildcards = glob_wildcards('reads/original/{sample}_R1.fastq.gz')
-
+read_type = config['mapping']['read_type']
 
 rule map_reads:
     input:
-        r1 = 'reads/trimmed/{sample}_R1.fastq.gz',
-        r2 = 'reads/trimmed/{sample}_R2.fastq.gz',
+        r1 = 'reads/%s/{sample}_R1.fastq.gz' % read_type,
+        r2 = 'reads/%s/{sample}_R2.fastq.gz' % read_type,
         index = 'reference/{reference}/bowtie2_index/{reference}.1.bt2',
         reffasta = 'reference/{reference}/{reference}.fa'
     output:
@@ -20,7 +16,7 @@ rule map_reads:
         index = 'reference/{reference}/bowtie2_index/{reference}',
         tmpdir = 'bowtie2/{reference}/tmp/'
     threads:
-        THREADS
+        int(config['threads'])
     shell:
         '''
         bowtie2 \
@@ -29,10 +25,7 @@ rule map_reads:
             -2 {input.r2} \
             --very-sensitive \
             --threads {threads} \
-            --rg-id {wildcards.sample} \
-            --rg PL:illumina \
-            --rg LB:{wildcards.sample} \
-            --rg SM:{wildcards.sample} \
+        2> {log} \
         | samtools view \
             -b \
             --reference {input.reffasta} \
