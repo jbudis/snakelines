@@ -39,8 +39,6 @@ rule fastuniq:
         gzip {params.r1}
         gzip {params.r2}
 
-        rm {params.r1}
-        rm {params.r2}
         rm {params.r1_ungz}
         rm {params.r2_ungz}
         rm {params.in_file}
