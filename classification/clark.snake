@@ -16,7 +16,7 @@ rule clark:
         mkdir -p {params.dir}
 
         clark \
-            -k 31 \
+            -k 19 \
             -T /data/genome/metagenome/clark/17-01-18/targets.txt \
             -D /data/genome/metagenome/clark/17-01-18 \
             -P {input.r1} \
