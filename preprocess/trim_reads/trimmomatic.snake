@@ -10,7 +10,7 @@ rule trim:
     threads:
         int(config['threads'])
     log:
-        'reads/trimmed/log/{sample}.log'
+        'reads/%s/log/{sample}.log' % read_type
     shell:
         '''
         trimmomatic PE \
