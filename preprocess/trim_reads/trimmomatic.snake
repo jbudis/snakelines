@@ -1,5 +1,3 @@
-include: "../report/fastqc.snake"
-
 read_type = config['trim']['read_type']
 
 rule trim:
