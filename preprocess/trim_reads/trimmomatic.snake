@@ -1,9 +1,4 @@
-import yaml
-
 include: "../report/fastqc.snake"
-
-THREADS = 32
-wildcards = glob_wildcards("reads/original/{sample}_R1.fastq.gz")
 
 read_type = config['trim']['read_type']
 
@@ -15,7 +10,7 @@ rule trim:
         r1 = 'reads/trimmed/{sample}_R1.fastq.gz',
         r2 = 'reads/trimmed/{sample}_R2.fastq.gz'
     threads:
-        THREADS
+        int(config['threads'])
     log:
         'reads/trimmed/log/{sample}.log'
     shell:
