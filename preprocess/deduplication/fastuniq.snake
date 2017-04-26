@@ -14,10 +14,12 @@ rule fastuniq:
     params:
         r1_ungz = 'reads/deduplicated/{sample}.tmp_R1.fastq',
         r2_ungz = 'reads/deduplicated/{sample}.tmp_R2.fastq',
-        in_file = 'reads/deduplicated/{sample}.txt'
-    output:
+        in_file = 'reads/deduplicated/{sample}.txt',
         r1 = 'reads/deduplicated/{sample}_R1.fastq',
         r2 = 'reads/deduplicated/{sample}_R2.fastq'
+    output:
+        r1 = 'reads/deduplicated/{sample}_R1.fastq.gz',
+        r2 = 'reads/deduplicated/{sample}_R2.fastq.gz'
     threads:
         THREADS
     shell:
@@ -31,8 +33,11 @@ rule fastuniq:
 
         fastuniq \
             -i {params.in_file} \
-            -o {output.r1} \
-            -p {output.r2}
+            -o {params.r1} \
+            -p {params.r2}
+
+        gzip {params.r1}
+        gzip {params.r2}
 
         rm {params.r1_ungz}
         rm {params.r2_ungz}

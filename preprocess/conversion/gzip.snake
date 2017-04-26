@@ -1,12 +1,11 @@
-THREADS = 32
-       
+
 rule unzip_fastq:
     input:
         '{file}.fastq.gz'
     output:
         temp('{file}.fastq')
     threads:
-        THREADS
+        int(config['threads'])
     shell:
         '''
         pigz \

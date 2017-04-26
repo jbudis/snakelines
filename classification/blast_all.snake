@@ -1,4 +1,4 @@
-THREADS = 32
+THREADS = 16
 
 rule blast:
     input:

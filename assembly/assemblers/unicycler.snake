@@ -1,28 +1,9 @@
-
-include: '../preprocess/deduplication/fastuniq.snake'
-
-workdir:
-    '/data/projects/plasmid'
-
-THREADS = 32
-SAMPLES = ['listeria-26']
-# ['LP-4', 'pTE53-200', 'pTE53-20']
-# ['LP-2']
-#           , 'LP-3', 'LP-4', 'pTE53-200', 'pTE53-20', 'listeria-26']
-#           , 'listeria-2', 'smv-kl53', 'smv-pl53', 'smv']
-
-### how to use this??? ###
-# wildcards = glob_wildcards('reads/original/{sample}_R1.fastq.gz')
-# print(wildcards.sample)
-
-rule run_samples:
-    input:
-        expand('unicycler/{sample}/assembly.fasta', sample=SAMPLES)
+THREADS = 16
 
 rule unicycler:
     input:
-        r1 = 'reads/deduplicated/{sample}_R1.fastq',
-        r2 = 'reads/deduplicated/{sample}_R2.fastq',
+        r1 = 'reads/deduplicated/{sample}_R1.fastq.gz',
+        r2 = 'reads/deduplicated/{sample}_R2.fastq.gz',
     params:
         outdir = 'unicycler/{sample}'
     output:
