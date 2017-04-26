@@ -8,5 +8,6 @@ trim:
     minlen: 35
 
 assembly:
-    read_type: trimmed
-    analysis_type: meta
+    read_type: trimmed    # original, trimmed, deduplicated
+    analysis_type: meta   # standard, meta, plasmid
+    path_to_reference: reference/mhv68/mhv68.fa
