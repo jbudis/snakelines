@@ -7,3 +7,5 @@ trim:
     headcrop: 20
     minlen: 35
 
+metaxa2:
+    read_type: trimmed
