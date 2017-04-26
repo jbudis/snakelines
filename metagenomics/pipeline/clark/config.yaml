@@ -1,0 +1,12 @@
+sample_pattern: .*
+
+trim:
+    read_type: original
+    crop: 170
+    quality: 20
+    headcrop: 20
+    minlen: 35
+
+clark:
+    read_type: trimmed
+    db_version: 17-01-18
