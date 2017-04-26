@@ -1,5 +1,3 @@
-include: '../../reference/indices/bowtie2.snake'
-
 read_type = config['mapping']['read_type']
 
 rule map_reads:
@@ -37,5 +35,27 @@ rule map_reads:
             -T {params.tmpdir} \
             -m 5G \
             - \
+        '''
+
+rule bowtie2_index:
+    input:
+        'reference/{genome}/{genome}.fa'
+    output:
+        protected('reference/{genome}/bowtie2_index/{genome}.1.bt2'),
+        protected('reference/{genome}/bowtie2_index/{genome}.2.bt2'),
+        protected('reference/{genome}/bowtie2_index/{genome}.3.bt2'),
+        protected('reference/{genome}/bowtie2_index/{genome}.4.bt2'),
+        protected('reference/{genome}/bowtie2_index/{genome}.rev.1.bt2'),
+        protected('reference/{genome}/bowtie2_index/{genome}.rev.2.bt2')
+    params:
+        index = 'reference/{genome}/bowtie2_index/{genome}'
+    log:
+        'reference/{genome}/log/bowtie2.log'
+    shell:
+        '''
+        bowtie2-build \
+            {input} \
+            {params.index} \
+        > {log}
         '''
 
