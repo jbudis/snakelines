@@ -51,9 +51,12 @@ rule bowtie2_index:
         index = 'reference/{genome}/bowtie2_index/{genome}'
     log:
         'reference/{genome}/log/bowtie2.log'
+    threads:
+        int(config['threads'])
     shell:
         '''
         bowtie2-build \
+            --threads {threads} \
             {input} \
             {params.index} \
         > {log}
