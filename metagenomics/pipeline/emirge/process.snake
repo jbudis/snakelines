@@ -9,13 +9,15 @@ include: config['snake_dir'] + '/metagenomics/report/krona.snake'
 include: config['snake_dir'] + '/metagenomics/report/tsv_summary.snake'
 
 rule process:
+    params:
+        reference = config['emirge']['reference']
     input:
         'reads/original/stats/summary.html',
         'reads/trimmed/stats/summary.html',
-        'emirge/silva-ssu-128/report/krona/krona.html',
-        'emirge/silva-ssu-128/report/tsv/summary.tsv',
-        'emirge/silva-ssu-128/report/tsv/summary.xlsx',
-        'emirge/silva-ssu-128/report/tsv/subtaxes.tsv',
-        'emirge/silva-ssu-128/report/tsv/subtaxes.xlsx',
-        'emirge/silva-ssu-128/report/tsv/subtaxes.norm.xlsx',
-        'emirge/silva-ssu-128/report/tsv/subtaxes.norm.tsv'
+        'emirge/{params.reference}/report/krona/krona.html',
+        'emirge/{params.reference}/report/tsv/summary.tsv',
+        'emirge/{params.reference}/report/tsv/summary.xlsx',
+        'emirge/{params.reference}/report/tsv/subtaxes.tsv',
+        'emirge/{params.reference}/report/tsv/subtaxes.xlsx',
+        'emirge/{params.reference}/report/tsv/subtaxes.norm.xlsx',
+        'emirge/{params.reference}/report/tsv/subtaxes.norm.tsv'
