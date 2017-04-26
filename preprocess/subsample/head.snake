@@ -1,0 +1,23 @@
+include: config['snake_dir'] + '/preprocess/conversion/gzip.snake'
+
+read_type  = config['subsample']['read_type']
+read_count  = config['subsample']['read_count']
+
+rule subsample:
+    input:
+        'reads/%s/{sample}.fastq' % read_type
+    output:
+        'reads/subsampled/{sample}.fastq.gz'
+    threads:
+        int(config['threads'])
+    params:
+        lines = read_count * 4
+    shell:
+        '''
+        head \
+            --lines {params.lines} \
+            {input} \
+        | pigz \
+            --processes {threads} \
+        > {output}
+        '''
