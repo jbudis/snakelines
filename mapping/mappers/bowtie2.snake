@@ -39,16 +39,16 @@ rule map_reads:
 
 rule bowtie2_index:
     input:
-        'reference/{genome}/{genome}.fa'
+        'reference/{genome}/{sequence}.fa'
     output:
-        protected('reference/{genome}/bowtie2_index/{genome}.1.bt2'),
-        protected('reference/{genome}/bowtie2_index/{genome}.2.bt2'),
-        protected('reference/{genome}/bowtie2_index/{genome}.3.bt2'),
-        protected('reference/{genome}/bowtie2_index/{genome}.4.bt2'),
-        protected('reference/{genome}/bowtie2_index/{genome}.rev.1.bt2'),
-        protected('reference/{genome}/bowtie2_index/{genome}.rev.2.bt2')
+        protected('reference/{genome}/bowtie2_index/{sequence}.1.bt2'),
+        protected('reference/{genome}/bowtie2_index/{sequence}.2.bt2'),
+        protected('reference/{genome}/bowtie2_index/{sequence}.3.bt2'),
+        protected('reference/{genome}/bowtie2_index/{sequence}.4.bt2'),
+        protected('reference/{genome}/bowtie2_index/{sequence}.rev.1.bt2'),
+        protected('reference/{genome}/bowtie2_index/{sequence}.rev.2.bt2')
     params:
-        index = 'reference/{genome}/bowtie2_index/{genome}'
+        index = 'reference/{genome}/bowtie2_index/{sequence}'
     log:
         'reference/{genome}/log/bowtie2.log'
     threads:
