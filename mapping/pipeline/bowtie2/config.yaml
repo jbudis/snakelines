@@ -10,3 +10,4 @@ trim:
 mapping:
     read_type: trimmed
     reference: pacnes
+    params: --very-sensitive

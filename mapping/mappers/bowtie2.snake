@@ -12,7 +12,8 @@ rule map_reads:
         'bowtie2/{reference}/log/{sample}.map'
     params:
         index = 'reference/{reference}/bowtie2_index/{reference}',
-        tmpdir = 'bowtie2/{reference}/tmp/'
+        tmpdir = 'bowtie2/{reference}/tmp/',
+        additional = config['mapping']['params']
     threads:
         int(config['threads'])
     shell:
@@ -23,6 +24,7 @@ rule map_reads:
             -2 {input.r2} \
             --very-sensitive \
             --threads {threads} \
+            {params.additional} \
         2> {log} \
         | samtools view \
             -b \
