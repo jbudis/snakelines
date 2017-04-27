@@ -7,7 +7,7 @@ rule unicycler:
     params:
         outdir = 'unicycler/{sample}'
     output:
-        contigs = 'unicycler/{sample}/assembly.fasta'
+        contigs = 'unicycler/{sample}/contigs.fasta'
     threads:
         THREADS
     shell:
@@ -20,4 +20,6 @@ rule unicycler:
             -o {params.outdir} \
             -t {threads} \
             --spades_path /usr/local/bin/spades
+
+        mv {params.outdir}/assembly.fasta {params.outdir}/contigs.fasta
         '''
