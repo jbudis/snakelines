@@ -7,7 +7,7 @@ rule quast:
     params:
         outdir = '{indir}/quast'
     output:
-         '{indir}/quast/latest/report.txt'
+         '{indir}/quast/report.txt'
     threads:
         int(config['threads'])
     log:
