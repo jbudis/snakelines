@@ -1,0 +1,65 @@
+rule mpileup_germline:
+    input:
+        bam = '{mapper}/{reference}/{sample}.dup.realign.bam',
+        bai = '{mapper}/{reference}/{sample}.dup.realign.bam.bai',
+        bed = 'reference/{reference}/annotation/{panel}/regions.bed',
+        reffasta = 'reference/{reference}/{reference}.fa',
+        reffaidx = 'reference/{reference}/{reference}.fa.fai'
+    output:
+        '{mapper}/{reference}/variants/{sample}.{panel}.mpileup.germline.vcf'
+    shell:
+        '''
+        samtools mpileup \
+            --max-depth 10000 \
+            --min-BQ 20 \
+            --positions {input.bed} \
+            --uncompressed \
+            --fasta-ref {input.reffasta} \
+            --output-tags DP,AD,ADF,ADR,SP,INFO/AD,INFO/ADF,INFO/ADR \
+            {input.bam} \
+        | bcftools call \
+            --consensus-caller \
+            --output-type v \
+            - \
+        > {output}
+        '''
+
+rule mpileup_somatic:
+    input:
+        bam = '{mapper}/{reference}/{sample}.bam',
+        bai = '{mapper}/{reference}/{sample}.bam.bai',
+        reffasta = 'reference/{reference}/{reference}.fa',
+        reffaidx = 'reference/{reference}/{reference}.fa.fai'
+    output:
+        '{mapper}/{reference}/variants/{sample}.mpileup.somatic.vcf'
+    shell:
+        '''
+        samtools mpileup \
+            --max-depth 10000 \
+            --min-BQ 20 \
+            --uncompressed \
+            --fasta-ref {input.reffasta} \
+            --output-tags DP,AD,ADF,ADR,SP,INFO/AD,INFO/ADF,INFO/ADR \
+            {input.bam} \
+        | bcftools call \
+            --consensus-caller \
+            --output-type v \
+            --pval-threshold 9999 \
+            - \
+        > {output}
+        '''
+
+rule filter_by_maf:
+    input:
+        '{mapper}/{reference}/variants/{sample}.mpileup.somatic.vcf'
+    output:
+        '{mapper}/{reference}/variants/{sample}.mpileup.somatic.maf.vcf'
+    shell:
+        '''
+        vcftools \
+            --non-ref-af 0.05 \
+            --recode  \
+            --vcf {input} \
+            --stdout \
+        > {output}
+        '''
