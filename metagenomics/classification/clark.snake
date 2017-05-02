@@ -2,6 +2,7 @@ include: config['snake_dir'] + '/preprocess/conversion/gzip.snake'
 
 read_type = config['clark']['read_type']
 db_version = config['clark']['db_version']
+mode = config['clark']['mode']
 db_path = '/data/genome/metagenome/clark/' + db_version
 
 rule clark:
@@ -12,7 +13,8 @@ rule clark:
         'clark/classification/{sample}/reads.csv'
     params:
         prefix = 'clark/classification/{sample}/reads',
-        db_path = db_path
+        db_path = db_path,
+        mode = mode
     threads:
         int(config['threads'])
     shell:
@@ -23,6 +25,7 @@ rule clark:
             -D {params.db_path} \
             -P {input.r1} \
                {input.r2} \
+            -m {params.mode} \
             -R {params.prefix} \
             -m 1 \
             -n {threads}
