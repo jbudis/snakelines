@@ -1,0 +1,22 @@
+sample_pattern: t
+
+trim:
+    read_type: original
+    crop: 500
+    quality: 20
+    headcrop: 0
+    minlen: 35
+
+mapping:
+    read_type: trimmed
+    reference: hg19
+    params: --very-sensitive
+    read_group:
+        map_type: ''
+    dedup:
+        map_type: read_group
+    realign:
+        map_type: dedup
+
+variant:
+    panel: truseq
