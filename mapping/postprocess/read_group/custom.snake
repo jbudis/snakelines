@@ -1,8 +1,11 @@
+map_type = config['mapping']['read_group']['map_type']
+map_subdir = '%s/' % map_type if map_type else ''
+
 rule infer_read_groups:
     input:
-        '{path}/{sample}.bam'
+        '{path}/%s{sample}.bam' % map_subdir
     output:
-        '{path}/{sample}.rg.bam'
+        '{path}/read_group/{sample}.bam'
     params:
         infer_script = srcdir("scripts/infer_read_groups.py")
     shell:
@@ -10,7 +13,7 @@ rule infer_read_groups:
         samtools view \
             -h \
             {input} \
-        | {params.infer_script} \
+        | python3 {params.infer_script} \
             {wildcards.sample} \
             - \
         | samtools view \
