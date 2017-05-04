@@ -93,12 +93,6 @@ rule summarize_single:
         join_table.drop_duplicates(inplace=True)
         join_table.sort_values(tax_ranks, ascending=True, na_position='first', inplace=True)
 
-        # Remove marginal taxes, e.g Bacteria from 28S samples
-        tax_sums = list(join_table.sum(axis=1))
-        root_counts = join_table.iloc[np.argmax(tax_sums)]
-        domain = tax_ranks[0]
-        join_table = join_table[join_table[domain] == root_counts[domain]]
-
         join_table.to_excel(output.subtax_xlsx, index=False)
         join_table.to_csv(output.subtax_tsv, sep='\t', index=False)
 
