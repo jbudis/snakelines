@@ -1,4 +1,4 @@
-sample_pattern: t
+sample_pattern: .*
 
 trim:
     read_type: original
