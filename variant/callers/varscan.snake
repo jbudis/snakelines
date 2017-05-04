@@ -1,11 +1,14 @@
-include: '../mapping/calibration.snake'
-include: '../mapping/postprocess/bam_index.snake'
-include: 'postprocess/index.snake'
+include: config['snake_dir'] + '/mapping/postprocess/bam_index.snake'
+include: config['snake_dir'] + '/variant/callers/mpileup.snake'
+include: config['snake_dir'] + '/variant/postprocess/index.snake'
+
+map_type = config['variant']['map_type']
+map_subdir = '%s/' % map_type if map_type else ''
 
 rule call_snps:
     input:
-        bam = '{mapper}/{reference}/{sample}.dup.realign.bam',
-        bai = '{mapper}/{reference}/{sample}.dup.realign.bam.bai',
+        bam = '{mapper}/{reference}/%s{sample}.bam' % map_subdir,
+        bai = '{mapper}/{reference}/%s{sample}.bam.bai' % map_subdir,
         bed = 'reference/{reference}/annotation/{panel}/regions.bed',
         reffasta = 'reference/{reference}/{reference}.fa',
         reffaidx = 'reference/{reference}/{reference}.fa.fai'
@@ -25,8 +28,8 @@ rule call_snps:
 
 rule call_indels:
     input:
-        bam = '{mapper}/{reference}/{sample}.dup.realign.bam',
-        bai = '{mapper}/{reference}/{sample}.dup.realign.bam.bai',
+        bam = '{mapper}/{reference}/%s{sample}.bam' % map_subdir,
+        bai = '{mapper}/{reference}/%s{sample}.bam.bai' % map_subdir,
         bed = 'reference/{reference}/annotation/{panel}/regions.bed',
         reffasta = 'reference/{reference}/{reference}.fa',
         reffaidx = 'reference/{reference}/{reference}.fa.fai'
