@@ -9,12 +9,23 @@ include: config['snake_dir'] + '/mapping/postprocess/bam_index.snake'
 include: config['snake_dir'] + '/mapping/postprocess/read_group/custom.snake'
 include: config['snake_dir'] + '/mapping/postprocess/deduplication/picard.snake'
 include: config['snake_dir'] + '/mapping/postprocess/realignment/gatk.snake'
-#include: config['snake_dir'] + '/mapping/report/qualimap.snake'
-#include: config['snake_dir'] + '/variant/callers/mpileup.snake'
+include: config['snake_dir'] + '/mapping/report/qualimap.snake'
+include: config['snake_dir'] + '/variant/callers/varscan.snake'
 
 reference = config['mapping']['reference']
 panel = config['variant']['panel']
 
 rule process:
     input:
-        expand('bowtie2/{reference}/realign/{sample}.bam', reference=reference, sample=pipeline.sample)
+        # BAM files
+        expand('bowtie2/{reference}/realign/{sample}.bam',
+                reference=reference, sample=pipeline.sample),
+
+        # Qualimap reports
+        'bowtie2/{reference}/stats-{panel}/summary.tsv'.format(
+                reference=reference, panel=panel),
+
+        # Variant files
+        expand('bowtie2/{reference}/variants/{sample}.{panel}.varscan.germline.vcf',
+                reference=reference, sample=pipeline.sample, panel=panel),
+

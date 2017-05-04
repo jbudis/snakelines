@@ -20,3 +20,4 @@ mapping:
 
 variant:
     panel: truseq
+    map_type: realign
