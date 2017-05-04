@@ -4,7 +4,7 @@ import pandas as pd
 import os
 
 def qualimap_files(wildcards):
-      return expand('%s/%s/stats-wgs/{sample}/genome_results.txt' % (wildcards.mapper, wildcards.reference), \
+      return expand('%s/%s/stats-%s/{sample}/genome_results.txt' % (wildcards.mapper, wildcards.reference, wildcards.panel), \
                      sample=pipeline.sample)
 
 rule qualimap_wgs_report:
@@ -18,6 +18,8 @@ rule qualimap_wgs_report:
         outdir = '{mapper}/{reference}/stats-wgs/{sample}'
     threads:
         int(config['threads'])
+    log:
+        '{mapper}/{reference}/stats-wgs/{sample}/analysis.log'
     shell:
         '''
         qualimap bamqc \
@@ -25,7 +27,8 @@ rule qualimap_wgs_report:
             -bam {input.bam} \
             --paint-chromosome-limits \
             -outdir {params.outdir} \
-            -nt {threads}
+            -nt {threads} \
+        > {log}
         '''
 
 rule qualimap_panel_report:
@@ -40,6 +43,8 @@ rule qualimap_panel_report:
         outdir = '{mapper}/{reference}/stats-{panel}/{sample}'
     threads:
         int(config['threads'])
+    log:
+        '{mapper}/{reference}/stats-{panel}/{sample}/analysis.log'
     shell:
         '''
         qualimap bamqc \
@@ -47,14 +52,15 @@ rule qualimap_panel_report:
             -bam {input.bam} \
             --feature-file {input.bed} \
             -nt {threads} \
-            -outdir {params.outdir}
+            -outdir {params.outdir} \
+        > {log}
         '''
         
 rule summary_qualimap_report:
     input:
         qualimap_files
     output:
-        '{mapper}/{reference}/stats-wgs/summary.tsv'
+        '{mapper}/{reference}/stats-{panel}/summary.tsv'
     run:
         def percent(text):
             return '%.4f' % (float(text[text.find('(') + 1: text.rfind('%')]) / 100)
