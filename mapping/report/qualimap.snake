@@ -1,4 +1,4 @@
-include: 'bam_index.snake'
+include: config['snake_dir'] + '/mapping/postprocess/bam_index.snake'
 
 import pandas as pd
 import os
