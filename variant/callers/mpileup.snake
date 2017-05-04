@@ -24,14 +24,14 @@ rule mpileup_germline:
         > {output}
         '''
 
-rule mpileup_somatic:
+rule mpileup_population:
     input:
         bam = '{mapper}/{reference}/{sample}.bam',
         bai = '{mapper}/{reference}/{sample}.bam.bai',
         reffasta = 'reference/{reference}/{reference}.fa',
         reffaidx = 'reference/{reference}/{reference}.fa.fai'
     output:
-        '{mapper}/{reference}/variants/{sample}.mpileup.somatic.vcf'
+        '{mapper}/{reference}/variants/{sample}.mpileup.population.vcf'
     shell:
         '''
         samtools mpileup \
@@ -51,15 +51,16 @@ rule mpileup_somatic:
 
 rule filter_by_maf:
     input:
-        '{mapper}/{reference}/variants/{sample}.mpileup.somatic.vcf'
+        '{mapper}/{reference}/variants/{sample}.mpileup.population.vcf'
     output:
-        '{mapper}/{reference}/variants/{sample}.mpileup.somatic.maf.vcf'
+        '{mapper}/{reference}/variants/{sample}.mpileup.population.maf.vcf'
     shell:
         '''
         vcftools \
             --non-ref-af 0.05 \
             --recode  \
             --vcf {input} \
+            --minDP 10 \
             --stdout \
         > {output}
         '''
