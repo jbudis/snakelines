@@ -18,5 +18,5 @@ rule process:
         expand('bowtie2/{reference}/{sample}.bam'    , reference=reference, sample=pipeline.sample),
         expand('bowtie2/{reference}/{sample}.bam.bai', reference=reference, sample=pipeline.sample),
         'bowtie2/%s/stats-wgs/summary.tsv' % reference,
-        expand('bowtie2/{reference}/variants/{sample}.mpileup.somatic.vcf', reference=reference, sample=pipeline.sample),
-        expand('bowtie2/{reference}/variants/{sample}.mpileup.somatic.maf.vcf', reference=reference, sample=pipeline.sample)
+        expand('bowtie2/{reference}/variants/{sample}.mpileup.population.vcf', reference=reference, sample=pipeline.sample),
+        expand('bowtie2/{reference}/variants/{sample}.mpileup.population.maf.vcf', reference=reference, sample=pipeline.sample)

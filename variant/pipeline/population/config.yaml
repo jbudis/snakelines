@@ -10,3 +10,4 @@ trim:
 mapping:
     read_type: trimmed
     reference: mhv68
+    params: --very-sensitive

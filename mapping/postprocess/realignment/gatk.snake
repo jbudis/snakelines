@@ -1,0 +1,46 @@
+include: config['snake_dir'] + '/reference/indices/gatk_dict.snake'
+include: config['snake_dir'] + '/mapping/postprocess/realignment/gatk.snake'
+
+map_type = config['mapping']['realign']['map_type']
+map_subdir = '%s/' % map_type if map_type else ''
+
+rule intervals_for_realign:
+    input:
+        bam = '{mapper}/{reference}/%s{sample}.bam' % map_subdir,
+        bai = '{mapper}/{reference}/%s{sample}.bam.bai' % map_subdir,
+        refdict = 'reference/{reference}/{reference}.dict',
+        reffasta = 'reference/{reference}/{reference}.fa'
+    output:
+        '{mapper}/{reference}/realign/{sample}.intervals'
+    threads:
+        int(config['threads'])
+    log:
+        '{mapper}/{reference}/realign/log/{sample}.intervals'
+    shell:
+        '''
+        gatk RealignerTargetCreator \
+            -R {input.reffasta} \
+            -nt {threads} \
+            -I {input.bam} \
+            -o {output} \
+        > {log}
+        '''
+
+rule realign:
+    input:
+        bam = '{mapper}/{reference}/%s{sample}.bam' % map_subdir,
+        intervals = '{mapper}/{reference}/realign/{sample}.intervals',
+        reffasta = 'reference/{reference}/{reference}.fa'
+    output:
+        bam = '{mapper}/{reference}/realign/{sample}.bam'
+    log:
+        '{mapper}/{reference}/realign/log/{sample}.realign'
+    shell:
+        '''
+        gatk IndelRealigner \
+            -R {input.reffasta} \
+            -I {input.bam} \
+            -targetIntervals {input.intervals} \
+            -o {output.bam} \
+        > {log}
+        '''
