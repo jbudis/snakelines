@@ -9,3 +9,7 @@ trim:
 
 emirge:
     reference: silva-ssu-128
+
+report:
+    tsv:
+        remove_marginal_taxes: True

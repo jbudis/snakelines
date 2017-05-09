@@ -9,3 +9,7 @@ trim:
 
 metaxa2:
     read_type: trimmed
+
+report:
+    tsv:
+        remove_marginal_taxes: False

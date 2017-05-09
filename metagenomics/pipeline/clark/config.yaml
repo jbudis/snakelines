@@ -11,3 +11,8 @@ clark:
     read_type: trimmed
     db_version: 17-01-18
     mode: 0
+    kmer: 19
+
+report:
+    tsv:
+        remove_marginal_taxes: False
