@@ -1,5 +1,3 @@
-include: '../mapping/calibration.snake'
-
 rule call_germline:
     input:
         bam = '{mapper}/{reference}/{sample}.dup.realign.bam',
