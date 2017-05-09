@@ -22,7 +22,8 @@ rule clark:
             -P {input.r1} \
                {input.r2} \
             -R {params.prefix} \
-            -m 1 \
+            -m 0 \
+            -extended \
             -n {threads}
         '''
 
