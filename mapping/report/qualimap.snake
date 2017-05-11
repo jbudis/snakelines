@@ -4,22 +4,23 @@ import pandas as pd
 import os
 
 def qualimap_files(wildcards):
-      return expand('%s/%s/stats-%s/{sample}/genome_results.txt' % (wildcards.mapper, wildcards.reference, wildcards.panel), \
+      bamdir = wildcards.bamdir if hasattr(wildcards, 'bamdir') else '%s/%s' % (wildcards.mapper, wildcards.reference)
+      return expand('%s/stats-%s/{sample}/genome_results.txt' % (bamdir, wildcards.panel), \
                      sample=pipeline.sample)
 
 rule qualimap_wgs_report:
     input:
-        bam = '{mapper}/{reference}/{sample}.bam',
-        bai = '{mapper}/{reference}/{sample}.bam.bai'
+        bam = '{bamdir}/{sample}.bam',
+        bai = '{bamdir}/{sample}.bam.bai'
     output:
-        html = '{mapper}/{reference}/stats-wgs/{sample}/qualimapReport.html',
-        text = '{mapper}/{reference}/stats-wgs/{sample}/genome_results.txt'
+        html = '{bamdir}/stats-wgs/{sample}/qualimapReport.html',
+        text = '{bamdir}/stats-wgs/{sample}/genome_results.txt'
     params:
-        outdir = '{mapper}/{reference}/stats-wgs/{sample}'
+        outdir = '{bamdir}/stats-wgs/{sample}'
     threads:
         int(config['threads'])
     log:
-        '{mapper}/{reference}/stats-wgs/{sample}/analysis.log'
+        '{bamdir}/stats-wgs/{sample}/analysis.log'
     shell:
         '''
         qualimap bamqc \
@@ -55,12 +56,12 @@ rule qualimap_panel_report:
             -outdir {params.outdir} \
         > {log}
         '''
-        
+
 rule summary_qualimap_report:
     input:
         qualimap_files
     output:
-        '{mapper}/{reference}/stats-{panel}/summary.tsv'
+        '{bamdir}/stats-{panel}/summary.tsv'
     run:
         def percent(text):
             return '%.4f' % (float(text[text.find('(') + 1: text.rfind('%')]) / 100)
