@@ -11,3 +11,7 @@ assembly:
     read_type: trimmed    # original, trimmed, deduplicated
     analysis_type: meta   # standard, meta, plasmid
     path_to_reference: reference/mhv68/mhv68.fa
+
+blast:
+    enabled: True
+    max_target_seqs: 25

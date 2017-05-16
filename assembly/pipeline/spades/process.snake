@@ -5,12 +5,20 @@ pipeline = glob_wildcards('reads/original/{sample,%s}_R1.fastq.gz' % config['sam
 include: config['snake_dir'] + '/preprocess/report/fastqc.snake'
 include: config['snake_dir'] + '/preprocess/trim_reads/trimmomatic.snake'
 include: config['snake_dir'] + '/assembly/assemblers/spades.snake'
+include: config['snake_dir'] + '/classification/classifiers/blast.snake'
 
 assembly_type = config['assembly']['analysis_type']
 
 rule process:
     input:
+        # FastQC summaries
         'reads/original/stats/summary.html',
         'reads/trimmed/stats/summary.html',
-        expand('spades-%s/{sample}/contigs.fasta' % assembly_type, sample=pipeline.sample),
-        expand('spades-%s/{sample}/blast/contigs.fasta' % assembly_type, sample=pipeline.sample)
+
+        # Contigs
+        expand('spades-%s/{sample}/contigs.fasta' % assembly_type,
+                sample=pipeline.sample),
+
+        # Blast
+        expand('spades-%s/{sample}/blast/contigs.blast' % assembly_type,
+                sample=pipeline.sample) if config['blast']['enabled'] else []
