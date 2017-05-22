@@ -1,13 +1,11 @@
-read_type = config['mapping']['read_type']
-
 rule map_reads:
     input:
-        r1 = 'reads/%s/{sample}_R1.fastq.gz' % read_type,
-        r2 = 'reads/%s/{sample}_R2.fastq.gz' % read_type,
+        r1 = 'reads/%s/{sample}_R1.fastq.gz' % config['mapping']['read_type'],
+        r2 = 'reads/%s/{sample}_R2.fastq.gz' % config['mapping']['read_type'],
         index = 'reference/{reference}/bowtie2_index/{reference}.1.bt2',
         reffasta = 'reference/{reference}/{reference}.fa'
     output:
-        bam = 'bowtie2/{reference}/{sample}.bam',
+        bam = 'bowtie2/{reference}/{sample}.bam'
     log:
         'bowtie2/{reference}/log/{sample}.map'
     params:
@@ -37,6 +35,53 @@ rule map_reads:
             -T {params.tmpdir} \
             -m 5G \
             - \
+        '''
+
+rule filter_reads:
+    input:
+        r1 = 'reads/%s/{sample}_R1.fastq.gz' % config['prefilter']['read_type'],
+        r2 = 'reads/%s/{sample}_R2.fastq.gz' % config['prefilter']['read_type'],
+        index_files = expand('reference/{ref}/bowtie2_index/{ref}.1.bt2', ref=config['prefilter']['references'])
+    output:
+        r1 = 'reads/filtered/{sample}_R1.fastq.gz',
+        r2 = 'reads/filtered/{sample}_R2.fastq.gz'
+    log:
+        'reads/filtered/log/{sample}.map'
+    params:
+        indices = ['reference/%s/bowtie2_index/%s' % (ref, ref) for ref in config['prefilter']['references']]
+    threads:
+        int(config['threads'])
+    shell:
+        '''
+        R1_IN={input.r1}
+        R2_IN={input.r2}
+
+        for INDEX in {params.indices}; do
+
+            REF=`basename $INDEX`
+            REF_DIR=reads/filtered-$REF
+            mkdir -p $REF_DIR
+
+            R1_OUT=$REF_DIR/{wildcards.sample}_R1.fastq.gz
+            R2_OUT=$REF_DIR/{wildcards.sample}_R2.fastq.gz
+            R_MASK=$REF_DIR/{wildcards.sample}_R%.fastq.gz
+
+            bowtie2 \
+                -x $INDEX \
+                -1 $R1_IN \
+                -2 $R2_IN \
+                --very-sensitive \
+                --threads {threads} \
+                --un-conc-gz $R_MASK \
+            > /dev/null \
+            2> $REF_DIR/{wildcards.sample}.log
+
+            R1_IN=$R1_OUT
+            R2_IN=$R2_OUT
+        done
+
+        mv $R1_OUT {output.r1}
+        mv $R2_OUT {output.r2}
         '''
 
 rule bowtie2_index:
