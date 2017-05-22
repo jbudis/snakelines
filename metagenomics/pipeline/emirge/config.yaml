@@ -8,6 +8,7 @@ trim:
     minlen: 35
 
 emirge:
+    read_type: trimmed
     reference: silva-ssu-128
 
 report:
