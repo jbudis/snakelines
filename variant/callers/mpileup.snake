@@ -1,3 +1,5 @@
+include: config['snake_dir'] + '/reference/indices/faidx.snake'
+
 rule mpileup_germline:
     input:
         bam = '{mapper}/{reference}/{sample}.dup.realign.bam',
@@ -44,23 +46,28 @@ rule mpileup_population:
         | bcftools call \
             --consensus-caller \
             --output-type v \
-            --pval-threshold 9999 \
             - \
         > {output}
         '''
 
-rule filter_by_maf:
+
+rule filter_variants:
     input:
         '{mapper}/{reference}/variants/{sample}.mpileup.population.vcf'
     output:
-        '{mapper}/{reference}/variants/{sample}.mpileup.population.maf.vcf'
+        '{mapper}/{reference}/variants/{sample}.mpileup.population.filter.vcf'
+    params:
+        min_nonref_allele_freq = config['variant']['min_nonref_allele_freq'],
+        min_coverage = config['variant']['min_coverage'],
+        keep_indels = '' if config['variant']['keep_indels'] else '--remove-indels'
     shell:
         '''
         vcftools \
-            --non-ref-af 0.05 \
+            --non-ref-af {params.min_nonref_allele_freq} \
             --recode  \
             --vcf {input} \
-            --minDP 10 \
+            --minDP {params.min_coverage} \
             --stdout \
+            {params.keep_indels} \
         > {output}
         '''
