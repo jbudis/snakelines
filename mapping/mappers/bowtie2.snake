@@ -1,3 +1,5 @@
+include: srcdir('indices/bowtie2_index.snake')
+
 rule map_reads:
     input:
         r1 = 'reads/%s/{sample}_R1.fastq.gz' % config['mapping']['read_type'],
@@ -35,29 +37,3 @@ rule map_reads:
             -m 5G \
             - \
         '''
-
-rule bowtie2_index:
-    input:
-        'reference/{genome}/{sequence}.fa'
-    output:
-        protected('reference/{genome}/bowtie2_index/{sequence}.1.bt2'),
-        protected('reference/{genome}/bowtie2_index/{sequence}.2.bt2'),
-        protected('reference/{genome}/bowtie2_index/{sequence}.3.bt2'),
-        protected('reference/{genome}/bowtie2_index/{sequence}.4.bt2'),
-        protected('reference/{genome}/bowtie2_index/{sequence}.rev.1.bt2'),
-        protected('reference/{genome}/bowtie2_index/{sequence}.rev.2.bt2')
-    params:
-        index = 'reference/{genome}/bowtie2_index/{sequence}'
-    log:
-        'reference/{genome}/log/bowtie2.log'
-    threads:
-        int(config['threads'])
-    shell:
-        '''
-        bowtie2-build \
-            --threads {threads} \
-            {input} \
-            {params.index} \
-        > {log}
-        '''
-
