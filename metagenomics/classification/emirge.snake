@@ -5,8 +5,8 @@ include: config['snake_dir'] + '/mapping/mappers/bowtie.snake'
 
 rule emirge_classification:
     input:
-        r1 = 'reads/trimmed/{sample}_R1.fastq',
-        r2 = 'reads/trimmed/{sample}_R2.fastq',
+        r1 = 'reads/%s/{sample}_R1.fastq' % config['emirge']['read_type'],
+        r2 = 'reads/%s/{sample}_R2.fastq' % config['emirge']['read_type'],
         reffasta = 'reference/{reference}/{reference}.emirge.fa',
         refindex = 'reference/{reference}/bowtie_index/{reference}.emirge.1.ebwt'
     output:
