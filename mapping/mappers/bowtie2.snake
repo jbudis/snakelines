@@ -13,7 +13,7 @@ rule map_reads:
     params:
         index = 'reference/{reference}/bowtie2_index/{reference}',
         tmpdir = 'bowtie2/{reference}/tmp/',
-        additional = config['mapping']['params']
+        additional = config['mapping']['params'] if 'params' in config['mapping'] else ''
     threads:
         int(config['threads'])
     shell:
