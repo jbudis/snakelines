@@ -1,0 +1,14 @@
+rule genome_coverage_histogram:
+    input:
+        '{bam_prefix}.bam'
+    output:
+        '{bam_prefix}.bam.genomecov'
+    params:
+        reference = config['mapping']['reference']
+    shell:
+        '''
+        bedtools genomecov \
+            -ibam {input} \
+            -g {params.reference} \
+        > {output}
+        '''
