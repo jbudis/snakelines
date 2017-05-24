@@ -9,7 +9,7 @@ trim:
 
 assembly:
     read_type: trimmed    # original, trimmed, deduplicated
-    analysis_type: meta   # standard, meta, plasmid
+    analysis_type: meta   # standard, meta, plasmid, transcript
     path_to_reference: reference/mhv68/mhv68.fa
 
 blast:
