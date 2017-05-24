@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <style>
+      a {{
+          color: #000000;
+      }}
+  </style>
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/jq-2.2.3/dt-1.10.12/fh-3.1.2/sc-1.4.2/datatables.min.css"/>
+  <script type="text/javascript" src="https://cdn.datatables.net/v/dt/jq-2.2.3/dt-1.10.12/fh-3.1.2/sc-1.4.2/datatables.min.js"></script>
+
+  <script type="text/javascript">
+    $(document).ready(function() {{
+        $('#data').DataTable();
+    }});
+  </script>
+  <title>Read counts per transcripts</title>
+</head>
+<body>
+    <h1>Read counts per transcript</h1>
+    <p>
+    {counts_table}
+    </p>
+</body>
+</html>

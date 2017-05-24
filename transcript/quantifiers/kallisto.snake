@@ -1,0 +1,39 @@
+read_type = config['kallisto']['read_type']
+
+rule remap_transcripts_spades:
+    input:
+        fasta = 'spades-transcript/{sample}/contigs.fasta',
+        index = 'spades-transcript/{sample}/contigs.idx',
+        r1 = 'reads/%s/{sample}_R1.fastq.gz' % read_type,
+        r2 = 'reads/%s/{sample}_R2.fastq.gz' % read_type
+    output:
+        'spades-transcript/{sample}/kallisto/abundance.tsv'
+    params:
+        outdir = 'spades-transcript/{sample}/kallisto',
+        bootstrap_samples = config['kallisto']['bootstrap_samples']
+    log:
+        'spades-transcript/{sample}/kallisto/kallisto.log'
+    threads:
+        int(config['threads'])
+    shell:
+        '''
+        kallisto quant \
+            --index {input.index} \
+            --output-dir {params.outdir} \
+            --bootstrap-samples {params.bootstrap_samples} \
+            --threads {threads} \
+            {input.r1} \
+            {input.r2}
+        '''
+
+rule prepare_kallisto_index:
+    input:
+        fasta = '{fasta}.fasta'
+    output:
+        index = '{fasta}.idx'
+    shell:
+        '''
+        kallisto index \
+            --index {output.index} \
+            {input.fasta}
+        '''

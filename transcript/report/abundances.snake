@@ -1,0 +1,42 @@
+from Bio.Blast import NCBIXML
+
+import pandas as pd
+pd.set_option('display.max_colwidth', 1000000)
+pd.options.display.float_format = '{:.1f}'.format
+
+
+TEMPLATE = open(srcdir('templates/abundances.html')).read()
+MIN_TRANSRIPT_LENGTH = 1000
+
+rule abundances_report:
+    input:
+        counts = '{sample_dir}/kallisto/abundance.tsv',
+        blast ='{sample_dir}/blast/{sample}.blast'
+    output:
+        report = '{sample_dir}/kallisto/{sample}.html'
+    run:
+        # Load Kallisto counts
+        counts = pd.read_csv(input.counts, sep='\t', index_col='target_id')
+        counts = counts[counts.length >= MIN_TRANSRIPT_LENGTH]
+
+        # Load blast results
+        counts['homologues'] = None
+        with open(input.blast) as blast_results:
+            for transcript in NCBIXML.parse(blast_results):
+                if transcript.query not in counts.index:
+                    continue
+                aligns = transcript.alignments
+                titles = [align.title for align in aligns]
+                gbids = [title.split('|')[3] for title in titles]
+                names = [title.split('|')[-1] for title in titles]
+                links = []
+                for gbid, name in zip(gbids, names):
+                    links.append('<a href="https://www.ncbi.nlm.nih.gov/nuccore/%s">%s</a>' % (gbid, name))
+
+                counts.set_value(transcript.query, 'homologues', '<br/>'.join(links))
+
+
+        # Generate report
+        counts_table = counts.to_html(escape=False).replace('<table ', '<table id="data" ')
+        with open(output.report, 'w') as out:
+            out.write(TEMPLATE.format(counts_table=counts_table))
