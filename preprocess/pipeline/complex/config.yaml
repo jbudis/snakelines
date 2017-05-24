@@ -1,0 +1,16 @@
+sample_pattern: .*
+
+trim:
+    read_type: original
+    crop: 500
+    quality: 20
+    headcrop: 20
+    minlen: 35
+
+prefilter:
+    read_type: trimmed
+    references:
+        - hg38
+
+deduplicate:
+    read_type: filtered
