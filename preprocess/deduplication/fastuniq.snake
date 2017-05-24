@@ -1,27 +1,18 @@
-include: '../trim_reads/trimmomatic.snake'
-
-THREADS = 32
-SAMPLES = glob_wildcards('reads/original/{sample}_R1.fastq.gz')
-
-rule run_all:
-    input:
-        expand('reads/trimmed/{sample}_R1.fastq', sample=SAMPLES)
+read_type = config['deduplicate']['read_type']
 
 rule fastuniq:
     input:
-        r1 = 'reads/trimmed/{sample}_R1.fastq.gz',
-        r2 = 'reads/trimmed/{sample}_R2.fastq.gz'
+        r1 = 'reads/%s/{sample}_R1.fastq.gz' % read_type,
+        r2 = 'reads/%s/{sample}_R2.fastq.gz' % read_type
+    output:
+        r1 = 'reads/deduplicated/{sample}_R1.fastq.gz',
+        r2 = 'reads/deduplicated/{sample}_R2.fastq.gz'
     params:
         r1_ungz = 'reads/deduplicated/{sample}.tmp_R1.fastq',
         r2_ungz = 'reads/deduplicated/{sample}.tmp_R2.fastq',
         in_file = 'reads/deduplicated/{sample}.txt',
         r1 = 'reads/deduplicated/{sample}_R1.fastq',
         r2 = 'reads/deduplicated/{sample}_R2.fastq'
-    output:
-        r1 = 'reads/deduplicated/{sample}_R1.fastq.gz',
-        r2 = 'reads/deduplicated/{sample}_R2.fastq.gz'
-    threads:
-        THREADS
     shell:
         '''
         mkdir -p 'reads/deduplicated'
