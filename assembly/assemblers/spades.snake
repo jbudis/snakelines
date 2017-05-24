@@ -101,3 +101,30 @@ rule assembly_plasmid:
         >  {log} \
         2> {log}
         '''
+
+rule assembly_transcriptome:
+    input:
+        r1 = 'reads/%s/{sample}_R1.fastq.gz' % read_type,
+        r2 = 'reads/%s/{sample}_R2.fastq.gz' % read_type
+    output:
+        contigs = 'spades-transcript/{sample}/contigs.fasta'
+    params:
+        outdir = 'spades-transcript/{sample}',
+        transcripts = 'spades-transcript/{sample}/transcripts.fasta'
+    threads:
+        int(config['threads'])
+    log:
+        'spades-transcript/{sample}/log/spades.log'
+    shell:
+        '''
+        /usr/local/tools/spades-3.10.0/bin/spades.py \
+            --rna \
+            -1 {input.r1} \
+            -2 {input.r2} \
+            --threads {threads} \
+            -o {params.outdir} \
+        >  {log} \
+        2> {log}
+
+        mv {params.transcripts} {output.contigs}
+        '''
