@@ -1,5 +1,7 @@
 shell.executable('bash')
 
+import re
+
 include: config['snake_dir'] + '/preprocess/conversion/gzip.snake'
 include: config['snake_dir'] + '/mapping/mappers/bowtie.snake'
 
@@ -26,7 +28,7 @@ rule emirge_classification:
             -2 {input.r2} \
             --fasta_db {input.reffasta} \
             --bowtie_db {params.refindex} \
-            --max_read_length 0 \
+            --max_read_length 35 \
             --insert_mean 300 \
             --insert_stddev 1000 \
             --processors {threads} \
@@ -78,16 +80,22 @@ rule prepare_nonchimeric_for_krona:
 
         taxonomies = {line.split()[0]: line.split()[1].replace(';', '\t') for line in open(input.tax)}
 
+        taxcopy = re.compile('.*_m\d\d?\d?')
+
         with open(input.summary) as summary, open(output.krona_txt, 'w') as krona:
             res = []
             for line in summary:
                 params = line.strip().split('\t')
                 if params[-1] == 'Y':
                     continue
-                info = params[1].split('|')[1].split()
-                tid = info[0]
+                info = params[1][params[1].find('|')+1:].split()
                 tabund = float(info[1].split('=')[1])
-                taxes = taxonomies[tid.split('_m')[0]]
+
+                tid = info[0]
+                if taxcopy.match(tid):
+                    tid = tid[:tid.rfind('_m')]
+
+                taxes = taxonomies[tid]
                 krona.write('%s\t%s\n'%(tabund, taxes))
 
 rule emirge_krona_report:
