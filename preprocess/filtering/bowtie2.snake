@@ -1,3 +1,5 @@
+include: config['snake_dir']  + '/mapping/mappers/indices/bowtie2_index.snake'
+
 rule filter_reads:
     input:
         r1 = 'reads/%s/{sample}_R1.fastq.gz' % config['prefilter']['read_type'],
