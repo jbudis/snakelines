@@ -9,6 +9,7 @@ trim:
 
 metaxa2:
     read_type: trimmed
+    gene: ssu # ssu or lsu
 
 report:
     tsv:

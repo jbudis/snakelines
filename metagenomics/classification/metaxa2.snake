@@ -7,11 +7,11 @@ rule metaxa2_classification:
         r1 = 'reads/%s/{sample}_R1.fastq' % read_type,
         r2 = 'reads/%s/{sample}_R2.fastq' % read_type
     output:
-        taxonomy = 'metaxa2/classification/{sample}/{sample}.taxonomy.txt'
+        taxonomy = 'metaxa2/{gene,ssu|lsu}/classification/{sample}/{sample}.taxonomy.txt'
     params:
-        outpref = 'metaxa2/classification/{sample}/{sample}'
+        outpref = 'metaxa2/{gene}/classification/{sample}/{sample}'
     log:
-        'metaxa2/classification/{sample}/log/metaxa2.log'
+        'metaxa2/{gene}/classification/{sample}/log/metaxa2.log'
     threads:
         int(config['threads'])
     shell:
@@ -20,7 +20,7 @@ rule metaxa2_classification:
             -1 {input.r1} \
             -2 {input.r2} \
             -o {params.outpref} \
-            -g ssu \
+            -g {wildcards.gene} \
             --plus T \
             --cpu {threads} \
         > {log}
@@ -28,13 +28,13 @@ rule metaxa2_classification:
 
 rule summarize_classification:
     input:
-        taxonomy = 'metaxa2/classification/{sample}/{sample}.taxonomy.txt'
+        taxonomy = 'metaxa2/{gene}/classification/{sample}/{sample}.taxonomy.txt'
     output:
-        summary = 'metaxa2/classification/{sample}/{sample}.level_7.txt'   
+        summary = 'metaxa2/{gene}/classification/{sample}/{sample}.level_7.txt'
     params:
-        outpref = 'metaxa2/classification/{sample}/{sample}'
+        outpref = 'metaxa2/{gene}/classification/{sample}/{sample}'
     log:
-        'metaxa2/classification/{sample}/log/metaxa2_ttt.log'
+        'metaxa2/{gene}/classification/{sample}/log/metaxa2_ttt.log'
     shell:
         '''
         metaxa2_ttt \
@@ -45,9 +45,9 @@ rule summarize_classification:
 
 rule prepare_for_krona:
     input:
-        'metaxa2/classification/{sample}/{sample}.level_7.txt'   
+        'metaxa2/{gene}/classification/{sample}/{sample}.level_7.txt'
     output:
-        'metaxa2/report/krona/individual/{sample}.krn'
+        'metaxa2/{gene}/report/krona/individual/{sample}.krn'
     shell:
         '''
         cat \
@@ -67,11 +67,11 @@ rule prepare_for_krona:
 
 rule metaxa2_krona_report:
     input:
-        'metaxa2/report/krona/individual/{sample}.krn'
+        'metaxa2/{gene}/report/krona/individual/{sample}.krn'
     output:
-        'metaxa2/report/krona/individual/{sample}.html'
+        'metaxa2/{gene}/report/krona/individual/{sample}.html'
     log:
-        'metaxa2/report/krona/individual/log/{sample}.krona'
+        'metaxa2/{gene}/report/krona/individual/log/{sample}.krona'
     shell:
         '''
         ktImportText \
