@@ -4,6 +4,7 @@ pipeline = glob_wildcards('reads/original/{sample,%s}_R1.fastq.gz' % config['sam
 
 include: config['snake_dir'] + '/preprocess/report/fastqc.snake'
 include: config['snake_dir'] + '/preprocess/trim_reads/trimmomatic.snake'
+include: config['snake_dir'] + '/preprocess/deduplication/fastuniq.snake'
 include: config['snake_dir'] + '/mapping/mappers/bowtie2.snake'
 include: config['snake_dir'] + '/mapping/postprocess/bam_index.snake'
 include: config['snake_dir'] + '/mapping/report/qualimap.snake'

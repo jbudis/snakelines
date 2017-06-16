@@ -4,8 +4,11 @@ trim:
     read_type: original
     crop: 500
     quality: 20
-    headcrop: 0
+    headcrop: 10
     minlen: 35
+
+deduplicate:
+    read_type: trimmed
 
 mapping:
     read_type: deduplicated
