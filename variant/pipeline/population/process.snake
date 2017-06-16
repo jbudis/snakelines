@@ -7,7 +7,7 @@ include: config['snake_dir'] + '/preprocess/trim_reads/trimmomatic.snake'
 include: config['snake_dir'] + '/mapping/mappers/bowtie2.snake'
 include: config['snake_dir'] + '/mapping/postprocess/bam_index.snake'
 include: config['snake_dir'] + '/mapping/report/qualimap.snake'
-include: config['snake_dir'] + '/variant/callers/mpileup.snake'
+include: config['snake_dir'] + '/variant/callers/freebayes.snake'
 
 reference = config['mapping']['reference']
 
@@ -27,7 +27,5 @@ rule process:
         'bowtie2/%s/stats-wgs/summary.tsv' % reference,
 
         # Variant calling
-        expand('bowtie2/{reference}/variants/{sample}.mpileup.population.vcf',
+        expand('bowtie2/{reference}/variants/{sample}.freebayes.population.vcf',
                reference=reference, sample=pipeline.sample),
-        expand('bowtie2/{reference}/variants/{sample}.mpileup.population.filter.vcf',
-               reference=reference, sample=pipeline.sample)
