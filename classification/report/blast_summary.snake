@@ -1,0 +1,40 @@
+from Bio.Blast import NCBIXML
+
+import pandas as pd
+pd.set_option('display.max_colwidth', 1000000)
+pd.options.display.float_format = '{:.1f}'.format
+
+TEMPLATE = open(srcdir('templates/abundances.html')).read()
+
+
+rule blast_summary:
+    input:
+        blast = '{indir}/blast/{name}.blast'
+    output:
+        report = '{indir}/blast/{name}.html'
+    run:
+        contig_items = []
+
+        with open(input.blast) as blast_results:
+            for contig in NCBIXML.parse(blast_results):
+                aligns = contig.alignments
+                titles = [align.title for align in aligns]
+                gbids = [title.split('|')[3] for title in titles]
+                names = [title.split('|')[-1] for title in titles]
+                links = []
+                for gbid, name in zip(gbids, names):
+                    links.append('<a href="https://www.ncbi.nlm.nih.gov/nuccore/%s">%s</a>' % (gbid, name))
+
+                contig_info = {'Contig': contig.query,
+                               'Homologues': '<br/>'.join(links),
+                               'Length': int(contig.query.split('_')[3]),
+                               'Coverage': float(contig.query.split('_')[5])}
+
+                contig_items.append(contig_info)
+
+        # Generate report
+        contigs = pd.DataFrame(contig_items)
+        contigs_table = contigs.to_html(escape=False).replace('<table ', '<table id="data" ')
+
+        with open(output.report, 'w') as out:
+            out.write(TEMPLATE.format(contigs_table=contigs_table))
