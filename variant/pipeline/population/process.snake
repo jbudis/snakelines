@@ -28,5 +28,5 @@ rule process:
         'bowtie2/%s/stats-wgs/summary.tsv' % reference,
 
         # Variant calling
-        expand('bowtie2/{reference}/variants/{sample}.freebayes.population.vcf',
+        expand('bowtie2/{reference}/freebayes/{sample}.population.vcf',
                reference=reference, sample=pipeline.sample),

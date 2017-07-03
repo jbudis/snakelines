@@ -26,6 +26,6 @@ rule process:
                 reference=reference, panel=panel),
 
         # Variant files
-        expand('bowtie2/{reference}/variants/{sample}.{panel}.varscan.germline.vcf',
+        expand('bowtie2/{reference}/varscan/{sample}.{panel}.germline.vcf',
                 reference=reference, sample=pipeline.sample, panel=panel),
 
