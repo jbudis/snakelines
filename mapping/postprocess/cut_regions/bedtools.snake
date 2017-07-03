@@ -1,0 +1,19 @@
+include: config['snake_dir'] + '/mapping/postprocess/bam_index.snake'
+
+rule extract_reads_from_regions:
+    input:
+        bam = '{mapper}/{reference}/{sample}.bam',
+        bai = '{mapper}/{reference}/{sample}.bam.bai'
+    output:
+        bam = '{mapper}/{reference}/{sample}-{panel}.bam'
+    params:
+        bed = 'reference/{reference}/annotation/{panel}/regions.bed'
+    threads:
+        int(config['threads'])
+    shell:
+        '''
+        bedtools intersect \
+            -a {input.bam} \
+            -b {params.bed} \
+        > {output.bam}
+        '''
