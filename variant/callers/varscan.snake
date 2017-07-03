@@ -13,7 +13,7 @@ rule call_snps:
         reffasta = 'reference/{reference}/{reference}.fa',
         reffaidx = 'reference/{reference}/{reference}.fa.fai'
     output:
-        '{mapper}/{reference}/variants/{sample}.{panel}.varscan.snp.germline.vcf'
+        '{mapper}/{reference}/varscan/{sample}.{panel}.snp.germline.vcf'
     shell:
         '''
         samtools mpileup \
@@ -34,7 +34,7 @@ rule call_indels:
         reffasta = 'reference/{reference}/{reference}.fa',
         reffaidx = 'reference/{reference}/{reference}.fa.fai'
     output:
-        '{mapper}/{reference}/variants/{sample}.{panel}.varscan.indel.germline.vcf'
+        '{mapper}/{reference}/varscan/{sample}.{panel}.indel.germline.vcf'
     shell:
         '''
         samtools mpileup \
@@ -53,7 +53,7 @@ rule concat_calls:
         snps = '{mapper}/{reference}/variants/{sample}.{panel}.varscan.snp.germline.vcf.gz',
         snps_idx = '{mapper}/{reference}/variants/{sample}.{panel}.varscan.snp.germline.vcf.gz.tbi'
     output:
-        '{mapper}/{reference}/variants/{sample}.{panel}.varscan.germline.vcf'
+        '{mapper}/{reference}/varscan/{sample}.{panel}.germline.vcf'
     shell:
         '''
         vcf-merge \

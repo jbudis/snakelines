@@ -5,7 +5,7 @@ rule variant_call:
         bam = 'bowtie2/{reference}/%s/{sample}.bam' % map_type,
         ref = 'reference/{reference}/{reference}.fa'
     output:
-        'bowtie2/{reference}/variants/{sample}.freebayes.population.vcf'
+        'bowtie2/{reference}/freebayes/{sample}.population.vcf'
     params:
         min_alternate_fraction = config['variant']['min_nonref_allele_freq'],
         min_alternate_count = config['variant']['min_alternate_count'],

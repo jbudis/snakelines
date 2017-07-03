@@ -6,9 +6,9 @@ rule call_germline:
         reffasta = 'reference/{reference}/{reference}.fa',
         reffaidx = 'reference/{reference}/{reference}.fa.fai'
     output:
-        '{mapper}/{reference}/variants/{sample}.{panel}.gatk.germline.vcf'
+        '{mapper}/{reference}/gatk/{sample}.{panel}.germline.vcf'
     log:
-        '{mapper}/{reference}/variants/log/{sample}.{panel}.gatk.germline.log'
+        '{mapper}/{reference}/gatk/log/{sample}.{panel}.germline.log'
     shell:
         '''
         gatk HaplotypeCaller \

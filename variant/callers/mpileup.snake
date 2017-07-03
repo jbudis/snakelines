@@ -8,7 +8,7 @@ rule mpileup_germline:
         reffasta = 'reference/{reference}/{reference}.fa',
         reffaidx = 'reference/{reference}/{reference}.fa.fai'
     output:
-        '{mapper}/{reference}/variants/{sample}.{panel}.mpileup.germline.vcf'
+        '{mapper}/{reference}/mpileup/{sample}.{panel}.germline.vcf'
     shell:
         '''
         samtools mpileup \
@@ -33,7 +33,7 @@ rule mpileup_population:
         reffasta = 'reference/{reference}/{reference}.fa',
         reffaidx = 'reference/{reference}/{reference}.fa.fai'
     output:
-        '{mapper}/{reference}/variants/{sample}.mpileup.population.vcf'
+        '{mapper}/{reference}/mpileup/{sample}.population.vcf'
     shell:
         '''
         samtools mpileup \
@@ -53,9 +53,9 @@ rule mpileup_population:
 
 rule filter_variants:
     input:
-        '{mapper}/{reference}/variants/{sample}.mpileup.population.vcf'
+        '{mapper}/{reference}/mpileup/{sample}.population.vcf'
     output:
-        '{mapper}/{reference}/variants/{sample}.mpileup.population.filter.vcf'
+        '{mapper}/{reference}/mpileup/{sample}.population.filter.vcf'
     params:
         min_nonref_allele_freq = config['variant']['min_nonref_allele_freq'],
         min_coverage = config['variant']['min_coverage'],
