@@ -1,5 +1,7 @@
 include: config['snake_dir'] + '/reference/indices/faidx.snake'
 
+import vcf
+
 rule mpileup_germline:
     input:
         bam = '{mapper}/{reference}/{sample}.dup.realign.bam',
@@ -50,24 +52,55 @@ rule mpileup_population:
         > {output}
         '''
 
-
-rule filter_variants:
+rule mpileup_lowqual:
     input:
-        '{mapper}/{reference}/mpileup/{sample}.population.vcf'
+        bam = '{mapper}/{reference}/{sample}.bam',
+        bai = '{mapper}/{reference}/{sample}.bam.bai',
+        bed = 'reference/{reference}/annotation/{panel}/regions.bed',
+        reffasta = 'reference/{reference}/{reference}.fa',
+        reffaidx = 'reference/{reference}/{reference}.fa.fai'
     output:
-        '{mapper}/{reference}/mpileup/{sample}.population.filter.vcf'
-    params:
-        min_nonref_allele_freq = config['variant']['min_nonref_allele_freq'],
-        min_coverage = config['variant']['min_coverage'],
-        keep_indels = '' if config['variant']['keep_indels'] else '--remove-indels'
+        vcf = '{mapper}/{reference}/mpileup/{sample}.{panel}.lowqual.vcf'
     shell:
         '''
-        vcftools \
-            --non-ref-af {params.min_nonref_allele_freq} \
-            --recode  \
-            --vcf {input} \
-            --minDP {params.min_coverage} \
-            --stdout \
-            {params.keep_indels} \
-        > {output}
+        samtools mpileup \
+            --ignore-rg \
+            --min-MQ 20 \
+            --min-BQ 20 \
+            --positions {input.bed} \
+            --uncompressed \
+            --fasta-ref {input.reffasta} \
+            {input.bam} \
+        | bcftools call \
+            --consensus-caller \
+            --pval-threshold 10000 \
+            - \
+        | bcftools filter \
+            --exclude 'ALT="<*>"' \
+            - \
+        > {output.vcf}
         '''
+
+rule mpileup_rare:
+    input:
+        vcf = '{mapper}/{reference}/mpileup/{sample}.{panel}.lowqual.vcf'
+    output:
+        vcf = '{mapper}/{reference}/mpileup/{sample}.{panel}.rare.vcf'
+    run:
+        MAX_COVERAGE = 0.1
+
+        vin = vcf.Reader(open(input.vcf))
+        vout = vcf.Writer(open(output.vcf, 'w'), vin)
+        for rec in vin:
+            dp4 = rec.INFO['DP4']
+            ac = sum(dp4[-2:])
+            an = sum(dp4)
+            af = ac / an
+            if af > MAX_COVERAGE:
+                continue
+            rec.add_info('AF', af)
+            rec.add_info('AC', 2)
+            rec.add_info('AN', an)
+            vout.write_record(rec)
+
+        vout.close()
