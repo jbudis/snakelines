@@ -1,11 +1,11 @@
 rule unicycler:
     input:
-        r1 = 'reads/deduplicated/{sample}_R1.fastq.gz',
-        r2 = 'reads/deduplicated/{sample}_R2.fastq.gz',
+        r1 = 'reads/{read_type}/{sample}_R1.fastq.gz',
+        r2 = 'reads/{read_type}/{sample}_R2.fastq.gz',
     params:
-        outdir = 'unicycler/{sample}'
+        outdir = 'unicycler/{sample}_{read_type}'
     output:
-        contigs = 'unicycler/{sample}/contigs.fasta'
+        contigs = 'unicycler/{sample}_{read_type}/contigs.fasta'
     threads:
         int(config['threads'])
     shell:
