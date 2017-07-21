@@ -1,5 +1,3 @@
-THREADS = 16
-
 rule unicycler:
     input:
         r1 = 'reads/deduplicated/{sample}_R1.fastq.gz',
@@ -9,7 +7,7 @@ rule unicycler:
     output:
         contigs = 'unicycler/{sample}/contigs.fasta'
     threads:
-        THREADS
+        int(config['threads'])
     shell:
         '''
         mkdir -p {params.outdir}
