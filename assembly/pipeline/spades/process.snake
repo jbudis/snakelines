@@ -6,6 +6,7 @@ include: config['snake_dir'] + '/preprocess/report/fastqc.snake'
 include: config['snake_dir'] + '/preprocess/trim_reads/trimmomatic.snake'
 include: config['snake_dir'] + '/assembly/assemblers/spades.snake'
 include: config['snake_dir'] + '/classification/classifiers/blast.snake'
+include: config['snake_dir'] + '/classification/report/blast_summary.snake'
 
 assembly_type = config['assembly']['analysis_type']
 
@@ -20,5 +21,5 @@ rule process:
                 sample=pipeline.sample),
 
         # Blast
-        expand('spades-%s/{sample}/blast/contigs.blast' % assembly_type,
+        expand('spades-%s/{sample}/blast/contigs.html' % assembly_type,
                 sample=pipeline.sample) if config['blast']['enabled'] else []
