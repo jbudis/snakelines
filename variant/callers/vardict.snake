@@ -1,0 +1,39 @@
+rule call_population_panel:
+    input:
+        bam = '{mapper}/{reference}/{sample}.bam',
+        bai = '{mapper}/{reference}/{sample}.bam.bai',
+        bed = 'reference/{reference}/annotation/{panel}/regions.bed',
+        reffasta = 'reference/{reference}/{reference}.fa',
+        reffaidx = 'reference/{reference}/{reference}.fa.fai'
+    output:
+        vcf = '{mapper}/{reference}/vardict-{panel}/{sample}.population.vcf'
+    shell:
+        '''
+        vardict \
+            -G {input.reffasta} \
+            -b {input.bam} \
+            -f {config[variant][min_nonref_allele_freq]} \
+            -r {config[variant][min_alternate_count]} \
+            -Q {config[variant][min_map_quality]} \
+            {input.bed} \
+        > {output.vcf}
+        '''
+
+rule call_population_wgs:
+    input:
+        bam = '{mapper}/{reference}/{sample}.bam',
+        bai = '{mapper}/{reference}/{sample}.bam.bai',
+        reffasta = 'reference/{reference}/{reference}.fa',
+        reffaidx = 'reference/{reference}/{reference}.fa.fai'
+    output:
+        vcf = '{mapper}/{reference}/vardict-wgs/{sample}.population.vcf'
+    shell:
+        '''
+        vardict \
+            -G {input.reffasta} \
+            -b {input.bam} \
+            -f {config[variant][min_nonref_allele_freq]} \
+            -r {config[variant][min_alternate_count]} \
+            -Q {config[variant][min_map_quality]} \
+        > {output.vcf}
+        '''
