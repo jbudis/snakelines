@@ -7,8 +7,11 @@ trim:
     headcrop: 0
     minlen: 35
 
+deduplicate:
+    read_type: trimmed
+
 assembly:
-    read_type: trimmed    # original, trimmed, deduplicated
+    read_type: deduplicated    # original, trimmed, deduplicated
     analysis_type: meta   # standard, meta, plasmid, transcript
     path_to_reference: reference/mhv68/mhv68.fa
 
