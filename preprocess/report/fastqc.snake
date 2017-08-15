@@ -1,15 +1,15 @@
-def fastq_files_single(read_type):
-    return expand('reads/%s/stats-single/{sample}_RM_fastqc.html' % read_type, sample=pipeline.sample)
+def fastq_files_joined(read_type):
+    return expand('reads/%s/stats-joined/{sample}_RM_fastqc.html' % read_type, sample=pipeline.sample)
 
 def fastq_files(read_type):
     return expand('reads/%s/stats/{sample}_R1_fastqc.html' % read_type, sample=pipeline.sample) + \
            expand('reads/%s/stats/{sample}_R2_fastqc.html' % read_type, sample=pipeline.sample)
 
-rule fastqc_summary_single:
+rule fastqc_summary_joined:
     input:
-        fastq_files_single
+        fastq_files_joined
     output:
-        'reads/{read_type}/stats-single/summary.html'
+        'reads/{read_type}/stats-joined/summary.html'
     params:
         summary_script = srcdir("scripts/fastqc-summary.py")
     shell:
