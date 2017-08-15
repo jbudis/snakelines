@@ -38,6 +38,8 @@ rule lefse_format_input:
         counts='{report_dir}/lefse/{attribute}/analysis/counts.tsv'
     output:
         infile='{report_dir}/lefse/{attribute}/analysis/counts.in'
+    params:
+        read_count = config['subsample']['read_count']
     shell:
         '''
         $LEFSE_DIR/format_input.py \
@@ -46,7 +48,7 @@ rule lefse_format_input:
             -c 1 \
             -s -1 \
             -u 2 \
-            -o 1000000
+            -o {params.read_count}
         '''
 
 rule lefse_run:
