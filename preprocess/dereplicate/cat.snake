@@ -1,0 +1,16 @@
+from glob import glob
+
+read_type = config['dereplicate']['read_type']
+
+def find_replicates(wildcards):
+    return sorted(glob('reads/original/%s-??_R%s.fastq.gz' % (wildcards.sample, wildcards.pair)))
+
+rule dereplicate:
+    input:
+        find_replicates
+    output:
+        'reads/dereplicated/{sample}_R{pair}.fastq.gz'
+    shell:
+        '''
+        cat {input} > {output}
+        '''

@@ -1,0 +1,4 @@
+sample_pattern: .*
+
+dereplicate:
+    read_type: original
