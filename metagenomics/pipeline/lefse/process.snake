@@ -1,0 +1,31 @@
+configfile: srcdir('config.yaml')
+
+read_type = config['subsample']['read_type']
+comparisons = config['lefse']['comparisons']
+gene = config['metaxa2']['gene']
+
+pipeline = glob_wildcards('reads/%s/{sample, %s}_R1.fastq.gz' % (read_type, config['sample_pattern']))
+
+include: config['snake_dir'] + '/preprocess/subsample/head.snake'
+include: config['snake_dir'] + '/preprocess/report/fastqc.snake'
+include: config['snake_dir'] + '/metagenomics/classification/metaxa2.snake'
+include: config['snake_dir'] + '/metagenomics/report/krona.snake'
+include: config['snake_dir'] + '/metagenomics/report/tsv_summary.snake'
+include: config['snake_dir'] + '/metagenomics/comparison/lefse.snake'
+
+rule process:
+    input:
+        # Summary tables
+        'metaxa2/%s/report/krona/krona.html' % gene,
+        'metaxa2/%s/report/tsv/summary.tsv' % gene,
+        'metaxa2/%s/report/tsv/summary.xlsx' % gene,
+        'metaxa2/%s/report/tsv/subtaxes.tsv' % gene,
+        'metaxa2/%s/report/tsv/subtaxes.xlsx' % gene,
+        'metaxa2/%s/report/tsv/subtaxes.norm.xlsx' % gene,
+        'metaxa2/%s/report/tsv/subtaxes.norm.tsv' % gene,
+
+        # Lefse comparison
+        expand('metaxa2/{gene}/report/lefse/{comparison}/significant-taxes.pdf', comparison=comparisons, gene=gene),
+        expand('metaxa2/{gene}/report/lefse/{comparison}/treeview.pdf',          comparison=comparisons, gene=gene),
+        expand('metaxa2/{gene}/report/lefse/{comparison}/comparison.html',       comparison=comparisons, gene=gene)
+
