@@ -1,6 +1,24 @@
+def fastq_files_single(read_type):
+    return expand('reads/%s/stats-single/{sample}_RM_fastqc.html' % read_type, sample=pipeline.sample)
+
 def fastq_files(read_type):
     return expand('reads/%s/stats/{sample}_R1_fastqc.html' % read_type, sample=pipeline.sample) + \
            expand('reads/%s/stats/{sample}_R2_fastqc.html' % read_type, sample=pipeline.sample)
+
+rule fastqc_summary_single:
+    input:
+        fastq_files_single
+    output:
+        'reads/{read_type}/stats-single/summary.html'
+    params:
+        summary_script = srcdir("scripts/fastqc-summary.py")
+    shell:
+        """
+        python {params.summary_script} \
+            {output} \
+            {input}
+        """
+
 
 rule fastqc_summary:
     input:
@@ -20,15 +38,14 @@ rule fastqc:
     input:
         'reads/{read_type}/{fastq}.fastq.gz' 
     output:
-        'reads/{read_type}/stats/{fastq}_fastqc.html'
+        'reads/{read_type}/stats{stats_type}/{fastq}_fastqc.html'
     threads:
         int(config['threads'])
     shell:
         """
         fastqc \
-            -o reads/{wildcards.read_type}/stats \
+            -o reads/{wildcards.read_type}/stats{wildcards.stats_type} \
             --extract \
             --threads {threads} \
             {input}
         """
-
