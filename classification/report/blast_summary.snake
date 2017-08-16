@@ -6,7 +6,6 @@ pd.options.display.float_format = '{:.1f}'.format
 
 TEMPLATE = open(srcdir('templates/abundances.html')).read()
 
-
 rule blast_summary:
     input:
         blast = '{indir}/blast/{name}.blast'
@@ -15,25 +14,44 @@ rule blast_summary:
     run:
         contig_items = []
 
+        def deduplicate(intervals):
+            dedup = []
+            for start, end in sorted(intervals):
+                if dedup and dedup[-1][1] >= start - 1:
+                    dedup[-1][1] = max(dedup[-1][1], end)
+                else:
+                    dedup.append([start, end])
+
+            return dedup
+
+        def calc_align_len(alignment):
+            intervals = deduplicate([(hsp.query_start, hsp.query_end) for hsp in alignment.hsps])
+            return sum(end - start + 1 for start, end in intervals)
+
         with open(input.blast) as blast_results:
             for contig in NCBIXML.parse(blast_results):
+                contig_len = int(contig.query.split('_')[3])
                 aligns = contig.alignments
+                align_lens = map(calc_align_len, aligns)
                 titles = [align.title for align in aligns]
                 gbids = [title.split('|')[3] for title in titles]
                 names = [title.split('|')[-1] for title in titles]
                 links = []
-                for gbid, name in zip(gbids, names):
-                    links.append('<a href="https://www.ncbi.nlm.nih.gov/nuccore/%s">%s</a>' % (gbid, name))
+                for gbid, name, align_len in zip(gbids, names, align_lens):
+                    coverage = align_len / contig_len
+                    links.append('%3.2f%% - <a href="https://www.ncbi.nlm.nih.gov/nuccore/%s">%s</a>' % \
+                                  (coverage * 100, gbid, name))
 
                 contig_info = {'Contig': contig.query,
                                'Homologues': '<br/>'.join(links),
-                               'Length': int(contig.query.split('_')[3]),
+                               'Length': contig_len,
                                'Coverage': float(contig.query.split('_')[5])}
 
                 contig_items.append(contig_info)
 
         # Generate report
-        contigs = pd.DataFrame(contig_items)
+        columns = ['Contig', 'Length', 'Coverage', 'Homologues']
+        contigs = pd.DataFrame(contig_items)[columns]
         contigs_table = contigs.to_html(escape=False).replace('<table ', '<table id="data" ')
 
         with open(output.report, 'w') as out:
