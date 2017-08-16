@@ -1,0 +1,24 @@
+sample_pattern: .*
+
+trim:
+    read_type: original
+    crop: 500
+    quality: 10
+    headcrop: 10
+    minlen: 35
+
+prefilter:
+    read_type: trimmed
+    references:
+        - hg38
+        - pacnes
+
+join:
+    read_type: filtered
+
+rdp:
+    read_type: joined
+
+report:
+    tsv:
+        remove_marginal_taxes: False

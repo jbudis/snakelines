@@ -1,0 +1,22 @@
+configfile: srcdir('config.yaml')
+
+pipeline = glob_wildcards('reads/original/{sample, %s}_R1.fastq.gz' % config['sample_pattern'])
+
+include: config['snake_dir'] + '/preprocess/report/fastqc.snake'
+include: config['snake_dir'] + '/preprocess/trim_reads/trimmomatic.snake'
+include: config['snake_dir'] + '/preprocess/filtering/bowtie2.snake'
+include: config['snake_dir'] + '/preprocess/join_reads/pear.snake'
+
+include: config['snake_dir'] + '/metagenomics/classification/rdp.snake'
+include: config['snake_dir'] + '/metagenomics/report/krona.snake'
+include: config['snake_dir'] + '/metagenomics/report/tsv_summary.snake'
+
+rule process:
+    input:
+        'reads/original/stats/summary.html',
+        'reads/trimmed/stats/summary.html',
+        'reads/filtered/stats/summary.html',
+        'reads/joined/stats/summary.html',
+        'reads/joined/stats-joined/summary.html',
+        'rdp/ssu/report/tsv/summary.tsv',
+        'rdp/ssu/report/krona/krona.html'
