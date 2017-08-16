@@ -8,6 +8,8 @@ pd.options.display.float_format = '{:.1f}'.format
 
 TEMPLATE = open(srcdir('templates/abundances.html')).read()
 
+n_contigs = int(config['blast']['report']['max_query_seqs'])
+
 rule blast_summary:
     input:
         contigs = '{indir}/{name}.fasta',
@@ -15,16 +17,18 @@ rule blast_summary:
     output:
         report = '{indir}/blast/{name}.html'
     params:
-        contig_dir = '{indir}/blast/contigs'
+        contig_dir = '{indir}/blast/individual'
     run:
 
         # Split contigs.fasta file into separate fasta files, one for each contig - downloadable from HTML page
         if not os.path.exists(params.contig_dir):
             os.mkdir(params.contig_dir)
 
-        for contig in SeqIO.parse(input.contigs, 'fasta'):
+        for i, contig in enumerate(SeqIO.parse(input.contigs, 'fasta')):
             with open('%s/%s.fa' % (params.contig_dir, contig.id), 'w') as out:
                 SeqIO.write(contig, out, 'fasta')
+            if i >= n_contigs:
+                break
 
         # Calculation of query/target overlap
         def deduplicate(intervals):
@@ -44,9 +48,9 @@ rule blast_summary:
         # Collect Blast results
         contig_items = []
         with open(input.blast) as blast_results:
-            for contig in NCBIXML.parse(blast_results):
+            for i, contig in enumerate(NCBIXML.parse(blast_results)):
 
-                contig_link = '<a href="contigs/%s.fa">%s</a>' % (contig.query, contig.query)
+                contig_link = '<a href="individual/%s.fa">%s</a>' % (contig.query, contig.query)
 
                 contig_len = int(contig.query.split('_')[3])
                 aligns = contig.alignments
@@ -66,6 +70,9 @@ rule blast_summary:
                                'Coverage': float(contig.query.split('_')[5])}
 
                 contig_items.append(contig_info)
+
+                if i >= n_contigs:
+                    break
 
         # Generate report
         columns = ['Contig', 'Length', 'Coverage', 'Homologues']
