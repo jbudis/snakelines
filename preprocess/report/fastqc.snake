@@ -38,13 +38,13 @@ rule fastqc:
     input:
         'reads/{read_type}/{fastq}.fastq.gz' 
     output:
-        'reads/{read_type}/stats{stats_type}/{fastq}_fastqc.html'
+        'reads/{read_type}/stat{stats_type}/{fastq}_fastqc.html'
     threads:
         int(config['threads'])
     shell:
         """
         fastqc \
-            -o reads/{wildcards.read_type}/stats{wildcards.stats_type} \
+            -o reads/{wildcards.read_type}/stat{wildcards.stats_type} \
             --extract \
             --threads {threads} \
             {input}
