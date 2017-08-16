@@ -1,4 +1,6 @@
 from Bio.Blast import NCBIXML
+from Bio import SeqIO
+import os
 
 import pandas as pd
 pd.set_option('display.max_colwidth', 1000000)
@@ -8,12 +10,23 @@ TEMPLATE = open(srcdir('templates/abundances.html')).read()
 
 rule blast_summary:
     input:
+        contigs = '{indir}/{name}.fasta',
         blast = '{indir}/blast/{name}.blast'
     output:
         report = '{indir}/blast/{name}.html'
+    params:
+        contig_dir = '{indir}/blast/contigs'
     run:
-        contig_items = []
 
+        # Split contigs.fasta file into separate fasta files, one for each contig - downloadable from HTML page
+        if not os.path.exists(params.contig_dir):
+            os.mkdir(params.contig_dir)
+
+        for contig in SeqIO.parse(input.contigs, 'fasta'):
+            with open('%s/%s.fa' % (params.contig_dir, contig.id), 'w') as out:
+                SeqIO.write(contig, out, 'fasta')
+
+        # Calculation of query/target overlap
         def deduplicate(intervals):
             dedup = []
             for start, end in sorted(intervals):
@@ -28,8 +41,13 @@ rule blast_summary:
             intervals = deduplicate([(hsp.query_start, hsp.query_end) for hsp in alignment.hsps])
             return sum(end - start + 1 for start, end in intervals)
 
+        # Collect Blast results
+        contig_items = []
         with open(input.blast) as blast_results:
             for contig in NCBIXML.parse(blast_results):
+
+                contig_link = '<a href="contigs/%s.fa">%s</a>' % (contig.query, contig.query)
+
                 contig_len = int(contig.query.split('_')[3])
                 aligns = contig.alignments
                 align_lens = map(calc_align_len, aligns)
@@ -42,7 +60,7 @@ rule blast_summary:
                     links.append('%3.2f%% - <a href="https://www.ncbi.nlm.nih.gov/nuccore/%s">%s</a>' % \
                                   (coverage * 100, gbid, name))
 
-                contig_info = {'Contig': contig.query,
+                contig_info = {'Contig': contig_link,
                                'Homologues': '<br/>'.join(links),
                                'Length': contig_len,
                                'Coverage': float(contig.query.split('_')[5])}
