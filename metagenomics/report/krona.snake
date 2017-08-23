@@ -1,5 +1,10 @@
-def individual_krn_files(analysis_dir):
-      return expand('%s/report/krona/individual/{sample}.krn' % analysis_dir, sample=pipeline.sample)
+import re
+
+def individual_krn_files(wildcards):
+    gene_file_pattern = re.compile(config['gene_pattern'][wildcards.gene])
+    gene_sids = list(filter(gene_file_pattern.match, pipeline.sample))
+    return expand('%s/%s/report/krona/individual/{sample}.krn' % (wildcards.analysis_dir, wildcards.gene),
+                  sample=gene_sids)
 
 rule krona_report:
     input:
@@ -20,7 +25,7 @@ rule final_krona_report:
     input:
         individual_krn_files
     output:
-        '{analysis_dir}/report/krona/krona.html'
+        '{analysis_dir}/{gene}/report/krona/krona.html'
     shell:
         '''
         ktImportText \

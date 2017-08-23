@@ -1,5 +1,9 @@
 sample_pattern: .*
 
+gene_pattern:
+    ssu: .*16S.*
+    lsu: .*28S.*
+
 trim:
     read_type: original
     crop: 170
@@ -9,7 +13,6 @@ trim:
 
 metaxa2:
     read_type: trimmed
-    gene: ssu # ssu or lsu
 
 report:
     tsv:

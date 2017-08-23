@@ -4,19 +4,22 @@ import pandas as pd
 import csv
 import numpy as np
 
-def individual_krn_files(analysis_dir):
-      return expand('%s/report/krona/individual/{sample}.krn' % analysis_dir, sample=pipeline.sample)
+def individual_krn_files(wildcards):
+    gene_file_pattern = re.compile(config['gene_pattern'][wildcards.gene])
+    gene_sids = list(filter(gene_file_pattern.match, pipeline.sample))
+    return expand('%s/%s/report/krona/individual/{sample}.krn' % (wildcards.analysis_dir, wildcards.gene),
+                  sample=gene_sids)
 
 rule summarize_single:
     input:
         individual_krn_files
     output:
-        summary_xlsx = '{analysis_dir}/report/tsv/summary.xlsx',
-        summary_tsv  = '{analysis_dir}/report/tsv/summary.tsv',
-        subtax_xlsx  = '{analysis_dir}/report/tsv/subtaxes.xlsx',
-        subtax_tsv   = '{analysis_dir}/report/tsv/subtaxes.tsv',
-        normed_xlsx  = '{analysis_dir}/report/tsv/subtaxes.norm.xlsx',
-        normed_tsv   = '{analysis_dir}/report/tsv/subtaxes.norm.tsv'
+        summary_xlsx = '{analysis_dir}/{gene}/report/tsv/summary.xlsx',
+        summary_tsv  = '{analysis_dir}/{gene}/report/tsv/summary.tsv',
+        subtax_xlsx  = '{analysis_dir}/{gene}/report/tsv/subtaxes.xlsx',
+        subtax_tsv   = '{analysis_dir}/{gene}/report/tsv/subtaxes.tsv',
+        normed_xlsx  = '{analysis_dir}/{gene}/report/tsv/subtaxes.norm.xlsx',
+        normed_tsv   = '{analysis_dir}/{gene}/report/tsv/subtaxes.norm.tsv'
     run:
 
         tax_ranks = ['domain', 'kingdom', 'phylum', 'class', 'order', 'family',

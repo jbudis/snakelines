@@ -1,7 +1,6 @@
 configfile: srcdir('config.yaml')
 
 pipeline = glob_wildcards('reads/original/{sample, %s}_R1.fastq.gz' % config['sample_pattern'])
-gene = config['metaxa2']['gene']
 
 include: config['snake_dir'] + '/preprocess/trim_reads/trimmomatic.snake'
 include: config['snake_dir'] + '/preprocess/report/fastqc.snake'
@@ -9,15 +8,12 @@ include: config['snake_dir'] + '/metagenomics/classification/metaxa2.snake'
 include: config['snake_dir'] + '/metagenomics/report/krona.snake'
 include: config['snake_dir'] + '/metagenomics/report/tsv_summary.snake'
 
+genes = list(config['gene_pattern'].keys())
+
 rule process:
     params:
     input:
         'reads/original/stats/summary.html',
         'reads/trimmed/stats/summary.html',
-        'metaxa2/%s/report/krona/krona.html' % gene,
-        'metaxa2/%s/report/tsv/summary.tsv' % gene,
-        'metaxa2/%s/report/tsv/summary.xlsx' % gene,
-        'metaxa2/%s/report/tsv/subtaxes.tsv' % gene,
-        'metaxa2/%s/report/tsv/subtaxes.xlsx' % gene,
-        'metaxa2/%s/report/tsv/subtaxes.norm.xlsx' % gene,
-        'metaxa2/%s/report/tsv/subtaxes.norm.tsv' % gene
+        expand('metaxa2/{gene}/report/krona/krona.html', gene=genes),
+        expand('metaxa2/{gene}/report/tsv/summary.tsv', gene=genes)
