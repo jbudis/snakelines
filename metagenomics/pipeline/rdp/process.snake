@@ -11,6 +11,8 @@ include: config['snake_dir'] + '/metagenomics/classification/rdp.snake'
 include: config['snake_dir'] + '/metagenomics/report/krona.snake'
 include: config['snake_dir'] + '/metagenomics/report/tsv_summary.snake'
 
+genes = list(config['gene_pattern'].keys())
+
 rule process:
     input:
         'reads/original/stats/summary.html',
@@ -18,5 +20,5 @@ rule process:
         'reads/filtered/stats/summary.html',
         'reads/joined/stats/summary.html',
         'reads/joined/stats-joined/summary.html',
-        'rdp/ssu/report/tsv/summary.tsv',
-        'rdp/ssu/report/krona/krona.html'
+        expand('rdp/{gene}/report/krona/krona.html', gene=genes),
+        expand('rdp/{gene}/report/tsv/summary.tsv', gene=genes)
