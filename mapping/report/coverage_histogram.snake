@@ -1,8 +1,8 @@
 rule genome_coverage_histogram:
     input:
-        '{bam_prefix}.bam'
+        '{bam_path}/{bam_prefix}.bam'
     output:
-        '{bam_prefix}.bam.genomecov'
+        '{bam_path}/coverage/{bam_prefix}.genomecov'
     params:
         reference = config['mapping']['reference']
     shell:
@@ -11,4 +11,21 @@ rule genome_coverage_histogram:
             -ibam {input} \
             -g {params.reference} \
         > {output}
+        '''
+
+rule genome_coverage_binned:
+    input:
+        '{bam_path}/{bam_prefix}.bam'
+    output:
+        '{bam_path}/coverage/{bam_prefix}.{bin_size, \d+}.bed'
+    params:
+        fasta = 'reference/{ref}/{ref}.fa'.format(ref=config['mapping']['reference'])
+    shell:
+        '''
+        pysamstats \
+            --fasta {params.fasta} \
+            --type coverage_binned \
+            --window-size {wildcards.bin_size} \
+            --output {output} \
+            {input}
         '''
