@@ -1,5 +1,9 @@
 sample_pattern: .*
 
+gene_pattern:
+    ssu: .*16S.*
+    its_unite: .*ITS.*
+
 trim:
     read_type: original
     crop: 500
