@@ -1,5 +1,9 @@
 sample_pattern: .*
 
+gene_pattern:
+    silva-ssu-128: .*16S.*
+    silva-lsu-128: .*28S.*
+
 trim:
     read_type: original
     crop: 170
@@ -8,8 +12,7 @@ trim:
     minlen: 35
 
 emirge:
-    read_type: trimmed
-    reference: silva-ssu-128
+    read_type: deduplicated
 
 report:
     tsv:
