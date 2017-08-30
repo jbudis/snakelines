@@ -7,23 +7,60 @@ rule trim:
     output:
         r1 = 'reads/trimmed/{sample}_R1.fastq.gz',
         r2 = 'reads/trimmed/{sample}_R2.fastq.gz'
+    params:
+        r1 = 'reads/trimmed/{sample}_R1.fastq',
+        r2 = 'reads/trimmed/{sample}_R2.fastq',
+        out1 = 'reads/trimmed/{sample}_R1.txt',
+        out2 = 'reads/trimmed/{sample}_R2.txt'
     threads:
         int(config['threads'])
     log:
         'reads/%s/log/{sample}.log' % read_type
     shell:
         '''
-        trimmomatic PE \
-            -threads {threads} \
-            -phred33 \
-            {input.r1} \
-            {input.r2} \
-            {output.r1} /dev/null \
-            {output.r2} /dev/null \
-            CROP:{config[trim][crop]} \
-            SLIDINGWINDOW:5:{config[trim][quality]} \
-            HEADCROP:{config[trim][headcrop]} \
-            MINLEN:{config[trim][minlen]} \
-        >  {log}
+        if [ {config[trim][auto]} = "True" ]; then
+            gzip -cd {input.r1} > {params.r1}
+            gzip -cd {input.r2} > {params.r2}
+
+            R1_TRIM=`find_trim_params {params.r1} {params.out1}`
+            R2_TRIM=`find_trim_params {params.r2} {params.out2}`
+
+            R1_TRIM_HEAD=`echo "$R1_TRIM" | cut -f1`
+            R1_TRIM_TAIL=`echo "$R1_TRIM" | cut -f2`
+
+            R2_TRIM_HEAD=`echo "$R2_TRIM" | cut -f1`
+            R2_TRIM_TAIL=`echo "$R2_TRIM" | cut -f2`
+
+            TRIM_HEAD=$(( $R1_TRIM_HEAD > $R2_TRIM_HEAD ? $R1_TRIM_HEAD : $R2_TRIM_HEAD ))
+            TRIM_TAIL=$(( $R1_TRIM_TAIL < $R2_TRIM_TAIL ? $R1_TRIM_TAIL : $R2_TRIM_TAIL ))
+
+            echo -e "Trimming parameters set for: CROP:$TRIM_TAIL HEADCROP:$TRIM_HEAD"
+
+            trimmomatic PE \
+                -threads {threads} \
+                -phred33 \
+                {input.r1} \
+                {input.r2} \
+                {output.r1} /dev/null \
+                {output.r2} /dev/null \
+                CROP:$TRIM_TAIL \
+                HEADCROP:$TRIM_HEAD \
+                SLIDINGWINDOW:5:{config[trim][quality]} \
+                MINLEN:{config[trim][minlen]} \
+            > {log}
+        else
+            trimmomatic PE \
+                -threads {threads} \
+                -phred33 \
+                {input.r1} \
+                {input.r2} \
+                {output.r1} /dev/null \
+                {output.r2} /dev/null \
+                CROP:{config[trim][crop]} \
+                SLIDINGWINDOW:5:{config[trim][quality]} \
+                HEADCROP:{config[trim][headcrop]} \
+                MINLEN:{config[trim][minlen]} \
+            > {log}
+        fi
         '''
 
