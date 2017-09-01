@@ -1,3 +1,5 @@
+include: config['snake_dir'] + '/mapping/postprocess/bam_index.snake'
+
 rule genome_coverage_histogram:
     input:
         '{bam_path}/{bam_prefix}.bam'
@@ -15,7 +17,8 @@ rule genome_coverage_histogram:
 
 rule genome_coverage_binned:
     input:
-        '{bam_path}/{bam_prefix}.bam'
+        '{bam_path}/{bam_prefix}.bam',
+        '{bam_path}/{bam_prefix}.bam.bai'
     output:
         '{bam_path}/coverage/{bam_prefix}.{bin_size, \d+}.bed'
     params:
