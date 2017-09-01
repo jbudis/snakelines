@@ -24,6 +24,6 @@ mapping:
 variant:
     map_type: realign
     min_nonref_allele_freq: 0.2
-    min_alternate_count: 2
+    min_nonref_allele_count: 2
     min_coverage: 10
     keep_indels: True

@@ -37,3 +37,23 @@ rule call_population_wgs:
             -Q {config[variant][min_map_quality]} \
         > {output.vcf}
         '''
+
+rule call_population_subset:
+    input:
+        bam = '{mapper}/{reference}/{sample}.bam',
+        bai = '{mapper}/{reference}/{sample}.bam.bai',
+        reffasta = 'reference/{reference}/{reference}.fa',
+        reffaidx = 'reference/{reference}/{reference}.fa.fai'
+    output:
+        vcf = '{mapper}/{reference}/vardict-region/{sample}/{chrom}-{start}-{end}.population.vcf'
+    shell:
+        '''
+        vardict \
+            -R {wildcards.chrom}:{wildcards.start}-{wildcards.end} \
+            -G {input.reffasta} \
+            -b {input.bam} \
+            -f {config[variant][min_nonref_allele_freq]} \
+            -r {config[variant][min_nonref_allele_count]} \
+            -Q {config[variant][min_map_quality]} \
+        > {output.vcf}
+        '''
