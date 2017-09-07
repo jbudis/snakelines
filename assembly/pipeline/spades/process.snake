@@ -35,4 +35,4 @@ rule process:
 
         # Quast
         expand('spades-%s/{sample}/quast-{quast_reference}/contigs.filtered/report.txt' % assembly_type,
-                sample=pipeline.sample, quast_reference=quast_reference) if config['bandage']['enabled'] else []
+                sample=pipeline.sample, quast_reference=quast_reference) if config['quast']['enabled'] else []

@@ -1,11 +1,13 @@
+read_type = config['assembly']['read_type']
+
 rule unicycler:
     input:
-        r1 = 'reads/{read_type}/{sample}_R1.fastq.gz',
-        r2 = 'reads/{read_type}/{sample}_R2.fastq.gz',
+        r1 = 'reads/%s/{sample}_R1.fastq.gz' % read_type,
+        r2 = 'reads/%s/{sample}_R2.fastq.gz' % read_type
     params:
-        outdir = 'unicycler/{sample}_{read_type}'
+        outdir = 'unicycler/{sample}'
     output:
-        contigs = 'unicycler/{sample}_{read_type}/contigs.fasta'
+        contigs = 'unicycler/{sample}/contigs.fasta'
     threads:
         int(config['threads'])
     shell:

@@ -7,7 +7,7 @@ rule quast:
     log:
         '{indir}/quast-{reference}/{sample}/quast.log'
     params:
-        outdir = '{indir}/quast/{reference}/{sample}'
+        outdir = '{indir}/quast-{reference}/{sample}'
     threads:
         int(config['threads'])
     shell:
