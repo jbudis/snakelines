@@ -31,7 +31,7 @@ rule process:
 
         # Bandage
         expand('spades-%s/{sample}/bandage/assembly_graph.png' % assembly_type,
-                sample=pipeline.sample) if config['bandage']['enabled'] else []
+                sample=pipeline.sample) if config['bandage']['enabled'] else [],
 
         # Quast
         expand('spades-%s/{sample}/quast-{quast_reference}/contigs.filtered/report.txt' % assembly_type,
