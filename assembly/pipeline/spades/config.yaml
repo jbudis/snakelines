@@ -13,6 +13,7 @@ deduplicate:
 assembly:
     read_type: deduplicated
     analysis_type: meta   # standard, meta, plasmid, transcript
+    min_contig_len: 200
 
 blast:
     enabled: True
