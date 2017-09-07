@@ -1,0 +1,25 @@
+sample_pattern: .*
+
+trim:
+    read_type: original
+    crop: 500
+    quality: 20
+    headcrop: 0
+    minlen: 35
+
+deduplicate:
+    read_type: trimmed
+
+assembly:
+    read_type: deduplicated
+    min_contig_len: 200
+
+blast:
+    enabled: True
+    max_target_seqs: 25
+    report:
+        max_query_seqs: 200
+
+quast:
+    enabled: True
+    reference: persici

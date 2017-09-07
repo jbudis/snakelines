@@ -1,0 +1,34 @@
+configfile: srcdir('config.yaml')
+
+pipeline = glob_wildcards('reads/original/{sample,%s}_R1.fastq.gz' % config['sample_pattern'])
+
+include: config['snake_dir'] + '/preprocess/report/fastqc.snake'
+include: config['snake_dir'] + '/preprocess/trim_reads/trimmomatic.snake'
+include: config['snake_dir'] + '/preprocess/deduplication/fastuniq.snake'
+include: config['snake_dir'] + '/assembly/assemblers/unicycler.snake'
+include: config['snake_dir'] + '/assembly/postprocess/filter_contigs.snake'
+include: config['snake_dir'] + '/assembly/postprocess/bandage.snake'
+include: config['snake_dir'] + '/classification/classifiers/blast.snake'
+include: config['snake_dir'] + '/classification/report/blast_summary.snake'
+include: config['snake_dir'] + '/assembly/postprocess/quast.snake'
+
+assembly_type = config['assembly']['analysis_type']
+quast_reference = config['quast']['reference']
+
+rule process:
+    input:
+        # FastQC summaries
+        'reads/original/stats/summary.html',
+        'reads/trimmed/stats/summary.html',
+
+        # Contigs
+        expand('unicycler/{sample}/contigs.filtered.fasta' % assembly_type,
+                sample=pipeline.sample),
+
+        # Blast
+        expand('unicycler/{sample}/blast/contigs.filtered.html' % assembly_type,
+                sample=pipeline.sample) if config['blast']['enabled'] else [],
+
+        # Quast
+        expand('unicycler/{sample}/quast-{quast_reference}/contigs.filtered/report.txt' % assembly_type,
+                sample=pipeline.sample, quast_reference=quast_reference) if config['quast']['enabled'] else []
