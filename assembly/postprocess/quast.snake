@@ -1,17 +1,15 @@
-path_to_reference = config['assembly']['path_to_reference']
-
 rule quast:
     input:
-        contigs = '{indir}/contigs.fasta',
-        reference = '%s' % path_to_reference
-    params:
-        outdir = '{indir}/quast'
+        contigs = '{indir}/{sample}.fasta',
+        reference = 'reference/{reference}/{reference}.fa'
     output:
-         '{indir}/quast/report.txt'
+        '{indir}/quast-{reference}/{sample}/report.txt'
+    log:
+        '{indir}/quast-{reference}/{sample}/quast.log'
+    params:
+        outdir = '{indir}/quast/{reference}/{sample}'
     threads:
         int(config['threads'])
-    log:
-        '{indir}/log/quast.log'
     shell:
         '''
         mkdir -p {params.outdir}

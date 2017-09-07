@@ -23,3 +23,7 @@ blast:
 
 bandage:
     enabled: True
+
+quast:
+    enabled: True
+    reference: persici

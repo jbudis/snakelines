@@ -10,8 +10,10 @@ include: config['snake_dir'] + '/assembly/postprocess/filter_contigs.snake'
 include: config['snake_dir'] + '/assembly/postprocess/bandage.snake'
 include: config['snake_dir'] + '/classification/classifiers/blast.snake'
 include: config['snake_dir'] + '/classification/report/blast_summary.snake'
+include: config['snake_dir'] + '/assembly/postprocess/quast.snake'
 
 assembly_type = config['assembly']['analysis_type']
+quast_reference = config['quast']['reference']
 
 rule process:
     input:
@@ -30,3 +32,7 @@ rule process:
         # Bandage
         expand('spades-%s/{sample}/bandage/assembly_graph.png' % assembly_type,
                 sample=pipeline.sample) if config['bandage']['enabled'] else []
+
+        # Quast
+        expand('spades-%s/{sample}/quast-{quast_reference}/contigs.filtered/report.txt' % assembly_type,
+                sample=pipeline.sample, quast_reference=quast_reference) if config['bandage']['enabled'] else []
