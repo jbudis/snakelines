@@ -7,6 +7,7 @@ include: config['snake_dir'] + '/preprocess/trim_reads/trimmomatic.snake'
 include: config['snake_dir'] + '/preprocess/deduplication/fastuniq.snake'
 include: config['snake_dir'] + '/assembly/assemblers/spades.snake'
 include: config['snake_dir'] + '/assembly/postprocess/filter_contigs.snake'
+include: config['snake_dir'] + '/assembly/postprocess/bandage.snake'
 include: config['snake_dir'] + '/classification/classifiers/blast.snake'
 include: config['snake_dir'] + '/classification/report/blast_summary.snake'
 
@@ -24,4 +25,8 @@ rule process:
 
         # Blast
         expand('spades-%s/{sample}/blast/contigs.filtered.html' % assembly_type,
-                sample=pipeline.sample) if config['blast']['enabled'] else []
+                sample=pipeline.sample) if config['blast']['enabled'] else [],
+
+        # Bandage
+        expand('spades-%s/{sample}/bandage/assembly_graph.png' % assembly_type,
+                sample=pipeline.sample) if config['bandage']['enabled'] else []

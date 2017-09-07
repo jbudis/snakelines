@@ -20,3 +20,6 @@ blast:
     max_target_seqs: 25
     report:
         max_query_seqs: 200
+
+bandage:
+    enabled: True
