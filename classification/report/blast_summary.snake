@@ -52,7 +52,7 @@ rule blast_summary:
 
                 contig_link = '<a href="individual/%s.fa">%s</a>' % (contig.query, contig.query)
 
-                contig_len = int(contig.query.split('_')[3])
+                contig_len = contig.query_length
                 aligns = contig.alignments
                 align_lens = map(calc_align_len, aligns)
                 titles = [align.title for align in aligns]
@@ -64,10 +64,17 @@ rule blast_summary:
                     links.append('%3.2f%% - <a href="https://www.ncbi.nlm.nih.gov/nuccore/%s">%s</a>' % \
                                   (coverage * 100, gbid, name))
 
+                is_unicycler = 'depth=' in contig.query
+                if is_unicycler:
+                    coverage = float(contig.query.split('depth=')[1].split('x')[0])
+                else:
+                    coverage = float(contig.query.split('_')[5])
+
+
                 contig_info = {'Contig': contig_link,
                                'Homologues': '<br/>'.join(links),
                                'Length': contig_len,
-                               'Coverage': float(contig.query.split('_')[5])}
+                               'Coverage': coverage}
 
                 contig_items.append(contig_info)
 
