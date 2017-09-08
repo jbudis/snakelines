@@ -64,11 +64,14 @@ rule blast_summary:
                     links.append('%3.2f%% - <a href="https://www.ncbi.nlm.nih.gov/nuccore/%s">%s</a>' % \
                                   (coverage * 100, gbid, name))
 
-                is_unicycler = 'depth=' in contig.query
-                if is_unicycler:
+                # Unicycler
+                if 'depth=' in contig.query:
                     coverage = float(contig.query.split('depth=')[1].split('x')[0])
-                else:
+                # Spades
+                elif '_cov_' in contig.query:
                     coverage = float(contig.query.split('_')[5])
+                else:
+                    coverage = ''
 
 
                 contig_info = {'Contig': contig_link,
