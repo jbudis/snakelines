@@ -11,6 +11,9 @@ include: config['snake_dir'] + '/assembly/postprocess/bandage.snake'
 include: config['snake_dir'] + '/classification/classifiers/blast.snake'
 include: config['snake_dir'] + '/classification/report/blast_summary.snake'
 include: config['snake_dir'] + '/assembly/postprocess/quast.snake'
+include: config['snake_dir'] + '/mapping/mappers/bowtie2.snake'
+include: config['snake_dir'] + '/mapping/report/qualimap.snake'
+
 
 assembly_type = config['assembly']['analysis_type']
 quast_reference = config['quast']['reference']
@@ -36,3 +39,8 @@ rule process:
         # Quast
         expand('spades-%s/{sample}/quast-{quast_reference}/contigs.filtered/report.txt' % assembly_type,
                 sample=pipeline.sample, quast_reference=quast_reference) if config['quast']['enabled'] else []
+
+        # Coverage of assembly
+        expand('{assembler}/{sample}/mapping/stats-wgs/contigs.filtered/qualimapReport.html',
+                assembler=assemblers, sample=pipeline.sample),
+

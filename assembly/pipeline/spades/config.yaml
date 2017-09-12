@@ -27,3 +27,7 @@ bandage:
 quast:
     enabled: True
     reference: persici
+
+mapping:
+    read_type: deduplicated
+    params: --very-sensitive
