@@ -6,9 +6,11 @@ rule assembly_standard:
         r2 = 'reads/%s/{sample}_R2.fastq.gz' % read_type
     params:
         outdir = 'spades_{type}/{sample}',
-        contigs_fasta = 'spades-standard/{sample}/contigs.fasta'
+        contigs_fasta = 'spades-standard/{sample}/contigs.fasta',
+        scaffolds_fasta = 'spades-standard/{sample}/scaffolds.fasta',
     output:
-        contigs = 'spades_{type}/{sample}/contigs.fa'
+        contigs = 'spades_{type}/{sample}/contigs.fa',
+        scaffolds = 'spades_{type}/{sample}/scaffolds.fa'
     threads:
         int(config['threads'])
     log:
@@ -26,6 +28,7 @@ rule assembly_standard:
         2> {log[1]}
 
         mv {params.contigs_fasta} {output.contigs}
+        mv {params.scaffolds_fasta} {output.scaffolds}
         '''
 
 rule assembly_meta:
@@ -62,10 +65,10 @@ rule assembly_plasmid:
         r2 = 'reads/%s/{sample}_R2.fastq.gz' % read_type
     params:
         outdir = 'spades-plasmid/{sample}',
-        transcripts = 'spades-transcript/{sample}/transcripts.fasta'
+        contigs = 'spades-plasmid/{sample}/contigs.fasta'
     output:
         graph = 'spades-plasmid/{sample}/assembly_graph.fastg',
-        contigs = 'spades-plasmid/{sample}/transcripts.fa'
+        contigs = 'spades-plasmid/{sample}/contigs.fa'
     threads:
         int(config['threads'])
     log:
