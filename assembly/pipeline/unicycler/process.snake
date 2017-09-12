@@ -22,7 +22,7 @@ rule process:
         'reads/trimmed/stats/summary.html',
 
         # Contigs
-        expand('unicycler/{sample}/contigs.filtered.fasta' % assembly_type,
+        expand('unicycler/{sample}/contigs.filtered.fa' % assembly_type,
                 sample=pipeline.sample),
 
         # Blast

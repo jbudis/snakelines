@@ -4,7 +4,7 @@ THREADS = 32
 
 rule make_list_of_viral_contigs:
     input:
-        '{indir}/blast/contigs.fasta.kingdoms'
+        '{indir}/blast/contigs.fa.kingdoms'
     output:
         '{indir}/blast/viral_contigs.list',
     threads:
@@ -16,10 +16,10 @@ rule make_list_of_viral_contigs:
 
 rule select_viral:
     input:
-        contigs = '{indir}/contigs.fasta',
+        contigs = '{indir}/contigs.fa',
         viral_contigs_list = '{indir}/blast/viral_contigs.list'
     output:
-        '{indir}/viral_contigs.fasta',
+        '{indir}/viral_contigs.fa',
     threads:
         THREADS
     shell:

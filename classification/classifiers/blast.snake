@@ -1,6 +1,6 @@
 rule blast_xml:
     input:
-        '{indir}/{name}.fasta'
+        '{indir}/{name}.fa'
     output:
         '{indir}/blast/{name}.blast'
     threads:
@@ -20,7 +20,7 @@ rule blast_xml:
 
 rule blast_tsv:
     input:
-        '{indir}/{name}.fasta'
+        '{indir}/{name}.fa'
     output:
         '{indir}/blast/{name}.blast.tsv'
     threads:

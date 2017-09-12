@@ -2,7 +2,7 @@ read_type = config['kallisto']['read_type']
 
 rule remap_transcripts_spades:
     input:
-        fasta = 'spades-transcript/{sample}/contigs.fasta',
+        fasta = 'spades-transcript/{sample}/contigs.fa',
         index = 'spades-transcript/{sample}/contigs.idx',
         r1 = 'reads/%s/{sample}_R1.fastq.gz' % read_type,
         r2 = 'reads/%s/{sample}_R2.fastq.gz' % read_type
@@ -28,7 +28,7 @@ rule remap_transcripts_spades:
 
 rule prepare_kallisto_index:
     input:
-        fasta = '{fasta}.fasta'
+        fasta = '{fasta}.fa'
     output:
         index = '{fasta}.idx'
     shell:

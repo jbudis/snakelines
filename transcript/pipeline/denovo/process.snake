@@ -16,7 +16,7 @@ rule process:
         'reads/trimmed/stats/summary.html',
 
         # Contigs
-        expand('spades-transcript/{sample}/contigs.fasta',
+        expand('spades-transcript/{sample}/contigs.fa',
                 sample=pipeline.sample),
 
         # Blast

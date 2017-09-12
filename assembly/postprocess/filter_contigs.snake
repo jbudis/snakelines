@@ -2,9 +2,9 @@ from Bio import SeqIO
 
 rule filter_contigs:
     input:
-        fasta = '{assembly_dir}/{sample}.fasta'
+        fasta = '{assembly_dir}/{sample}.fa'
     output:
-        fasta = '{assembly_dir}/{sample}.filtered.fasta'
+        fasta = '{assembly_dir}/{sample}.filtered.fa'
     run:
         with open(input.fasta) as infa, open(output.fasta, 'w') as outfa:
             for contig in SeqIO.parse(infa, 'fasta'):

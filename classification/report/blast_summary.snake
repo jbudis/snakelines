@@ -12,7 +12,7 @@ n_contigs = int(config['blast']['report']['max_query_seqs'])
 
 rule blast_summary:
     input:
-        contigs = '{indir}/{name}.fasta',
+        contigs = '{indir}/{name}.fa',
         blast = '{indir}/blast/{name}.blast'
     output:
         report = '{indir}/blast/{name}.html'

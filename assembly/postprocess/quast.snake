@@ -1,6 +1,6 @@
 rule quast:
     input:
-        contigs = '{indir}/{sample}.fasta',
+        contigs = '{indir}/{sample}.fa',
         reference = 'reference/{reference}/{reference}.fa'
     output:
         '{indir}/quast-{reference}/{sample}/report.txt'
