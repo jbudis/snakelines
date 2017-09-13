@@ -5,17 +5,18 @@ rule assembly_standard:
         r1 = 'reads/%s/{sample}_R1.fastq.gz' % read_type,
         r2 = 'reads/%s/{sample}_R2.fastq.gz' % read_type
     params:
-        outdir = 'spades_{type}/{sample}',
+        outdir = 'spades-standard/{sample}',
         contigs_fasta = 'spades-standard/{sample}/contigs.fasta',
         scaffolds_fasta = 'spades-standard/{sample}/scaffolds.fasta',
     output:
-        contigs = 'spades_{type}/{sample}/contigs.fa',
-        scaffolds = 'spades_{type}/{sample}/scaffolds.fa'
+        graph = 'spades-standard/{sample}/assembly_graph.fastg',
+        contigs = 'spades-standard/{sample}/contigs.fa',
+        scaffolds = 'spades-standard/{sample}/scaffolds.fa'
     threads:
         int(config['threads'])
     log:
-        'spades_{type}/{sample}/log/spades.log',
-        'spades_{type}/{sample}/log/spades.err'
+        'spades-standard/{sample}/log/spades.log',
+        'spades-standard/{sample}/log/spades.err'
     shell:
         '''
         /usr/local/tools/spades-3.10.0/bin/spades.py \
@@ -37,7 +38,7 @@ rule assembly_meta:
         r2 = 'reads/%s/{sample}_R2.fastq.gz' % read_type
     params:
         outdir = 'spades-meta/{sample}',
-        contigs_fasta = 'spades-standard/{sample}/contigs.fasta'
+        contigs_fasta = 'spades-meta/{sample}/contigs.fasta'
     output:
         graph = 'spades-meta/{sample}/assembly_graph.fastg',
         contigs = 'spades-meta/{sample}/contigs.fa'
