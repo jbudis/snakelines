@@ -11,7 +11,12 @@ rule trim:
         r1 = 'reads/trimmed/{sample}_R1.fastq',
         r2 = 'reads/trimmed/{sample}_R2.fastq',
         out1 = 'reads/trimmed/{sample}_R1.txt',
-        out2 = 'reads/trimmed/{sample}_R2.txt'
+        out2 = 'reads/trimmed/{sample}_R2.txt',
+        adapter = 'ILLUMINACLIP:%s:%s:%s:%s' % (config['trim']['adapter']['fasta'],
+                                                config['trim']['adapter']['seed_mismatches'],
+                                                config['trim']['adapter']['palindrom_threshold'],
+                                                config['trim']['adapter']['clip_threshold']) \
+                   if 'adapter' in config['trim'] else ''
     threads:
         int(config['threads'])
     log:
@@ -43,6 +48,7 @@ rule trim:
                 {input.r2} \
                 {output.r1} /dev/null \
                 {output.r2} /dev/null \
+                {params.adapter} \
                 CROP:$TRIM_TAIL \
                 HEADCROP:$TRIM_HEAD \
                 SLIDINGWINDOW:5:{config[trim][quality]} \
@@ -56,6 +62,7 @@ rule trim:
                 {input.r2} \
                 {output.r1} /dev/null \
                 {output.r2} /dev/null \
+                {params.adapter} \
                 CROP:{config[trim][crop]} \
                 SLIDINGWINDOW:5:{config[trim][quality]} \
                 HEADCROP:{config[trim][headcrop]} \
