@@ -1,7 +1,12 @@
+include: config['snake_dir'] + '/mapping/postprocess/bam_index.snake'
+
+map_type = config['variant']['map_type']
+map_subdir = '%s/' % map_type if map_type else ''
+
 rule call_exome_panel:
     input:
-        bam = '{mapper}/{reference}/{sample}.bam',
-        bai = '{mapper}/{reference}/{sample}.bam.bai',
+        bam = '{mapper}/{reference}/%s{sample}.bam' % map_subdir,
+        bai = '{mapper}/{reference}/%s{sample}.bam.bai' % map_subdir,
         bed = 'reference/{reference}/annotation/{panel}/regions.bed',
         reffasta = 'reference/{reference}/{reference}.fa',
         reffaidx = 'reference/{reference}/{reference}.fa.fai'
