@@ -1,4 +1,4 @@
-rule call_population_panel:
+rule call_exome_panel:
     input:
         bam = '{mapper}/{reference}/{sample}.bam',
         bai = '{mapper}/{reference}/{sample}.bam.bai',
@@ -6,17 +6,47 @@ rule call_population_panel:
         reffasta = 'reference/{reference}/{reference}.fa',
         reffaidx = 'reference/{reference}/{reference}.fa.fai'
     output:
-        vcf = '{mapper}/{reference}/vardict-{panel}/{sample}.population.vcf'
+        vdc = '{mapper}/{reference}/vardict-{panel}/{sample}.germline.vdc'
     shell:
         '''
         vardict \
             -G {input.reffasta} \
             -b {input.bam} \
-            -f {config[variant][min_nonref_allele_freq]} \
-            -r {config[variant][min_alternate_count]} \
-            -Q {config[variant][min_map_quality]} \
+            -f {config[variant][hard_filter][min_nonref_allele_freq]} \
+            -r {config[variant][hard_filter][min_alternate_count]} \
+            -Q {config[variant][hard_filter][min_map_quality]} \
             {input.bed} \
-        > {output.vcf}
+        > {output.vdc}
+        '''
+
+rule test_strand_bias:
+    input:
+        vdc = '{path}/{sample}.vdc'
+    output:
+        tsb = '{path}/{sample}.tsb'
+    shell:
+        '''
+        BIAS_SCRIPT=/usr/local/tools/vardict-1.5.1/VarDict/teststrandbias.R
+        cat {input.vdc} | $BIAS_SCRIPT > {output.tsb}
+        '''
+
+
+rule tsb_to_vcf:
+    input:
+        '{path}/{sample}.tsb'
+    output:
+        '{path}/{sample}.vcf'
+    shell:
+        '''
+        /usr/local/tools/vardict-1.5.1/VarDict/var2vcf_valid.pl \
+            -S \
+            -A \
+            -q {config[variant][soft_filter][min_mean_base_quality]} \
+            -Q {config[variant][soft_filter][min_map_quality]} \
+            -d {config[variant][soft_filter][read_depth]} \
+            -f {config[variant][soft_filter][min_nonref_allele_freq]}  \
+            -N {wildcards.sample} \
+        > {output}
         '''
 
 rule call_population_wgs:
@@ -26,7 +56,7 @@ rule call_population_wgs:
         reffasta = 'reference/{reference}/{reference}.fa',
         reffaidx = 'reference/{reference}/{reference}.fa.fai'
     output:
-        vcf = '{mapper}/{reference}/vardict-wgs/{sample}.population.vcf'
+        vcf = '{mapper}/{reference}/vardict-wgs/{sample}.population.vdc'
     shell:
         '''
         vardict \
@@ -45,7 +75,7 @@ rule call_population_subset:
         reffasta = 'reference/{reference}/{reference}.fa',
         reffaidx = 'reference/{reference}/{reference}.fa.fai'
     output:
-        vcf = '{mapper}/{reference}/vardict-region/{sample}/{chrom}-{start}-{end}.population.vcf'
+        vcf = '{mapper}/{reference}/vardict-region/{sample}/{chrom}-{start}-{end}.population.vdc'
     shell:
         '''
         vardict \

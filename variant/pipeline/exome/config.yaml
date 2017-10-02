@@ -21,3 +21,14 @@ mapping:
 variant:
     panel: truseq
     map_type: realign
+    hard_filter:
+        min_nonref_allele_freq: 0.05
+        min_alternate_count: 2
+        min_map_quality: 15
+    soft_filter:
+        min_map_quality: 20
+        read_depth: 10
+        min_nonref_allele_freq: 0.05
+        min_mean_base_quality: 20
+
+
