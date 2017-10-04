@@ -20,7 +20,7 @@ rule call_exome_panel:
             -f {config[variant][hard_filter][min_nonref_allele_freq]} \
             -r {config[variant][hard_filter][min_alternate_count]} \
             -Q {config[variant][hard_filter][min_map_quality]} \
-            {input.bed} \
+            <(cut -f 1-4 {input.bed}) \
         > {output.vdc}
         '''
 
@@ -51,6 +51,7 @@ rule tsb_to_vcf:
             -d {config[variant][soft_filter][read_depth]} \
             -f {config[variant][soft_filter][min_nonref_allele_freq]}  \
             -N {wildcards.sample} \
+            {input} \
         > {output}
         '''
 
