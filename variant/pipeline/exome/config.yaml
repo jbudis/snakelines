@@ -30,5 +30,6 @@ variant:
         read_depth: 10
         min_nonref_allele_freq: 0.05
         min_mean_base_quality: 20
+    dbsnp_version: v150
 
 
