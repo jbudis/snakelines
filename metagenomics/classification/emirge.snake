@@ -78,7 +78,7 @@ rule prepare_nonchimeric_for_krona:
     run:
         import os
 
-        taxonomies = {line.split()[0]: line.split()[1].replace(';', '\t') for line in open(input.tax)}
+        taxonomies = {line.split('\t')[0]: line.strip().split('\t')[1].replace(';', '\t') for line in open(input.tax)}
 
         taxcopy = re.compile('.*_m\d\d?\d?')
 
