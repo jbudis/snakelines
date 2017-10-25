@@ -1,6 +1,6 @@
 configfile: srcdir('config.yaml')
 
-pipeline = glob_wildcards('reads/original/{sample,%s}_R1.fastq.gz' % config['sample_pattern'])
+    pipeline = glob_wildcards('reads/original/{sample,%s}_R1.fastq.gz' % config['sample_pattern'])
 
 include: config['snake_dir'] + '/preprocess/report/fastqc.snake'
 include: config['snake_dir'] + '/preprocess/trim_reads/trimmomatic.snake'
@@ -41,6 +41,6 @@ rule process:
                 sample=pipeline.sample, quast_reference=quast_reference) if config['quast']['enabled'] else []
 
         # Coverage of assembly
-        expand('{assembler}/{sample}/mapping/stats-wgs/contigs.filtered/qualimapReport.html',
-                assembler=assemblers, sample=pipeline.sample),
+        expand('spades-%s/{sample}/mapping/stats-wgs/contigs.filtered/qualimapReport.html' % assembly_type,
+                sample=pipeline.sample),
 
