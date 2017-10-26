@@ -1,6 +1,7 @@
 from Bio.Blast import NCBIXML
 from Bio import SeqIO
 import os
+import numpy as np
 
 import pandas as pd
 pd.set_option('display.max_colwidth', 1000000)
@@ -90,7 +91,7 @@ rule blast_summary:
         # Generate report
         columns = ['Contig', 'Genbank', 'Length', 'Coverage', 'Homologues']
         contigs = pd.DataFrame(contig_items)[columns]
-        contigs.index += 1
+        contigs.index = np.arange(1, len(contigs) + 1)
         contigs_table = contigs.to_html(escape=False).replace('<table ', '<table id="data" ')
 
         with open(output.report, 'w') as out:
