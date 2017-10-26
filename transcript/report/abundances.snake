@@ -37,6 +37,7 @@ rule abundances_report:
 
 
         # Generate report
+        counts.index = np.arange(1, len(counts) + 1)
         counts_table = counts.to_html(escape=False).replace('<table ', '<table id="data" ')
         with open(output.report, 'w') as out:
             out.write(TEMPLATE.format(counts_table=counts_table))
