@@ -15,9 +15,11 @@ rule blast_summary:
         contigs = '{indir}/{name}.fa',
         blast = '{indir}/blast/{name}.blast'
     output:
-        report = '{indir}/blast/{name}.html'
+        report = '{indir}/blast/{name}.html',
+        contigs = '{indir}/blast/individual/{name}.fa'
     params:
-        contig_dir = '{indir}/blast/individual'
+        contig_dir = '{indir}/blast/individual',
+        contig_fa = 'individual/{name}.fa'
     run:
 
         # Split contigs.fasta file into separate fasta files, one for each contig - downloadable from HTML page
@@ -77,7 +79,8 @@ rule blast_summary:
                 contig_info = {'Contig': contig_link,
                                'Homologues': '<br/>'.join(links),
                                'Length': contig_len,
-                               'Coverage': coverage}
+                               'Coverage': coverage,
+                               'Genbank': gbids[0] if len(gbids) > 0 else ''}
 
                 contig_items.append(contig_info)
 
@@ -85,9 +88,12 @@ rule blast_summary:
                     break
 
         # Generate report
-        columns = ['Contig', 'Length', 'Coverage', 'Homologues']
+        columns = ['Contig', 'Genbank', 'Length', 'Coverage', 'Homologues']
         contigs = pd.DataFrame(contig_items)[columns]
+        contigs.index += 1
         contigs_table = contigs.to_html(escape=False).replace('<table ', '<table id="data" ')
 
         with open(output.report, 'w') as out:
-            out.write(TEMPLATE.format(contigs_table=contigs_table))
+            out.write(TEMPLATE.format(contigs_table=contigs_table, contigs_fa=params.contig_fa))
+
+        os.system('cp %s %s' % (input.contigs, output.contigs))
