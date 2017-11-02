@@ -1,0 +1,11 @@
+sample_pattern: .*
+
+trim:
+    read_type: original
+    crop: 500
+    quality: 20
+    headcrop: 10
+    minlen: 35
+
+dante:
+    read_type: trimmed
