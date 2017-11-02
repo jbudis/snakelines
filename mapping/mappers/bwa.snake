@@ -1,0 +1,39 @@
+include: srcdir('indices/bwa_index.snake')
+
+rule map_reads:
+    input:
+        r1 = 'reads/%s/{sample}_R1.fastq.gz' % config['mapping']['read_type'],
+        r2 = 'reads/%s/{sample}_R2.fastq.gz' % config['mapping']['read_type'],
+        index = 'reference/{reference}/bwa_index/{reference}.bwt',
+        reffasta = 'reference/{reference}/{reference}.fa'
+    output:
+        bam = 'bwa/{reference}/{sample}.bam'
+    log:
+        'bwa/{reference}/log/{sample}.map'
+    params:
+        index = 'reference/{reference}/bwa_index/{reference}',
+        tmpdir = 'bwa/{reference}/tmp/',
+        additional = config['mapping']['params'] if 'params' in config['mapping'] else ''
+    threads:
+        int(config['threads'])
+    shell:
+        '''
+        bwa mem \
+            -t {threads} \
+            {params.additional} \
+            {params.index} \
+            {input.r1} \
+            {input.r2} \
+        2> {log} \
+        | samtools view \
+            -b \
+            --reference {input.reffasta} \
+            --threads {threads} \
+            - \
+        | samtools sort \
+            --threads {threads} \
+            -o {output.bam} \
+            -T {params.tmpdir} \
+            -m 5G \
+            - \
+        '''
