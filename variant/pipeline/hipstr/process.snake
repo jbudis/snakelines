@@ -1,0 +1,31 @@
+configfile: srcdir('config.yaml')
+
+pipeline = glob_wildcards('reads/original/{sample,%s}_R1.fastq.gz' % config['sample_pattern'])
+
+include: config['snake_dir'] + '/preprocess/report/fastqc.snake'
+include: config['snake_dir'] + '/preprocess/trim_reads/trimmomatic.snake'
+include: config['snake_dir'] + '/mapping/mappers/bwa.snake'
+include: config['snake_dir'] + '/mapping/postprocess/bam_index.snake'
+include: config['snake_dir'] + '/mapping/report/qualimap.snake'
+include: config['snake_dir'] + '/variant/callers/hipstr.snake'
+
+reference = config['mapping']['reference']
+
+rule process:
+    input:
+        # Preprocess
+        'reads/original/stats/summary.html',
+        'reads/trimmed/stats/summary.html',
+
+        # Mapping
+        expand('bwa/{reference}/{sample}.bam',
+               reference=reference, sample=pipeline.sample),
+
+        expand('bwa/{reference}/{sample}.bam.bai',
+               reference=reference, sample=pipeline.sample),
+
+        'bwa/%s/stats-wgs/summary.tsv' % reference,
+
+        # HipSTR variant calling
+        expand('bwa/{reference}/hipstr/calls.tsv',
+               reference=reference)

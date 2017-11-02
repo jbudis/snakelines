@@ -1,0 +1,84 @@
+import pandas as pd
+import numpy as np
+import gzip
+
+map_type = '/' + config['variant']['map_type'] if 'variant' in config and 'map_type' in config['variant'] else ''
+
+rule hipstr_call_str_genotype:
+    input:
+        bam = '{mapper}/{reference}%s/{sample}.bam' % map_type,
+        ref = 'reference/{reference}/{reference}.fa',
+        bed = srcdir('hipstr/locus.bed')
+    output:
+        vcf = '{mapper}/{reference}/hipstr/{sample}/genotype.vcf.gz'
+    shell:
+        '''
+        hipstr \
+            --bams {input.bam} \
+            --fasta {input.ref} \
+            --regions {input.bed} \
+            --str-vcf {output.vcf} \
+            --def-stutter-model \
+            --bam-samps s1 \
+            --bam-libs l1 \
+            --min-reads 1
+        '''
+
+def all_vcfs(wildcards):
+    return expand('{mapper}/{reference}/hipstr/{sample}/genotype.vcf.gz',
+                   sample=pipeline.sample, mapper=wildcards.mapper, reference=wildcards.reference)
+
+rule hipstr_summarize:
+    input:
+        vcfs = all_vcfs
+    output:
+        summary = '{mapper}/{reference}/hipstr/calls.tsv'
+    run:
+
+        ID_COL, REF_COL, INFO_COL, FORMAT_COL = 2, 3, 7, 9
+
+        def extract_calls(sid, vcf):
+            with gzip.open(vcf) as variants:
+
+                rows = []
+                for line in variants:
+
+                    line = line.decode('utf-8')
+                    if line.startswith('#'):
+                        continue
+
+                    items = line.strip().split('\t')
+
+                    motif = items[ID_COL].split('(')[1][:-1]
+
+                    # FIXME - hardcoded length of the motif
+                    motif_len = 3
+                    ref_reps = len(items[REF_COL])
+                    form_part = items[FORMAT_COL]
+
+                    # No call for variant
+                    if form_part.startswith('.'):
+                        continue
+
+                    form = form_part.split(':')
+                    allele_code = form[1]
+                    diff1, diff2 = form[1].split('|')
+                    call1 = int((ref_reps + int(diff1)) / motif_len)
+                    call2 = int((ref_reps + int(diff2)) / motif_len)
+                    if (call1 > call2) and (call2 > 0):
+                        call1, call2 = call2, call1
+                    confidence = float(form[2])
+
+                    info_item = items[INFO_COL].split(';')
+                    info = {it.split('=')[0]: it.split('=')[1] if '=' in it else True for it in info_item}
+                    readcount = info['DP']
+
+                    rows.append((motif, readcount, call1, call2, confidence, sid))
+
+                sid_calls = pd.DataFrame(rows)
+                sid_calls.columns = ['motif', 'readcount', 'call1', 'call2', 'confall', 'sample']
+                return sid_calls
+
+        sids = [vcf.split('/')[-2] for vcf in input.vcfs]
+        calls = pd.concat([extract_calls(sid, vcf) for sid, vcf in zip(sids, input.vcfs)])
+        calls.to_csv(output.summary, sep='\t', index=None)
