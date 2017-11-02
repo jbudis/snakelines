@@ -11,7 +11,7 @@ include: config['snake_dir'] + '/mapping/postprocess/deduplication/picard.snake'
 include: config['snake_dir'] + '/mapping/postprocess/realignment/gatk.snake'
 include: config['snake_dir'] + '/mapping/report/qualimap.snake'
 include: config['snake_dir'] + '/variant/callers/vardict.snake'
-include: config['snake_dir'] + '/variant/annotation/gatk.snake'
+include: config['snake_dir'] + '/variant/annotation/snpsift.snake'
 
 reference = config['mapping']['reference']
 panel = config['variant']['panel']
@@ -27,6 +27,6 @@ rule process:
                 reference=reference, panel=panel),
 
         # Variant files
-        expand('bowtie2/{reference}/vardict-{panel}/{sample}.germline.vcf',
+        expand('bowtie2/{reference}/vardict-{panel}/{sample}.germline.dbsnp.vcf',
                 reference=reference, sample=pipeline.sample, panel=panel),
 
