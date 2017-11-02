@@ -62,16 +62,16 @@ rule call_population_wgs:
         reffasta = 'reference/{reference}/{reference}.fa',
         reffaidx = 'reference/{reference}/{reference}.fa.fai'
     output:
-        vcf = '{mapper}/{reference}/vardict-wgs/{sample}.population.vdc'
+        vdc = '{mapper}/{reference}/vardict-wgs/{sample}.population.vdc'
     shell:
         '''
         vardict \
             -G {input.reffasta} \
             -b {input.bam} \
-            -f {config[variant][min_nonref_allele_freq]} \
-            -r {config[variant][min_alternate_count]} \
-            -Q {config[variant][min_map_quality]} \
-        > {output.vcf}
+            -f {config[variant][hard_filter][min_nonref_allele_freq]} \
+            -r {config[variant][hard_filter][min_alternate_count]} \
+            -Q {config[variant][hard_filter][min_map_quality]} \
+        > {output.vdc}
         '''
 
 rule call_population_subset:
