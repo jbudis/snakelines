@@ -10,16 +10,23 @@ rule call_exome_panel:
         bed = 'reference/{reference}/annotation/{panel}/regions.bed',
         reffasta = 'reference/{reference}/{reference}.fa',
         reffaidx = 'reference/{reference}/{reference}.fa.fai'
+    threads:
+        int(config['threads'])
     output:
         vdc = '{mapper}/{reference}/vardict-{panel}/{sample}.germline.vdc'
     shell:
         '''
-        vardict \
+        vardictjava \
             -G {input.reffasta} \
             -b {input.bam} \
             -f {config[variant][hard_filter][min_nonref_allele_freq]} \
             -r {config[variant][hard_filter][min_alternate_count]} \
             -Q {config[variant][hard_filter][min_map_quality]} \
+            -th {threads} \
+            -c 1 \
+            -S 2 \
+            -E 3 \
+            -g 4 \
             <(cut -f 1-4 {input.bed}) \
         > {output.vdc}
         '''
