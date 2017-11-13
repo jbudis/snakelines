@@ -1,8 +1,8 @@
 rule faidx_fa:
     input:
-        '{path}/{genome}.fa'
+        '{genome}.fa'
     output:
-        '{path}/{genome}.fa.fai'
+        '{genome}.fa.fai'
     shell:
         '''
         samtools faidx {input}
@@ -10,9 +10,9 @@ rule faidx_fa:
 
 rule faidx_fasta:
     input:
-        '{path}/{genome}.fasta'
+        '{genome}.fasta'
     output:
-        '{path}/{genome}.fasta.fai'
+        '{genome}.fasta.fai'
     shell:
         '''
         samtools faidx {input}
