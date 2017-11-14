@@ -1,0 +1,10 @@
+configfile: srcdir('config.yaml')
+
+include: config['snake_dir'] + '/reference/download/ncbi.snake'
+include: config['snake_dir'] + '/reference/indices/faidx.snake'
+
+rule process:
+    input:
+        fa = 'mcra.fa',
+        fai = 'mcra.fa.fai',
+        tax = 'mcra.tax',

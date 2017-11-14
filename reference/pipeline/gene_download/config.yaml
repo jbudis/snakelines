@@ -1,0 +1,10 @@
+ncbi:
+    download:
+        max_records: 10
+        min_tax_level: 3
+        filters:
+            - Bacteria
+        email: jaroslav.budis@gmail.com
+    postfilter:
+        min_tax_level: 5
+        trim_environmental: True

@@ -1,0 +1,133 @@
+from Bio.SeqRecord import SeqRecord
+from Bio import Entrez
+from Bio import SeqIO
+import http
+import time
+import sys
+
+rule ncbi_gene_postfilter:
+    input:
+        fa = 'downloaded/{gene}.fa',
+        tax = 'downloaded/{gene}.tax'
+    output:
+        fa = '{gene, [a-z]+}.fa',
+        tax = '{gene, [a-z]+}.tax'
+    params:
+        min_tax_level = config['ncbi']['postfilter']['min_tax_level'] if 'min_tax_level' in config['ncbi']['postfilter'] else 0,
+        trim_environmental = ('trim_environmental' in config['ncbi']['postfilter']) and config['ncbi']['postfilter']['trim_environmental']
+    run:
+        def trim_environmental(tax):
+            tax = tax.strip()
+            trim_label = ';environmental samples'
+            if tax.endswith(trim_label):
+                tax = tax[:-len(trim_label)]
+            return tax + '\n'
+
+        processed_ids = set()
+
+        with open(output.fa, 'w') as outfa, open(output.tax, 'w') as outtax:
+            for fa, tax in zip(SeqIO.parse(input.fa, 'fasta'), open(input.tax)):
+                ncbi_id = tax.split()[0]
+                if ncbi_id in processed_ids:
+                    continue
+                processed_ids.add(ncbi_id)
+                if params.trim_environmental:
+                    tax = trim_environmental(tax)
+                if tax.count(';') + 1 < params.min_tax_level:
+                    continue
+                SeqIO.write(fa, outfa, 'fasta')
+                outtax.write(tax)
+
+rule ncbi_gene_database_download:
+    output:
+        fa = protected('downloaded/{gene}.fa'),
+        tax = protected('downloaded/{gene}.tax')
+    params:
+        filters = config['ncbi']['download']['filters'] if 'filters' in config['ncbi']['download'] else [],
+        min_tax_level = config['ncbi']['download']['min_tax_level'] if 'min_tax_level' in config['ncbi']['download'] else 0,
+        email = config['ncbi']['download']['email'],
+        max_records = config['ncbi']['download']['max_records'],
+    run:
+        def safe_get_qualifier(feature, key, default_value='NO_DATA'):
+            try:
+                return ';'.join(feature.qualifiers[key])
+            except KeyError:
+                return default_value
+
+        query = '{gene}[Gene Name]'.format(gene=wildcards.gene)
+        for filt in params.filters:
+            query = '{query} AND {filt}[filter]'.format(query=query, filt=filt)
+
+        with open(output.fa, 'w') as fa_out, open(output.tax, 'w') as tax_out:
+
+            Entrez.email = params.email
+
+            handle = Entrez.esearch(db="nucleotide", term=query, idtype='acc', retmax=params.max_records, usehistory='y')
+            record = Entrez.read(handle)
+            handle.close()
+
+            webenv = record["WebEnv"]
+            query_key = record["QueryKey"]
+            batch = 100
+            genome_num = 0
+            gene_num = 0
+
+            print('There is {} sequences to download.'.format(len(record['IdList'])))
+
+            for i in range(0, len(record['IdList']), batch):
+
+                print('Downloaded {} sequences.'.format(i))
+
+                fa_handle = None
+                gb_handle = None
+
+                try:
+                    while fa_handle is None or gb_handle is None:
+                        fa_handle = Entrez.efetch(db="nucleotide", rettype="fasta", retmode="text", idtype="acc",
+                                                  retstart=i, retmax=batch, webenv=webenv, query_key=query_key)
+                        gb_handle = Entrez.efetch(db="nucleotide", rettype="gb", retmode="text",
+                                                  retstart=i, retmax=batch, webenv=webenv, query_key=query_key)
+                except TimeoutError:
+                    time.sleep(10)
+                    print('TimeoutError')
+                    i -= batch
+                    continue
+
+                try:
+                    fa_list = list(SeqIO.parse(fa_handle, 'fasta'))
+                    gb_list = list(SeqIO.parse(gb_handle, 'genbank'))
+                except http.client.IncompleteRead:
+                    time.sleep(10)
+                    print('Read was incomplete, trying one more time.')
+                    i -= batch
+                    continue
+
+                fa_handle.close()
+                gb_handle.close()
+
+                for j in range(0, len(fa_list)):
+
+                    fa = fa_list[j]                 # type: SeqRecord
+                    gb = gb_list[j]                 # type: SeqRecord
+
+                    if len(gb.annotations['taxonomy']) < params.min_tax_level:
+                        continue
+
+                    gene_tax = ';'.join(gb.annotations['taxonomy'])
+
+                    for feature in gb.features:
+
+                        if feature.type == 'CDS' and safe_get_qualifier(feature, 'gene').lower() == wildcards.gene.lower():
+
+                            gene_id = '{} {}'.format(str(fa.id), str(feature.location))
+                            gene_seq = ''
+
+                            if feature.location.strand == 1:
+                                gene_seq = fa.seq[feature.location.start:feature.location.end]
+                            if feature.location.strand == -1:
+                                gene_seq = fa.seq[feature.location.start:feature.location.end].reverse_complement()
+
+                            fa_out.write('>{} {}\n{}\n'.format(gene_id, gene_tax, gene_seq))
+                            tax_out.write('{}\t{}\n'.format(gene_id, gene_tax))
+                            fa_out.flush()
+                            tax_out.flush()
