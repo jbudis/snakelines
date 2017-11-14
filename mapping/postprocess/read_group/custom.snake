@@ -7,13 +7,15 @@ rule infer_read_groups:
     output:
         '{path}/read_group/{sample}.bam'
     params:
-        infer_script = srcdir("scripts/infer_read_groups.py")
+        infer_script = srcdir("scripts/infer_read_groups.py"),
+        skip_merged = '--skip-merged' if 'skip_merged' in config['mapping']['read_group'] and config['mapping']['read_group']['skip_merged'] else ''
     shell:
         '''
         samtools view \
             -h \
             {input} \
         | python3 {params.infer_script} \
+            {params.skip_merged} \
             {wildcards.sample} \
             - \
         | samtools view \
