@@ -10,7 +10,11 @@ rule hipstr_call_str_genotype:
         ref = 'reference/{reference}/{reference}.fa',
         bed = srcdir('hipstr/locus.bed')
     output:
-        vcf = '{mapper}/{reference}/hipstr/{sample}/genotype.vcf.gz'
+        vcf = '{mapper}/{reference}/hipstr/{sample}/genotype.vcf.gz',
+        alignments = '{mapper}/{reference}/hipstr/{sample}/alignment.viz.gz',
+        report_html = '{mapper}/{reference}/hipstr/{sample}/alignment.html'
+    log:
+        '{mapper}/{reference}/hipstr/{sample}/hipstr.log'
     shell:
         '''
         hipstr \
@@ -21,7 +25,15 @@ rule hipstr_call_str_genotype:
             --def-stutter-model \
             --bam-samps s1 \
             --bam-libs l1 \
-            --min-reads 1
+            --min-reads 1 \
+            --viz-out {output.alignments} \
+        >>  {log} \
+        2>> {log}
+
+        # TODO split into two rules
+        tabix -p bed  {output.alignments}
+        TMP_ALIGNMENT=`/usr/local/tools/hipstr-0.5.0/VizAln {output.alignments} chr19 46273463 2>&1 >/dev/null  | cut -f 15 -d ' '`
+        cp $TMP_ALIGNMENT {output.report_html}
         '''
 
 def all_vcfs(wildcards):
