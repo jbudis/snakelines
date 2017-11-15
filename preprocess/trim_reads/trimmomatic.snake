@@ -16,14 +16,18 @@ rule trim:
                                                 config['trim']['adapter']['seed_mismatches'],
                                                 config['trim']['adapter']['palindrom_threshold'],
                                                 config['trim']['adapter']['clip_threshold']) \
-                   if 'adapter' in config['trim'] else ''
+                   if 'adapter' in config['trim'] else '',
+        quality = 'SLIDINGWINDOW:5:%s' % config['trim']['quality'] if 'quality' in config['trim'] else '',
+        headcrop = 'HEADCROP:%s' % config['trim']['headcrop'] if 'headcrop' in config['trim'] else '',
+        crop = 'CROP:%s' % config['trim']['crop'] if 'crop' in config['trim'] else '',
+        auto = 'True' if ('auto' in config['trim']) and (config['trim']['auto']) else 'False',
     threads:
         int(config['threads'])
     log:
         'reads/%s/log/{sample}.log' % read_type
     shell:
         '''
-        if [ {config[trim][auto]} = "True" ]; then
+        if [ "{params.auto}" = "True" ]; then
             gzip -cd {input.r1} > {params.r1}
             gzip -cd {input.r2} > {params.r2}
 
@@ -51,7 +55,7 @@ rule trim:
                 {params.adapter} \
                 CROP:$TRIM_TAIL \
                 HEADCROP:$TRIM_HEAD \
-                SLIDINGWINDOW:5:{config[trim][quality]} \
+                {params.quality} \
                 MINLEN:{config[trim][minlen]} \
             > {log}
         else
@@ -63,9 +67,9 @@ rule trim:
                 {output.r1} /dev/null \
                 {output.r2} /dev/null \
                 {params.adapter} \
-                CROP:{config[trim][crop]} \
-                SLIDINGWINDOW:5:{config[trim][quality]} \
-                HEADCROP:{config[trim][headcrop]} \
+                {params.crop} \
+                {params.headcrop} \
+                {params.quality} \
                 MINLEN:{config[trim][minlen]} \
             > {log}
         fi
