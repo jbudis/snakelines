@@ -1,6 +1,6 @@
 include: srcdir('indices/bwa_index.snake')
 
-rule map_reads:
+rule bwa_map_reads:
     input:
         r1 = 'reads/%s/{sample}_R1.fastq.gz' % config['mapping']['read_type'],
         r2 = 'reads/%s/{sample}_R2.fastq.gz' % config['mapping']['read_type'],

@@ -1,6 +1,6 @@
 include: srcdir('indices/bowtie2_index.snake')
 
-rule map_reads:
+rule bowtie2_map_reads:
     input:
         r1 = 'reads/%s/{sample}_R1.fastq.gz' % config['mapping']['read_type'],
         r2 = 'reads/%s/{sample}_R2.fastq.gz' % config['mapping']['read_type'],
@@ -45,7 +45,7 @@ rule map_reads:
             - \
         '''
 
-rule remap_reads_to_assembly:
+rule bowtie2_remap_reads_to_assembly:
     input:
         r1 = 'reads/%s/{sample}_R1.fastq.gz' % config['mapping']['read_type'],
         r2 = 'reads/%s/{sample}_R2.fastq.gz' % config['mapping']['read_type'],
