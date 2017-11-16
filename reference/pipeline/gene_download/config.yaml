@@ -1,4 +1,5 @@
 ncbi:
+    gene: mcra
     download:
         max_records: 10
         min_tax_level: 3
