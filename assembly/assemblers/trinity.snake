@@ -1,0 +1,30 @@
+rule trinity_assemble:
+    input:
+        fastas = expand('reads/%s/{sample}_R{orientation}.fastq.gz' % config['trinity']['read_type'],
+                        sample=pipeline.sample, orientation=[1,2]),
+        design = 'description/designs/{design}.tsv'
+    output:
+        fa = 'trinity/{design}.Trinity.fa'
+    params:
+        read_type = config['trinity']['read_type'],
+        min_contig_len = config['trinity']['min_contig_len'],
+        outdir = 'trinity/{design}',
+        fasta = 'trinity/{design}.Trinity.fa'
+    threads:
+        int(config['threads'])
+    log:
+        stdout = 'trinity/log/analysis.log',
+        stderr = 'trinity/log/analysis.err',
+    shell:
+        '''
+        trinity \
+            --seqType fq \
+            --samples_file <(sed 's/{{read_type}}/{params.read_type}/g') \
+            --CPU {threads} \
+            --min_contig_length {params.min_contig_len} \
+            --output {params.outdir} \
+        > {log.stdout} \
+        2> {log.stderr}
+
+        mv {params.fasta} {output.fa}
+        '''
