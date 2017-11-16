@@ -2,8 +2,9 @@ configfile: srcdir('config.yaml')
 
 pipeline = glob_wildcards('reads/original/{sample, %s}_R1.fastq.gz' % config['sample_pattern'])
 
-include: config['snake_dir'] + '/preprocess/trim_reads/trimmomatic.snake'
 include: config['snake_dir'] + '/preprocess/report/fastqc.snake'
+include: config['snake_dir'] + '/preprocess/trim_reads/trimmomatic.snake'
+include: config['snake_dir'] + '/preprocess/deduplication/fastuniq.snake'
 include: config['snake_dir'] + '/metagenomics/classification/emirge.snake'
 include: config['snake_dir'] + '/metagenomics/report/krona.snake'
 include: config['snake_dir'] + '/metagenomics/report/tsv_summary.snake'
