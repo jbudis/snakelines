@@ -120,6 +120,31 @@ motifs:
       - repetitions: 1,3,1
         bases: 5,10,5
 
+  - full_name: SpinAtax6
+    description: CACNA1A gén (spinocerebelárna ataxia = SCA6)
+    modules:
+      - seq: CCCAGACCCCCTCCACCCCCCGGCCACACGTGTCCTATTCCCCTGTGATCCGTAAGGCCGGCGGCTCGGGGCCCCCG
+      - seq: 5-CAG
+      - seq: GCGGTGGCCAGGCCGGGCCGGGCGGCCACCAGCGGCCCTCGGAGGTACCCAGGCCCCACGGCCGAGCCTCTGGCC
+    prefilter:
+      type: SimpleFilter
+      seq: 4-CAG
+    postfilter:
+      - repetitions: 1,3,1
+        bases: 5,10,5
+
+  - full_name: SpinAtax17
+    description: TBP gén (spinocerebelárna ataxia = SCA17)
+    modules:
+      - seq: CACTGGACTGACCCCACAGCCTATTCAGAACACCAATAGTCTGTCTATTTTGGAAGAGCAACAAAGG
+      - seq: 5-CAG
+      - seq: GCAGTGGCAGCTGCAGCCGTTCAGCAGTCAACGTCCCAGCAGGCAACACAGGGAACCTCAGGCCAGGCACCACAG
+    prefilter:
+      type: SimpleFilter
+      seq: 4-CAG
+    postfilter:
+      - repetitions: 1,3,1
+        bases: 5,10,5
 
   - full_name: DRPLA
     description: ATN1 gén (dentatorubral-pallidoluysian atrophy DRPLA)
@@ -143,6 +168,19 @@ motifs:
     prefilter:
       type: SimpleFilter
       seq: 4-CTG
+    postfilter:
+      - repetitions: 1,3,1
+        bases: 5,10,5
+
+  - full_name: SpinAtax7
+    description: ATXN7 gén (spinocerebelárna ataxia = SCA7) (maybe not in OnePanel data)
+    modules:
+      - seq: GATGACGTCAGGGGGGAGCCGCGCCGCGCGGCGGCGGCGGCGGGCGGAGCAGCGGCCGCGGCCGCCCGG
+      - seq: 5-CAG
+      - seq: CCGCCGCCTCCGCAGCCCCAGCGGCAGCAGCACCCGCCACCGCCGCCACGGCGCACACGGCCGGAGGACGGCGGG
+    prefilter:
+      type: SimpleFilter
+      seq: 4-CAG
     postfilter:
       - repetitions: 1,3,1
         bases: 5,10,5
