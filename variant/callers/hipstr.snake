@@ -27,6 +27,7 @@ rule hipstr_call_str_genotype:
             --bam-libs l1 \
             --min-reads 1 \
             --viz-out {output.alignments} \
+            --max-str-len 200 \
         >>  {log} \
         2>> {log}
 
