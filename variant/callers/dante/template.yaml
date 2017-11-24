@@ -16,11 +16,11 @@ inputs:
     filetype: infer
 
 annotation:
-  delete_prob: 0.001
-  insert_prob: 0.001
+  delete_prob: {delete_prob}
+  insert_prob: {insert_prob}
   max_delete_skips: 1
-  motif_frequency: 0.001
-  snp_chance: 0.005
+  motif_frequency: {motif_frequency}
+  snp_chance: {snp_chance}
 
 motifs:
   - full_name: DMPK

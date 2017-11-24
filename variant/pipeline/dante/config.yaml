@@ -8,4 +8,8 @@ trim:
     minlen: 35
 
 dante:
+    delete_prob: 0.0001
+    insert_prob: 0.0001
+    motif_frequency: 0.005
+    snp_chance: 0.005
     read_type: trimmed
