@@ -1,27 +1,23 @@
 include: config['snake_dir'] + '/preprocess/conversion/gzip.snake'
 
-read_type  = config['mapping']['read_type']
-read_count  = config['subsample']['read_count']
-
-skip_first = config['subsample']['skip_first'] if 'skip_first' in config['subsample'] else 0
-
 """
 Downsample the fastq. Take first {config['subsample']['read_count']} reads, but do not take first {config['subsample']['skip_first']}.
 """
 
-rule subsample:
+rule downsample_fastq:
     input:
-        'reads/%s/{sample}.fastq' % read_type
+        'reads/%s/{sample}.fastq' % config['mapping']['read_type']
     output:
         'reads/subsampled/{sample}.fastq.gz'
     threads:
         int(config['threads'])
     params:
-        skip_first_lines = skip_first * 4 + 1
-        lines = read_count * 4
+        keep_lines = config['subsample']['read_count'] * 4,
+        skip_first_lines = config['subsample']['skip_first'] * 4 + 1 if 'skip_first' in config['subsample'] else 1
     shell:
         '''
-        tail --lines +{params.skip_first_lines} {input} | head --lines {params.lines} \
+        set +o pipefail;
+        tail --lines +{params.skip_first_lines} {input} | head --lines {params.keep_lines} \
         | pigz \
             --processes {threads} \
         > {output}

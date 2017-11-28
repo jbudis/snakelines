@@ -2,22 +2,26 @@ include: srcdir('indices/bowtie2_index.snake')
 
 rule bowtie2_map_reads:
     input:
-        r1 = 'reads/%s/{sample}_R1.fastq.gz' % config['mapping']['read_type'],
-        r2 = 'reads/%s/{sample}_R2.fastq.gz' % config['mapping']['read_type'],
+        r1 = 'reads/{read_type}/{sample}_R1.fastq.gz',
+        r2 = 'reads/{read_type}/{sample}_R2.fastq.gz',
         index = 'reference/{reference}/bowtie2_index/{reference}.1.bt2',
         reffasta = 'reference/{reference}/{reference}.fa'
     output:
-        bam = 'bowtie2/{reference}/{sample}.bam'
+        bam = 'bowtie2{modifier}/{reference}/{read_type}/{sample}.bam'
     log:
-        'bowtie2/{reference}/log/{sample}.map'
+        'bowtie2{modifier}/{reference}/{read_type}/log/{sample}.map'
     params:
         index = 'reference/{reference}/bowtie2_index/{reference}',
-        tmpdir = 'bowtie2/{reference}/tmp/',
-        additional = config['mapping']['params'] if 'params' in config['mapping'] else ''
+        tmpdir = 'bowtie2{modifier}/{reference}/{read_type}/tmp/',
+        additional = config['mapping']['params'] if 'params' in config['mapping'] else '',
+        min_map_quality = config['mapping']['min_map_quality'] if 'min_map_quality' in config['mapping'] else 0
+    benchmark:
+        'bowtie2{modifier}/{reference}/{read_type}/benchmark/{sample}.txt'
     threads:
         int(config['threads'])
     shell:
         '''
+        hostname > {log}.host;
         bowtie2 \
             -x {params.index} \
             -1 {input.r1} \
@@ -27,6 +31,7 @@ rule bowtie2_map_reads:
         2> {log} \
         | samtools view \
             -b \
+            -q {params.min_map_quality} \
             --reference {input.reffasta} \
             --threads {threads} \
             - \
