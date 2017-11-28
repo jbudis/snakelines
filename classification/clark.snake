@@ -23,7 +23,7 @@ rule clark:
                {input.r2} \
             -R {params.prefix} \
             -m 0 \
-            -extended \
+            --extended \
             -n {threads}
         '''
 
