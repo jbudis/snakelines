@@ -5,36 +5,36 @@ import re
 include: config['snake_dir'] + '/preprocess/conversion/gzip.snake'
 include: config['snake_dir'] + '/mapping/mappers/bowtie.snake'
 
-#rule emirge_classification:
-#    input:
-#        r1 = 'reads/%s/{sample}_R1.fastq' % config['emirge']['read_type'],
-#        r2 = 'reads/%s/{sample}_R2.fastq' % config['emirge']['read_type'],
-#        reffasta = 'reference/{reference}/{reference}.emirge.fa',
-#        refindex = 'reference/{reference}/bowtie_index/{reference}.emirge.1.ebwt'
-#    output:
-#        bam = 'emirge/{reference}/iterations/{sample}/iter.40/bowtie.iter.40.PE.bam'
-#    params:
-#        refindex = 'reference/{reference}/bowtie_index/{reference}.emirge',
-#        emirge_dir = 'emirge/{reference}/iterations/{sample}'
-#    log:
-#        'emirge/{reference}/iterations/{sample}/log/emirge.log'
-#    threads:
-#        int(config['threads'])
-#    shell:
-#        '''
-#        emirge \
-#            {params.emirge_dir} \
-#            -1 {input.r1} \
-#            -2 {input.r2} \
-#            --fasta_db {input.reffasta} \
-#            --bowtie_db {params.refindex} \
-#            --max_read_length 35 \
-#            --insert_mean 300 \
-#            --insert_stddev 1000 \
-#            --processors {threads} \
-#            --phred33 \
-#        > {log}
-#        '''
+rule emirge_classification:
+    input:
+        r1 = 'reads/%s/{sample}_R1.fastq' % config['emirge']['read_type'],
+        r2 = 'reads/%s/{sample}_R2.fastq' % config['emirge']['read_type'],
+        reffasta = 'reference/{reference}/{reference}.emirge.fa',
+        refindex = 'reference/{reference}/bowtie_index/{reference}.emirge.1.ebwt'
+    output:
+        bam = 'emirge/{reference}/iterations/{sample}/iter.40/bowtie.iter.40.PE.bam'
+    params:
+        refindex = 'reference/{reference}/bowtie_index/{reference}.emirge',
+        emirge_dir = 'emirge/{reference}/iterations/{sample}'
+    log:
+        'emirge/{reference}/iterations/{sample}/log/emirge.log'
+    threads:
+        int(config['threads'])
+    shell:
+        '''
+        emirge \
+            {params.emirge_dir} \
+            -1 {input.r1} \
+            -2 {input.r2} \
+            --fasta_db {input.reffasta} \
+            --bowtie_db {params.refindex} \
+            --max_read_length 35 \
+            --insert_mean 300 \
+            --insert_stddev 1000 \
+            --processors {threads} \
+            --phred33 \
+        > {log}
+        '''
 
 rule extract_emirge_results:
     input:
