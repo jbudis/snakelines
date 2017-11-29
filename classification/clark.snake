@@ -1,5 +1,3 @@
-THREADS = 16
-
 rule clark:
     input:
         r1 = 'reads/{type}/{sample}_R1.fastq',
@@ -10,7 +8,7 @@ rule clark:
         prefix='clark/{type}/classification/{sample}/reads',
         dir='clark/{type}/classification/{sample}'
     threads:
-        THREADS
+        int(config['threads'])
     shell:
         '''
         mkdir -p {params.dir}
@@ -23,7 +21,7 @@ rule clark:
                {input.r2} \
             -R {params.prefix} \
             -m 0 \
-            -extended \
+            --extended \
             -n {threads}
         '''
 
