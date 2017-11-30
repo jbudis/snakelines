@@ -23,6 +23,8 @@ rule dante:
         max_delete_skips = config['dante']['max_delete_skips'],
         motif_frequency = config['dante']['motif_frequency'],
         snp_chance = config['dante']['snp_chance']
+    threads:
+        int(config['threads'])
     run:
         outdir = '%s/%s' % (os.getcwd(), params.outdir)
         os.makedirs(params.outdir, exist_ok=True)
