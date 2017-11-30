@@ -30,10 +30,12 @@ rule custom_counts_table_report:
             data = task.stdout.read()
             counts = pd.read_csv(StringIO(data.decode('utf-8')), sep='\t', header=None, index_col=0)
             counts.index = counts.index.str.replace('*', 'Unmapped')
-            return counts[3]
+            counts = counts.set_value(col=2, index='Unmapped', value=counts.loc['Unmapped'][3])
+            return counts[2]
 
-        sids = list(map(extract_sid, input.bams))
-        sid_counts = list(map(extract_counts, input.bams))
+        bams = sorted(input.bams)
+        sids = list(map(extract_sid, bams))
+        sid_counts = list(map(extract_counts, bams))
 
         counts = pd.DataFrame(sid_counts, index=sids)
         tcounts = counts.transpose()
