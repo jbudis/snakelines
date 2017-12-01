@@ -1,12 +1,10 @@
-THREADS = 16
-
-rule multiple_alignment_clustal:
+rule mafft_multiple_alignment_clustal:
     input:
         '{path}/{genome}.fa'
     output:
         '{path}/alignment/mafft/{genome}.clustal'
     threads:
-        THREADS
+        int(config['threads'])
     shell:
         '''
         mafft \
@@ -16,13 +14,13 @@ rule multiple_alignment_clustal:
         > {output}
         '''
 
-rule multiple_alignment_fa:
+rule mafft_multiple_alignment_fa:
     input:
         '{path}/{genome}.fa'
     output:
         '{path}/alignment/mafft/{genome}.alignfa'
     threads:
-        THREADS
+        int(config['threads'])
     shell:
         '''
         mafft \
