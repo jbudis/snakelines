@@ -18,7 +18,7 @@ rule mafft_multiple_alignment_fa:
     input:
         '{path}/{genome}.fa'
     output:
-        '{path}/alignment/mafft/{genome}.alignfa'
+        '{path}/alignment/mafft/{genome}.aln'
     threads:
         int(config['threads'])
     shell:
