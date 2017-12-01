@@ -49,7 +49,8 @@ rule hipstr_denovo:
         bed = srcdir('hipstr/locus.bed')
     output:
         vcf = '{mapper}/{reference}/hipstr-denovo/genotype.vcf.gz',
-        stutter_model = '{mapper}/{reference}/hipstr-denovo/stutter_models.txt'
+        stutter_model = '{mapper}/{reference}/hipstr-denovo/stutter_models.txt',
+        alignments = '{mapper}/{reference}/hipstr-denovo/alignment.viz.gz'
     log:
         '{mapper}/{reference}/hipstr-denovo/hipstr.log'
     shell:
@@ -63,10 +64,12 @@ rule hipstr_denovo:
             --regions {input.bed} \
             --str-vcf {output.vcf} \
             --stutter-out {output.stutter_model} \
+            --viz-out {output.alignments} \
             --min-reads 1 \
             --max-str-len 200 \
         >>  {log} \
         2>> {log}
+        tabix -p bed  {output.alignments}
         '''
 
 rule hipstr_summarize_denovo:
