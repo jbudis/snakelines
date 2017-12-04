@@ -1,5 +1,3 @@
-THREADS = 16
-
 rule iqtree_infer_phylogeny:
     input:
         '{path}/{genome}.aln'
