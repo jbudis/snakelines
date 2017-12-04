@@ -32,7 +32,7 @@ TEMPLATE = '''
 
 rule html_report:
     input:
-        '{path}/{sample}.alignfa'
+        '{path}/{sample}.aln'
     output:
         '{path}/{sample}.html'
     run:

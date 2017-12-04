@@ -1,0 +1,19 @@
+THREADS = 16
+
+rule iqtree_infer_phylogeny:
+    input:
+        '{path}/{genome}.aln'
+    output:
+        '{path}/{genome}.aln.treefile'
+    params:
+        model = config['iqtree']['model']
+    threads:
+        int(config['threads'])
+    shell:
+        '''
+        iqtree \
+            -s {input} \
+            -m {params.model} \
+            -st DNA \
+            -nt {threads}
+        '''
