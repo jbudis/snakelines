@@ -5,6 +5,28 @@ import re
 include: config['snake_dir'] + '/preprocess/conversion/gzip.snake'
 include: config['snake_dir'] + '/mapping/mappers/bowtie.snake'
 
+rule emirge_prepare_reference:
+    input:
+        fa = 'reference/{reference}/{reference}.fa'
+    output:
+        fa = 'reference/{reference}/{reference}.emirge.fa'
+    shell:
+        '''
+        /usr/local/tools/emirge-0.61.0/utils/fix_nonstandard_chars.py \
+            < {input.fa} \
+            > {output.fa}
+        '''
+
+rule uchime_prepare_reference:
+    input:
+        fa = 'reference/{reference}/{reference}.fa'
+    output:
+        fa = 'reference/{reference}/{reference}.gold.fa'
+    shell:
+        '''
+        ln -s `basename {input.fa}` {output.fa}
+        '''
+
 rule emirge_classification:
     input:
         r1 = 'reads/%s/{sample}_R1.fastq' % config['emirge']['read_type'],
