@@ -1,0 +1,20 @@
+configfile: srcdir('config.yaml')
+
+pipeline = glob_wildcards('reads/original/{sample,%s}_R1.fastq.gz' % config['sample_pattern'])
+
+include: config['snake_dir'] + '/preprocess/report/fastqc.snake'
+include: config['snake_dir'] + '/preprocess/trim_reads/trimmomatic.snake'
+include: config['snake_dir'] + '/preprocess/deduplication/fastuniq.snake'
+include: config['snake_dir'] + '/assembly/assemblers/trinity.snake'
+
+design = config['trinity']['design']
+
+rule process:
+    input:
+        # FastQC summaries
+        'reads/original/stats/summary.html',
+        'reads/trimmed/stats/summary.html',
+        'reads/deduplicated/stats/summary.html',
+
+        # Contigs
+        'trinity/{design}.Trinity.fa'.format(design=design)

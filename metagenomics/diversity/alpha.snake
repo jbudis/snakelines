@@ -1,0 +1,23 @@
+import pandas as pd
+import numpy as np
+import skbio
+
+rule skbio_calculate_alpha_diversities:
+    input:
+        counts = '{path}/{genome}.counts.tsv'
+    output:
+        diversities = '{path}/{genome}.alpha.tsv'
+    run:
+        table = pd.read_csv(input.counts, sep='\t', index_col=0)
+        otus = list(table.columns)
+        sids = list(table.index)
+        counts = np.round(table.as_matrix()).astype(int)
+
+        ILLEGAL_METRICS = ['chao1_ci', 'esty_ci', 'faith_pd', 'kempton_taylor_q',
+                           'lladser_ci', 'lladser_pe', 'michaelis_menten_fit', 'osd']
+        all_metrics = skbio.diversity.get_alpha_diversity_metrics()
+        metrics = sorted(set(all_metrics) - set(ILLEGAL_METRICS))
+
+        diversity_series = [skbio.diversity.alpha_diversity(metric, counts, ids=sids) for metric in metrics]
+        diversities = pd.DataFrame(diversity_series, index=metrics).transpose()
+        diversities.to_csv(output.diversities, sep='\t')

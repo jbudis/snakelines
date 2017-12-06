@@ -4,7 +4,7 @@ rule genome_coverage_histogram:
     input:
         '{bam_path}/{bam_prefix}.bam'
     output:
-        '{bam_path}/coverage/{bam_prefix}.genomecov'
+        '{bam_path}/coverage-wgs/{bam_prefix}.genomecov'
     params:
         reference = config['mapping']['reference']
     shell:
@@ -15,10 +15,32 @@ rule genome_coverage_histogram:
         > {output}
         '''
 
+rule genome_coverage_panel:
+    input:
+        bam = '{mapper}/{reference}/{bam_prefix}.bam',
+        bed = 'reference/{reference}/annotation/{panel}/regions.bed'
+    output:
+        '{mapper}/{reference}/coverage-{panel}/{bam_prefix}.genomecov'
+    shell:
+        '''
+        samtools mpileup \
+          --positions {input.bed} \
+          --max-depth 1000 \
+          {input.bam} \
+        | awk \
+          '{{ COV[$4]++ }}; \
+          END {{ \
+            for (C in COV) {{ \
+              print C, COV[C] \
+            }} \
+          }}' \
+        > {output}
+        '''
+
 rule genome_coverage_binned:
     input:
-        '{bam_path}/{bam_prefix}.bam',
-        '{bam_path}/{bam_prefix}.bam.bai'
+        bam = '{bam_path}/{bam_prefix}.bam',
+        bai = '{bam_path}/{bam_prefix}.bam.bai'
     output:
         '{bam_path}/coverage/{bam_prefix}.{bin_size, \d+}.bed'
     params:
@@ -30,5 +52,5 @@ rule genome_coverage_binned:
             --type coverage_binned \
             --window-size {wildcards.bin_size} \
             --output {output} \
-            {input}
+            {input.bam}
         '''

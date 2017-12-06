@@ -1,0 +1,120 @@
+include: config['snake_dir'] + '/preprocess/conversion/gzip.snake'
+
+from Bio import SeqIO
+import numpy as np
+import pandas as pd
+
+rule matam_assemble:
+    input:
+        rc  = 'reads/joined/{sample}_RC.fastq',
+        ref = 'reference/{reference}/matam/{reference}_NR{cluster_limit}.clustered.fasta'
+    output:
+        contigs = 'matam/{reference}_NR{cluster_limit}/assembly/{sample}/final_assembly.fa'
+    params:
+        outdir = 'matam/{reference}_NR{cluster_limit}/{sample}',
+        db = 'reference/{reference}/matam/{reference}_NR{cluster_limit}'
+    threads:
+        int(config['threads'])
+    log:
+        stdout = 'matam/{reference}_NR{cluster_limit}/{sample}/log/analysis.log',
+        stderr = 'matam/{reference}_NR{cluster_limit}/{sample}/log/analysis.err',
+    shell:
+        '''
+        matam_assembly \
+            --input_fastx {input.rc} \
+            --ref_db {params.db} \
+            --out_dir {params.outdir} \
+            --cpu {threads} \
+            --max_memory 120000 \
+         > {log.stdout} \
+        2> {log.stderr} \
+        '''
+
+rule matam_prepare_reference:
+    input:
+        fa = 'reference/{reference}/{reference}.fa'
+    output:
+        ref = 'reference/{reference}/matam/{reference}_NR{cluster_limit}.clustered.fasta'
+    params:
+        db_dir = 'reference/{reference}/matam'
+    threads:
+        int(config['threads'])
+    shell:
+        '''
+        mkdir -p {params.db_dir}
+
+        matam_db_preprocessing \
+            --input_ref {input.fa} \
+            --db_dir {params.db_dir} \
+            --cpu {threads} \
+            --max_memory 120000 \
+            --clustering_id_threshold 0.{wildcards.cluster_limit}
+        '''
+
+
+def matam_assemblies(wildcards):
+      return expand('matam/{reference}_NR{cluster_limit}/assembly/{sample}/final_assembly.fa',
+                     reference=wildcards.reference, cluster_limit=wildcards.cluster_limit,
+                     sample=pipeline.sample)
+
+rule matam_join_assemblies:
+    input:
+        matam_assemblies = matam_assemblies
+    output:
+        assembly = 'matam/{reference}_NR{cluster_limit}/joined/assembly.fa',
+        counts = 'matam/{reference}_NR{cluster_limit}/joined/assembly.counts.tsv',
+        ratios = 'matam/{reference}_NR{cluster_limit}/joined/assembly.ratios.tsv'
+    run:
+        # Extract sequences and sample ids from fasta files
+        def extract_contigs(assembly):
+            return list(SeqIO.parse(assembly, 'fasta'))
+
+        def extract_sid(assembly):
+            return assembly.split('/')[-2]
+
+        assemblies = sorted(input.matam_assemblies)
+        sids = list(map(extract_sid, assemblies))
+        contigs = list(map(extract_contigs, assemblies))
+
+        # Change sequence headers to contain sample of origin and its proportion in the sample
+        updated_contigs = []
+        i_otu = 0
+        contig_ids = []
+        counts_list, ratios_list = [], []
+        for sid, sid_contigs in zip(sids, contigs):
+            updated_sid_contigs = []
+            sid_reads = []
+            for i, contig in enumerate(sid_contigs):
+                cid = '{sid}_{contig}'.format(sid=sid, contig=i)
+                contig.id = cid
+                contig_ids.append(contig.id)
+                contig_reads = float(contig.description.split(' ')[-1].split('=')[1])
+                sid_reads.append((contig_reads, i_otu))
+                updated_sid_contigs.append((sid, contig))
+                counts_list.append((sid, contig_reads, i_otu))
+                i_otu += 1
+
+            total_sid_reads = sum([n_reads for n_reads, otu in sid_reads])
+            for (sid, contig), (contig_reads, contig_otu) in zip(updated_sid_contigs, sid_reads):
+                ratio = contig_reads/total_sid_reads
+                contig.description = '{desc} ratio={ratio:.5f}'.format(desc=contig.description, ratio=ratio)
+                updated_contigs.append(contig)
+                ratios_list.append((sid, ratio, contig_otu))
+
+        # Prepare OTU count table
+        def prepare_otu_table(value_list):
+            counts = np.zeros((len(sids), i_otu))
+            for (sid, value, contig_otu) in value_list:
+                assert counts[sids.index(sid), contig_otu] == 0
+                counts[sids.index(sid), contig_otu] = value
+            return pd.DataFrame(counts, index=sids, columns=contig_ids)
+
+        # Store count tables
+        prepare_otu_table(counts_list).to_csv(output.counts, sep='\t')
+        prepare_otu_table(ratios_list).to_csv(output.ratios, sep='\t')
+
+        # Store all contigs into a single file
+        with open(output.assembly, 'w') as out:
+            for contig in updated_contigs:
+                SeqIO.write(contig, out, 'fasta')
+

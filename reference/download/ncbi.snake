@@ -4,6 +4,7 @@ from Bio import SeqIO
 import http
 import time
 import sys
+import shutil
 
 rule ncbi_gene_postfilter:
     input:
@@ -47,6 +48,9 @@ rule ncbi_gene_database_download:
         min_tax_level = config['ncbi']['download']['min_tax_level'] if 'min_tax_level' in config['ncbi']['download'] else 0,
         email = config['ncbi']['download']['email'],
         max_records = config['ncbi']['download']['max_records'],
+        tmp_fa = 'downloaded/tmp/{gene}.fa',
+        tmp_tax = 'downloaded/tmp/{gene}.tax',
+        tmp_dir = 'downloaded/tmp'
     run:
         def safe_get_qualifier(feature, key, default_value='NO_DATA'):
             try:
@@ -58,7 +62,10 @@ rule ncbi_gene_database_download:
         for filt in params.filters:
             query = '{query} AND {filt}[filter]'.format(query=query, filt=filt)
 
-        with open(output.fa, 'w') as fa_out, open(output.tax, 'w') as tax_out:
+        if not os.path.exists(params.tmp_dir):
+            os.mkdir(params.tmp_dir)
+
+        with open(params.tmp_fa, 'w') as fa_out, open(params.tmp_tax, 'w') as tax_out:
 
             Entrez.email = params.email
 
@@ -114,20 +121,28 @@ rule ncbi_gene_database_download:
                         continue
 
                     gene_tax = ';'.join(gb.annotations['taxonomy'])
+                    if 'organism' in gb.annotations:
+                        organism = gb.annotations['organism']
+                        gene_tax = '{gene_tax};{organism}'.format(gene_tax=gene_tax, organism=organism)
 
                     for feature in gb.features:
 
-                        if feature.type == 'CDS' and safe_get_qualifier(feature, 'gene').lower() == wildcards.gene.lower():
+                        is_target_gene = feature.type == 'CDS' and safe_get_qualifier(feature, 'gene').lower() == wildcards.gene.lower()
+                        if not is_target_gene:
+                            continue
 
-                            gene_id = '{} {}'.format(str(fa.id), str(feature.location))
-                            gene_seq = ''
+                        gene_id = '{} {}'.format(str(fa.id), str(feature.location))
+                        gene_seq = ''
 
-                            if feature.location.strand == 1:
-                                gene_seq = fa.seq[feature.location.start:feature.location.end]
-                            if feature.location.strand == -1:
-                                gene_seq = fa.seq[feature.location.start:feature.location.end].reverse_complement()
+                        if feature.location.strand == 1:
+                            gene_seq = fa.seq[feature.location.start:feature.location.end]
+                        if feature.location.strand == -1:
+                            gene_seq = fa.seq[feature.location.start:feature.location.end].reverse_complement()
 
-                            fa_out.write('>{} {}\n{}\n'.format(gene_id, gene_tax, gene_seq))
-                            tax_out.write('{}\t{}\n'.format(gene_id, gene_tax))
-                            fa_out.flush()
-                            tax_out.flush()
+                        fa_out.write('>{} {}\n{}\n'.format(gene_id, gene_tax, gene_seq))
+                        tax_out.write('{}\t{}\n'.format(gene_id, gene_tax))
+                        fa_out.flush()
+                        tax_out.flush()
+
+        shutil.copy2(params.tmp_fa, input.fa)
+        shutil.copy2(params.tmp_tax, input.tax)

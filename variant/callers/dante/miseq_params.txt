@@ -1,0 +1,12 @@
+Model parameters:
+	function: linear
+	deletes: 0.007163 + 0.000105 * x
+	inserts: linear with parameter 0.000165
+Read loss parameters (absolute):
+	function: linear
+	read count drop: 76.256432 - 1.105275 * x
+Read loss parameters (relative):
+	function: linear
+	read count drop: 0.758786 - -0.042410 * x
+All parameters:
+	0.00716322 0.000105087 0.0210812 0.0001648 76.2564 -1.10528 0.758786 0.0424103

@@ -14,8 +14,17 @@ rule dante:
     output:
         config = 'dante/{sample}/config.yaml',
         annotation = 'dante/{sample}/report.html'
+    benchmark:
+       'dante/{sample}/benchmark.log'
     params:
-        outdir = 'dante/{sample}'
+        outdir = 'dante/{sample}',
+        delete_prob = config['dante']['delete_prob'],
+        insert_prob = config['dante']['insert_prob'],
+        max_delete_skips = config['dante']['max_delete_skips'],
+        motif_frequency = config['dante']['motif_frequency'],
+        snp_chance = config['dante']['snp_chance']
+    threads:
+        int(config['threads'])
     run:
         outdir = '%s/%s' % (os.getcwd(), params.outdir)
         os.makedirs(params.outdir, exist_ok=True)
@@ -23,9 +32,16 @@ rule dante:
         with open(input.config) as inconf:
             conf = inconf.read()
 
-        outconf = conf.format(output_dir=outdir ,
+        outconf = conf.format(output_dir=outdir,
                               param_file=input.param,
-                              read_file_r1=input.r1, read_file_r2=input.r2)
+                              read_file_r1=input.r1,
+                              read_file_r2=input.r2,
+                              delete_prob=params.delete_prob,
+                              insert_prob=params.insert_prob,
+                              motif_frequency=params.motif_frequency,
+                              snp_chance=params.snp_chance,
+                              threads=threads,
+                              max_delete_skips=params.max_delete_skips)
 
 
         with open(output.config, 'w') as out:

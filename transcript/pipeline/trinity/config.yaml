@@ -1,0 +1,16 @@
+sample_pattern: rna-totl.*
+
+trim:
+    read_type: original
+    crop: 140
+    quality: 20
+    headcrop: 15
+    minlen: 35
+
+deduplicate:
+    read_type: trimmed
+
+trinity:
+    read_type: deduplicated
+    design: rna-totl
+    min_contig_len: 200

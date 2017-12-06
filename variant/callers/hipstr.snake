@@ -10,7 +10,11 @@ rule hipstr_call_str_genotype:
         ref = 'reference/{reference}/{reference}.fa',
         bed = srcdir('hipstr/locus.bed')
     output:
-        vcf = '{mapper}/{reference}/hipstr/{sample}/genotype.vcf.gz'
+        vcf = '{mapper}/{reference}/hipstr/{sample}/genotype.vcf.gz',
+        alignments = '{mapper}/{reference}/hipstr/{sample}/alignment.viz.gz',
+        report_html = '{mapper}/{reference}/hipstr/{sample}/alignment.html'
+    log:
+        '{mapper}/{reference}/hipstr/{sample}/hipstr.log'
     shell:
         '''
         hipstr \
@@ -21,8 +25,109 @@ rule hipstr_call_str_genotype:
             --def-stutter-model \
             --bam-samps s1 \
             --bam-libs l1 \
-            --min-reads 1
+            --min-reads 1 \
+            --viz-out {output.alignments} \
+            --max-str-len 200 \
+        >>  {log} \
+        2>> {log}
+
+        # TODO split into two rules
+        tabix -p bed  {output.alignments}
+        TMP_ALIGNMENT=`/usr/local/tools/hipstr-0.5.0/VizAln {output.alignments} chr19 46273463 2>&1 >/dev/null  | cut -f 15 -d ' '`
+        cp $TMP_ALIGNMENT {output.report_html}
         '''
+
+
+def all_bams(wildcards):
+    return expand('{mapper}/{reference}/{sample}.bam',
+                   sample=pipeline.sample, mapper=wildcards.mapper, reference=wildcards.reference)
+
+rule hipstr_denovo:
+    input:
+        bams = all_bams,
+        ref = 'reference/{reference}/{reference}.fa',
+        bed = srcdir('hipstr/locus.bed')
+    output:
+        vcf = '{mapper}/{reference}/hipstr-denovo/genotype.vcf.gz',
+        stutter_model = '{mapper}/{reference}/hipstr-denovo/stutter_models.txt',
+        alignments = '{mapper}/{reference}/hipstr-denovo/alignment.viz.gz'
+    log:
+        '{mapper}/{reference}/hipstr-denovo/hipstr.log'
+    shell:
+        '''
+        RGS=`echo {input.bams} | tr ' ' '\n' | cut -f3 -d'/' | cut -f 1 -d'.' | tr '\n' ','`
+        hipstr \
+            --bams `echo {input.bams} | tr ' ' ',' ` \
+            --bam-samps $RGS \
+            --bam-libs $RGS \
+            --fasta {input.ref} \
+            --regions {input.bed} \
+            --str-vcf {output.vcf} \
+            --stutter-out {output.stutter_model} \
+            --viz-out {output.alignments} \
+            --min-reads 1 \
+            --max-str-len 200 \
+        >>  {log} \
+        2>> {log}
+        tabix -p bed  {output.alignments}
+        '''
+
+rule hipstr_summarize_denovo:
+    input:
+        vcf = '{mapper}/{reference}/hipstr-denovo/genotype.vcf.gz'
+    output:
+        summary = '{mapper}/{reference}/hipstr-denovo/calls.tsv'
+    run:
+        ID_COL, REF_COL, INFO_COL, FIRST_SID_COL = 2, 3, 7, 9
+
+        with gzip.open(input.vcf) as variants:
+
+            rows = []
+            for line in variants:
+
+                # Skip VCF headers
+                line = line.decode('utf-8')
+                if line.startswith('##'):
+                    continue
+
+                # Extract sample names from attribute header
+                if line.startswith('#'):
+                    sids = line.strip().split()[FIRST_SID_COL:]
+                    continue
+
+                # Extract calls - each motif has a single line of VCF
+                items = line.strip().split('\t')
+
+                # FIXME - hardcoded length of the motif
+                motif_len = 3
+                motif = items[ID_COL].split('(')[1][:-1]
+                ref_reps = len(items[REF_COL])
+
+                for i, sid in enumerate(sids):
+                    form_part = items[FIRST_SID_COL + i]
+
+                    # No call for variant
+                    if form_part.startswith('.'):
+                        continue
+
+                    form = form_part.split(':')
+                    allele_code = form[1]
+                    diff1, diff2 = form[1].split('|')
+                    call1 = int((ref_reps + int(diff1)) / motif_len)
+                    call2 = int((ref_reps + int(diff2)) / motif_len)
+                    if (call1 > call2) and (call2 > 0):
+                        call1, call2 = call2, call1
+                    confidence = float(form[2])
+
+                    info_item = items[INFO_COL].split(';')
+                    info = {it.split('=')[0]: it.split('=')[1] if '=' in it else True for it in info_item}
+                    readcount = info['DP']
+
+                    rows.append((motif, readcount, call1, call2, confidence, sid))
+
+        calls = pd.DataFrame(rows)
+        calls.columns = ['motif', 'readcount', 'call1', 'call2', 'confall', 'sample']
+        calls.to_csv(output.summary, sep='\t', index=None)
 
 def all_vcfs(wildcards):
     return expand('{mapper}/{reference}/hipstr/{sample}/genotype.vcf.gz',
