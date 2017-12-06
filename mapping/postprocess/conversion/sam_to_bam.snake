@@ -7,14 +7,3 @@ rule sam_to_bam:
         '''
         samtools view -bhS {input} > {output}
         '''
-
-rule bam_to_sam:
-    input:
-        '{path}/{sample}.bam'
-    output:
-        '{path}/{sample}.sam'
-    shell:
-        '''
-        samtools view -h {input} > {output}
-        '''
-
