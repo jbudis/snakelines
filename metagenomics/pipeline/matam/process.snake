@@ -1,0 +1,54 @@
+configfile: srcdir('config.yaml')
+
+pipeline = glob_wildcards('reads/original/{sample,%s}_R1.fastq.gz' % config['sample_pattern'])
+
+include: config['snake_dir'] + '/preprocess/join_reads/pear.snake'
+include: config['snake_dir'] + '/assembly/assemblers/matam.snake'
+include: config['snake_dir'] + '/alignment/aligners/mafft.snake'
+include: config['snake_dir'] + '/alignment/visualisation/msaviewer.snake'
+include: config['snake_dir'] + '/alignment/phylogeny/iqtree.snake'
+include: config['snake_dir'] + '/alignment/visualisation/phylogenetic_tree.snake'
+include: config['snake_dir'] + '/metagenomics/diversity/alpha.snake'
+include: config['snake_dir'] + '/metagenomics/diversity/beta.snake'
+include: config['snake_dir'] + '/metagenomics/clustering/cdhit.snake'
+include: config['snake_dir'] + '/classification/report/blast_summary.snake'
+
+reference = config['matam']['reference']
+cluster_limit = config['matam']['cluster_limit']
+otu_limit = config['otu']['cluster_limit']
+
+otu_assembly = 'assembly.otu{otu_limit}'.format(otu_limit=otu_limit)
+assemblies = ['assembly', otu_assembly]
+
+rule process:
+    input:
+        # Matam contigs
+        expand('matam/{reference}_NR{cluster_limit}/joined/{assembly}.fa',
+                reference=reference, cluster_limit=cluster_limit,
+                assembly=assemblies),
+
+        # Read counts and proportions
+        expand('matam/{reference}_NR{cluster_limit}/joined/assembly.{suffix}',
+                reference=reference, cluster_limit=cluster_limit,
+                suffix=['counts.tsv', 'ratios.tsv']),
+
+        # Alpha diversity
+        expand('matam/{reference}_NR{cluster_limit}/joined/assembly.alpha.tsv',
+                reference=reference, cluster_limit=cluster_limit,
+                assembly=assemblies),
+
+        # Multiple alignments
+        expand('matam/{reference}_NR{cluster_limit}/joined/alignment/mafft/{assembly}.html',
+                reference=reference, cluster_limit=cluster_limit,
+                assembly=assemblies),
+
+        # Phylogenetic trees
+        expand('matam/{reference}_NR{cluster_limit}/joined/alignment/mafft/{assembly}.aln.treefile.{suffix}',
+                reference=reference, cluster_limit=cluster_limit,
+                assembly=assemblies, suffix=['svg', 'ascii']),
+
+        # Blast OTUs
+        expand('matam/{reference}_NR{cluster_limit}/joined/blast/{assembly}.html',
+                reference=reference, cluster_limit=cluster_limit,
+                assembly=otu_assembly, suffix=['svg', 'ascii']),
+

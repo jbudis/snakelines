@@ -1,0 +1,21 @@
+sample_pattern: .*-pepX-.*
+
+join:
+    read_type: deduplicated
+
+matam:
+    cluster_limit: 99
+    reference: pepx
+
+otu:
+    cluster_limit: 97
+
+iqtree:
+    model: GTR+I+G4
+
+
+blast:
+    enabled: True
+    max_target_seqs: 25
+    report:
+        max_query_seqs: 200
