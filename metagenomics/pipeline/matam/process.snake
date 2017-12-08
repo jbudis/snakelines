@@ -27,7 +27,7 @@ rule process:
                 reference=reference, cluster_limit=cluster_limit,
                 assembly=assemblies),
 
-        # Read counts and proportions
+        # Contig read counts and proportions
         expand('matam/{reference}_NR{cluster_limit}/joined/assembly.{suffix}',
                 reference=reference, cluster_limit=cluster_limit,
                 suffix=['counts.tsv', 'ratios.tsv']),
@@ -52,3 +52,7 @@ rule process:
                 reference=reference, cluster_limit=cluster_limit,
                 assembly=otu_assembly, suffix=['svg', 'ascii']),
 
+        # OTU read counts and proportions
+        expand('matam/{reference}_NR{cluster_limit}/joined/{assembly}.{suffix}',
+                reference=reference, cluster_limit=cluster_limit,
+                assembly=otu_assembly, suffix=['counts.tsv']),

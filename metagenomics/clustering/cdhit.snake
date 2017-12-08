@@ -1,3 +1,7 @@
+import re
+import pandas as pd
+from collections import OrderedDict
+
 rule cdhit_cluster_to_otus:
     input:
         fa='{path}/{genome}.fa'
@@ -17,3 +21,40 @@ rule cdhit_cluster_to_otus:
             -aS 0.9 \
             -g 1
         '''
+
+rule cdhit_summarise_otu_counts:
+    input:
+        clusters='{path}/{genome}.otu{identity}.fa.clstr',
+        counts = '{path}/{genome}.counts.tsv'
+    output:
+        counts='{path}/{genome}.otu{identity}.counts.tsv',
+        ratios='{path}/{genome}.otu{identity}.ratios.tsv'
+    run:
+        contig_counts = pd.read_csv(input.counts, sep='\t', index_col=0)
+
+        # Parse contigs that belongs to each OTU
+        otus = OrderedDict()
+        otu_id, otu_contigs = 0, None
+        with open(input.clusters) as cluster_file:
+            for line in cluster_file:
+                if line.startswith('>'):
+                    otu_id += 1
+                    otu_name = 'OTU{otu_id}'.format(otu_id=otu_id)
+                    otu_contigs = []
+                    otus[otu_name] = otu_contigs
+                    continue
+
+                contig_id = re.search(r'>.+\.\.\.', line).group()[1:-3]
+                otu_contigs.append(contig_id)
+
+        # Sum contig counts that belongs to the same OTU
+        otu_counts = pd.DataFrame(index=contig_counts.index)
+        for otu_name, otu_contigs in otus.items():
+            otu_counts[otu_name] = contig_counts[otu_contigs].sum(axis=1)
+
+        # Calculate percentual proportions of each OTU at sample
+        otu_ratios = (otu_counts.transpose() / otu_counts.transpose().sum(axis=0)).transpose()
+
+        # Store counts and ratios
+        otu_counts.to_csv(output.counts, sep='\t', index=True)
+        otu_ratios.to_csv(output.ratios, sep='\t', index=True)
