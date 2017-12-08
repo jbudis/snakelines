@@ -1,0 +1,19 @@
+rule cdhit_cluster_to_otus:
+    input:
+        fa='{path}/{genome}.fa'
+    output:
+        otus='{path}/{genome}.otu{identity}.fa',
+        clusters='{path}/{genome}.otu{identity}.fa.clstr'
+    threads:
+        int(config['threads'])
+    shell:
+        '''
+        cd-hit \
+            -i {input.fa} \
+            -o {output.otus} \
+            -G 0.{wildcards.identity} \
+            -T {threads} \
+            -M 120000 \
+            -aS 0.9 \
+            -g 1
+        '''
