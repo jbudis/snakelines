@@ -10,7 +10,6 @@ import pandas as pd
 pd.set_option('display.max_colwidth', 1000000)
 pd.options.display.float_format = '{:.1f}'.format
 
-TEMPLATE = open(srcdir('templates/abundances.html')).read()
 MISSING_COVERAGE = ''
 
 n_contigs = int(config['blast']['report']['max_query_seqs'])
@@ -103,6 +102,8 @@ rule blast_summary:
         contigs.index = np.arange(1, len(contigs) + 1)
         contigs_table = contigs.to_html(escape=False).replace('<table ', '<table id="data" ')
 
+
+        TEMPLATE = open(srcdir('templates/abundances.html')).read()
         with open(output.report, 'w') as out:
             out.write(TEMPLATE.format(contigs_table=contigs_table, contigs_fa=params.contig_fa))
 
