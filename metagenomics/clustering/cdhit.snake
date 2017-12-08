@@ -1,26 +1,40 @@
 import re
 import pandas as pd
 from collections import OrderedDict
+from Bio import SeqIO
 
 rule cdhit_cluster_to_otus:
     input:
         fa='{path}/{genome}.fa'
     output:
-        otus='{path}/{genome}.otu{identity}.fa',
-        clusters='{path}/{genome}.otu{identity}.fa.clstr'
+        otus='{path}/{genome}.otu{identity, \d+}.fa',
+        clusters='{path}/{genome}.otu{identity, \d+}.fa.clstr'
+    params:
+        otus='{path}/{genome}.otu{identity, \d+}.tmp',
+        clusters='{path}/{genome}.otu{identity, \d+}.tmp.clstr'
     threads:
         int(config['threads'])
-    shell:
-        '''
-        cd-hit \
-            -i {input.fa} \
-            -o {output.otus} \
-            -G 0.{wildcards.identity} \
-            -T {threads} \
-            -M 120000 \
-            -aS 0.9 \
-            -g 1
-        '''
+    run:
+        cdhit = '''
+            cd-hit \
+                -i {input.fa} \
+                -o {params.otus} \
+                -G 0.{wildcards.identity} \
+                -T {threads} \
+                -M 120000 \
+                -aS 0.9 \
+                -g 1
+        '''.format(input=input, output=output, wildcards=wildcards, threads=threads, params=params)
+
+        os.system(cdhit)
+        with open(params.otus) as infa, open(output.otus, 'w') as outfa:
+            for i, otu in enumerate(SeqIO.parse(infa, 'fasta')):
+                otu.id = 'OTU{}'.format(i+1)
+                otu.description = ''
+                SeqIO.write(otu, outfa, 'fasta')
+
+        os.rename(params.clusters, output.clusters)
+        os.remove(params.otus)
 
 rule cdhit_summarise_otu_counts:
     input:
