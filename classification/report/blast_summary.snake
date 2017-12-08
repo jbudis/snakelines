@@ -1,3 +1,5 @@
+include: config['snake_dir'] + '/classification/classifiers/blast.snake'
+
 from Bio.Blast import NCBIXML
 from Bio import SeqIO
 import os
@@ -8,6 +10,7 @@ pd.set_option('display.max_colwidth', 1000000)
 pd.options.display.float_format = '{:.1f}'.format
 
 TEMPLATE = open(srcdir('templates/abundances.html')).read()
+MISSING_COVERAGE = ''
 
 n_contigs = int(config['blast']['report']['max_query_seqs'])
 
@@ -74,7 +77,7 @@ rule blast_summary:
                 elif '_cov_' in contig.query:
                     coverage = float(contig.query.split('_')[5])
                 else:
-                    coverage = ''
+                    coverage = MISSING_COVERAGE
 
 
                 contig_info = {'Contig': contig_link,
@@ -91,6 +94,9 @@ rule blast_summary:
         # Generate report
         columns = ['Contig', 'Genbank', 'Length', 'Coverage', 'Homologues']
         contigs = pd.DataFrame(contig_items)[columns]
+        if list(contigs['Coverage'].unique()) == [MISSING_COVERAGE]:
+            contigs = contigs[[col for col in contigs.columns if col != 'Coverage']]
+
         contigs.index = np.arange(1, len(contigs) + 1)
         contigs_table = contigs.to_html(escape=False).replace('<table ', '<table id="data" ')
 
