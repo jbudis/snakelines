@@ -1,10 +1,11 @@
 include: config['snake_dir'] + '/classification/classifiers/blast.snake'
 
+import subprocess
 from Bio.Blast import NCBIXML
 from Bio import SeqIO
 import os
 import numpy as np
-
+import pickle
 import pandas as pd
 pd.set_option('display.max_colwidth', 1000000)
 pd.options.display.float_format = '{:.1f}'.format
@@ -13,6 +14,21 @@ TEMPLATE = open(srcdir('templates/abundances.html')).read()
 MISSING_COVERAGE = ''
 
 n_contigs = int(config['blast']['report']['max_query_seqs'])
+
+# Calculation of query/target overlap
+def deduplicate(intervals):
+    dedup = []
+    for start, end in sorted(intervals):
+        if dedup and dedup[-1][1] >= start - 1:
+            dedup[-1][1] = max(dedup[-1][1], end)
+        else:
+            dedup.append([start, end])
+
+    return dedup
+
+def calc_align_len(alignment):
+    intervals = deduplicate([(hsp.query_start, hsp.query_end) for hsp in alignment.hsps])
+    return sum(end - start + 1 for start, end in intervals)
 
 rule blast_summary:
     input:
@@ -36,20 +52,7 @@ rule blast_summary:
             if i >= n_contigs:
                 break
 
-        # Calculation of query/target overlap
-        def deduplicate(intervals):
-            dedup = []
-            for start, end in sorted(intervals):
-                if dedup and dedup[-1][1] >= start - 1:
-                    dedup[-1][1] = max(dedup[-1][1], end)
-                else:
-                    dedup.append([start, end])
 
-            return dedup
-
-        def calc_align_len(alignment):
-            intervals = deduplicate([(hsp.query_start, hsp.query_end) for hsp in alignment.hsps])
-            return sum(end - start + 1 for start, end in intervals)
 
         # Collect Blast results
         contig_items = []
@@ -104,3 +107,32 @@ rule blast_summary:
             out.write(TEMPLATE.format(contigs_table=contigs_table, contigs_fa=params.contig_fa))
 
         os.system('cp %s %s' % (input.contigs, output.contigs))
+
+
+rule blast_assign_taxonomy:
+    input:
+        fa = '{indir}/{name}.fa',
+        blast = '{indir}/blast/{name}.blast',
+        tax_db = '/data/genome/metagenome/blast/nt/17-01-17/taxonomy/code_taxonomy.pickle'
+    output:
+        fa = '{indir}/{name}.tax'
+    params:
+        blast_db = '/data/genome/metagenome/blast/nt/17-01-17/nt'
+    run:
+        taxes = pickle.load(open(input.tax_db, 'rb'))
+        with open(input.blast) as blast, \
+             open(input.fa) as infa, \
+             open(output.fa, 'w') as outtax:
+            for i, (contig, sequence) in enumerate(zip(NCBIXML.parse(blast), SeqIO.parse(infa, 'fasta'))):
+                assert contig.query.split()[0] == sequence.id, contig.query + ' - ' + sequence.id
+
+                seq_id, taxonomy = sequence.id, ''
+                if len(contig.alignments) > 0:
+                    accession = contig.alignments[0].accession
+
+                    # Retrieve taxid identifier from local Blast database
+                    command = 'blastdbcmd -entry {} -db {}  -outfmt "%T"'.format(accession, params.blast_db)
+                    taxid = int(subprocess.check_output(command.split()).strip()[1:-1].decode('utf-8'))
+                    taxonomy = ';'.join(taxes[taxid])
+
+                outtax.write('{seq_id}\t{taxonomy}\n'.format(seq_id=seq_id, taxonomy=taxonomy))
