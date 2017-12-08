@@ -1,11 +1,18 @@
-sample_pattern: .*-pepX-.*
+sample_pattern: .*
+
+gene_pattern:
+    silva-ssu-128: .*-16Sr-.*
+    silva-lsu-128: .*-28Sr-.*
+    prtp: .*-prtP-.*
+    bcat: .*-bcaT-.*
+    pepx: .*-pepX-.*
+    pepn: '.*-pepN.*'
 
 join:
-    read_type: deduplicated
+    read_type: trimmed
 
 matam:
     cluster_limit: 99
-    reference: pepx
 
 otu:
     cluster_limit: 97

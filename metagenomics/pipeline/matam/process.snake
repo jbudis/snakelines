@@ -12,8 +12,9 @@ include: config['snake_dir'] + '/metagenomics/diversity/alpha.snake'
 include: config['snake_dir'] + '/metagenomics/diversity/beta.snake'
 include: config['snake_dir'] + '/metagenomics/clustering/cdhit.snake'
 include: config['snake_dir'] + '/classification/report/blast_summary.snake'
+include: config['snake_dir'] + '/metagenomics/report/krona.snake'
 
-reference = config['matam']['reference']
+reference = list(config['gene_pattern'].keys())
 cluster_limit = config['matam']['cluster_limit']
 otu_limit = config['otu']['cluster_limit']
 
@@ -59,5 +60,10 @@ rule process:
 
         # Taxonomy for annotated OTUs
         expand('matam/{reference}_NR{cluster_limit}/joined/{assembly}.tax',
+                reference=reference, cluster_limit=cluster_limit,
+                assembly=otu_assembly),
+
+        # Krona for annotated OTUs
+        expand('matam/{reference}_NR{cluster_limit}/joined/{assembly}.krona.html',
                 reference=reference, cluster_limit=cluster_limit,
                 assembly=otu_assembly),
