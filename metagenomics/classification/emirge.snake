@@ -60,9 +60,9 @@ rule emirge_classification:
 
 rule extract_emirge_results:
     input:
-        rules.emirge_classification.output
+        bam = 'emirge/{reference}/iterations/{sample}/iter.40/bowtie.iter.40.PE.bam'
     output:
-        'emirge/{reference}/iterations/{sample}/{sample}.fa'
+        temporary('emirge/{reference}/iterations/{sample}/{sample}.tmp')
     params:
         final_dir = 'emirge/{reference}/iterations/{sample}/iter.40'
     shell:
@@ -71,6 +71,29 @@ rule extract_emirge_results:
             {params.final_dir} \
         > {output}
         '''
+
+
+rule append_read_counts:
+    input:
+        tmp = 'emirge/{reference}/iterations/{sample}/{sample}.tmp'
+    output:
+        fa = 'emirge/{reference}/iterations/{sample}/{sample}.fa'
+    params:
+        final_bam = 'emirge/{reference}/iterations/{sample}/iter.40/bowtie.iter.40.PE.bam'
+    run:
+        import subprocess
+
+        # extract read count
+        result = subprocess.check_output('samtools view %s | cut -f 1 | uniq | wc -l' % params.final_bam, shell=True)
+        read_count = int(result.strip())
+
+        # add it to the fasta
+        with open(input.tmp) as file_in, open(output.fa, 'w') as file_out:
+            for line in file_in:
+                if line.startswith('>'):
+                    line = line.strip() + ' ReadCount=%d\n' % read_count
+                file_out.write(line)
+
 
 rule find_chimeras_uchime:
     input:
@@ -111,13 +134,14 @@ rule prepare_nonchimeric_for_krona:
                     continue
                 info = params[1][params[1].find('|')+1:].split()
                 tabund = float(info[1].split('=')[1])
+                read_count = int(info[-1].split('=')[1])
 
                 tid = info[0]
                 if taxcopy.match(tid):
                     tid = tid[:tid.rfind('_m')]
 
                 taxes = taxonomies[tid]
-                krona.write('%s\t%s\n'%(tabund, taxes))
+                krona.write('%s\t%s\n'%(str(int(read_count*tabund + 0.49)), taxes))
 
 rule emirge_krona_report:
     input:

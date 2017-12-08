@@ -1,0 +1,50 @@
+rule generate_loess_counts_bam:
+    input:
+        '{path}/{sample}.bam'
+    output:
+        '{path}/counts/{sample}.loess.txt'
+    params:
+        script = srcdir("loess/chrom_counts.py")
+    shell:
+        '''
+        python {params.script} {input} {output} -l
+        '''
+
+rule generate_counts_bam:
+    input:
+        '{path}/{sample}.bam'
+    output:
+        '{path}/counts/{sample}.normal.txt'
+    params:
+        script = srcdir("loess/chrom_counts.py")
+    shell:
+        '''
+        python {params.script} {input} {output}
+        '''
+
+rule generate_loess_counts_sam:
+    input:
+        '{path}/{sample}.sam'
+    output:
+        '{path}/counts/{sample}.loess.txt'
+    params:
+        script = srcdir("loess/chrom_counts.py")
+    shell:
+        '''
+        python {params.script} {input} {output} -l
+        '''
+
+rule generate_counts_sam:
+    input:
+        '{path}/{sample}.sam'
+    output:
+        '{path}/counts/{sample}.normal.txt'
+    params:
+        script = srcdir("loess/chrom_counts.py")
+    shell:
+        '''
+        python {params.script} {input} {output}
+        '''
+
+ruleorder: generate_loess_counts_bam > generate_loess_counts_sam
+ruleorder: generate_counts_bam > generate_counts_sam
