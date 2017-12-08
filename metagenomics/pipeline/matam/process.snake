@@ -56,3 +56,8 @@ rule process:
         expand('matam/{reference}_NR{cluster_limit}/joined/{assembly}.{suffix}',
                 reference=reference, cluster_limit=cluster_limit,
                 assembly=otu_assembly, suffix=['counts.tsv']),
+
+        # Taxonomy for annotated OTUs
+        expand('matam/{reference}_NR{cluster_limit}/joined/{assembly}.tax',
+                reference=reference, cluster_limit=cluster_limit,
+                assembly=otu_assembly),
