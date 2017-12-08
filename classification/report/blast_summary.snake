@@ -32,7 +32,8 @@ def calc_align_len(alignment):
 rule blast_summary:
     input:
         contigs = '{indir}/{name}.fa',
-        blast = '{indir}/blast/{name}.blast'
+        blast = '{indir}/blast/{name}.blast',
+        template = srcdir('templates/abundances.html')
     output:
         report = '{indir}/blast/{name}.html',
         contigs = '{indir}/blast/individual/{name}.fa'
@@ -103,7 +104,7 @@ rule blast_summary:
         contigs_table = contigs.to_html(escape=False).replace('<table ', '<table id="data" ')
 
 
-        TEMPLATE = open(srcdir('templates/abundances.html')).read()
+        TEMPLATE = open(input.template).read()
         with open(output.report, 'w') as out:
             out.write(TEMPLATE.format(contigs_table=contigs_table, contigs_fa=params.contig_fa))
 
