@@ -5,6 +5,8 @@ rule generate_loess_counts_bam:
         '{path}/counts/{sample}.loess.txt'
     params:
         script = srcdir("loess/chrom_counts.py")
+    threads:
+        1
     shell:
         '''
         python {params.script} {input} {output} -l
@@ -17,6 +19,8 @@ rule generate_counts_bam:
         '{path}/counts/{sample}.normal.txt'
     params:
         script = srcdir("loess/chrom_counts.py")
+    threads:
+        1
     shell:
         '''
         python {params.script} {input} {output}
@@ -29,6 +33,8 @@ rule generate_loess_counts_sam:
         '{path}/counts/{sample}.loess.txt'
     params:
         script = srcdir("loess/chrom_counts.py")
+    threads:
+        1
     shell:
         '''
         python {params.script} {input} {output} -l
@@ -41,10 +47,86 @@ rule generate_counts_sam:
         '{path}/counts/{sample}.normal.txt'
     params:
         script = srcdir("loess/chrom_counts.py")
+    threads:
+        1
     shell:
         '''
         python {params.script} {input} {output}
         '''
 
+rule generate_loess_counts_bam_filtered:
+    input:
+        '{path}/{sample}.bam'
+    output:
+        '{path}/counts/{sample}.loess_filtered.txt'
+    params:
+        script = srcdir("loess/chrom_counts.py")
+    threads:
+        1
+    shell:
+        '''
+        QUAL=40
+        if [[ {input} == *"soap2"* ]]; then
+          QUAL=30
+        fi
+        python {params.script} {input} {output} -l -q $QUAL
+        '''
+
+rule generate_counts_bam_filtered:
+    input:
+        '{path}/{sample}.bam'
+    output:
+        '{path}/counts/{sample}.normal_filtered.txt'
+    params:
+        script = srcdir("loess/chrom_counts.py")
+    threads:
+        1
+    shell:
+        '''
+        QUAL=40
+        if [[ {input} == *"soap2"* ]]; then
+          QUAL=30
+        fi
+        python {params.script} {input} {output} -q $QUAL
+        '''
+
+rule generate_loess_counts_sam_filtered:
+    input:
+        '{path}/{sample}.sam'
+    output:
+        '{path}/counts/{sample}.loess_filtered.txt'
+    params:
+        script = srcdir("loess/chrom_counts.py")
+    threads:
+        1
+    shell:
+        '''
+        QUAL=40
+        if [[ {input} == *"soap2"* ]]; then
+          QUAL=30
+        fi
+        python {params.script} {input} {output} -l -q $QUAL
+        '''
+
+rule generate_counts_sam_filtered:
+    input:
+        '{path}/{sample}.sam'
+    output:
+        '{path}/counts/{sample}.normal_filtered.txt'
+    params:
+        script = srcdir("loess/chrom_counts.py")
+    threads:
+        1
+    shell:
+        '''
+        QUAL=40
+        if [[ {input} == *"soap2"* ]]; then
+          QUAL=30
+        fi
+        python {params.script} {input} {output} -q $QUAL
+        '''
+
+ruleorder: generate_loess_counts_bam_filtered > generate_loess_counts_sam_filtered
+ruleorder: generate_counts_bam_filtered > generate_counts_sam_filtered
 ruleorder: generate_loess_counts_bam > generate_loess_counts_sam
 ruleorder: generate_counts_bam > generate_counts_sam

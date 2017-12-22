@@ -112,6 +112,7 @@ start_time = datetime.now()
 
 # read arguments
 args = load_arguments()
+print(sys.argv)
 
 # data container
 positions = []
@@ -133,7 +134,7 @@ for i, line in enumerate(p.stdout):
 
     # progress:
     if i % 100000 == 0:
-        s = "\r    processing: %8d %s" % (i, '{duration}'.format(duration=datetime.now() - start_time))
+        s = "\r    processing: %8d %s, kept %8d (%.1f%%)" % (i, '{duration}'.format(duration=datetime.now() - start_time), len(positions), 0.0 if i == 0 else len(positions)/float(i)*100)
         sys.stdout.write(s)
         sys.stdout.flush()
 
