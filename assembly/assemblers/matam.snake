@@ -3,6 +3,7 @@ include: config['snake_dir'] + '/preprocess/conversion/gzip.snake'
 from Bio import SeqIO
 import numpy as np
 import pandas as pd
+import re
 
 rule matam_assemble:
     input:
@@ -11,13 +12,13 @@ rule matam_assemble:
     output:
         contigs = 'matam/{reference}_NR{cluster_limit}/assembly/{sample}/final_assembly.fa'
     params:
-        outdir = 'matam/{reference}_NR{cluster_limit}/{sample}',
+        outdir = 'matam/{reference}_NR{cluster_limit}/assembly/{sample}',
         db = 'reference/{reference}/matam/{reference}_NR{cluster_limit}'
     threads:
         int(config['threads'])
     log:
-        stdout = 'matam/{reference}_NR{cluster_limit}/{sample}/log/analysis.log',
-        stderr = 'matam/{reference}_NR{cluster_limit}/{sample}/log/analysis.err',
+        stdout = 'matam/{reference}_NR{cluster_limit}/assembly/{sample}/log/analysis.log',
+        stderr = 'matam/{reference}_NR{cluster_limit}/assembly/{sample}/log/analysis.err',
     shell:
         '''
         matam_assembly \
@@ -53,17 +54,20 @@ rule matam_prepare_reference:
 
 
 def matam_assemblies(wildcards):
-      return expand('matam/{reference}_NR{cluster_limit}/assembly/{sample}/final_assembly.fa',
-                     reference=wildcards.reference, cluster_limit=wildcards.cluster_limit,
-                     sample=pipeline.sample)
+    gene_file_pattern = re.compile(config['gene_pattern'][wildcards.gene])
+    gene_sids = list(filter(gene_file_pattern.match, pipeline.sample))
+    return expand('matam/{gene}_NR{cluster_limit}/assembly/{sample}/final_assembly.fa',
+                   gene=wildcards.gene, cluster_limit=wildcards.cluster_limit,
+                   sample=gene_sids)
 
 rule matam_join_assemblies:
     input:
         matam_assemblies = matam_assemblies
     output:
-        assembly = 'matam/{reference}_NR{cluster_limit}/joined/assembly.fa',
-        counts = 'matam/{reference}_NR{cluster_limit}/joined/assembly.counts.tsv',
-        ratios = 'matam/{reference}_NR{cluster_limit}/joined/assembly.ratios.tsv'
+        assembly = 'matam/{gene}_NR{cluster_limit}/joined/assembly.fa',
+        counts = 'matam/{gene}_NR{cluster_limit}/joined/assembly.counts.tsv',
+        ratios = 'matam/{gene}_NR{cluster_limit}/joined/assembly.ratios.tsv',
+        matam/fhs_NR99/joined/assembly.ratios.tsv
     run:
         # Extract sequences and sample ids from fasta files
         def extract_contigs(assembly):

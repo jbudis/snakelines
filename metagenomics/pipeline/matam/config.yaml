@@ -1,0 +1,28 @@
+sample_pattern: .*
+
+gene_pattern:
+    silva-ssu-128: .*-16Sr-.*
+    silva-lsu-128: .*-28Sr-.*
+    prtp: .*-prtP-.*
+    bcat: .*-bcaT-.*
+    pepx: .*-pepX-.*
+    pepn: '.*-pepN.*'
+
+join:
+    read_type: trimmed
+
+matam:
+    cluster_limit: 99
+
+otu:
+    cluster_limit: 97
+
+iqtree:
+    model: GTR+I+G4
+
+
+blast:
+    enabled: True
+    max_target_seqs: 25
+    report:
+        max_query_seqs: 200
