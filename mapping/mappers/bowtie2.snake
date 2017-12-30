@@ -33,7 +33,7 @@ rule bowtie2_map_reads:
             -1 {input.r1} \
             -2 {input.r2} \
             --threads {threads} \
-            {params.additional} \
+            {params.additional} -t \
         2> {log} \
         | samtools view \
             -b \
@@ -73,7 +73,7 @@ rule bowtie2_remap_reads_to_assembly:
             -1 {input.r1} \
             -2 {input.r2} \
             --threads {threads} \
-            {params.additional} \
+            {params.additional} -t \
         2> {log} \
         | samtools view \
             -b \
