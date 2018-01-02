@@ -50,7 +50,6 @@ rule krona_report_from_otus:
                     krn.write('{count}\t{tax}\n'.format(count=otu_count, tax=taxes[otu].replace(';', '\t')))
 
         krns = ' '.join(['{},{}'.format(krn,sid) for sid, krn in krn_files.items()])
-        print(krns)
         command = 'ktImportText -o {output} {input}'.format(output=output.html, input=krns)
         os.system(command)
         for krn in krn_files.values():
