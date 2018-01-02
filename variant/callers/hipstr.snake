@@ -6,16 +6,20 @@ import gzip
 
 map_type = '/' + config['variant']['map_type'] if 'variant' in config and 'map_type' in config['variant'] else ''
 
+use_unpaired = 'hipstr' in config and 'use_unpaired' in config['hipstr'] and config['hipstr']['use_unpaired']
+
 rule hipstr_call_str_genotype:
     input:
         bam = '{mapper}/{reference}%s/{sample}.bam' % map_type,
         bai = '{mapper}/{reference}%s/{sample}.bam.bai' % map_type,
         ref = 'reference/{reference}/{reference}.fa',
-        bed = srcdir('hipstr/locus.bed')
+        bed = srcdir('hipstr/dmpk.bed')
     output:
         vcf = '{mapper}/{reference}/hipstr/{sample}/genotype.vcf.gz',
         alignments = '{mapper}/{reference}/hipstr/{sample}/alignment.viz.gz',
         report_html = '{mapper}/{reference}/hipstr/{sample}/alignment.html'
+    params:
+        use_unpaired = '--use-unpaired' if use_unpaired else ''
     log:
         '{mapper}/{reference}/hipstr/{sample}/hipstr.log'
     shell:
@@ -27,10 +31,12 @@ rule hipstr_call_str_genotype:
             --str-vcf {output.vcf} \
             --def-stutter-model \
             --bam-samps s1 \
+            --output-filters \
             --bam-libs l1 \
             --min-reads 1 \
             --viz-out {output.alignments} \
             --max-str-len 200 \
+            {params.use_unpaired} \
         >>  {log} \
         2>> {log}
 
@@ -54,11 +60,13 @@ rule hipstr_denovo:
         bams = all_bams,
         bais = all_bais,
         ref = 'reference/{reference}/{reference}.fa',
-        bed = srcdir('hipstr/locus.bed')
+        bed = srcdir('hipstr/dmpk.bed')
     output:
         vcf = '{mapper}/{reference}/hipstr-denovo/genotype.vcf.gz',
         stutter_model = '{mapper}/{reference}/hipstr-denovo/stutter_models.txt',
         alignments = '{mapper}/{reference}/hipstr-denovo/alignment.viz.gz'
+    params:
+        use_unpaired = '--use-unpaired' if use_unpaired else ''
     log:
         '{mapper}/{reference}/hipstr-denovo/hipstr.log'
     shell:
@@ -74,7 +82,8 @@ rule hipstr_denovo:
             --stutter-out {output.stutter_model} \
             --viz-out {output.alignments} \
             --min-reads 1 \
-            --max-str-len 200 \
+            --max-str-len 00 \
+            {params.use_unpaired} \
         >>  {log} \
         2>> {log}
         tabix -p bed  {output.alignments}
@@ -147,12 +156,10 @@ rule hipstr_summarize:
     output:
         summary = '{mapper}/{reference}/hipstr/calls.tsv'
     run:
-
         ID_COL, REF_COL, INFO_COL, FORMAT_COL = 2, 3, 7, 9
 
         def extract_calls(sid, vcf):
             with gzip.open(vcf) as variants:
-
                 rows = []
                 for line in variants:
 
