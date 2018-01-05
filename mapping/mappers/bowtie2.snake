@@ -14,7 +14,7 @@ rule bowtie2_map_reads:
         index = 'reference/{reference}/bowtie2_index/{reference}',
         tmpdir = 'bowtie2/{reference}/tmp/',
         additional = config['mapping']['params'] if 'params' in config['mapping'] else '',
-        regions = config['mapping']['regions'] if 'regions' in config['mapping'] else '',
+        regions = "" if 'regions' not in config['mapping'] else "-L reference/{reference}/annotation/%s/regions.bed" % config['mapping']['regions'],
         min_map_quality = config['mapping']['min_map_quality'] if 'min_map_quality' in config['mapping'] else 0
     benchmark:
         'bowtie2/{reference}/benchmark/{sample}.txt'
@@ -23,10 +23,6 @@ rule bowtie2_map_reads:
     shell:
         '''
         hostname > {log}.host;
-        REGION_PARAM=
-        if [ -n "{params.regions}" ]; then
-            REGION_PARAM="-L reference/{wildcards.reference}/annotation/{params.regions}/regions.bed";
-        fi
 
         bowtie2 \
             -x {params.index} \
@@ -40,7 +36,7 @@ rule bowtie2_map_reads:
             -q {params.min_map_quality} \
             --reference {input.reffasta} \
             --threads {threads} \
-            $REGION_PARAM \
+            {params.regions} \
             - \
         | samtools sort \
             --threads {threads} \
