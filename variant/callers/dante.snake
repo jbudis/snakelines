@@ -50,16 +50,59 @@ rule dante:
         dante_command = 'dante %s' % output.config
         os.system(dante_command)
 
+rule dante_se:
+    input:
+        config = srcdir('dante/template-se.yaml'),
+        param = srcdir('dante/miseq_params.txt'),
+        r1 = 'reads/%s/{sample}_R1.fastq.gz' % read_type
+    output:
+        config = 'dante-se/{sample}/config.yaml',
+        annotation = 'dante-se/{sample}/report.html'
+    benchmark:
+       'dante-se/{sample}/benchmark.log'
+    params:
+        outdir = 'dante-se/{sample}',
+        delete_prob = config['dante']['delete_prob'],
+        insert_prob = config['dante']['insert_prob'],
+        max_delete_skips = config['dante']['max_delete_skips'],
+        motif_frequency = config['dante']['motif_frequency'],
+        snp_chance = config['dante']['snp_chance']
+    threads:
+        int(config['threads'])
+    run:
+        outdir = '%s/%s' % (os.getcwd(), params.outdir)
+        os.makedirs(params.outdir, exist_ok=True)
+
+        with open(input.config) as inconf:
+            conf = inconf.read()
+
+        outconf = conf.format(output_dir=outdir,
+                              param_file=input.param,
+                              read_file_r1=input.r1,
+                              delete_prob=params.delete_prob,
+                              insert_prob=params.insert_prob,
+                              motif_frequency=params.motif_frequency,
+                              snp_chance=params.snp_chance,
+                              threads=threads,
+                              max_delete_skips=params.max_delete_skips)
+
+
+        with open(output.config, 'w') as out:
+            out.write(outconf)
+
+        dante_command = 'dante %s' % output.config
+        os.system(dante_command)
+
 
 def all_reports(wildcards):
-    return expand('dante/{sample}/report.html',
+    return expand('dante-se/{sample}/report.html',
                    sample=pipeline.sample)
 
 rule dante_summarize:
     input:
         reports = all_reports
     output:
-        summary = 'dante/calls.tsv'
+        summary = 'dante-se/calls.tsv'
     run:
         def parse_allele(allele_code):
             if allele_code == 'B':
@@ -97,7 +140,7 @@ rule dante_summarize:
             return n_reads(partial_file), n_reads(full_file)
 
         for report_dir, sid in zip(report_dirs, sids):
-            call_files = glob('%s/*/allcall_new_*.txt' % report_dir)
+            call_files = glob('%s/*/allcall*.txt' % report_dir)
             for call_file in call_files:
                 readcount_partial, readcount_full = parse_readcount(call_file)
                 motif = '%s_%s' % (call_file.split('/')[-2], call_file[-5])

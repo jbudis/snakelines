@@ -13,6 +13,7 @@ include: config['snake_dir'] + '/metagenomics/diversity/beta.snake'
 include: config['snake_dir'] + '/metagenomics/clustering/cdhit.snake'
 include: config['snake_dir'] + '/classification/report/blast_summary.snake'
 include: config['snake_dir'] + '/metagenomics/report/krona.snake'
+include: config['snake_dir'] + '/metagenomics/report/tax_counts.snake'
 
 reference = list(config['gene_pattern'].keys())
 cluster_limit = config['matam']['cluster_limit']
@@ -53,10 +54,11 @@ rule process:
                 reference=reference, cluster_limit=cluster_limit,
                 assembly=otu_assembly, suffix=['svg', 'ascii']),
 
-        # OTU read counts and proportions
+        # OTU and taxonomy read counts and proportions
         expand('matam/{reference}_NR{cluster_limit}/joined/{assembly}.{suffix}',
                 reference=reference, cluster_limit=cluster_limit,
-                assembly=otu_assembly, suffix=['counts.tsv']),
+                assembly=otu_assembly,
+                suffix=['counts.tsv', 'counts.tax.tsv', 'ratios.tsv', 'ratios.tax.tsv']),
 
         # Taxonomy for annotated OTUs
         expand('matam/{reference}_NR{cluster_limit}/joined/{assembly}.tax',

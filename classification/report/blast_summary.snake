@@ -125,16 +125,28 @@ rule blast_assign_taxonomy:
         with open(input.blast) as blast, \
              open(input.fa) as infa, \
              open(output.fa, 'w') as outtax:
+            is_first = True
             for i, (contig, sequence) in enumerate(zip(NCBIXML.parse(blast), SeqIO.parse(infa, 'fasta'))):
                 assert contig.query.split()[0] == sequence.id, contig.query + ' - ' + sequence.id
 
                 seq_id, taxonomy = sequence.id, ''
                 if len(contig.alignments) > 0:
-                    accession = contig.alignments[0].accession
+                    for i, alignment in enumerate(contig.alignments):
+                        accession = alignment.accession
 
-                    # Retrieve taxid identifier from local Blast database
-                    command = 'blastdbcmd -entry {} -db {}  -outfmt "%T"'.format(accession, params.blast_db)
-                    taxid = int(subprocess.check_output(command.split()).strip()[1:-1].decode('utf-8'))
-                    taxonomy = ';'.join(taxes[taxid])
+                        # Retrieve taxid identifier from local Blast database
+                        command = 'blastdbcmd -entry {} -db {}  -outfmt "%T"'.format(accession, params.blast_db)
+                        output = subprocess.check_output(command.split()).strip().decode('utf-8')
+                        taxid = int(output.split('\n')[0].replace('"', ''))
+                        if taxid not in taxes:
+                            continue
+                        align_taxonomy = ';'.join(taxes[taxid])
+                        if is_first:
+                            taxonomy = align_taxonomy
+                            is_first = False
+                        is_classified = not ('uncultured' in align_taxonomy.lower() or 'environmental' in align_taxonomy.lower())
+                        if is_classified:
+                            taxonomy = align_taxonomy
+                            break
 
                 outtax.write('{seq_id}\t{taxonomy}\n'.format(seq_id=seq_id, taxonomy=taxonomy))

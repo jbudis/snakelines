@@ -6,21 +6,28 @@ from io import StringIO
 import subprocess
 import numpy as np
 
+def filtered_sids(wildcards):
+    if 'gene_pattern' in config:
+        gene_file_pattern = re.compile(config['gene_pattern'][wildcards.reference])
+        return list(filter(gene_file_pattern.match, pipeline.sample))
+    else:
+        return pipeline.sample
+
 def bam_files(wildcards):
-      return expand('{bamdir}/{sample}.bam',
-                     bamdir=wildcards.bamdir, sample=pipeline.sample)
+      return expand('{mapper}/{reference}/{sample}.bam',
+                     mapper=wildcards.mapper, reference=wildcards.reference, sample=filtered_sids(wildcards))
 
 def bai_files(wildcards):
-      return expand('{bamdir}/{sample}.bam.bai',
-                     bamdir=wildcards.bamdir, sample=pipeline.sample)
+      return expand('{mapper}/{reference}/{sample}.bam.bai',
+                     mapper=wildcards.mapper, reference=wildcards.reference, sample=filtered_sids(wildcards))
 
 rule custom_counts_table_report:
     input:
         bams = bam_files,
         bais = bai_files
     output:
-        counts = '{bamdir}/counts/counts.tsv',
-        ratios = '{bamdir}/counts/ratios.tsv'
+        counts = '{mapper}/{reference}/counts/counts.tsv',
+        ratios = '{mapper}/{reference}/counts/ratios.tsv'
     run:
         def extract_sid(bam):
             return os.path.basename(bam)[:-4]

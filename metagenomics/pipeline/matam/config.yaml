@@ -13,6 +13,7 @@ join:
 
 matam:
     cluster_limit: 99
+    min_scaffold_length: 500
 
 otu:
     cluster_limit: 97

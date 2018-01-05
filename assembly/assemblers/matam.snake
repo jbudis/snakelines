@@ -13,7 +13,8 @@ rule matam_assemble:
         contigs = 'matam/{reference}_NR{cluster_limit}/assembly/{sample}/final_assembly.fa'
     params:
         outdir = 'matam/{reference}_NR{cluster_limit}/assembly/{sample}',
-        db = 'reference/{reference}/matam/{reference}_NR{cluster_limit}'
+        db = 'reference/{reference}/matam/{reference}_NR{cluster_limit}',
+        min_scaffold_length = config['matam'].get('min_scaffold_length', 500)
     threads:
         int(config['threads'])
     log:
@@ -27,6 +28,7 @@ rule matam_assemble:
             --out_dir {params.outdir} \
             --cpu {threads} \
             --max_memory 120000 \
+            --min_scaffold_length {params.min_scaffold_length} \
          > {log.stdout} \
         2> {log.stderr} \
         '''
@@ -53,7 +55,7 @@ rule matam_prepare_reference:
         '''
 
 
-def matam_assemblies(wildcards):
+def all_matam_assemblies(wildcards):
     gene_file_pattern = re.compile(config['gene_pattern'][wildcards.gene])
     gene_sids = list(filter(gene_file_pattern.match, pipeline.sample))
     return expand('matam/{gene}_NR{cluster_limit}/assembly/{sample}/final_assembly.fa',
@@ -62,12 +64,11 @@ def matam_assemblies(wildcards):
 
 rule matam_join_assemblies:
     input:
-        matam_assemblies = matam_assemblies
+        matam_assemblies = all_matam_assemblies
     output:
         assembly = 'matam/{gene}_NR{cluster_limit}/joined/assembly.fa',
         counts = 'matam/{gene}_NR{cluster_limit}/joined/assembly.counts.tsv',
-        ratios = 'matam/{gene}_NR{cluster_limit}/joined/assembly.ratios.tsv',
-        matam/fhs_NR99/joined/assembly.ratios.tsv
+        ratios = 'matam/{gene}_NR{cluster_limit}/joined/assembly.ratios.tsv'
     run:
         # Extract sequences and sample ids from fasta files
         def extract_contigs(assembly):
