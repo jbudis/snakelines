@@ -1,0 +1,30 @@
+
+rule zip_fastq:
+    input:
+        '{file}.fastq'
+    output:
+        temp('{file}.fastq.gz')
+    threads:
+        int(config['threads'])
+    shell:
+        '''
+        pigz \
+            --keep \
+            --processes {threads} \
+            {input}
+        '''
+
+rule zip_fa:
+    input:
+        '{file}.fa'
+    output:
+        temp('{file}.fa.gz')
+    threads:
+        int(config['threads'])
+    shell:
+        '''
+        pigz \
+            --keep \
+            --processes {threads} \
+            {input}
+        '''
