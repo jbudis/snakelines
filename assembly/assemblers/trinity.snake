@@ -11,13 +11,13 @@ rule trinity_assemble:
         fastas = fastas_in_design,
         design = 'description/design/{design}.tsv'
     output:
-        fa = 'trinity-{design}/{design}.fa',
+        fa = 'trinity-{design}/contigs.fa',
         design = 'trinity-{design}/design/{design}.tsv'
     params:
         read_type = config['trinity']['read_type'],
         min_contig_len = config['trinity']['min_contig_len'],
         outdir = 'trinity-{design}',
-        fasta = 'trinity/Trinity.fasta'
+        fasta = 'trinity-{design}/Trinity.fasta'
     threads:
         int(config['threads'])
     log:

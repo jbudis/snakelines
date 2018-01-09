@@ -1,6 +1,6 @@
 read_type = config['kallisto']['read_type']
 
-rule remap_transcripts_spades:
+rule kallisto_remap_transcripts_spades:
     input:
         fasta = 'spades-transcript/{sample}/contigs.fa',
         index = 'spades-transcript/{sample}/contigs.idx',
@@ -26,7 +26,44 @@ rule remap_transcripts_spades:
             {input.r2}
         '''
 
-rule prepare_kallisto_index:
+def fastqs_in_design(wildcards):
+    design = 'description/design/{design}.tsv'.format(design=wildcards.design)
+    r1s = [line.strip().split('\t')[2] for line in open(design)]
+    r2s = [line.strip().split('\t')[3] for line in open(design)]
+    fastqs = []
+    for r1, r2 in zip(r1s, r2s):
+        fastqs.append(r1)
+        fastqs.append(r2)
+
+    return [fastq.format(read_type=read_type) for fastq in fastqs]
+
+rule kallisto_remap_transcripts_trinity:
+    input:
+        fasta = 'trinity-{design}/contigs.fa',
+        index = 'trinity-{design}/contigs.idx',
+        design = 'description/design/{design}.tsv',
+        fastqs = fastqs_in_design
+    output:
+        'trinity-{design}/kallisto/abundance.tsv'
+    params:
+        outdir = 'trinity-{design}/kallisto',
+        bootstrap_samples = config['kallisto']['bootstrap_samples']
+    log:
+        'trinity-{design}/kallisto/kallisto.log'
+    threads:
+        int(config['threads'])
+    shell:
+        '''
+        kallisto quant \
+            --index {input.index} \
+            --output-dir {params.outdir} \
+            --bootstrap-samples {params.bootstrap_samples} \
+            --threads {threads} \
+            {input.fastqs}
+        '''
+
+
+rule kallisto_prepare_index:
     input:
         fasta = '{fasta}.fa'
     output:
