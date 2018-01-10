@@ -6,6 +6,10 @@ include: config['snake_dir'] + '/preprocess/report/fastqc.snake'
 include: config['snake_dir'] + '/preprocess/trim_reads/trimmomatic.snake'
 include: config['snake_dir'] + '/preprocess/deduplication/fastuniq.snake'
 include: config['snake_dir'] + '/assembly/assemblers/trinity.snake'
+include: config['snake_dir'] + '/classification/classifiers/blast.snake'
+include: config['snake_dir'] + '/classification/report/blast_summary.snake'
+include: config['snake_dir'] + '/transcript/quantifiers/kallisto.snake'
+include: config['snake_dir'] + '/transcript/report/abundances.snake'
 
 design = config['trinity']['design']
 
@@ -17,4 +21,17 @@ rule process:
         'reads/deduplicated/stats/summary.html',
 
         # Contigs
-        'trinity/{design}.Trinity.fa'.format(design=design)
+        expand('trinity-{design}/contigs.fa',
+                design=design),
+
+        # Annotations for contigs
+        expand('trinity-{design}/blast/contigs.html',
+                design=design) if config['blast']['enabled'] else [],
+
+        # Read quantification
+        expand('trinity-{design}/kallisto/abundance.tsv',
+                design=design),
+
+        # HTML report
+        expand('trinity-{design}/kallisto/contigs.html',
+                design=design)

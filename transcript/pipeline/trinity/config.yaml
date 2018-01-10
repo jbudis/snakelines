@@ -1,4 +1,4 @@
-sample_pattern: rna-totl.*
+sample_pattern: .*
 
 trim:
     read_type: original
@@ -14,3 +14,14 @@ trinity:
     read_type: deduplicated
     design: rna-totl
     min_contig_len: 200
+
+blast:
+    protein: False
+    enabled: True
+    max_target_seqs: 25
+    report:
+        max_query_seqs: 20000
+
+kallisto:
+    read_type: deduplicated
+    bootstrap_samples: 100
