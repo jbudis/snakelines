@@ -1,3 +1,6 @@
+import pandas as pd
+import os
+
 read_type = config['kallisto']['read_type']
 
 rule kallisto_remap_transcripts_spades:
@@ -7,7 +10,7 @@ rule kallisto_remap_transcripts_spades:
         r1 = 'reads/%s/{sample}_R1.fastq.gz' % read_type,
         r2 = 'reads/%s/{sample}_R2.fastq.gz' % read_type
     output:
-        'spades-transcript/{sample}/kallisto/abundance.tsv'
+        abundances = 'spades-transcript/{sample}/kallisto/abundance.tsv'
     params:
         outdir = 'spades-transcript/{sample}/kallisto',
         bootstrap_samples = config['kallisto']['bootstrap_samples']
@@ -26,30 +29,70 @@ rule kallisto_remap_transcripts_spades:
             {input.r2}
         '''
 
-def fastqs_in_design(wildcards):
+def abundances_from_design(wildcards):
     design = 'description/design/{design}.tsv'.format(design=wildcards.design)
-    r1s = [line.strip().split('\t')[2] for line in open(design)]
-    r2s = [line.strip().split('\t')[3] for line in open(design)]
-    fastqs = []
-    for r1, r2 in zip(r1s, r2s):
-        fastqs.append(r1)
-        fastqs.append(r2)
+    sids = [line.split('\t')[1] for line in open(design) if line]
+    return expand('trinity-{design}/kallisto/{sample}/abundance.tsv',
+                   design=wildcards.design, sample=sids)
 
-    return [fastq.format(read_type=read_type) for fastq in fastqs]
+def fastqs_from_design(wildcards):
+    design = 'description/design/{design}.tsv'.format(design=wildcards.design)
+    fastqs = pd.read_csv(design, index_col=1, sep='\t', header=None)
+    sid = wildcards.sample
+    return fastqs.loc[sid][2].format(read_type=read_type), fastqs.loc[sid][3].format(read_type=read_type)
+
+rule kallisto_aggregate_trinity:
+    input:
+        abundances = abundances_from_design
+    output:
+        aggregate = 'trinity-{design}/kallisto/abundance.tsv',
+        tpm = 'trinity-{design}/kallisto/tpm.tsv',
+        est = 'trinity-{design}/kallisto/counts.tsv'
+    run:
+        def load_abundances(abund_file):
+            sid = abund_file.split('/')[-2]
+            abund = pd.read_csv(abund_file, sep='\t')
+            abund = abund[[col for col in abund.columns if col != 'eff_length']]
+            abund.rename(columns={'est_counts': '%s_est_counts' % sid,
+                                  'tpm': '%s_tpm' % sid},
+                                  inplace=True)
+            return abund
+
+        abund_list = [load_abundances(abund_file) for abund_file in input.abundances]
+        abunds = abund_list[0]
+        MERGE_ATTRS = ['target_id', 'length']
+        for abund in abund_list[1:]:
+            abunds = abunds.merge(how='outer', right=abund,
+                                  left_on=MERGE_ATTRS, right_on=MERGE_ATTRS)
+
+        abunds.fillna(0, inplace=True)
+        est_cols = [col for col in abunds.columns if col.endswith('_est_counts')]
+        tpm_cols = [col for col in abunds.columns if col.endswith('_tpm')]
+
+        tpms = abunds[[col for col in abunds.columns if not col in est_cols]]
+        tpms.rename(columns={col: col[:col.rfind('_tpm')] for col in tpm_cols}, inplace=True)
+        tpms.to_csv(output.tpm, sep='\t', index=None)
+
+        ests = abunds[[col for col in abunds.columns if not col in tpm_cols]]
+        ests.rename(columns={col: col[:col.rfind('_est_counts')] for col in est_cols}, inplace=True)
+        ests.to_csv(output.est, sep='\t', index=None)
+
+        os.symlink(os.path.basename(output.tpm), output.aggregate)
+
 
 rule kallisto_remap_transcripts_trinity:
     input:
         fasta = 'trinity-{design}/contigs.fa',
         index = 'trinity-{design}/contigs.idx',
         design = 'description/design/{design}.tsv',
-        fastqs = fastqs_in_design
+        fastqs = fastqs_from_design
     output:
-        'trinity-{design}/kallisto/abundance.tsv'
+        abundance = 'trinity-{design}/kallisto/{sample}/abundance.tsv'
     params:
-        outdir = 'trinity-{design}/kallisto',
+        outdir = 'trinity-{design}/kallisto/{sample}',
         bootstrap_samples = config['kallisto']['bootstrap_samples']
     log:
-        'trinity-{design}/kallisto/kallisto.log'
+        'trinity-{design}/kallisto/{sample}/kallisto.log'
     threads:
         int(config['threads'])
     shell:
