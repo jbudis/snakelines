@@ -14,3 +14,19 @@ rule unzip_fastq:
             --processes {threads} \
             {input}
         '''
+
+rule unzip_fa:
+    input:
+        '{file}.fa.gz'
+    output:
+        temp('{file}.fa')
+    threads:
+        int(config['threads'])
+    shell:
+        '''
+        pigz \
+            --decompress \
+            --keep \
+            --processes {threads} \
+            {input}
+        '''

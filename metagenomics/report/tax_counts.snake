@@ -1,0 +1,17 @@
+import pandas as pd
+
+rule custom_group_otus_with_same_taxonomy:
+    input:
+        counts = '{path}/{otus}.{count_typ}.tsv',
+        taxes = '{path}/{otus}.tax'
+    output:
+        counts = '{path}/{otus}.{count_typ, counts|ratios}.tax.tsv'
+    run:
+        counts = pd.read_csv(input.counts, sep='\t', index_col=0)
+        taxes = dict([line.strip().split('\t') for line in open(input.taxes)])
+        uniq_taxes = sorted(set(taxes.values()))
+        tax_table = pd.DataFrame(0, index=counts.index, columns=uniq_taxes)
+        for otu in counts.columns:
+            tax_table[taxes[otu]] += counts[otu]
+
+        tax_table.to_csv(output.counts, sep='\t')

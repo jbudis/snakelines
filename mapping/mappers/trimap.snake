@@ -1,0 +1,57 @@
+kmer = config['kmer']
+limit = config['repetition_limit']
+
+rule trimap_map_reads:                            
+    input:
+        r1 = 'reads/{read_type}/{sample}_R1.fastq',
+        r2 = 'reads/{read_type}/{sample}_R2.fastq',
+        ref = 'reference/{reference}/{reference}.fa',
+        index = 'reference/{reference}/trimap_index/{reference}.%d.ti' % kmer
+    output:
+        sam = temporary('trimap/{reference}/{read_type}/{sample}.trimapsam')
+    log:
+        'trimap/{reference}/{read_type}/log/{sample}.map'
+    benchmark:
+        'trimap/{reference}/{read_type}/benchmark/{sample}.txt'
+    threads:
+        int(config['threads'])
+    shell:
+        '''
+        hostname > {log}.host;
+        build/mapper -x {input.index} -1 {input.r1} -2 {input.r2} -i {input.ref} -S {output.sam} -n %d -p {threads} > {log} 2> {log}
+        ''' % kmer
+        
+rule trimapsam_to_bam:
+    input:
+        sam = 'trimap/{reference}/{read_type}/{sample}.trimapsam',
+        ref = 'reference/{reference}/{reference}.fa' 
+    output:
+        bam = 'trimap/{reference}/{read_type}/{sample}.bam'
+    shell:
+        '''
+        samtools view -bhT {input.ref} {input.sam} > {output.bam}
+        '''
+
+rule fa_to_plain:
+    input:
+        'reference/{reference}/{reference}.fa'
+    output:
+        'reference/{reference}/{reference}.plain'
+    shell:
+        '''
+        grep -v "^>" {input} | awk 'BEGIN {{ ORS="" }} {{ print }}' > {output}
+        '''
+
+rule trimap_index:
+    input:
+        'reference/{reference}/{reference}.plain'
+    output:
+        'reference/{reference}/trimap_index/{reference}.%d.ti' % kmer
+    log:
+        'reference/{reference}/log/trimap.log'
+    threads:
+        int(config['threads'])
+    shell:
+        '''
+        build/index -b {input} -n %d -s {output} -m %d > {log} 2> {log}
+        ''' % (kmer, limit)
