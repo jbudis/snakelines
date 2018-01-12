@@ -23,7 +23,8 @@ rule abundances_report:
         counts['homologues'] = None
         with open(input.blast) as blast_results:
             for transcript in NCBIXML.parse(blast_results):
-                if transcript.query not in counts.index:
+                query = transcript.query.split()[0]
+                if query not in counts.index:
                     continue
                 aligns = transcript.alignments
                 titles = [align.title for align in aligns]
@@ -33,7 +34,7 @@ rule abundances_report:
                 for gbid, name in zip(gbids, names):
                     links.append('<a href="https://www.ncbi.nlm.nih.gov/nuccore/%s">%s</a>' % (gbid, name))
 
-                counts.set_value(transcript.query, 'homologues', '<br/>'.join(links))
+                counts.set_value(   query, 'homologues', '<br/>'.join(links))
 
 
         # Generate report
