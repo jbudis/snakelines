@@ -1,0 +1,9 @@
+rule bam_to_sam:
+    input:
+        '{path}/{sample}.bam'
+    output:
+        '{path}/{sample}.sam'
+    shell:
+        '''
+        samtools view -h {input} > {output}
+        '''

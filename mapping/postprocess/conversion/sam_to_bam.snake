@@ -1,9 +1,9 @@
-rule convert_to_bam:
+rule sam_to_bam:
     input:
         '{path}/{sample}.sam'
     output:
         '{path}/{sample}.bam'
     shell:
         '''
-        samtools view -bS {input} > {output}
+        samtools view -bhS {input} > {output}
         '''

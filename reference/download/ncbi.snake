@@ -48,6 +48,7 @@ rule ncbi_gene_database_download:
         min_tax_level = config['ncbi']['download']['min_tax_level'] if 'min_tax_level' in config['ncbi']['download'] else 0,
         email = config['ncbi']['download']['email'],
         max_records = config['ncbi']['download']['max_records'],
+        batch_size = int(config['ncbi']['download']['batch_size']),
         tmp_fa = 'downloaded/tmp/{gene}.fa',
         tmp_tax = 'downloaded/tmp/{gene}.tax',
         tmp_dir = 'downloaded/tmp'
@@ -68,14 +69,14 @@ rule ncbi_gene_database_download:
         with open(params.tmp_fa, 'w') as fa_out, open(params.tmp_tax, 'w') as tax_out:
 
             Entrez.email = params.email
-
-            handle = Entrez.esearch(db="nucleotide", term=query, idtype='acc', retmax=params.max_records, usehistory='y')
+            print('Searching query {query}'.format(query=query))
+            handle = Entrez.esearch(db="nuccore", term=query, idtype='acc', retmax=params.max_records, usehistory='y')
             record = Entrez.read(handle)
             handle.close()
 
             webenv = record["WebEnv"]
             query_key = record["QueryKey"]
-            batch = 100
+            batch = params.batch_size
             genome_num = 0
             gene_num = 0
 

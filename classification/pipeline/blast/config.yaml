@@ -1,0 +1,9 @@
+sample_pattern: .*
+
+blast:
+    fasta_dir: representatives
+    protein: True
+    enabled: True
+    max_target_seqs: 25
+    report:
+        max_query_seqs: 20000

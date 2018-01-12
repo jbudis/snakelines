@@ -1,0 +1,12 @@
+configfile: srcdir('config.yaml')
+
+fasta_dir = config['blast']['fasta_dir']
+pipeline = glob_wildcards('%s/{sample, %s}.fa' % (fasta_dir, config['sample_pattern']))
+
+include: config['snake_dir'] + '/classification/classifiers/blast.snake'
+include: config['snake_dir'] + '/classification/report/blast_summary.snake'
+
+rule process:
+    input:
+        expand('{fasta_dir}/blast/{sample}.html',
+                fasta_dir=fasta_dir, sample=pipeline.sample)

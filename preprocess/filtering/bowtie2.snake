@@ -1,6 +1,6 @@
 include: config['snake_dir']  + '/mapping/mappers/indices/bowtie2_index.snake'
 
-rule filter_reads:
+rule bowtie2_filter_reads:
     input:
         r1 = 'reads/%s/{sample}_R1.fastq.gz' % config['prefilter']['read_type'],
         r2 = 'reads/%s/{sample}_R2.fastq.gz' % config['prefilter']['read_type'],
@@ -11,7 +11,8 @@ rule filter_reads:
     log:
         'reads/filtered/log/{sample}.map'
     params:
-        indices = ['reference/%s/bowtie2_index/%s' % (ref, ref) for ref in config['prefilter']['references']]
+        indices = ['reference/%s/bowtie2_index/%s' % (ref, ref) for ref in config['prefilter']['references']],
+        keep_param = '--al-conc-gz' if 'keep' in config['prefilter'] and config['prefilter']['keep'] else '--un-conc-gz'
     threads:
         int(config['threads'])
     shell:
@@ -35,7 +36,7 @@ rule filter_reads:
                 -2 $R2_IN \
                 --very-sensitive \
                 --threads {threads} \
-                --un-conc-gz $R_MASK \
+                {params.keep_param} $R_MASK \
             > /dev/null \
             2> $REF_DIR/{wildcards.sample}.log
 
