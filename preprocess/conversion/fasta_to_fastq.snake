@@ -1,0 +1,15 @@
+rule fasta_to_fastq:
+    input:
+        fasta = '{path}/{sample}.fa'
+    output:
+        fastq = '{path}/{sample}.fastq'
+    params:
+        default_qual = 'A'
+    run:
+        with open(output.fastq, 'w') as out, open(input.fasta, 'r') as inp:
+            for i,line in enumerate(inp):
+                if i % 2 == 0:
+                    name = line
+                    continue
+                if i % 2 == 1:
+                    out.write('@' + name[1:] + line + '+\n' + params.default_qual*len(line.strip()) + '\n')

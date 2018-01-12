@@ -7,7 +7,7 @@ rule bowtie2_map_reads:
         index = 'reference/{reference}/bowtie2_index/{reference}.1.bt2',
         reffasta = 'reference/{reference}/{reference}.fa'
     output:
-        bam = 'bowtie2/{reference}/{sample}.bam'
+        bam = 'bowtie2/{reference}/%s/{sample}.bam' % config['mapping']['read_type']
     log:
         'bowtie2/{reference}/log/{sample}.map'
     params:
