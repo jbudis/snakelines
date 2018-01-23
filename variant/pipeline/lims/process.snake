@@ -1,9 +1,7 @@
-# FIXME - this should be derived from the last Snakemake tag
-VERSION = 'v0.1'
-
 configfile: srcdir('config.yaml')
 
 sample = config['sample']
+version = config['version']
 analysis_id = sample.split('_')[-1]
 
 pipeline = glob_wildcards('reads/original/{sample,%s}_R1.fastq.gz' % sample)
@@ -33,18 +31,25 @@ rule process:
                      reference=reference, panel=panel),
 
         # Variant files
-        #expand('bowtie2/{reference}/vardict-{panel}/{sample}.germline.dbsnp.vcf',
-        #        reference=reference, sample=pipeline.sample, panel=panel),
+        vcf = 'bowtie2/{reference}/vardict-{panel}/{sample}.germline.vcf'.format(
+                      reference=reference, sample=sample, panel=panel)
+
+
 
     output:
         # Qualimap reports
         qualimap = 'report/variant/{sample}/{version}/qualimapReport.html'.format(
-                    sample=sample, version=VERSION),
+                    sample=sample, version=version),
 
-        success_flag = 'report/variant/{sample}/{version}/success.txt'
+        vcf = 'report/variant/{sample}/{version}/{sample}.vcf'.format(
+                    sample=sample, version=version),
+
+        success_flag = 'report/variant/{sample}/{version}/success.txt'.format(
+                    sample=sample, version=version),
 
     shell:
         '''
         ln -s {input.qualimap} {output.qualimap}
+        ln -s {input.vcf} {output.vcf}
         touch output.success_flag
         '''
