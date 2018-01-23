@@ -1,4 +1,4 @@
-include: config['snake_dir'] + '/preprocess/conversion/gzip.snake'
+include: config['snake_dir'] + '/preprocess/conversion/unzip.snake'
 
 """
 Downsample the fastq. Take first {config['subsample']['read_count']} reads, but do not take first {config['subsample']['skip_first']}.

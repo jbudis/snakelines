@@ -7,17 +7,17 @@ rule bwa_map_paired_reads:
         index = 'reference/{reference}/bwa_index/{reference}.bwt',
         reffasta = 'reference/{reference}/{reference}.fa'
     output:
-        bam = 'bwa/{reference}/{sample}.bam'
+        bam = 'bwa/{reference}/%s/{sample}.bam' % config['mapping']['read_type']
     log:
-        'bwa/{reference}/log/{sample}.map'
+        'bwa/{reference}/%s/log/{sample}.map' % config['mapping']['read_type']
     params:
         index = 'reference/{reference}/bwa_index/{reference}',
-        tmpdir = 'bwa/{reference}/tmp/',
+        tmpdir = 'bwa/{reference}/%s/tmp/' % config['mapping']['read_type'],
         additional = config['mapping']['params'] if 'params' in config['mapping'] else '',
         min_map_quality = config['mapping']['min_map_quality'] if 'min_map_quality' in config['mapping'] else 0,
         skip_flags = config['mapping']['skip_flags'] if 'skip_flags' in config['mapping'] else 0,
     benchmark:
-        'bwa/{reference}/benchmark/{sample}.txt'
+        'bwa/{reference}/%s/benchmark/{sample}.txt' % config['mapping']['read_type']
     threads:
         int(config['threads'])
     shell:
