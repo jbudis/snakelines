@@ -25,5 +25,5 @@ rule process:
 
         # Mapping quality summaries
         'bowtie2/{reference}/stats-wgs/summary.tsv'.format(reference=reference),
-        'bowtie2/{reference}/counts/counts.tsv'.format(reference=reference),
-        'bowtie2/{reference}/counts/ratios.tsv'.format(reference=reference)
+        'bowtie2/{reference}/counts/mapping.counts.tsv'.format(reference=reference),
+        'bowtie2/{reference}/counts/mapping.ratios.tsv'.format(reference=reference)

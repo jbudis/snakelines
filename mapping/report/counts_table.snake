@@ -26,8 +26,8 @@ rule custom_counts_table_report:
         bams = bam_files,
         bais = bai_files
     output:
-        counts = '{mapper}/{reference}/counts/counts.tsv',
-        ratios = '{mapper}/{reference}/counts/ratios.tsv'
+        counts = '{mapper}/{reference}/counts/mapping.counts.tsv',
+        ratios = '{mapper}/{reference}/counts/mapping.ratios.tsv'
     run:
         def extract_sid(bam):
             return os.path.basename(bam)[:-4]
