@@ -1,17 +1,40 @@
 import pandas as pd
 
-rule custom_group_otus_with_same_taxonomy:
-    input:
-        counts = '{path}/{otus}.{count_typ}.tsv',
-        taxes = '{path}/{otus}.tax'
-    output:
-        counts = '{path}/{otus}.{count_typ, counts|ratios}.tax.tsv'
-    run:
+def group_otus(input, output, params):
         counts = pd.read_csv(input.counts, sep='\t', index_col=0)
-        taxes = dict([line.strip().split('\t') for line in open(input.taxes)])
-        uniq_taxes = sorted(set(taxes.values()))
-        tax_table = pd.DataFrame(0, index=counts.index, columns=uniq_taxes)
+        taxes = {}
+        for line in open(input.taxes):
+            ref, tax = line.strip().split('\t')
+            taxes[ref] = tax
+            if ' ' in ref:
+                taxes[ref[:ref.find(' ')]] = tax
+
+        tax_table = pd.DataFrame(index=counts.index)
         for otu in counts.columns:
-            tax_table[taxes[otu]] += counts[otu]
+            otu_tax = taxes[otu]
+            if otu_tax in tax_table:
+                tax_table[otu_tax] += counts[otu]
+            else:
+                tax_table[otu_tax] = counts[otu]
 
         tax_table.to_csv(output.counts, sep='\t')
+
+rule custom_group_otus_with_same_taxonomy:
+    input:
+        counts = '{path}/{otus}.{count_type}.tsv',
+        taxes = '{path}/{otus}.tax'
+    output:
+        counts = '{path}/{otus}.{count_type, counts|ratios}.tax.tsv'
+    run:
+        group_otus(input, output, params)
+
+rule custom_group_mappings_with_same_taxonomy:
+    input:
+        counts = '{mapper}/{reference}/counts/mapping.{count_type}.tsv',
+        taxes = 'reference/{reference}/{reference}.tax'
+    output:
+        counts = '{mapper}/{reference}/counts/mapping.{count_type}.tax.tsv'
+    run:
+        group_otus(input, output, params)
+
+ruleorder: custom_group_mappings_with_same_taxonomy > custom_group_otus_with_same_taxonomy
