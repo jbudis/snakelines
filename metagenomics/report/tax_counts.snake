@@ -1,5 +1,18 @@
 import pandas as pd
 
+shorten_species_names = 'tax_counts' in config and 'shorten_species_names' in config['tax_counts'] \
+                         and config['tax_counts']['shorten_species_names']
+
+def shorten_species(tax):
+    subtaxes = tax.split(';')
+    species_parts = subtaxes[-1].split(' ')
+    if len(species_parts) <= 2:
+        return tax
+    else:
+        subtaxes[-1] = ' '.join(species_parts[:2])
+        return ';'.join(subtaxes)
+
+
 def group_otus(input, output, params):
         counts = pd.read_csv(input.counts, sep='\t', index_col=0)
         taxes = {}
@@ -12,6 +25,8 @@ def group_otus(input, output, params):
         tax_table = pd.DataFrame(index=counts.index)
         for otu in counts.columns:
             otu_tax = taxes[otu]
+            if shorten_species_names:
+                otu_tax = shorten_species(otu_tax)
             if otu_tax in tax_table:
                 tax_table[otu_tax] += counts[otu]
             else:
