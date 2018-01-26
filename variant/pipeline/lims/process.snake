@@ -1,3 +1,5 @@
+shell.prefix("set +o pipefail; ")
+
 configfile: srcdir('config.yaml')
 
 sample = config['sample']
@@ -49,7 +51,7 @@ rule process:
 
     shell:
         '''
-        ln -s {input.qualimap} {output.qualimap}
-        ln -s {input.vcf} {output.vcf}
-        touch output.success_flag
+        cp {input.qualimap} {output.qualimap}
+        cp {input.vcf} {output.vcf}
+        touch {output.success_flag}
         '''
