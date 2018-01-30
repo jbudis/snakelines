@@ -6,7 +6,7 @@ gene_pattern:
     prtp: .*-prtP-.*
     bcat: .*-bcaT-.*
     pepx: .*-pepX-.*
-    pepn: '.*-pepN.*'
+    pepn: .*-pepN.*
 
 join:
     read_type: trimmed
