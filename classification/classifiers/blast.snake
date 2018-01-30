@@ -29,15 +29,32 @@ rule blast_tsv:
     threads:
         int(config['threads'])
     params:
+        nohead = '{indir}/blast/{name}.blast.tsv.tmp',
+        header = '{indir}/blast/{name}.blast.tsv.tmp.header',
         max_target_seqs = config["blast"]["max_target_seqs"]
     shell:
         '''
+        set +e pipefail
+        HEADER="qseqid qacc \
+                sacc staxid stitle \
+                pident evalue length mismatch \
+                gapopen qstart qend \
+                sstart send"
+
+        # TODO really ugly way to get header to the blast table, find better way
+        HEADER=`echo "$HEADER" | sed -E -e  's/[[:blank:]]+/\t/g'`
+        echo $HEADER  > {params.header}
+        sed -i 's/\s/\t/g' {params.header}
+
         blastn \
             -db /data/genome/metagenome/blast/nt/17-01-17/nt \
             -query {input} \
-            -out {output} \
-            -outfmt 6 \
+            -out {params.nohead} \
+            -outfmt "6 `echo $HEADER`"
             -num_threads {threads} \
             -max_target_seqs {params.max_target_seqs}
+
+        cat {params.header} {params.nohead} > {output}
+        rm {params.header} {params.nohead}
         '''
 
