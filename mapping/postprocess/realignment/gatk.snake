@@ -4,7 +4,7 @@ include: config['snake_dir'] + '/mapping/postprocess/realignment/gatk.snake'
 map_type = config['mapping']['realign']['map_type']
 map_subdir = '%s/' % map_type if map_type else ''
 
-rule intervals_for_realign:
+rule gatk_intervals_for_realign:
     input:
         bam = '{mapper}/{reference}/%s{sample}.bam' % map_subdir,
         bai = '{mapper}/{reference}/%s{sample}.bam.bai' % map_subdir,
@@ -26,7 +26,7 @@ rule intervals_for_realign:
         > {log}
         '''
 
-rule realign:
+rule gatk_realign:
     input:
         bam = '{mapper}/{reference}/%s{sample}.bam' % map_subdir,
         intervals = '{mapper}/{reference}/realign/{sample}.intervals',
@@ -42,5 +42,6 @@ rule realign:
             -I {input.bam} \
             -targetIntervals {input.intervals} \
             -o {output.bam} \
+            --disable_bam_indexing \
         > {log}
         '''
