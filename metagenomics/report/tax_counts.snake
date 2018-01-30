@@ -17,7 +17,11 @@ def group_otus(input, output, params):
         counts = pd.read_csv(input.counts, sep='\t', index_col=0)
         taxes = {}
         for line in open(input.taxes):
-            ref, tax = line.strip().split('\t')
+            # FIXME should not happen - fix tax file preparation
+            ref, tax = line.split('\t')
+            tax = tax.strip()
+            tax = tax if tax else 'Unknown'
+
             taxes[ref] = tax
             if ' ' in ref:
                 taxes[ref[:ref.find(' ')]] = tax
