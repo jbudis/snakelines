@@ -8,9 +8,15 @@ def shorten_species(tax):
     species_parts = subtaxes[-1].split(' ')
     if len(species_parts) <= 2:
         return tax
-    else:
-        subtaxes[-1] = ' '.join(species_parts[:2])
-        return ';'.join(subtaxes)
+    if ' subsp. ' in subtaxes[-2]:
+        subtaxes = subtaxes[:-1]
+
+    subtaxes[-1] = ' '.join(species_parts[:2])
+
+    if subtaxes[-1] == subtaxes[-2]:
+        subtaxes = subtaxes[:-1]
+
+    return ';'.join(subtaxes)
 
 
 def group_otus(input, output, params):
