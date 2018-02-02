@@ -1,4 +1,6 @@
 import pickle
+import pandas as pd
+from Bio import SeqIO
 
 is_protein = 'protein' in config['blast'] and config['blast']['protein']
 
@@ -37,7 +39,7 @@ rule blast_tsv:
     shell:
         '''
         set +e pipefail
-        HEADER="qseqid qacc \
+        HEADER="qseqid \
                 sacc staxid stitle \
                 pident evalue length mismatch \
                 gapopen qstart qend \
@@ -88,3 +90,45 @@ rule blast_annotate_with_taxonomy:
                 items = items[:tax_col] + [to_insert] + items[tax_col:]
                 out_blast.write('\t'.join(items))
                 out_blast.write('\n')
+
+rule blast_filter_by_kingdom:
+    input:
+        blast = '{indir}/blast/{name}.blast.tax.tsv'
+    output:
+        blast = '{indir}/blast/{name}.blast.tax.{kingdom, [a-z]+}.tsv'
+    run:
+        with open(input.blast) as in_blast, open(output.blast, 'w') as out_blast:
+            for i, line in enumerate(in_blast):
+                items = line.strip().split("\t")
+                if i == 0:
+                    tax_col = items.index('taxonomy')
+                else:
+                    tax = items[tax_col].lower()
+                    if tax.startswith(wildcards.kingdom):
+                        out_blast.write(line)
+
+                out_blast.write(line)
+
+rule blast_extract_contigs_by_kingdom:
+    input:
+        blast = '{indir}/blast/{name}.blast.tax.{kingdom}.tsv',
+        fasta = '{indir}/{name}.fa'
+    output:
+        fasta = '{indir}/{name}.blast.tax.{kingdom}.fa'
+    run:
+        # Store all fasta contigs into memory
+        contigs = {contig.id: contig for contig in SeqIO.parse(input.fasta, 'fasta')}
+
+        already_stored = set()
+        with open(input.blast) as in_blast, open(output.fasta, 'w') as out_fasta:
+            for i, line in enumerate(in_blast):
+                items = line.strip().split("\t")
+                if i == 0:
+                    contig_id_col = items.index('qseqid')
+                else:
+                    contig_id = items[contig_id_col]
+                    if contig_id in already_stored:
+                        continue
+
+                    SeqIO.write(contigs[contig_id], out_fasta, 'fasta')
+                    already_stored.add(contig_id)
