@@ -79,7 +79,7 @@ rule blast_summary:
                     if qcov < min_similarity:
                         continue
 
-                    if len(alignments) > max_subject_seqs:
+                    if len(alignments) >= max_subject_seqs:
                         continue
 
                     alignments.append((items[gbid_col], items[tax_col], items[sname_col], qcov))
