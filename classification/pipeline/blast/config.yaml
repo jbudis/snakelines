@@ -7,3 +7,5 @@ blast:
     max_target_seqs: 25
     report:
         max_query_seqs: 20000
+        max_subject_seqs: 20000
+        min_query_coverage: 0.5
