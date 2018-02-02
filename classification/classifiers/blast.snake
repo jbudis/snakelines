@@ -104,8 +104,8 @@ rule blast_filter_by_kingdom:
                     tax_col = items.index('taxonomy')
                 else:
                     tax = items[tax_col].lower()
-                    if tax.startswith(wildcards.kingdom):
-                        out_blast.write(line)
+                    if not tax.startswith(wildcards.kingdom):
+                        continue
 
                 out_blast.write(line)
 
