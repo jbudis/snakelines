@@ -18,22 +18,10 @@ n_contigs = int(config['blast']['report']['max_query_seqs'])
 min_similarity = float(config['blast']['report']['min_query_coverage']) if 'min_query_coverage' in config['blast']['report'] else DEFAULT_MIN_QUERY_COVERAGE
 max_subject_seqs = float(config['blast']['report']['max_subject_seqs']) if 'max_subject_seqs' in config['blast']['report'] else DEFAULT_MAX_SUBJECT_SEQS
 
-rule blast_summary:
-    input:
-        contigs = '{indir}/{name}.fa',
-        blast = '{indir}/blast/{name}.blast.tax.tsv',
-        remap = '{indir}/mapping/{name}.bam',
-        remap_idx = '{indir}/mapping/{name}.bam.bai',
-        template = srcdir('templates/abundances.html')
-    output:
-        report = '{indir}/blast/{name}.html',
-        contigs = '{indir}/blast/individual/{name}.fa'
-    params:
-        contig_dir = '{indir}/blast/individual',
-        contig_fa = 'individual/{name}.fa'
-    run:
+def create_summary(input, output, params, show_coverage):
 
-        bam = pysam.AlignmentFile(input.remap, 'rb')
+        if show_coverage:
+            bam = pysam.AlignmentFile(input.remap, 'rb')
 
         # Split contigs.fasta file into separate fasta files, one for each contig - downloadable from HTML page
         if not os.path.exists(params.contig_dir):
@@ -98,14 +86,18 @@ rule blast_summary:
                 contig_info = {'Contig': contig_link,
                                'Homologues': '<br/>'.join(links),
                                'Length': contig_len,
-                               'Mapped reads': bam.count(contig=contig_name)}
+                               'Mapped reads': bam.count(contig=contig_name) if show_coverage else ''}
 
                 contig_items.append(contig_info)
 
-        bam.close()
+        if show_coverage:
+            bam.close()
 
         # Generate report
         columns = ['Contig', 'Length', 'Mapped reads', 'Homologues']
+        if not show_coverage:
+            columns.remove('Mapped reads')
+
         contigs = pd.DataFrame(contig_items)[columns]
         contigs.index = np.arange(1, len(contigs) + 1)
         contigs_table = contigs.to_html(escape=False).replace('<table ', '<table id="data" ')
@@ -116,6 +108,36 @@ rule blast_summary:
             out.write(TEMPLATE.format(contigs_table=contigs_table, contigs_fa=params.contig_fa))
 
         os.system('cp %s %s' % (input.contigs, output.contigs))
+
+rule blast_summary:
+    input:
+        contigs = '{indir}/{name}.fa',
+        blast = '{indir}/blast/{name}.blast.tax.tsv',
+        remap = '{indir}/mapping/{name}.bam',
+        remap_idx = '{indir}/mapping/{name}.bam.bai',
+        template = srcdir('templates/abundances.html')
+    output:
+        report = '{indir}/blast/{name}.html',
+        contigs = '{indir}/blast/individual/{name}.fa'
+    params:
+        contig_dir = '{indir}/blast/individual',
+        contig_fa = 'individual/{name}.fa'
+    run:
+        create_summary(input, output, params, show_coverage=True)
+
+rule blast_summary_without_coverage:
+    input:
+        contigs = '{indir}/{name}.fa',
+        blast = '{indir}/blast/{name}.blast.tax.tsv',
+        template = srcdir('templates/abundances.html')
+    output:
+        report = '{indir}/blast-nocoverage/{name}.html',
+        contigs = '{indir}/blast-nocoverage/individual/{name}.fa'
+    params:
+        contig_dir = '{indir}/blast-nocoverage/individual',
+        contig_fa = 'individual/{name}.fa'
+    run:
+        create_summary(input, output, params, show_coverage=False)
 
 
 rule blast_assign_taxonomy:
