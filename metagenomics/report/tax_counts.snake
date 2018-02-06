@@ -44,6 +44,25 @@ def group_otus(input, output, params):
 
         tax_table.to_csv(output.counts, sep='\t')
 
+
+rule custom_group_otus_with_same_species:
+    input:
+        counts = '{path}/{otus}.{count_type, counts|ratios}.tax.tsv'
+    output:
+        counts = '{path}/{otus}.{count_type, counts|ratios}.tax.species.tsv'
+    run:
+        tax_counts = pd.read_csv(input.counts, sep='\t', index_col=0)
+        species_counts = pd.DataFrame(index=tax_counts.index)
+        for tax in tax_counts.columns:
+            species = tax.split(';')[-1]
+            if species in species_counts:
+                species_counts[species] += tax_counts[tax]
+            else:
+                species_counts[species]  = tax_counts[tax]
+
+        species_counts.to_csv(output.counts, sep='\t')
+
+
 rule custom_group_otus_with_same_taxonomy:
     input:
         counts = '{path}/{otus}.{count_type}.tsv',
@@ -62,4 +81,4 @@ rule custom_group_mappings_with_same_taxonomy:
     run:
         group_otus(input, output, params)
 
-ruleorder: custom_group_mappings_with_same_taxonomy > custom_group_otus_with_same_taxonomy
+ruleorder: custom_group_otus_with_same_species > custom_group_mappings_with_same_taxonomy > custom_group_otus_with_same_taxonomy
