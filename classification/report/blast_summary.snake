@@ -9,7 +9,7 @@ import numpy as np
 import pickle
 import pandas as pd
 pd.set_option('display.max_colwidth', 1000000)
-pd.options.display.float_format = '{:.1f}'.format
+pd.options.display.float_format = '{:.3f}'.format
 
 DEFAULT_MIN_QUERY_COVERAGE = 0.5
 DEFAULT_MAX_SUBJECT_SEQS = 10
@@ -18,10 +18,7 @@ n_contigs = int(config['blast']['report']['max_query_seqs'])
 min_similarity = float(config['blast']['report']['min_query_coverage']) if 'min_query_coverage' in config['blast']['report'] else DEFAULT_MIN_QUERY_COVERAGE
 max_subject_seqs = float(config['blast']['report']['max_subject_seqs']) if 'max_subject_seqs' in config['blast']['report'] else DEFAULT_MAX_SUBJECT_SEQS
 
-def create_summary(input, output, params, show_coverage):
-
-        if show_coverage:
-            bam = pysam.AlignmentFile(input.remap, 'rb')
+def create_summary(input, output, params):
 
         # Split contigs.fasta file into separate fasta files, one for each contig - downloadable from HTML page
         if not os.path.exists(params.contig_dir):
@@ -86,22 +83,28 @@ def create_summary(input, output, params, show_coverage):
                 contig_info = {'Contig': contig_link,
                                'Homologues': '<br/>'.join(links),
                                'Length': contig_len,
-                               'Mapped reads': bam.count(contig=contig_name) if show_coverage else ''}
+                               'Contig Name': contig_name}
 
                 contig_items.append(contig_info)
 
-        if show_coverage:
+        # Generate report
+        contigs = pd.DataFrame(contig_items)
+        columns = ['Contig', 'Length', 'Homologues']
+
+        if hasattr(input, 'remap'):
+            bam = pysam.AlignmentFile(input.remap, 'rb')
+            columns.insert(2, 'Mapped reads')
+            contigs['Mapped reads'] = contigs['Contig Name'].apply(lambda contig_name: bam.count(contig=contig_name))
             bam.close()
 
-        # Generate report
-        columns = ['Contig', 'Length', 'Mapped reads', 'Homologues']
-        if not show_coverage:
-            columns.remove('Mapped reads')
+        if hasattr(input, 'pvalues'):
+            pvalues = pd.read_csv(input.pvalues, sep='\t', index_col=0)
+            columns.insert(2, 'Viral pvalue')
+            contigs['Viral pvalue'] = contigs['Contig Name'].apply(lambda cid: pvalues.get_value(index=cid, col='pvalue'))
 
-        contigs = pd.DataFrame(contig_items)[columns]
+        contigs = contigs[columns]
         contigs.index = np.arange(1, len(contigs) + 1)
         contigs_table = contigs.to_html(escape=False).replace('<table ', '<table id="data" ')
-
 
         TEMPLATE = open(input.template).read()
         with open(output.report, 'w') as out:
@@ -123,7 +126,7 @@ rule blast_summary:
         contig_dir = '{indir}/blast/individual',
         contig_fa = 'individual/{name}.fa'
     run:
-        create_summary(input, output, params, show_coverage=True)
+        create_summary(input, output, params)
 
 rule blast_summary_without_coverage:
     input:
@@ -137,7 +140,22 @@ rule blast_summary_without_coverage:
         contig_dir = '{indir}/blast-nocoverage/individual',
         contig_fa = 'individual/{name}.fa'
     run:
-        create_summary(input, output, params, show_coverage=False)
+        create_summary(input, output, params)
+
+rule blast_summary_viral:
+    input:
+        contigs = '{indir}/{name}.fa',
+        blast = '{indir}/blast/{name}.blast.tax.tsv',
+        template = srcdir('templates/abundances.html'),
+        pvalues = '{indir}/virfinder/{name}.pvalues.tsv'
+    output:
+        report = '{indir}/blast-viral/{name}.html',
+        contigs = '{indir}/blast-viral/individual/{name}.fa'
+    params:
+        contig_dir = '{indir}/blast-viral/individual',
+        contig_fa = 'individual/{name}.fa'
+    run:
+        create_summary(input, output, params)
 
 
 rule blast_assign_taxonomy:
