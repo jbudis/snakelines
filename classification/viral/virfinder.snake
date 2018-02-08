@@ -1,0 +1,18 @@
+rule virfinder_identify_viral_sequences:
+    input:
+        '{indir}/{name}.fa'
+    output:
+        '{indir}/virfinder/{name}.pvalues.tsv'
+    log:
+        out = '{indir}/virfinder/log/{name}.log',
+        err = '{indir}/virfinder/log/{name}.err'
+    params:
+        wrapper_script = srcdir('virfinder/virfinder_wrapper.R')
+    shell:
+        '''
+        Rscript {params.wrapper_script} \
+            {input} \
+            {output} \
+         > {log.out} \
+        2> {log.err}
+        '''
