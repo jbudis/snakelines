@@ -12,7 +12,9 @@
 
   <script type="text/javascript">
     $(document).ready(function() {{
-        $('#data').DataTable();
+        $('#data').DataTable( {{
+            "pageLength": 100
+        }} );
     }});
   </script>
   <title>Assembled contigs</title>
