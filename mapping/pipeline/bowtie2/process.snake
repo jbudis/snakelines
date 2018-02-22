@@ -1,6 +1,7 @@
 configfile: srcdir('config.yaml')
 
 pipeline = glob_wildcards('reads/original/{sample,%s}_R1.fastq.gz' % config['sample_pattern'])
+report_dir = 'report/{}'.format(config['report_dir'])
 
 include: config['snake_dir'] + '/preprocess/report/fastqc.snake'
 include: config['snake_dir'] + '/preprocess/trim_reads/trimmomatic.snake'
@@ -24,6 +25,17 @@ rule process:
                 reference=reference, sample=pipeline.sample),
 
         # Mapping quality summaries
-        'bowtie2/{reference}/stats-wgs/summary.tsv'.format(reference=reference),
-        'bowtie2/{reference}/counts/mapping.counts.tsv'.format(reference=reference),
-        'bowtie2/{reference}/counts/mapping.ratios.tsv'.format(reference=reference)
+        qualimaps = expand('bowtie2/{reference}/stats-wgs/{sample}/report.pdf',
+                            reference=reference, sample=pipeline.sample),
+
+        map_summary = 'bowtie2/{reference}/stats-wgs/summary.tsv'.format(reference=reference),
+        mapped_reads_abs = 'bowtie2/{reference}/counts/mapping.counts.tsv'.format(reference=reference),
+        mapped_reads_rel = 'bowtie2/{reference}/counts/mapping.ratios.tsv'.format(reference=reference)
+
+    output:
+        qualimaps = expand('{report_dir}/{reference}/{sample}/mapping-report.pdf',
+                            report_dir=report_dir, reference=reference, sample=pipeline.sample)
+
+    run:
+        for in_file, out_file in zip(input.qualimaps, output.qualimaps):
+            shutil.copy(in_file, out_file)
