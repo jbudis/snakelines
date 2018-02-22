@@ -14,6 +14,7 @@ rule qualimap_wgs_report:
         bai = '{bamdir}/{sample}.bam.bai'
     output:
         html = '{bamdir}/stats-wgs/{sample}/qualimapReport.html',
+        pdf  = '{bamdir}/stats-wgs/{sample}/report.pdf',
         text = '{bamdir}/stats-wgs/{sample}/genome_results.txt'
     params:
         outdir = '{bamdir}/stats-wgs/{sample}'
@@ -28,6 +29,7 @@ rule qualimap_wgs_report:
             -bam {input.bam} \
             --paint-chromosome-limits \
             -outdir {params.outdir} \
+            -outformat PDF:HTML \
             -nt {threads} \
         > {log}
         '''
@@ -39,6 +41,7 @@ rule qualimap_panel_report:
         bed = 'reference/{reference}/annotation/{panel}/regions.bed'
     output:
         html = '{mapper}/{reference}/stats-{panel}/{sample}/qualimapReport.html',
+        pdf  = '{mapper}/{reference}/stats-{panel}/{sample}/report.pdf',
         text = '{mapper}/{reference}/stats-{panel}/{sample}/genome_results.txt'
     params:
         outdir = '{mapper}/{reference}/stats-{panel}/{sample}'
@@ -52,8 +55,9 @@ rule qualimap_panel_report:
             --java-mem-size=100G \
             -bam {input.bam} \
             --feature-file {input.bed} \
-            -nt {threads} \
             -outdir {params.outdir} \
+            -outformat PDF:HTML \
+            -nt {threads} \
         > {log}
         '''
 
