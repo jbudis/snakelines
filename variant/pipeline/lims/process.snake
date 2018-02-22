@@ -29,8 +29,8 @@ rule process:
                     reference=reference, sample=sample),
 
         # Qualimap reports
-        qualimap = 'bowtie2/{reference}/stats-{panel}/summary.tsv'.format(
-                     reference=reference, panel=panel),
+        qualimap = 'bowtie2/{reference}/stats-{panel}/{sample}/report.pdf'.format(
+                     reference=reference, panel=panel, sample=sample),
 
         # Variant files
         vcf = 'bowtie2/{reference}/vardict-{panel}/{sample}.germline.vcf'.format(
@@ -40,14 +40,14 @@ rule process:
 
     output:
         # Qualimap reports
-        qualimap = 'report/variant/{sample}/{version}/qualimapReport.html'.format(
-                    sample=sample, version=version),
+        qualimap = 'report/variant/{version}/mapping-report.pdf'.format(
+                    version=version),
 
-        vcf = 'report/variant/{sample}/{version}/{sample}.vcf'.format(
-                    sample=sample, version=version),
+        vcf = 'report/variant/{version}/variants.vcf'.format(
+               version=version),
 
-        success_flag = 'report/variant/{sample}/{version}/success.txt'.format(
-                    sample=sample, version=version),
+        success_flag = 'report/variant/{version}/success.txt'.format(
+                        version=version),
 
     shell:
         '''
