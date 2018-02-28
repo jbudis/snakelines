@@ -8,6 +8,8 @@ rule rdp_classification:
     output:
         readtax = 'rdp/{gene,ssu|lsu|its_unite|its_warcup}/classification/{sample}/readtax.tsv',
         taxonomy = 'rdp/{gene,ssu|lsu|its_unite|its_warcup}/classification/{sample}/taxonomy.tsv'
+    params:
+        confidence = config['rdp']['confidence']
     shell:
         '''
         declare -A GENES=( [ssu]=16srrna [lsu]=fungallsu [its_unite]=fungalits_unite [its_warcup]=fungalits_warcup)
@@ -16,6 +18,7 @@ rule rdp_classification:
         rdpclassifier classify \
             --format fixrank \
             --gene $GENE \
+            --conf {params.confidence} \
             --hier_outfile {output.taxonomy} \
             --outputFile {output.readtax} \
             {input}

@@ -22,6 +22,7 @@ join:
 
 rdp:
     read_type: joined
+    confidence: 0.5
 
 report:
     tsv:
