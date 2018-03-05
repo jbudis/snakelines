@@ -18,6 +18,10 @@ n_contigs = int(config['blast']['report']['max_query_seqs'])
 min_similarity = float(config['blast']['report']['min_query_coverage']) if 'min_query_coverage' in config['blast']['report'] else DEFAULT_MIN_QUERY_COVERAGE
 max_subject_seqs = float(config['blast']['report']['max_subject_seqs']) if 'max_subject_seqs' in config['blast']['report'] else DEFAULT_MAX_SUBJECT_SEQS
 
+summary_columns_def = config['blast'].get('include', [])
+include_coverage  = 'coverage'  in summary_columns_def
+include_virfinder = 'virfinder' in summary_columns_def
+
 def create_summary(input, output, params):
 
         # Split contigs.fasta file into separate fasta files, one for each contig - downloadable from HTML page
@@ -114,11 +118,15 @@ def create_summary(input, output, params):
 
 rule blast_summary:
     input:
+        # Required files to generate blast summary
         contigs = '{indir}/{name}.fa',
         blast = '{indir}/blast/{name}.blast.tax.tsv',
-        remap = '{indir}/mapping/{name}.bam',
-        remap_idx = '{indir}/mapping/{name}.bam.bai',
-        template = srcdir('templates/abundances.html')
+        template = srcdir('templates/abundances.html'),
+
+        # Optional columns of the table
+        remap = '{indir}/mapping/{name}.bam'             if include_coverage  else [],
+        remap_idx = '{indir}/mapping/{name}.bam.bai'     if include_coverage  else [],
+        pvalues = '{indir}/virfinder/{name}.pvalues.tsv' if include_virfinder else []
     output:
         report = '{indir}/blast/{name}.html',
         contigs = '{indir}/blast/individual/{name}.fa'
@@ -128,34 +136,6 @@ rule blast_summary:
     run:
         create_summary(input, output, params)
 
-rule blast_summary_without_coverage:
-    input:
-        contigs = '{indir}/{name}.fa',
-        blast = '{indir}/blast/{name}.blast.tax.tsv',
-        template = srcdir('templates/abundances.html')
-    output:
-        report = '{indir}/blast-nocoverage/{name}.html',
-        contigs = '{indir}/blast-nocoverage/individual/{name}.fa'
-    params:
-        contig_dir = '{indir}/blast-nocoverage/individual',
-        contig_fa = 'individual/{name}.fa'
-    run:
-        create_summary(input, output, params)
-
-rule blast_summary_viral:
-    input:
-        contigs = '{indir}/{name}.fa',
-        blast = '{indir}/blast/{name}.blast.tax.tsv',
-        template = srcdir('templates/abundances.html'),
-        pvalues = '{indir}/virfinder/{name}.pvalues.tsv'
-    output:
-        report = '{indir}/blast-viral/{name}.html',
-        contigs = '{indir}/blast-viral/individual/{name}.fa'
-    params:
-        contig_dir = '{indir}/blast-viral/individual',
-        contig_fa = 'individual/{name}.fa'
-    run:
-        create_summary(input, output, params)
 
 
 rule blast_assign_taxonomy:

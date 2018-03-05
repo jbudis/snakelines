@@ -2,7 +2,22 @@ import pickle
 import pandas as pd
 from Bio import SeqIO
 
-is_protein = 'protein' in config['blast'] and config['blast']['protein']
+DEFAULT_QUERY_TYPE  = 'nucleotide'
+DEFAULT_TARGET_TYPE = 'nucleotide'
+
+query_type  = config['blast'].get('query_type',  DEFAULT_QUERY_TYPE)
+target_type = config['blast'].get('target_type', DEFAULT_TARGET_TYPE)
+
+blast_binary, blast_db_prefix = {
+    ('nucleotide', 'nucleotide'): ('blastn',  'nt'),
+    ('nucleotide', 'protein'):    ('blastx',  'nr'),
+    ('protein',    'nucleotide'): ('tblastn', 'nt'),
+    ('protein',    'protein'):    ('blastp',  'nr')
+}[(query_type, target_type)]
+
+blast_database = '/data/genome/metagenome/blast/{blast_db_prefix}/{database_version}/{blast_db_prefix}' \
+                        .format(blast_db_prefix=blast_db_prefix,
+                                database_version=config['blast']['database_version'])
 
 rule blast_xml:
     input:
@@ -13,11 +28,12 @@ rule blast_xml:
         int(config['threads'])
     params:
         max_target_seqs = config["blast"]["max_target_seqs"],
-        blast_bin = 'tblastn' if is_protein else 'blastn'
+        blast_binary = blast_binary,
+        blast_database = blast_database
     shell:
         '''
-        {params.blast_bin} \
-            -db /data/genome/metagenome/blast/nt/17-01-17/nt \
+        {params.blast_binary} \
+            -db {params.blast_database} \
             -query {input} \
             -out {output} \
             -outfmt 5 \
@@ -35,7 +51,9 @@ rule blast_tsv:
     params:
         nohead = '{indir}/blast/{name}.blast.tsv.tmp',
         header = '{indir}/blast/{name}.blast.tsv.tmp.header',
-        max_target_seqs = config["blast"]["max_target_seqs"]
+        max_target_seqs = config["blast"]["max_target_seqs"],
+        blast_binary = blast_binary,
+        blast_database = blast_database
     shell:
         '''
         set +e pipefail
@@ -50,12 +68,13 @@ rule blast_tsv:
         echo $HEADER  > {params.header}
         sed -i 's/\s/\t/g' {params.header}
 
-        blastn \
-            -db /data/genome/metagenome/blast/nt/17-01-17/nt \
+        {params.blast_binary} \
+            -db {params.blast_database} \
             -query {input} \
             -out {params.nohead} \
-            -outfmt "6 `echo $HEADER`"
+            -outfmt "6 `echo $HEADER`" \
             -num_threads {threads} \
+            /data/genome/metagenome/blast/nr/18-02-22/taxonomy/taxids \
             -max_target_seqs {params.max_target_seqs}
 
         cat {params.header} {params.nohead} > {output}
