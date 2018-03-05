@@ -1,29 +1,33 @@
-sample_pattern: .*
+sample_pattern: .*               # Regex expression which samples from reads/original should be analysed
 
-gene_pattern:
-    silva-ssu-128: .*-16Sr-.*
-    silva-lsu-128: .*-28Sr-.*
+gene_pattern:                    # Split samples into different groups based on reference gene database
+    silva-ssu-128: .*-16Sr-.*    # Here, for example all samples with -16Sr- in name would be analysed against
+    silva-lsu-128: .*-28Sr-.*    #       gene sequences stored in reference/silva-ssu-128/silva-ssu-128.fa
     prtp: .*-prtP-.*
     bcat: .*-bcaT-.*
     pepx: .*-pepX-.*
     pepn: .*-pepN.*
 
-join:
-    read_type: trimmed
+join:                            # Join paired reads to simulate single-end sequencing (Matam requires it)
+    read_type: trimmed           # What type of reads should be used for join (reads/<read_type>)
 
-matam:
-    cluster_limit: 99
-    min_scaffold_length: 500
+matam:                           # Assembler for metagenomic reads
+    cluster_limit: 99            # Cluster genes from the reference gene sequences - This is threshold for sequence similarity
+    min_scaffold_length: 500     # Shorter assembled scaffold would be filtered
 
-otu:
-    cluster_limit: 97
+otu:                             # Cluster assembled contigs according to the sequence similarity
+    cluster_limit: 97            # Similarity threshold to assign sequences into the same cluster
 
-iqtree:
-    model: GTR+I+G4
-
+iqtree:                          # Generate phylogenetic tree from contig clusters
+    model: GTR+I+G4              # Model to use for phylo tree generation - see iqtree documentation for more detail
 
 blast:
-    enabled: True
-    max_target_seqs: 25
+    enabled: True                # Do you want to generate blast report
+    query_type: nucleotide       # Nucleotide or protein, according to sequence type in input .fa files
+    target_type: nucleotide      # Nucleotide or protein, according to sequence type in blast database
+    database_version: 17-01-17   # Location of the database - /data/genome/metagenome/n[tr]/{database_version}/n[tr]
+    max_target_seqs: 25          # Number of best hit reference sequences from blast database for each input sequence
     report:
-        max_query_seqs: 200
+        max_query_seqs: 20000    # Number of input sequences that would be reported
+        max_subject_seqs: 25     # Number of reported best hit reference sequences from blast database
+        min_query_coverage: 0.5  # Filter hits with lesser aligned part of the input sequence to the reference
