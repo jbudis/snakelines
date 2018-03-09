@@ -1,6 +1,8 @@
+import shutil
 configfile: srcdir('config.yaml')
 
 pipeline = glob_wildcards('reads/original/{sample,%s}_R1.fastq.gz' % config['sample_pattern'])
+report_dir = 'report/{}'.format(config['report_dir'])
 
 include: config['snake_dir'] + '/preprocess/report/fastqc.snake'
 include: config['snake_dir'] + '/preprocess/trim_reads/trimmomatic.snake'
@@ -30,18 +32,41 @@ rule process:
                 sample=pipeline.sample),
 
         # Blast
-        expand('spades-%s/{sample}/blast/contigs.filtered.html' % assembly_type,
+        blast_html = expand('spades-%s/{sample}/blast/contigs.filtered.html' % assembly_type,
+                sample=pipeline.sample) if config['blast']['enabled'] else [],
+        blast_tsv  = expand('spades-%s/{sample}/blast/contigs.filtered.html.tsv' % assembly_type,
                 sample=pipeline.sample) if config['blast']['enabled'] else [],
 
         # Bandage
-        expand('spades-%s/{sample}/bandage/assembly_graph.png' % assembly_type,
-                sample=pipeline.sample) if config['bandage']['enabled'] else [],
+        bandage = expand('spades-%s/{sample}/bandage/assembly_graph.png' % assembly_type,
+                          sample=pipeline.sample) if config['bandage']['enabled'] else [],
 
         # Quast
-        expand('spades-%s/{sample}/quast-{quast_reference}/contigs.filtered/report.txt' % assembly_type,
-                sample=pipeline.sample, quast_reference=quast_reference) if config['quast']['enabled'] else [],
+        quast = expand('spades-%s/{sample}/quast-{quast_reference}/contigs.filtered/report.txt' % assembly_type,
+                        sample=pipeline.sample, quast_reference=quast_reference) if config['quast']['enabled'] else []
 
-        # Coverage of assembly
-        expand('spades-%s/{sample}/mapping/stats-wgs/contigs.filtered/qualimapReport.html' % assembly_type,
-                sample=pipeline.sample),
+    output:
+        blast_html = expand('{report_dir}/{sample}/contigs.filtered.html',
+                             report_dir=report_dir, sample=pipeline.sample),
+        blast_tsv  = expand('{report_dir}/{sample}/contigs.filtered.html.tsv',
+                             report_dir=report_dir, sample=pipeline.sample),
+        bandage    = expand('{report_dir}/{sample}/assembly_graph.png',
+                             report_dir=report_dir, sample=pipeline.sample)  if config['bandage']['enabled'] else [],
+    params:
+        in_blast_contigs  = expand('spades-%s/{sample}/blast/individual' % assembly_type,
+                                   sample=pipeline.sample) if config['blast']['enabled'] else [],
+        out_blast_contigs = expand('{report_dir}/{sample}/individual',
+                                    report_dir=report_dir, sample=pipeline.sample)
 
+    run:
+        for in_dir, out_dir in zip(params.in_blast_contigs, params.out_blast_contigs):
+            shutil.copytree(in_dir, out_dir)
+
+        for in_file, out_file in zip(input.blast_html, output.blast_html):
+            shutil.copy(in_file, out_file)
+
+        for in_file, out_file in zip(input.blast_tsv, output.blast_tsv):
+            shutil.copy(in_file, out_file)
+
+        for in_file, out_file in zip(input.bandage, output.bandage):
+            shutil.copy(in_file, out_file)

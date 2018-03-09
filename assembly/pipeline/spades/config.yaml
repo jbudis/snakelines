@@ -1,5 +1,7 @@
 sample_pattern: .*
-
+report_dir: public/01-spades      # Summaries would be copied at report/<report_dir> at the end of pipeline execution
+                                  # if you choose public/<subdir>, reports would be accessible from web through
+                                  # https://gen-clc.cusp.uniba.sk/<project>/<subdir>
 trim:
     read_type: original
     crop: 500
@@ -16,10 +18,21 @@ assembly:
     min_contig_len: 200
 
 blast:
-    enabled: True
-    max_target_seqs: 25
+    enabled: True                 # Do you want to generate blast reports?
+
+    query_type: nucleotide        # Nucleotide or protein, according to sequence type in input .fa files
+    target_type: protein          # Nucleotide or protein, according to sequence type in blast database
+    database_version: 18-02-22    # Location of the database would be determined as /data/genome/metagenome/n[tr]/{database_version}/n[tr]
+    max_target_seqs: 25           # Number of best hit reference sequences from blast database for each input sequence
+
     report:
-        max_query_seqs: 200
+        max_query_seqs: 20000     # Number of input sequences that would be reported
+        max_subject_seqs: 25      # Number of reported best hit reference sequences from blast database
+        min_query_coverage: 0.5   # Filter hits with lesser aligned part of the input sequence to the reference
+
+    include:                      # Optional columns in the summary HTML report
+        - coverage                # Number of aligned reads per contig
+        - virfinder               # Probability that contig is from virus
 
 bandage:
     enabled: True
