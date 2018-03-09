@@ -78,14 +78,17 @@ def create_summary(input, output, params):
         with open(input.blast) as blast_results:
             for (contig_name, contig_len), alignments in iter_contigs(input.blast):
 
-                links = []
+                links, homologues = [], []
                 contig_link = '<a href="individual/%s.fa">%s</a>' % (contig_name, contig_name)
                 for gbid, tax, sname, qcov in alignments:
                     links.append('%3.2f%% - <a href="https://www.ncbi.nlm.nih.gov/nuccore/%s", title="%s">%s</a>' % \
                                   (qcov * 100, gbid, tax, sname))
+                    homologues.append(sname)
 
-                contig_info = {'Contig': contig_link,
-                               'Homologues': '<br/>'.join(links),
+                contig_info = {'Contig (link)': contig_link,
+                               'Contig': contig_name,
+                               'Homologues (links)': '<br/>'.join(links),
+                               'Homologues': ';'.join(homologues),
                                'Length': contig_len,
                                'Contig Name': contig_name}
 
@@ -93,20 +96,27 @@ def create_summary(input, output, params):
 
         # Generate report
         contigs = pd.DataFrame(contig_items)
-        columns = ['Contig', 'Length', 'Homologues']
+        tsv_columns = ['Contig', 'Length', 'Homologues']
 
+        # Add optional columns
         if hasattr(input, 'remap'):
             bam = pysam.AlignmentFile(input.remap, 'rb')
-            columns.insert(2, 'Mapped reads')
+            tsv_columns.insert(2, 'Mapped reads')
             contigs['Mapped reads'] = contigs['Contig Name'].apply(lambda contig_name: bam.count(contig=contig_name))
             bam.close()
 
         if hasattr(input, 'pvalues'):
             pvalues = pd.read_csv(input.pvalues, sep='\t', index_col=0)
-            columns.insert(2, 'Viral pvalue')
+            tsv_columns.insert(2, 'Viral pvalue')
             contigs['Viral pvalue'] = contigs['Contig Name'].apply(lambda cid: pvalues.get_value(index=cid, col='pvalue'))
 
-        contigs = contigs[columns]
+        # Write TSV report
+        contigs[tsv_columns].to_csv(output.table, sep='\t')
+
+        # Write HTML report
+        html_columns = ['Homologue (links)' if col == 'Homologue' else col for col in tsv_columns]
+        html_columns = ['Contig (link)' if col == 'Contig' else col for col in html_columns]
+        contigs = contigs[html_columns]
         contigs.index = np.arange(1, len(contigs) + 1)
         contigs_table = contigs.to_html(escape=False).replace('<table ', '<table id="data" ')
 
@@ -115,6 +125,8 @@ def create_summary(input, output, params):
             out.write(TEMPLATE.format(contigs_table=contigs_table, contigs_fa=params.contig_fa))
 
         os.system('cp %s %s' % (input.contigs, output.contigs))
+
+
 
 rule blast_summary:
     input:
@@ -129,6 +141,7 @@ rule blast_summary:
         pvalues = '{indir}/virfinder/{name}.pvalues.tsv' if include_virfinder else []
     output:
         report = '{indir}/blast/{name}.html',
+        table  = '{indir}/blast/{name}.html.tsv',
         contigs = '{indir}/blast/individual/{name}.fa'
     params:
         contig_dir = '{indir}/blast/individual',
