@@ -43,7 +43,11 @@ rule process:
 
         # Quast
         quast = expand('spades-%s/{sample}/quast-{quast_reference}/contigs.filtered/report.txt' % assembly_type,
-                        sample=pipeline.sample, quast_reference=quast_reference) if config['quast']['enabled'] else []
+                        sample=pipeline.sample, quast_reference=quast_reference) if config['quast']['enabled'] else [],
+
+        # Coverage of assembly
+        coverage = expand('spades-%s/{sample}/mapping/stats-wgs/contigs.filtered/report.pdf' % assembly_type,
+                           sample=pipeline.sample),
 
     output:
         blast_html = expand('{report_dir}/{sample}/contigs.filtered.html',
@@ -52,11 +56,14 @@ rule process:
                              report_dir=report_dir, sample=pipeline.sample),
         bandage    = expand('{report_dir}/{sample}/assembly_graph.png',
                              report_dir=report_dir, sample=pipeline.sample)  if config['bandage']['enabled'] else [],
+        coverage   = expand('{report_dir}/{sample}/coverage.pdf',
+                             report_dir=report_dir, sample=pipeline.sample)
     params:
+        # Blast
         in_blast_contigs  = expand('spades-%s/{sample}/blast/individual' % assembly_type,
                                    sample=pipeline.sample) if config['blast']['enabled'] else [],
         out_blast_contigs = expand('{report_dir}/{sample}/individual',
-                                    report_dir=report_dir, sample=pipeline.sample)
+                                    report_dir=report_dir, sample=pipeline.sample),
 
     run:
         for in_dir, out_dir in zip(params.in_blast_contigs, params.out_blast_contigs):
@@ -69,4 +76,7 @@ rule process:
             shutil.copy(in_file, out_file)
 
         for in_file, out_file in zip(input.bandage, output.bandage):
+            shutil.copy(in_file, out_file)
+
+        for in_file, out_file in zip(input.coverage, output.coverage):
             shutil.copy(in_file, out_file)
