@@ -114,7 +114,7 @@ def create_summary(input, output, params):
         contigs[tsv_columns].to_csv(output.table, sep='\t')
 
         # Write HTML report
-        html_columns = ['Homologue (links)' if col == 'Homologue' else col for col in tsv_columns]
+        html_columns = ['Homologues (links)' if col == 'Homologues' else col for col in tsv_columns]
         html_columns = ['Contig (link)' if col == 'Contig' else col for col in html_columns]
         contigs = contigs[html_columns]
         contigs.index = np.arange(1, len(contigs) + 1)
