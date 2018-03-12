@@ -15,9 +15,8 @@ blast_binary, blast_db_prefix = {
     ('protein',    'protein'):    ('blastp',  'nr')
 }[(query_type, target_type)]
 
-blast_database = '/data/genome/metagenome/blast/{blast_db_prefix}/{database_version}/{blast_db_prefix}' \
-                        .format(blast_db_prefix=blast_db_prefix,
-                                database_version=config['blast']['database_version'])
+blast_database = 'reference/{reference}/blast_index/{reference}'\
+                            .format(reference=config['blast']['reference'])
 
 rule blast_xml:
     input:
@@ -74,7 +73,6 @@ rule blast_tsv:
             -out {params.nohead} \
             -outfmt "6 `echo $HEADER`" \
             -num_threads {threads} \
-            /data/genome/metagenome/blast/nr/18-02-22/taxonomy/taxids \
             -max_target_seqs {params.max_target_seqs}
 
         cat {params.header} {params.nohead} > {output}

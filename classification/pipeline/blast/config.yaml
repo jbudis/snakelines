@@ -6,7 +6,7 @@ blast:
 
     query_type: nucleotide        # Nucleotide or protein, according to sequence type in input .fa files
     target_type: protein          # Nucleotide or protein, according to sequence type in blast database
-    database_version: 18-02-22    # Location of the database would be determined as /data/genome/metagenome/n[tr]/{database_version}/n[tr]
+    reference: virprot            # Blast database to be used (located at reference/<reference>/blast_index/<reference>.psq)
     max_target_seqs: 25           # Number of best hit reference sequences from blast database for each input sequence
 
     report:
