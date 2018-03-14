@@ -11,6 +11,9 @@ trim:
     headcrop: 20
     minlen: 35
 
+deduplicate:
+    read_type: trimmed
+
 emirge:
     read_type: deduplicated
 

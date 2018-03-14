@@ -16,4 +16,9 @@ rule process:
         'reads/original/stats/summary.html',
         'reads/trimmed/stats/summary.html',
         expand('emirge/{reference}/report/krona/krona.html', reference=references),
-        expand('emirge/{reference}/report/tsv/summary.tsv', reference=references)
+        expand('emirge/{reference}/report/tsv/summary.tsv', reference=references),
+        expand('emirge/{reference}/report/tsv/summary.xlsx', reference=references),
+        expand('emirge/{reference}/report/tsv/subtaxes.tsv', reference=references),
+        expand('emirge/{reference}/report/tsv/subtaxes.xlsx', reference=references),
+        expand('emirge/{reference}/report/tsv/subtaxes.norm.tsv', reference=references),
+        expand('emirge/{reference}/report/tsv/subtaxes.norm.xlsx', reference=references)
