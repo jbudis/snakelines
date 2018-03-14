@@ -9,7 +9,7 @@ trim:                                   # Pre-process of reads, eliminate low qu
 
 mapping:
     read_type: trimmed                  # Location of reads to map, would be searched in reads/<read_type>/*_R1.fastq.gz
-    reference: hg19                     # Reference genome, should be located at reference/<reference>/<reference>.fa
+    reference: hg38                     # Reference genome, should be located at reference/<reference>/<reference>.fa
     params: --very-sensitive            # Additional parameters of the mapper
     read_group:                         # Add information of sequencing run to the bam header
         map_type: ''                    # Input BAM for the operation, <mapper>/<reference>/<map_type>/*.bam
