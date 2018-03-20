@@ -1,6 +1,10 @@
 include: config['snake_dir'] + '/preprocess/conversion/unzip.snake'
 
+DEFAULT_CONFIDENCE = 0.5
+
 read_type  = config['metaxa2']['read_type']
+confidence = config['metaxa2']['confidence'] if 'confidence' in config['metaxa2'] else DEFAULT_CONFIDENCE
+confidence = int(100*float(confidence))
 
 rule metaxa2_classification:
     input:
@@ -9,7 +13,8 @@ rule metaxa2_classification:
     output:
         taxonomy = 'metaxa2/{gene,ssu|lsu}/classification/{sample}/{sample}.taxonomy.txt'
     params:
-        outpref = 'metaxa2/{gene}/classification/{sample}/{sample}'
+        outpref = 'metaxa2/{gene}/classification/{sample}/{sample}',
+        confidence = confidence
     log:
         'metaxa2/{gene}/classification/{sample}/log/metaxa2.log'
     threads:
@@ -21,12 +26,13 @@ rule metaxa2_classification:
             -2 {input.r2} \
             -o {params.outpref} \
             -g {wildcards.gene} \
+            -R {params.confidence} \
             --plus T \
             --cpu {threads} \
         > {log}
         '''
 
-rule summarize_classification:
+rule metaxa2_summarize_classification:
     input:
         taxonomy = 'metaxa2/{gene}/classification/{sample}/{sample}.taxonomy.txt'
     output:
@@ -43,7 +49,7 @@ rule summarize_classification:
         > {log}
         '''
 
-rule prepare_for_krona:
+rule metaxa2_prepare_for_krona:
     input:
         'metaxa2/{gene}/classification/{sample}/{sample}.level_7.txt'
     output:

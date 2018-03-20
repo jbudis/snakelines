@@ -13,6 +13,7 @@ trim:
 
 metaxa2:
     read_type: trimmed
+    confidence: 0.8
 
 report:
     tsv:
