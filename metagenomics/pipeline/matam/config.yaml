@@ -8,6 +8,8 @@ gene_pattern:                    # Split samples into different groups based on 
     pepx: .*-pepX-.*
     pepn: .*-pepN.*
 
+
+
 join:                            # Join paired reads to simulate single-end sequencing (Matam requires it)
     read_type: trimmed           # What type of reads should be used for join (reads/<read_type>)
 
@@ -25,9 +27,9 @@ blast:
     enabled: True                # Do you want to generate blast report
     query_type: nucleotide       # Nucleotide or protein, according to sequence type in input .fa files
     target_type: nucleotide      # Nucleotide or protein, according to sequence type in blast database
-    database_version: 17-01-17   # Location of the database - /data/genome/metagenome/n[tr]/{database_version}/n[tr]
-    max_target_seqs: 25          # Number of best hit reference sequences from blast database for each input sequence
+    reference: nt                # Blast database to be used (located at reference/<reference>/blast_index/<reference>.psq)
+    max_target_seqs: 5           # Number of best hit reference sequences from blast database for each input sequence
     report:
         max_query_seqs: 20000    # Number of input sequences that would be reported
-        max_subject_seqs: 25     # Number of reported best hit reference sequences from blast database
+        max_subject_seqs: 5      # Number of reported best hit reference sequences from blast database
         min_query_coverage: 0.5  # Filter hits with lesser aligned part of the input sequence to the reference
