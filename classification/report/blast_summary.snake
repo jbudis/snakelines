@@ -98,14 +98,16 @@ def create_summary(input, output, params):
         contigs = pd.DataFrame(contig_items)
         tsv_columns = ['Contig', 'Length', 'Homologues']
 
+        print(input)
+        print(input.remap)
         # Add optional columns
-        if hasattr(input, 'remap'):
+        if input.remap:
             bam = pysam.AlignmentFile(input.remap, 'rb')
             tsv_columns.insert(2, 'Mapped reads')
             contigs['Mapped reads'] = contigs['Contig Name'].apply(lambda contig_name: bam.count(contig=contig_name))
             bam.close()
 
-        if hasattr(input, 'pvalues'):
+        if input.pvalues:
             pvalues = pd.read_csv(input.pvalues, sep='\t', index_col=0)
             tsv_columns.insert(2, 'Viral pvalue')
             contigs['Viral pvalue'] = contigs['Contig Name'].apply(lambda cid: pvalues.get_value(index=cid, col='pvalue'))
