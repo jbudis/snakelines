@@ -29,12 +29,6 @@ if include_blast:
 
 def create_summary(input, output, params):
 
-        # Split contigs.fasta file into separate fasta files, one for each contig - downloadable from HTML page
-        if not os.path.exists(params.contig_dir):
-            os.mkdir(params.contig_dir)
-
-
-
         # Collect Blast results
         contig_items = []
 
@@ -229,7 +223,7 @@ rule fasta_summary:
         max_query_seqs = config['fasta_summary'].get('max_query_seqs', None),
         sort_by = config['fasta_summary']['html'].get('sort_by', ''),
         sort_how = config['fasta_summary']['html'].get('sort_how', 'asc'),
-        fasta_relpath = 'individual/{name}.fa'
+        fasta_dir = 'individual'
     run:
         def flatten(files):
             flat = []
@@ -264,12 +258,12 @@ rule fasta_summary:
         # HTML report
         TEMPLATE = open(input.template).read()
         with open(output.html, 'w') as out:
-            attrs['Sequence'] = attrs.index
+            attrs['Sequence'] = ['<a href="%s/%s.fa">%s</a>' % (params.fasta_dir, seqid, seqid) for seqid in attrs.index]
             attrs.index = np.arange(1, len(attrs) + 1)
             html_table = attrs.to_html(escape=False).replace('<table ', '<table id="data" ')
             sort_index = list(attrs.columns).index(params.sort_by) + 1
             out.write(TEMPLATE.format(attrs=html_table,
-                                      seq_fasta=params.fasta_relpath,
+                                      seq_fasta='all_contigs.fa',
                                       sort_index=sort_index, sort_how=params.sort_how))
 
 rule blast_assign_taxonomy:
