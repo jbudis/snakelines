@@ -164,7 +164,8 @@ rule fasta_summary:
         max_query_seqs = config['fasta_summary'].get('max_query_seqs', None),
         sort_by = config['fasta_summary']['html'].get('sort_by', ''),
         sort_how = config['fasta_summary']['html'].get('sort_how', 'asc'),
-        fasta_dir = 'sequences'
+        fasta_dir = 'sequences',
+        html_columns = config['fasta_summary']['html'].get('columns', [])
     run:
         def flatten(files):
             flat = []
@@ -177,7 +178,6 @@ rule fasta_summary:
             return flat
 
         def load_attrs(attr_file):
-            print(attr_file)
             table = pd.DataFrame.from_csv(attr_file, sep='\t', index_col=0)
             return table
 
@@ -196,7 +196,6 @@ rule fasta_summary:
         if params.max_query_seqs:
             attrs = attrs.iloc[:int(params.max_query_seqs)]
 
-        print(attrs)
 
         # TSV report
         tsv_columns = [attr for attr in attrs.columns if not attr.endswith(' link')]
@@ -207,8 +206,20 @@ rule fasta_summary:
         with open(output.html, 'w') as out:
             attrs['Sequence'] = ['<a href="%s/%s.fa">%s</a>' % (params.fasta_dir, seqid, seqid) for seqid in attrs.index]
             attrs.index = np.arange(1, len(attrs) + 1)
-            html_table = attrs.to_html(escape=False).replace('<table ', '<table id="data" ')
-            sort_index = list(attrs.columns).index(params.sort_by) + 1
+
+            html_columns = attrs.columns
+            if params.html_columns:
+                html_columns = []
+                for col_prefix in params.html_columns:
+                    html_columns.extend([col for col in attrs.columns if col.startswith(col_prefix)])
+
+            html_attrs = attrs[html_columns]
+            html_table = html_attrs\
+                            .fillna('') \
+                            .to_html(escape=False) \
+                            .replace('<table ', '<table id="data" ')
+
+            sort_index = list(html_attrs.columns).index(params.sort_by) + 1
             out.write(TEMPLATE.format(attrs=html_table,
                                       seq_fasta='%s/all_contigs.fa' % params.fasta_dir,
                                       sort_index=sort_index, sort_how=params.sort_how))
