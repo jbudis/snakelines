@@ -99,12 +99,6 @@ def create_summary(input, output, params):
 
         print(input)
         print(input.remap)
-        # Add optional columns
-        if input.remap:
-            bam = pysam.AlignmentFile(input.remap, 'rb')
-            tsv_columns.insert(2, 'Mapped reads')
-            contigs['Mapped reads'] = contigs['Contig Name'].apply(lambda contig_name: bam.count(contig=contig_name))
-            bam.close()
 
 
         # Write TSV report
@@ -134,12 +128,38 @@ rule fasta_summary_blast:
 
 rule fasta_summary_coverage:
     input:
-        remap     = '{indir}/mapping/{name}.bam',
-        remap_idx = '{indir}/mapping/{name}.bam.bai'
+        qualimap = '{indir}/mapping/stats-wgs/{name}/genome_results.txt',
     output:
-        tsv       = '{indir}/fasta_summary/{name}/attributes/coverage.tsv'
+        tsv      = '{indir}/fasta_summary/{name}/attributes/coverage.tsv'
     run:
-        pass
+        is_seq_coverage_line = False
+        seq_coverage_header = '>>>>>>> Coverage per contig'
+        seqids, info_list = [], []
+
+        for line in open(input.qualimap):
+
+            line = line.strip()
+            if not line:
+                continue
+
+            if line.startswith(seq_coverage_header):
+                is_seq_coverage_line = True
+                continue
+
+            if line.startswith('>>>'):
+                is_seq_coverage_line = False
+                continue
+
+            if is_seq_coverage_line:
+                seqid, seqlen, nbases, coverage, coverage_std = line.split()
+                seqids.append(seqid)
+                info_list.append({
+                    'Mapped bases': nbases,
+                    'Coverage': np.round(float(coverage), 2)
+                })
+
+        infos = pd.DataFrame(info_list, index=seqids)
+        infos.to_csv(output.tsv, sep='\t')
 
 rule fasta_summary_virfinder:
     input:
@@ -233,6 +253,8 @@ rule fasta_summary:
         attrs.sort_values(by='Length', ascending=False, inplace=True)
         if params.max_query_seqs:
             attrs = attrs.iloc[:int(params.max_query_seqs)]
+
+        print(attrs)
 
         attrs.to_csv(output.html, sep='\t')
         attrs.to_csv(output.tsv, sep='\t')
