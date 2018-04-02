@@ -9,7 +9,7 @@ include: config['snake_dir'] + '/assembly/assemblers/unicycler.snake'
 include: config['snake_dir'] + '/assembly/postprocess/filter_contigs.snake'
 include: config['snake_dir'] + '/assembly/postprocess/bandage.snake'
 include: config['snake_dir'] + '/classification/classifiers/blast.snake'
-include: config['snake_dir'] + '/classification/report/blast_summary.snake'
+include: config['snake_dir'] + '/classification/report/fasta_summary.snake'
 include: config['snake_dir'] + '/assembly/postprocess/quast.snake'
 
 assembly_type = config['assembly']['analysis_type']

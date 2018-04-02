@@ -4,7 +4,7 @@ fasta_dir = config['blast']['fasta_dir']
 pipeline = glob_wildcards('%s/{sample, %s}.fa' % (fasta_dir, config['sample_pattern']))
 
 include: config['snake_dir'] + '/classification/classifiers/blast.snake'
-include: config['snake_dir'] + '/classification/report/blast_summary.snake'
+include: config['snake_dir'] + '/classification/report/fasta_summary.snake'
 
 rule process:
     input:

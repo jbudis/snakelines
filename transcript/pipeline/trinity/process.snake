@@ -7,7 +7,7 @@ include: config['snake_dir'] + '/preprocess/trim_reads/trimmomatic.snake'
 include: config['snake_dir'] + '/preprocess/deduplication/fastuniq.snake'
 include: config['snake_dir'] + '/assembly/assemblers/trinity.snake'
 include: config['snake_dir'] + '/classification/classifiers/blast.snake'
-include: config['snake_dir'] + '/classification/report/blast_summary.snake'
+include: config['snake_dir'] + '/classification/report/fasta_summary.snake'
 include: config['snake_dir'] + '/transcript/quantifiers/kallisto.snake'
 include: config['snake_dir'] + '/transcript/report/abundances.snake'
 
