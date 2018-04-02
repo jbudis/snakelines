@@ -48,7 +48,7 @@ rule fasta_summary_blast:
 
             def create_link(align):
                 return '%3.2f%% - <a href="https://www.ncbi.nlm.nih.gov/nuccore/%s", title="%s">%s</a>' % \
-                                  (align['qcov'] * 100, align['sacc'], align['staxid'], align['stitle'])
+                                  (align['qcov'] * 100, align['sacc'], align['taxonomy'], align['stitle'])
 
             seqids.append(seqid)
             info_list.append({
@@ -211,7 +211,7 @@ rule fasta_summary:
             if params.html_columns:
                 html_columns = []
                 for col_prefix in params.html_columns:
-                    html_columns.extend([col for col in attrs.columns if col.startswith(col_prefix)])
+                    html_columns.extend(sorted([col for col in attrs.columns if col.startswith(col_prefix)]))
 
             html_attrs = attrs[html_columns]
             html_table = html_attrs\
