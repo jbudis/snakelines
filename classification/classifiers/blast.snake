@@ -2,57 +2,32 @@ import pickle
 import pandas as pd
 from Bio import SeqIO
 
-DEFAULT_QUERY_TYPE  = 'nucleotide'
-DEFAULT_TARGET_TYPE = 'nucleotide'
+blast_binaries = {
+    ('nucleotide', 'nucleotide'): 'blastn',
+    ('nucleotide', 'protein'):    'blastx',
+    ('protein',    'nucleotide'): 'tblastn',
+    ('protein',    'protein'):    'blastp'
+}
 
-query_type  = config['blast'].get('query_type',  DEFAULT_QUERY_TYPE)
-target_type = config['blast'].get('target_type', DEFAULT_TARGET_TYPE)
-
-blast_binary, blast_db_prefix = {
-    ('nucleotide', 'nucleotide'): ('blastn',  'nt'),
-    ('nucleotide', 'protein'):    ('blastx',  'nr'),
-    ('protein',    'nucleotide'): ('tblastn', 'nt'),
-    ('protein',    'protein'):    ('blastp',  'nr')
-}[(query_type, target_type)]
-
-blast_database = 'reference/{reference}/blast_index/{reference}'\
-                            .format(reference=config['blast']['reference'])
-
-rule blast_xml:
-    input:
-        '{indir}/{name}.fa'
-    output:
-        '{indir}/blast/{name}.blast'
-    threads:
-        int(config['threads'])
-    params:
-        max_target_seqs = config["blast"]["max_target_seqs"],
-        blast_binary = blast_binary,
-        blast_database = blast_database
-    shell:
-        '''
-        {params.blast_binary} \
-            -db {params.blast_database} \
-            -query {input} \
-            -out {output} \
-            -outfmt 5 \
-            -num_threads {threads} \
-            -max_target_seqs {params.max_target_seqs}
-        '''
+blast_db_suffix = {
+    'nucleotide': 'nsq',
+    'protein':    'psq'
+}
 
 rule blast_tsv:
     input:
         '{indir}/{name}.fa'
     output:
-        '{indir}/blast/{name}.blast.tsv'
+        '{indir}/blast/{reference}/{name}.blast.tsv'
     threads:
         int(config['threads'])
     params:
-        nohead = '{indir}/blast/{name}.blast.tsv.tmp',
-        header = '{indir}/blast/{name}.blast.tsv.tmp.header',
-        max_target_seqs = config["blast"]["max_target_seqs"],
-        blast_binary = blast_binary,
-        blast_database = blast_database
+        nohead = '{indir}/blast/{reference}/{name}.blast.tsv.tmp',
+        header = '{indir}/blast/{reference}/{name}.blast.tsv.tmp.header',
+        max_target_seqs = lambda wc: config['blast']['reference'][wc.reference]['max_target_seqs'],
+        blast_binary    = lambda wc: blast_binaries[(config['blast']['reference'][wc.reference]['query_type'],
+                                                     config['blast']['reference'][wc.reference]['target_type'])],
+        blast_database  = 'reference/{reference}/blast_index/{reference}'
     shell:
         '''
         set +e pipefail
