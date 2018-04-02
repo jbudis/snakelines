@@ -227,6 +227,8 @@ rule fasta_summary:
         contig_dir = '{indir}/fasta_summary/individual',
         contig_fa  = 'individual/{name}.fa',
         max_query_seqs = config['fasta_summary'].get('max_query_seqs', None),
+        sort_by = config['fasta_summary']['html'].get('sort_by', ''),
+        sort_how = config['fasta_summary']['html'].get('sort_how', 'asc'),
         fasta_relpath = 'individual/{name}.fa'
     run:
         def flatten(files):
@@ -265,7 +267,10 @@ rule fasta_summary:
             attrs['Sequence'] = attrs.index
             attrs.index = np.arange(1, len(attrs) + 1)
             html_table = attrs.to_html(escape=False).replace('<table ', '<table id="data" ')
-            out.write(TEMPLATE.format(attrs=html_table, seq_fasta=params.fasta_relpath))
+            sort_index = list(attrs.columns).index(params.sort_by) + 1
+            out.write(TEMPLATE.format(attrs=html_table,
+                                      seq_fasta=params.fasta_relpath,
+                                      sort_index=sort_index, sort_how=params.sort_how))
 
 rule blast_assign_taxonomy:
     input:
