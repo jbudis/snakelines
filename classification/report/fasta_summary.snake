@@ -3,22 +3,22 @@ include: config['snake_dir'] + '/classification/classifiers/blast.snake'
 import subprocess
 from Bio.Blast import NCBIXML
 from Bio import SeqIO
+from Bio import SeqUtils
 import pysam
 import os
+import shutil
 import numpy as np
 import pickle
 import pandas as pd
 pd.set_option('display.max_colwidth', 1000000)
 pd.options.display.float_format = '{:.3f}'.format
 
-DEFAULT_MIN_QUERY_COVERAGE = 0.5
 DEFAULT_MAX_TARGET_SEQS = 10
 
-n_contigs = int(config['blast']['report']['max_query_seqs'])
-min_similarity   = float(config['blast']['report'].get('min_query_coverage', DEFAULT_MIN_QUERY_COVERAGE))
-max_subject_seqs = float(config['blast']['report'].get('max_target_seqs',    DEFAULT_MAX_TARGET_SEQS))
-
 summary_columns_def = config['blast'].get('include', [])
+if not summary_columns_def:
+    summary_columns_def = []
+
 include_coverage  = 'coverage'  in summary_columns_def
 include_virfinder = 'virfinder' in summary_columns_def
 include_blast     = 'blast'     in summary_columns_def
@@ -32,13 +32,7 @@ def create_summary(input, output, params):
         if not os.path.exists(params.contig_dir):
             os.mkdir(params.contig_dir)
 
-        contig_lens = {}
-        for i, contig in enumerate(SeqIO.parse(input.contigs, 'fasta')):
-            with open('%s/%s.fa' % (params.contig_dir, contig.id), 'w') as out:
-                SeqIO.write(contig, out, 'fasta')
-                contig_lens[contig.id] = len(contig.seq)
-            if i >= n_contigs:
-                break
+
 
         # Collect Blast results
         contig_items = []
@@ -159,16 +153,47 @@ rule fasta_summary_virfinder:
         pass
 
 
+rule fasta_summary_copy_contigs:
+    input:
+        fasta     = '{indir}/{name}.fa'
+    output:
+        fasta     = '{indir}/fasta_summary/{name}.fa',
+        seqinfo   = '{indir}/fasta_summary/{name}/attributes/seqinfo.fa'
+    params:
+        indiv_dir = '{indir}/fasta_summary/individual'
+    run:
+        if not os.path.exists(params.indiv_dir):
+            os.makedirs(params.indiv_dir)
+
+        shutil.copyfile(input.fasta, output.fasta)
+
+        seqids, info_list = [], []
+        for i, seq in enumerate(SeqIO.parse(input.fasta, 'fasta')):
+
+            # Store each sequence in the fasta to the separate file
+            with open('%s/%s.fa' % (params.indiv_dir, seq.id), 'w') as out:
+                SeqIO.write(seq, out, 'fasta')
+
+            seqids.append(seq.id)
+            contig_info = {
+                'length':     len(seq),
+                'GC content': str(np.round(SeqUtils.GC(seq.seq), 1))
+            }
+            info_list.append(contig_info)
+
+        infos = pd.DataFrame(info_list, index=seqids)
+        infos.to_csv(output.seqinfo, sep='\t')
+
 def blast_attr_tsvs(wildcards):
-    print(wildcards)
     return expand('{indir}/fasta_summary/{name}/attributes/blast/{reference}.tsv',
                    indir=wildcards.indir, name=wildcards.name, reference=blast_references)
 
 rule fasta_summary:
     input:
         # Required files to generate blast summary
-        contigs = '{indir}/{name}.fa',
         template = srcdir('templates/abundances.html'),
+        fasta           = '{indir}/fasta_summary/{name}.fa',
+        attrs_seqinfo   = '{indir}/fasta_summary/{name}/attributes/seqinfo.fa',
 
         # Optional columns of the table
         attrs_blast     =  blast_attr_tsvs                                        if include_blast     else [],
@@ -176,16 +201,42 @@ rule fasta_summary:
         attrs_virfinder = '{indir}/fasta_summary/{name}/attributes/virfinder.tsv' if include_virfinder else [],
 
     output:
-        report     = '{indir}/fasta_summary/{name}.html',
-        table      = '{indir}/fasta_summary/{name}.html.tsv',
-        contigs    = '{indir}/fasta_summary/individual/{name}.fa'
+        html = '{indir}/fasta_summary/{name}.html',
+        tsv  = '{indir}/fasta_summary/{name}.html.tsv'
     params:
         contig_dir = '{indir}/fasta_summary/individual',
-        contig_fa  = 'individual/{name}.fa'
+        contig_fa  = 'individual/{name}.fa',
+        max_query_seqs = config['fasta_summary'].get('max_query_seqs', None)
     run:
-        create_summary(input, output, params)
+        def flatten(files):
+            flat = []
+            for item in files:
+                if item:
+                    if type(item) == list:
+                        flat.expand(item)
+                    else:
+                        flat.append(item)
+            return flat
 
+        def load_attrs(attr_file):
+            table = pd.DataFrame.from_csv(attr_file, sep='\t', index_col=0)
+            return table
 
+        attr_files = flatten([attr_file for name, attr_file in input.__dict__.items() if name.startswith('attrs_')])
+        attr_tables = [load_attrs(attr_file) for attr_file in attr_files]
+
+        attrs = attr_tables[0]
+        for attr_table in attr_tables[1:]:
+            attrs = attrs.merge(attr_table, how='outer', left_index=True, right_index=True)
+
+        attrs.sort_values(by='length', ascending=False, inplace=True)
+        if params.max_query_seqs:
+            attrs = attrs.iloc[:int(params.max_query_seqs)]
+
+        attrs.to_csv(output.html, sep='\t')
+        attrs.to_csv(output.tsv, sep='\t')
+
+ruleorder: fasta_summary_copy_contigs > filter_contigs
 
 rule blast_assign_taxonomy:
     input:
