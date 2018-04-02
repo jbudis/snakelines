@@ -12,15 +12,19 @@ pd.set_option('display.max_colwidth', 1000000)
 pd.options.display.float_format = '{:.3f}'.format
 
 DEFAULT_MIN_QUERY_COVERAGE = 0.5
-DEFAULT_MAX_SUBJECT_SEQS = 10
+DEFAULT_MAX_TARGET_SEQS = 10
 
 n_contigs = int(config['blast']['report']['max_query_seqs'])
-min_similarity = float(config['blast']['report']['min_query_coverage']) if 'min_query_coverage' in config['blast']['report'] else DEFAULT_MIN_QUERY_COVERAGE
-max_subject_seqs = float(config['blast']['report']['max_subject_seqs']) if 'max_subject_seqs' in config['blast']['report'] else DEFAULT_MAX_SUBJECT_SEQS
+min_similarity   = float(config['blast']['report'].get('min_query_coverage', DEFAULT_MIN_QUERY_COVERAGE))
+max_subject_seqs = float(config['blast']['report'].get('max_target_seqs',    DEFAULT_MAX_TARGET_SEQS))
 
 summary_columns_def = config['blast'].get('include', [])
 include_coverage  = 'coverage'  in summary_columns_def
 include_virfinder = 'virfinder' in summary_columns_def
+include_blast     = 'blast'     in summary_columns_def
+
+if include_blast:
+    blast_references = list(config['blast']['reference'].keys())
 
 def create_summary(input, output, params):
 
@@ -129,25 +133,55 @@ def create_summary(input, output, params):
         os.system('cp %s %s' % (input.contigs, output.contigs))
 
 
+rule fasta_summary_blast:
+    input:
+        blast = '{indir}/blast/{reference}/{name}.blast.tax.tsv'
+    output:
+        tsv   = '{indir}/fasta_summary/{name}/attributes/blast/{reference}.tsv'
+    run:
+        pass
 
-rule blast_summary:
+rule fasta_summary_coverage:
+    input:
+        remap     = '{indir}/mapping/{name}.bam',
+        remap_idx = '{indir}/mapping/{name}.bam.bai'
+    output:
+        tsv       = '{indir}/fasta_summary/{name}/attributes/coverage.tsv'
+    run:
+        pass
+
+rule fasta_summary_virfinder:
+    input:
+        pvalues   = '{indir}/virfinder/{name}.pvalues.tsv'
+    output:
+        tsv       = '{indir}/fasta_summary/{name}/attributes/virfinder.tsv'
+    run:
+        pass
+
+
+def blast_attr_tsvs(wildcards):
+    print(wildcards)
+    return expand('{indir}/fasta_summary/{name}/attributes/blast/{reference}.tsv',
+                   indir=wildcards.indir, name=wildcards.name, reference=blast_references)
+
+rule fasta_summary:
     input:
         # Required files to generate blast summary
         contigs = '{indir}/{name}.fa',
-        blast = '{indir}/blast/{name}.blast.tax.tsv',
         template = srcdir('templates/abundances.html'),
 
         # Optional columns of the table
-        remap = '{indir}/mapping/{name}.bam'             if include_coverage  else [],
-        remap_idx = '{indir}/mapping/{name}.bam.bai'     if include_coverage  else [],
-        pvalues = '{indir}/virfinder/{name}.pvalues.tsv' if include_virfinder else []
+        attrs_blast     =  blast_attr_tsvs                                        if include_blast     else [],
+        attrs_coverage  = '{indir}/fasta_summary/{name}/attributes/coverage.tsv'  if include_coverage  else [],
+        attrs_virfinder = '{indir}/fasta_summary/{name}/attributes/virfinder.tsv' if include_virfinder else [],
+
     output:
-        report = '{indir}/blast/{name}.html',
-        table  = '{indir}/blast/{name}.html.tsv',
-        contigs = '{indir}/blast/individual/{name}.fa'
+        report     = '{indir}/fasta_summary/{name}.html',
+        table      = '{indir}/fasta_summary/{name}.html.tsv',
+        contigs    = '{indir}/fasta_summary/individual/{name}.fa'
     params:
-        contig_dir = '{indir}/blast/individual',
-        contig_fa = 'individual/{name}.fa'
+        contig_dir = '{indir}/fasta_summary/individual',
+        contig_fa  = 'individual/{name}.fa'
     run:
         create_summary(input, output, params)
 
