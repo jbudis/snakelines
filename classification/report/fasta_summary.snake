@@ -1,6 +1,7 @@
 include: config['snake_dir'] + '/classification/classifiers/blast.snake'
 
 import subprocess
+import snakemake
 from Bio.Blast import NCBIXML
 from Bio import SeqIO
 from Bio import SeqUtils
@@ -116,8 +117,33 @@ rule fasta_summary_blast:
         blast = '{indir}/blast/{reference}/{name}.blast.tax.tsv'
     output:
         tsv   = '{indir}/fasta_summary/{name}/attributes/blast/{reference}.tsv'
+    params:
+        min_query_coverage = config['fasta_summary'].get('min_query_coverage', 0),
+        max_target_seqs = config['fasta_summary'].get('max_target_seqs', 999999999)
     run:
-        pass
+        blast = pd.DataFrame.from_csv(input.blast, sep='\t', index_col=None)
+        seqids, info_list = [], []
+        for seqid, aligns in blast.groupby('qseqid'):
+            aligns['qcov'] = (aligns['qend'] - aligns['qstart']) / aligns['qlen']
+            aligns = aligns[aligns['qcov'] >= params.min_query_coverage]
+            aligns = aligns.iloc[:params.max_target_seqs]
+            if len(aligns) == 0:
+                continue
+
+            def create_link(align):
+                return '%3.2f%% - <a href="https://www.ncbi.nlm.nih.gov/nuccore/%s", title="%s">%s</a>' % \
+                                  (align['qcov'] * 100, align['sacc'], align['staxid'], align['stitle'])
+
+            seqids.append(seqid)
+            info_list.append({
+                'Homologue title': ';'.join(aligns['stitle']),
+                'Homologue accession': ';'.join(aligns['stitle']),
+                'Homologue link': '<br />'.join(aligns.apply(create_link, axis=1))
+            })
+
+        infos = pd.DataFrame(info_list, index=seqids)
+        infos.to_csv(output.tsv, sep='\t')
+
 
 rule fasta_summary_coverage:
     input:
@@ -228,22 +254,27 @@ rule fasta_summary:
             flat = []
             for item in files:
                 if item:
-                    if type(item) == list:
-                        flat.expand(item)
+                    if type(item) == snakemake.io.Namedlist:
+                        flat.extend(item)
                     else:
                         flat.append(item)
             return flat
 
         def load_attrs(attr_file):
+            print(attr_file)
             table = pd.DataFrame.from_csv(attr_file, sep='\t', index_col=0)
             return table
 
         attr_files = flatten([attr_file for name, attr_file in input.__dict__.items() if name.startswith('attrs_')])
+        attr_names = [os.path.basename(f)[:-4] for f in attr_files]
         attr_tables = [load_attrs(attr_file) for attr_file in attr_files]
 
-        attrs = attr_tables[0]
-        for attr_table in attr_tables[1:]:
-            attrs = attrs.merge(attr_table, how='outer', left_index=True, right_index=True)
+        attrs, last_name = attr_tables[0], attr_names[0]
+        for attr_name, attr_table in zip(attr_names[1:], attr_tables[1:]):
+            attrs = attrs.merge(attr_table, how='outer',
+                                left_index=True, right_index=True,
+                                suffixes = [' (%s)' % last_name, ' (%s)' % attr_name])
+            last_name = attr_name
 
         attrs.sort_values(by='Length', ascending=False, inplace=True)
         if params.max_query_seqs:
@@ -252,7 +283,8 @@ rule fasta_summary:
         print(attrs)
 
         # TSV report
-        attrs.to_csv(output.tsv, sep='\t')
+        tsv_columns = [attr for attr in attrs.columns if not attr.endswith(' link')]
+        attrs[tsv_columns].to_csv(output.tsv, sep='\t')
 
         # HTML report
         TEMPLATE = open(input.template).read()

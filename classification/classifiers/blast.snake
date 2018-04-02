@@ -35,7 +35,8 @@ rule blast_tsv:
                 sacc staxid stitle \
                 pident evalue length mismatch \
                 gapopen qstart qend \
-                sstart send"
+                sstart send \
+                qlen slen"
 
         # TODO really ugly way to get header to the blast table, find better way
         HEADER=`echo "$HEADER" | sed -E -e  's/[[:blank:]]+/\t/g'`
