@@ -171,10 +171,10 @@ rule fasta_summary_copy_contigs:
     input:
         fasta     = '{indir}/{name}.fa'
     output:
-        fasta     = '{indir}/fasta_summary/{name}/all_contigs.fa',
+        fasta     = '{indir}/fasta_summary/{name}/sequences/all_contigs.fa',
         seqinfo   = '{indir}/fasta_summary/{name}/attributes/seqinfo.fa'
     params:
-        indiv_dir = '{indir}/fasta_summary/individual'
+        indiv_dir = '{indir}/fasta_summary/{name}/sequences'
     run:
         if not os.path.exists(params.indiv_dir):
             os.makedirs(params.indiv_dir)
@@ -206,7 +206,7 @@ rule fasta_summary:
     input:
         # Required files to generate blast summary
         template = srcdir('templates/abundances.html'),
-        fasta           = '{indir}/fasta_summary/{name}/all_contigs.fa',
+        fasta           = '{indir}/fasta_summary/{name}/sequences/all_contigs.fa',
         attrs_seqinfo   = '{indir}/fasta_summary/{name}/attributes/seqinfo.fa',
 
         # Optional columns of the table
@@ -218,12 +218,11 @@ rule fasta_summary:
         html = '{indir}/fasta_summary/{name}/summary.html',
         tsv  = '{indir}/fasta_summary/{name}/summary.html.tsv'
     params:
-        contig_dir = '{indir}/fasta_summary/individual',
-        contig_fa  = 'individual/{name}.fa',
+        contig_dir = '{indir}/fasta_summary/sequences',
         max_query_seqs = config['fasta_summary'].get('max_query_seqs', None),
         sort_by = config['fasta_summary']['html'].get('sort_by', ''),
         sort_how = config['fasta_summary']['html'].get('sort_how', 'asc'),
-        fasta_dir = 'individual'
+        fasta_dir = 'sequences'
     run:
         def flatten(files):
             flat = []
@@ -263,7 +262,7 @@ rule fasta_summary:
             html_table = attrs.to_html(escape=False).replace('<table ', '<table id="data" ')
             sort_index = list(attrs.columns).index(params.sort_by) + 1
             out.write(TEMPLATE.format(attrs=html_table,
-                                      seq_fasta='all_contigs.fa',
+                                      seq_fasta='%s/all_contigs.fa' % params.fasta_dir,
                                       sort_index=sort_index, sort_how=params.sort_how))
 
 rule blast_assign_taxonomy:
