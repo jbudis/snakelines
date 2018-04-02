@@ -115,7 +115,6 @@ def create_summary(input, output, params):
         with open(output.report, 'w') as out:
             out.write(TEMPLATE.format(contigs_table=contigs_table, contigs_fa=params.contig_fa))
 
-        os.system('cp %s %s' % (input.contigs, output.contigs))
 
 
 rule fasta_summary_blast:
@@ -178,7 +177,7 @@ rule fasta_summary_copy_contigs:
     input:
         fasta     = '{indir}/{name}.fa'
     output:
-        fasta     = '{indir}/fasta_summary/{name}.fa',
+        fasta     = '{indir}/fasta_summary/{name}/all_contigs.fa',
         seqinfo   = '{indir}/fasta_summary/{name}/attributes/seqinfo.fa'
     params:
         indiv_dir = '{indir}/fasta_summary/individual'
@@ -213,7 +212,7 @@ rule fasta_summary:
     input:
         # Required files to generate blast summary
         template = srcdir('templates/abundances.html'),
-        fasta           = '{indir}/fasta_summary/{name}.fa',
+        fasta           = '{indir}/fasta_summary/{name}/all_contigs.fa',
         attrs_seqinfo   = '{indir}/fasta_summary/{name}/attributes/seqinfo.fa',
 
         # Optional columns of the table
@@ -222,12 +221,13 @@ rule fasta_summary:
         attrs_virfinder = '{indir}/fasta_summary/{name}/attributes/virfinder.tsv' if include_virfinder else [],
 
     output:
-        html = '{indir}/fasta_summary/{name}.html',
-        tsv  = '{indir}/fasta_summary/{name}.html.tsv'
+        html = '{indir}/fasta_summary/{name}/summary.html',
+        tsv  = '{indir}/fasta_summary/{name}/summary.html.tsv'
     params:
         contig_dir = '{indir}/fasta_summary/individual',
         contig_fa  = 'individual/{name}.fa',
-        max_query_seqs = config['fasta_summary'].get('max_query_seqs', None)
+        max_query_seqs = config['fasta_summary'].get('max_query_seqs', None),
+        fasta_relpath = 'individual/{name}.fa'
     run:
         def flatten(files):
             flat = []
@@ -256,10 +256,16 @@ rule fasta_summary:
 
         print(attrs)
 
-        attrs.to_csv(output.html, sep='\t')
+        # TSV report
         attrs.to_csv(output.tsv, sep='\t')
 
-ruleorder: fasta_summary_copy_contigs > filter_contigs
+        # HTML report
+        TEMPLATE = open(input.template).read()
+        with open(output.html, 'w') as out:
+            attrs['Sequence'] = attrs.index
+            attrs.index = np.arange(1, len(attrs) + 1)
+            html_table = attrs.to_html(escape=False).replace('<table ', '<table id="data" ')
+            out.write(TEMPLATE.format(attrs=html_table, seq_fasta=params.fasta_relpath))
 
 rule blast_assign_taxonomy:
     input:
