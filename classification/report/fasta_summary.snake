@@ -15,13 +15,14 @@ pd.options.display.float_format = '{:.3f}'.format
 
 DEFAULT_MAX_TARGET_SEQS = 10
 
-summary_columns_def = config['blast'].get('include', [])
+summary_columns_def = config['fasta_summary'].get('include', [])
 if not summary_columns_def:
     summary_columns_def = []
 
 include_coverage  = 'coverage'  in summary_columns_def
 include_virfinder = 'virfinder' in summary_columns_def
 include_blast     = 'blast'     in summary_columns_def
+
 
 if include_blast:
     blast_references = list(config['blast']['reference'].keys())
@@ -105,10 +106,6 @@ def create_summary(input, output, params):
             contigs['Mapped reads'] = contigs['Contig Name'].apply(lambda contig_name: bam.count(contig=contig_name))
             bam.close()
 
-        if input.pvalues:
-            pvalues = pd.read_csv(input.pvalues, sep='\t', index_col=0)
-            tsv_columns.insert(2, 'Viral pvalue')
-            contigs['Viral pvalue'] = contigs['Contig Name'].apply(lambda cid: pvalues.get_value(index=cid, col='pvalue'))
 
         # Write TSV report
         contigs[tsv_columns].to_csv(output.table, sep='\t')
@@ -150,7 +147,11 @@ rule fasta_summary_virfinder:
     output:
         tsv       = '{indir}/fasta_summary/{name}/attributes/virfinder.tsv'
     run:
-        pass
+        pvalues = pd.read_csv(input.pvalues, sep='\t', index_col=0)
+        pvalues.index.names = ['']
+        pvalues = pvalues[['pvalue']]
+        pvalues.columns = ['VirFinder pvalue']
+        pvalues.to_csv(output.tsv, sep='\t')
 
 
 rule fasta_summary_copy_contigs:
@@ -176,7 +177,7 @@ rule fasta_summary_copy_contigs:
 
             seqids.append(seq.id)
             contig_info = {
-                'length':     len(seq),
+                'Length':     len(seq),
                 'GC content': str(np.round(SeqUtils.GC(seq.seq), 1))
             }
             info_list.append(contig_info)
@@ -229,7 +230,7 @@ rule fasta_summary:
         for attr_table in attr_tables[1:]:
             attrs = attrs.merge(attr_table, how='outer', left_index=True, right_index=True)
 
-        attrs.sort_values(by='length', ascending=False, inplace=True)
+        attrs.sort_values(by='Length', ascending=False, inplace=True)
         if params.max_query_seqs:
             attrs = attrs.iloc[:int(params.max_query_seqs)]
 
