@@ -32,6 +32,35 @@ rule metaxa2_classification:
         > {log}
         '''
 
+rule metaxa2_create_index:
+    input:
+        fasta = 'reference/{reference}/{reference}.fa',
+        tax = 'reference/{reference}/{reference}.tax'
+    output:
+        blast = 'reference/{reference}/metaxa2_index/blast.nhr',
+        hmm = 'reference/{reference}/metaxa2_index/HMMS/E.hmm'
+    params:
+        index_dir = 'reference/{reference}/metaxa2_index'
+    threads:
+        int(config['threads'])
+    log:
+        out = 'reference/{reference}/metaxa2_index/log/db.log',
+        err = 'reference/{reference}/metaxa2_index/log/db.err'
+    shell:
+        '''
+        metaxa2_dbb \
+            -i {input.fasta} \
+            -o {params.index_dir} \
+            -g {reference} \
+            -t {input.tax} \
+            --auto_rep T \
+            --cpu {threads} \
+            --plus T \
+         > {log.out} \
+        2> {log.err}
+        '''
+
+
 rule metaxa2_summarize_classification:
     input:
         taxonomy = 'metaxa2/{gene}/classification/{sample}/{sample}.taxonomy.txt'
