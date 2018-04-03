@@ -9,24 +9,30 @@ confidence = int(100*float(confidence))
 rule metaxa2_classification:
     input:
         r1 = 'reads/%s/{sample}_R1.fastq.gz' % read_type,
-        r2 = 'reads/%s/{sample}_R2.fastq.gz' % read_type
+        r2 = 'reads/%s/{sample}_R2.fastq.gz' % read_type,
+        blast = 'reference/{reference}/metaxa2_index/blast.nhr',
+        hmm = 'reference/{reference}/metaxa2_index/HMMs/E.hmm'
     output:
-        taxonomy = 'metaxa2/{gene,ssu|lsu}/classification/{sample}/{sample}.taxonomy.txt'
+        taxonomy = 'metaxa2/{reference}/classification/{sample}/{sample}.taxonomy.txt'
     params:
-        outpref = 'metaxa2/{gene}/classification/{sample}/{sample}',
-        confidence = confidence
+        outpref = 'metaxa2/{reference}/classification/{sample}/{sample}',
+        confidence = confidence,
+        hmm_dir = 'reference/{reference}/metaxa2_index/HMMs,
+        blast_dir = 'reference/{reference}/metaxa2_index/'
     log:
-        'metaxa2/{gene}/classification/{sample}/log/metaxa2.log'
+        'metaxa2/{reference}/classification/{sample}/log/metaxa2.log'
     threads:
         int(config['threads'])
     shell:
         '''
-        /usr/local/tools/metaxa-2.1.3/metaxa2 \
+        metaxa2 \
             -1 {input.r1} \
             -2 {input.r2} \
             -o {params.outpref} \
-            -g {wildcards.gene} \
+            -g {wildcards.reference} \
             -R {params.confidence} \
+            -p {params.hmm_dir} \
+            -d {params.blast_dir} \
             --plus T \
             --cpu {threads} \
         > {log}
@@ -38,7 +44,7 @@ rule metaxa2_create_index:
         tax = 'reference/{reference}/{reference}.tax'
     output:
         blast = 'reference/{reference}/metaxa2_index/blast.nhr',
-        hmm = 'reference/{reference}/metaxa2_index/HMMS/E.hmm'
+        hmm = 'reference/{reference}/metaxa2_index/HMMs/E.hmm'
     params:
         index_dir = 'reference/{reference}/metaxa2_index'
     threads:
