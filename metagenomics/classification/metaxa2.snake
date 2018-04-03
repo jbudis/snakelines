@@ -1,10 +1,6 @@
 include: config['snake_dir'] + '/preprocess/conversion/unzip.snake'
 
-DEFAULT_CONFIDENCE = 0.5
-
 read_type  = config['metaxa2']['read_type']
-confidence = config['metaxa2']['confidence'] if 'confidence' in config['metaxa2'] else DEFAULT_CONFIDENCE
-confidence = int(100*float(confidence))
 
 rule metaxa2_classification:
     input:
@@ -16,7 +12,7 @@ rule metaxa2_classification:
         taxonomy = 'metaxa2/{reference}/classification/{sample}/{sample}.taxonomy.txt'
     params:
         outpref = 'metaxa2/{reference}/classification/{sample}/{sample}',
-        confidence = confidence,
+        confidence = int(100*float(config['metaxa2'].get('confidence', 0.8))),
         hmm_dir = 'reference/{reference}/metaxa2_index/HMMs,
         blast_dir = 'reference/{reference}/metaxa2_index/'
     log:
