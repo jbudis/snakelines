@@ -8,8 +8,8 @@ confidence = int(100*float(confidence))
 
 rule metaxa2_classification:
     input:
-        r1 = 'reads/%s/{sample}_R1.fastq' % read_type,
-        r2 = 'reads/%s/{sample}_R2.fastq' % read_type
+        r1 = 'reads/%s/{sample}_R1.fastq.gz' % read_type,
+        r2 = 'reads/%s/{sample}_R2.fastq.gz' % read_type
     output:
         taxonomy = 'metaxa2/{gene,ssu|lsu}/classification/{sample}/{sample}.taxonomy.txt'
     params:
