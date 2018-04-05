@@ -7,14 +7,15 @@ rule metaxa2_classification:
         r1 = 'reads/%s/{sample}_R1.fastq.gz' % read_type,
         r2 = 'reads/%s/{sample}_R2.fastq.gz' % read_type,
         blast = 'reference/{reference}/metaxa2_index/blast.nhr',
+        cutoffs = 'reference/{reference}/metaxa2_index/blast.cutoffs.txt',
         hmm = 'reference/{reference}/metaxa2_index/HMMs/E.hmm'
     output:
         taxonomy = 'metaxa2/{reference}/classification/{sample}/{sample}.taxonomy.txt'
     params:
         outpref = 'metaxa2/{reference}/classification/{sample}/{sample}',
         confidence = int(100*float(config['metaxa2'].get('confidence', 0.8))),
-        hmm_dir = 'reference/{reference}/metaxa2_index/HMMs,
-        blast_dir = 'reference/{reference}/metaxa2_index/'
+        hmm_dir = 'reference/{reference}/metaxa2_index/HMMs',
+        blast_prefix = 'reference/{reference}/metaxa2_index/blast'
     log:
         'metaxa2/{reference}/classification/{sample}/log/metaxa2.log'
     threads:
@@ -28,7 +29,8 @@ rule metaxa2_classification:
             -g {wildcards.reference} \
             -R {params.confidence} \
             -p {params.hmm_dir} \
-            -d {params.blast_dir} \
+            -d {params.blast_prefix} \
+            -T {input.cutoffs} \
             --plus T \
             --cpu {threads} \
         > {log}
@@ -40,7 +42,8 @@ rule metaxa2_create_index:
         tax = 'reference/{reference}/{reference}.tax'
     output:
         blast = 'reference/{reference}/metaxa2_index/blast.nhr',
-        hmm = 'reference/{reference}/metaxa2_index/HMMs/E.hmm'
+        cutoffs = 'reference/{reference}/metaxa2_index/blast.cutoffs.txt',
+        hmm = 'reference/{reference}/metaxa2_index/HMMs/E.hmm',
     params:
         index_dir = 'reference/{reference}/metaxa2_index'
     threads:
@@ -53,7 +56,7 @@ rule metaxa2_create_index:
         metaxa2_dbb \
             -i {input.fasta} \
             -o {params.index_dir} \
-            -g {reference} \
+            -g {wildcards.reference} \
             -t {input.tax} \
             --auto_rep T \
             --cpu {threads} \
@@ -65,17 +68,29 @@ rule metaxa2_create_index:
 
 rule metaxa2_summarize_classification:
     input:
-        taxonomy = 'metaxa2/{gene}/classification/{sample}/{sample}.taxonomy.txt'
+        taxonomy = 'metaxa2/{gene}/classification/{sample}/{sample}.taxonomy.txt',
+        nomatch_template = srcdir('metaxa2/nomatch.txt')
     output:
-        summary = 'metaxa2/{gene}/classification/{sample}/{sample}.level_7.txt'
+        summary = 'metaxa2/{gene}/classification/{sample}/{sample}.level_7.txt',
     params:
-        outpref = 'metaxa2/{gene}/classification/{sample}/{sample}'
+        outpref = 'metaxa2/{gene}/classification/{sample}/{sample}',
+        nomatch_taxonomy = 'metaxa2/{gene}/classification/{sample}/{sample}.taxonomy.nomatch.txt'
     log:
         'metaxa2/{gene}/classification/{sample}/log/metaxa2_ttt.log'
     shell:
         '''
+        TAXONOMY={input.taxonomy}
+        echo {input.taxonomy}  as
+        if [ ! -s {input.taxonomy} ];
+        then
+            echo in
+            cp {input.nomatch_template} {params.nomatch_taxonomy}
+            TAXONOMY={params.nomatch_taxonomy}
+            echo $TAXONOMY
+        fi
+        echo $TAXONOMY
         metaxa2_ttt \
-                -i {input.taxonomy} \
+                -i $TAXONOMY \
                 -o {params.outpref} \
         > {log}
         '''
