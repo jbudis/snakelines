@@ -53,9 +53,9 @@ rule fasta_summary_blast:
 
             seqids.append(seqid)
             info_list.append({
-                'Homologue title': ';'.join(aligns['stitle']),
-                'Homologue accession': ';'.join(aligns['stitle']),
-                'Homologue link': '<br />'.join(aligns.apply(create_link, axis=1))
+                'Homologue title (%s)' % wildcards.reference: ';'.join(aligns['stitle']),
+                'Homologue accession (%s)' % wildcards.reference: ';'.join(aligns['stitle']),
+                'Homologue link (%s)' % wildcards.reference: '<br />'.join(aligns.apply(create_link, axis=1))
             })
 
         infos = pd.DataFrame(info_list, index=seqids)
@@ -189,8 +189,7 @@ rule fasta_summary:
         attrs, last_name = attr_tables[0], attr_names[0]
         for attr_name, attr_table in zip(attr_names[1:], attr_tables[1:]):
             attrs = attrs.merge(attr_table, how='outer',
-                                left_index=True, right_index=True,
-                                suffixes = [' (%s)' % last_name, ' (%s)' % attr_name])
+                                left_index=True, right_index=True)
             last_name = attr_name
 
         attrs.sort_values(by='Length', ascending=False, inplace=True)
@@ -199,7 +198,7 @@ rule fasta_summary:
 
 
         # TSV report
-        tsv_columns = [attr for attr in attrs.columns if not attr.endswith(' link')]
+        tsv_columns = [attr for attr in attrs.columns if ' link' not in attr]
         attrs[tsv_columns].to_csv(output.tsv, sep='\t')
 
         # HTML report
