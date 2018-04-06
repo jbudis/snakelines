@@ -4,8 +4,8 @@ read_type  = config['metaxa2']['read_type']
 
 rule metaxa2_classification:
     input:
-        r1 = 'reads/%s/{sample}_R1.fastq.gz' % read_type,
-        r2 = 'reads/%s/{sample}_R2.fastq.gz' % read_type,
+        r1 = 'reads/%s/{sample}_R1.fastq' % read_type,
+        r2 = 'reads/%s/{sample}_R2.fastq' % read_type,
         blast = 'reference/{reference}/metaxa2_index/blast.nhr',
         cutoffs = 'reference/{reference}/metaxa2_index/blast.cutoffs.txt',
         hmm = 'reference/{reference}/metaxa2_index/HMMs/E.hmm'
@@ -69,7 +69,8 @@ rule metaxa2_create_index:
 rule metaxa2_summarize_classification:
     input:
         taxonomy = 'metaxa2/{gene}/classification/{sample}/{sample}.taxonomy.txt',
-        nomatch_template = srcdir('metaxa2/nomatch.txt')
+        nomatch_template = srcdir('metaxa2/nomatch.txt'),
+        nomatch_tax_template = srcdir('metaxa2/nomatch.level_7.txt')
     output:
         summary = 'metaxa2/{gene}/classification/{sample}/{sample}.level_7.txt',
     params:
@@ -93,6 +94,11 @@ rule metaxa2_summarize_classification:
                 -i $TAXONOMY \
                 -o {params.outpref} \
         > {log}
+
+        if [ ! -f {output.summary} ];
+        then
+            cp {input.nomatch_tax_template} {output.summary}
+        fi
         '''
 
 rule metaxa2_prepare_for_krona:
