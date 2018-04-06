@@ -40,9 +40,10 @@ rule fasta_summary_blast:
         blast = pd.DataFrame.from_csv(input.blast, sep='\t', index_col=None)
         seqids, info_list = [], []
         for seqid, aligns in blast.groupby('qseqid'):
-            aligns['qcov'] = (aligns['qend'] - aligns['qstart']) / aligns['qlen']
+            aligns['qcov'] = ((aligns['qend'] - aligns['qstart']) / aligns['qlen']).abs()
             aligns = aligns[aligns['qcov'] >= params.min_query_coverage]
             aligns = aligns.iloc[:params.max_target_seqs]
+
             if len(aligns) == 0:
                 continue
 
