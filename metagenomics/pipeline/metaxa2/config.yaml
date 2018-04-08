@@ -1,4 +1,5 @@
 sample_pattern: .*
+report_dir: public/01-metaxa2
 
 gene_pattern:
     ssu: .*16S.*

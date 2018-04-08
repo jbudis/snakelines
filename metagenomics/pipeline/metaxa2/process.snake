@@ -9,11 +9,25 @@ include: config['snake_dir'] + '/metagenomics/report/krona.snake'
 include: config['snake_dir'] + '/metagenomics/report/tsv_summary.snake'
 
 genes = list(config['gene_pattern'].keys())
+report_dir = 'report/' + config['report_dir']
 
 rule process:
-    params:
     input:
-        'reads/original/stats/summary.html',
-        'reads/trimmed/stats/summary.html',
-        expand('metaxa2/{gene}/report/krona/krona.html', gene=genes),
-        expand('metaxa2/{gene}/report/tsv/summary.tsv', gene=genes)
+        fastqc_original = 'reads/original/stats/summary.html',
+        fastqc_trimmed  = 'reads/trimmed/stats/summary.html',
+        krona = expand('metaxa2/{gene}/report/krona/krona.html', gene=genes),
+        table = expand('metaxa2/{gene}/report/tsv/summary.tsv', gene=genes)
+    output:
+        krona = expand('{report_dir}/{gene}/krona/krona.html', gene=genes, report_dir=report_dir),
+        table = expand('{report_dir}/{gene}/tsv/summary.tsv', gene=genes, report_dir=report_dir)
+    params:
+        genes = genes,
+        report_dir = report_dir
+    shell:
+        '''
+        for GENE in {params.genes}; do
+            REPORT_DIR={params.report_dir}/$GENE
+            cp -R metaxa2/$GENE/report/* $REPORT_DIR
+            echo cp -R metaxa2/$GENE/report/* $REPORT_DIR
+        done
+        '''
