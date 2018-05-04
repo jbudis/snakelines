@@ -16,6 +16,7 @@ rule convert_to_lefse_tsv:
         # Load tsv table with sample mappings to specific group
         classification = pd.read_csv(input.description, sep='\t', index_col=0, header=None)
         classification.columns = ['group']
+        classification.index = classification.index.astype(str)
         classification = classification[classification.index.isin(counts.columns)]
 
         # Convert counts to lefse format
