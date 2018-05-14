@@ -2,10 +2,23 @@ include: config['snake_dir'] + '/preprocess/conversion/unzip.snake'
 
 read_type  = config['metaxa2']['read_type']
 
+def r_file(wildcards, orientation):
+    read_dir = read_type
+    if '{gene}' in read_dir:
+        read_dir = read_dir.format(gene=wildcards.reference)
+
+    return 'reads/%s/%s_R%s.fastq' % (read_dir, wildcards.sample, orientation)
+
+def r1_file(wildcards):
+    return r_file(wildcards, '1')
+
+def r2_file(wildcards):
+    return r_file(wildcards, '2')
+
 rule metaxa2_classification:
     input:
-        r1 = 'reads/%s/{sample}_R1.fastq' % read_type,
-        r2 = 'reads/%s/{sample}_R2.fastq' % read_type,
+        r1 = r1_file,
+        r2 = r2_file,
         blast = 'reference/{reference}/metaxa2_index/blast.nhr',
         cutoffs = 'reference/{reference}/metaxa2_index/blast.cutoffs.txt',
         hmm = 'reference/{reference}/metaxa2_index/HMMs/E.hmm'
