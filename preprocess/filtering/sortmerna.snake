@@ -18,11 +18,12 @@ rule sortmerna_index:
     output:
         index = 'reference/{reference}/sortmerna/{reference}.idx.stats'
     params:
-        tmpdir = 'reference/{reference}/sortmerna'
+        tmpdir = 'reference/{reference}/sortmerna',
+        index_prefix = 'reference/{reference}/sortmerna/{reference}.idx',
     shell:
         '''
         sortmerna_index \
-            --ref {input.ref},{output.index} \
+            --ref {input.ref},{params.index_prefix} \
             --tmpdir {params.tmpdir}
         '''
 
@@ -38,6 +39,8 @@ rule sortmerna_filter_reads:
         prefix = 'reads/sortmerna-{reference}/{sample}',
         index_prefix = 'reference/{reference}/sortmerna/{reference}.idx',
         output_prefix = 'reads/sortmerna-{reference}/{sample}_RL'
+    threads:
+        int(config['threads'])
     shell:
         '''
         sortmerna \
@@ -45,7 +48,8 @@ rule sortmerna_filter_reads:
             --reads {input.rl} \
             --aligned {params.output_prefix} \
             --fastx \
-            --paired_in
+            --paired_in \
+            -a {threads}
         '''
 
 
