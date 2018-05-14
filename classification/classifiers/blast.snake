@@ -1,5 +1,6 @@
 import pickle
 import pandas as pd
+from glob import glob
 from Bio import SeqIO
 
 blast_binaries = {
@@ -9,14 +10,29 @@ blast_binaries = {
     ('protein',    'protein'):    'blastp'
 }
 
-blast_db_suffix = {
+blast_db_suffices = {
     'nucleotide': 'nsq',
     'protein':    'psq'
 }
 
+def find_blast_db(wildcards):
+    target_type = config['blast']['reference'][wildcards.reference]['target_type']
+    db_suffix = blast_db_suffices[target_type]
+    indices = glob('reference/{reference}/blast_index/{reference}.*{db_suffix}' \
+                        .format(reference=wildcards.reference, db_suffix=db_suffix))
+    if indices:
+        return indices
+
+    print('reference/{reference}/blast_index/{reference}.{db_suffix}' \
+                        .format(reference=wildcards.reference, db_suffix=db_suffix))
+
+    return 'reference/{reference}/blast_index/{reference}.{db_suffix}' \
+                        .format(reference=wildcards.reference, db_suffix=db_suffix)
+
 rule blast_tsv:
     input:
-        '{indir}/{name}.fa'
+        fasta = '{indir}/{name}.fa',
+        db = find_blast_db
     output:
         '{indir}/blast/{reference}/{name}.blast.tsv'
     threads:
@@ -45,7 +61,7 @@ rule blast_tsv:
 
         {params.blast_binary} \
             -db {params.blast_database} \
-            -query {input} \
+            -query {input.fasta} \
             -out {params.nohead} \
             -outfmt "6 `echo $HEADER`" \
             -num_threads {threads} \
