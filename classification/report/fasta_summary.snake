@@ -11,6 +11,7 @@ import shutil
 import numpy as np
 import pickle
 import pandas as pd
+import zlib
 pd.set_option('display.max_colwidth', 1000000)
 pd.options.display.float_format = '{:.3f}'.format
 
@@ -134,7 +135,8 @@ rule fasta_summary_copy_contigs:
             seqids.append(seq.id)
             contig_info = {
                 'Length':     len(seq),
-                'GC content': str(np.round(SeqUtils.GC(seq.seq), 1))
+                'GC content': str(np.round(SeqUtils.GC(seq.seq), 1)),
+                'Compress ratio':  len(zlib.compress(bytes(str(seq.seq), 'utf-8'))) / len(seq.seq)
             }
             info_list.append(contig_info)
 
