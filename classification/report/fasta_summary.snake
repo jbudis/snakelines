@@ -206,7 +206,8 @@ rule fasta_summary:
         # HTML report
         TEMPLATE = open(input.template).read()
         with open(output.html, 'w') as out:
-            attrs['Sequence'] = ['<a href="%s/%s.fa">%s</a>' % (params.fasta_dir, seqid, seqid) for seqid in attrs.index]
+            attrs['Sequence'] = ['<a href="%s/%s.fa">%s</a>' % (params.fasta_dir, seqid, i+1) \
+                                        for i, seqid in enumerate(attrs.index)]
             attrs.index = np.arange(1, len(attrs) + 1)
 
             html_columns = attrs.columns
@@ -218,10 +219,10 @@ rule fasta_summary:
             html_attrs = attrs[html_columns]
             html_table = html_attrs\
                             .fillna('') \
-                            .to_html(escape=False) \
+                            .to_html(escape=False, index=False) \
                             .replace('<table ', '<table id="data" ')
 
-            sort_index = list(html_attrs.columns).index(params.sort_by) + 1
+            sort_index = list(html_attrs.columns).index(params.sort_by)
             out.write(TEMPLATE.format(attrs=html_table,
                                       seq_fasta='%s/all_contigs.fa' % params.fasta_dir,
                                       sort_index=sort_index, sort_how=params.sort_how))
