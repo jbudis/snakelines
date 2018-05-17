@@ -167,4 +167,6 @@ rule blast_assign_taxonomy_assemblers:
                 tax = 'Unknown'
                 if query.id in blast.index:
                     homologue = blast.loc[query.id]['sacc']
-                    outtax.write('{qid}\t{taxonomy}\n'.format(qid=query.id, taxonomy=taxes[homologue]))
+                    tax = taxes[homologue]
+
+                outtax.write('{qid}\t{taxonomy}\n'.format(qid=query.id, taxonomy=tax))
