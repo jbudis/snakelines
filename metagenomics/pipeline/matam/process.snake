@@ -2,6 +2,7 @@ configfile: srcdir('config.yaml')
 
 pipeline = glob_wildcards('reads/original/{sample,%s}_R1.fastq.gz' % config['sample_pattern'])
 
+include: config['snake_dir'] + '/preprocess/trim_reads/trimmomatic.snake'
 include: config['snake_dir'] + '/preprocess/join_reads/pear.snake'
 include: config['snake_dir'] + '/assembly/assemblers/matam.snake'
 include: config['snake_dir'] + '/alignment/aligners/mafft.snake'
@@ -11,11 +12,11 @@ include: config['snake_dir'] + '/alignment/visualisation/phylogenetic_tree.snake
 include: config['snake_dir'] + '/metagenomics/diversity/alpha.snake'
 include: config['snake_dir'] + '/metagenomics/diversity/beta.snake'
 include: config['snake_dir'] + '/metagenomics/clustering/cdhit.snake'
-include: config['snake_dir'] + '/classification/report/blast_summary.snake'
 include: config['snake_dir'] + '/metagenomics/report/krona.snake'
 include: config['snake_dir'] + '/metagenomics/report/tax_counts.snake'
+include: config['snake_dir'] + '/classification/classifiers/blast.snake'
 
-reference = list(config['gene_pattern'].keys())
+report_dir = 'report/{}'.format(config['report_dir'])
 cluster_limit = config['matam']['cluster_limit']
 otu_limit = config['otu']['cluster_limit']
 
@@ -24,48 +25,34 @@ assemblies = ['assembly', otu_assembly]
 
 rule process:
     input:
-        # Matam contigs
-        expand('matam/{reference}_NR{cluster_limit}/joined/{assembly}.fa',
-                reference=reference, cluster_limit=cluster_limit,
-                assembly=assemblies),
-
         # Contig read counts and proportions
-        expand('matam/{reference}_NR{cluster_limit}/joined/assembly.{suffix}',
-                reference=reference, cluster_limit=cluster_limit,
+        expand('matam/{reference}/joined/assembly.{suffix}',
+                reference=reference,
                 suffix=['counts.tsv', 'ratios.tsv']),
 
         # Alpha diversity
-        expand('matam/{reference}_NR{cluster_limit}/joined/assembly.alpha.tsv',
-                reference=reference, cluster_limit=cluster_limit,
+        expand('matam/{reference}/joined/assembly.alpha.tsv',
+                reference=reference,
                 assembly=assemblies),
 
         # Multiple alignments
-        expand('matam/{reference}_NR{cluster_limit}/joined/alignment/mafft/{assembly}.html',
-                reference=reference, cluster_limit=cluster_limit,
+        expand('matam/{reference}/joined/alignment/mafft/{assembly}.html',
+                reference=reference,
                 assembly=assemblies),
 
         # Phylogenetic trees
-        expand('matam/{reference}_NR{cluster_limit}/joined/alignment/mafft/{assembly}.aln.treefile.{suffix}',
-                reference=reference, cluster_limit=cluster_limit,
-                assembly=assemblies, suffix=['svg', 'ascii']),
-
-        # Blast OTUs
-        expand('matam/{reference}_NR{cluster_limit}/joined/blast/{assembly}.html',
-                reference=reference, cluster_limit=cluster_limit,
-                assembly=otu_assembly, suffix=['svg', 'ascii']),
+        expand('matam/{reference}/joined/alignment/mafft/{assembly}.aln.treefile.{suffix}',
+                reference=reference, assembly=assemblies,
+                suffix=['svg', 'ascii']),
 
         # OTU and taxonomy read counts and proportions
-        expand('matam/{reference}_NR{cluster_limit}/joined/{assembly}.{suffix}',
-                reference=reference, cluster_limit=cluster_limit,
-                assembly=otu_assembly,
+        expand('matam/{reference}/joined/{assembly}.{suffix}',
+                reference=reference, assembly=otu_assembly,
                 suffix=['counts.tsv', 'counts.tax.tsv', 'ratios.tsv', 'ratios.tax.tsv']),
 
-        # Taxonomy for annotated OTUs
-        expand('matam/{reference}_NR{cluster_limit}/joined/{assembly}.tax',
-                reference=reference, cluster_limit=cluster_limit,
-                assembly=otu_assembly),
 
         # Krona for annotated OTUs
-        expand('matam/{reference}_NR{cluster_limit}/joined/{assembly}.krona.html',
-                reference=reference, cluster_limit=cluster_limit,
-                assembly=otu_assembly),
+        expand('matam/{reference}/joined/{assembly}.krona.html',
+                reference=reference,
+                assembly=otu_assembly)
+
