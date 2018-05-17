@@ -1,12 +1,9 @@
 sample_pattern: .*               # Regex expression which samples from reads/original should be analysed
 
 gene_pattern:                    # Split samples into different groups based on reference gene database
-    silva-ssu-128: .*-16Sr-.*    # Here, for example all samples with -16Sr- in name would be analysed against
-    silva-lsu-128: .*-28Sr-.*    #       gene sequences stored in reference/silva-ssu-128/silva-ssu-128.fa
-    prtp: .*-prtP-.*
-    bcat: .*-bcaT-.*
-    pepx: .*-pepX-.*
-    pepn: .*-pepN.*
+    silva-ssu-128: .*-16S.*      # Here, for example all samples with -16S in name would be analysed against
+    refseq: .*-ITS               #        gene sequences stored in reference/silva-ssu-128/silva-ssu-128.fa
+
 
 trim:
     read_type: original
