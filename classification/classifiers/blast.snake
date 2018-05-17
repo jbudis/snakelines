@@ -17,6 +17,7 @@ blast_db_suffices = {
 
 def find_blast_db(wildcards):
     target_type = config['blast']['reference'][wildcards.reference]['target_type']
+
     db_suffix = blast_db_suffices[target_type]
     indices = glob('reference/{reference}/blast_index/{reference}.*{db_suffix}' \
                         .format(reference=wildcards.reference, db_suffix=db_suffix))
@@ -141,3 +142,29 @@ rule blast_extract_contigs_by_kingdom:
 
                     SeqIO.write(contigs[contig_id], out_fasta, 'fasta')
                     already_stored.add(contig_id)
+
+
+
+rule blast_assign_taxonomy_assemblers:
+    input:
+        fa = '{assembler}/{reference}/{indir}/{sample}.fa',
+        blast = '{assembler}/{reference}/{indir}/blast/{reference}/{sample}.blast.tsv',
+        tax = 'reference/{reference}/{reference}.tax'
+    output:
+        tax = '{assembler, matam}/{reference}/{indir, [a-z]+}/{sample}.tax'
+    run:
+        # Load ids and taxonomies for reference sequences
+        taxes = pd.read_csv(input.tax, header=None, index_col=0, sep='\t')[1]
+
+        # Load homologues found by blast
+        blast = pd.read_csv(input.blast, index_col=None, sep='\t') \
+                  .drop_duplicates(subset=['qseqid'], keep='first') \
+                  .set_index('qseqid')
+
+        # Assign taxonomies for best hit homologues to sequences from fasta
+        with open(output.tax, 'w') as outtax:
+            for query in SeqIO.parse(input.fa, 'fasta'):
+                tax = 'Unknown'
+                if query.id in blast.index:
+                    homologue = blast.loc[query.id]['sacc']
+                    outtax.write('{qid}\t{taxonomy}\n'.format(qid=query.id, taxonomy=taxes[homologue]))
