@@ -2,6 +2,8 @@ configfile: srcdir('config.yaml')
 
 pipeline = glob_wildcards('reads/original/{sample,%s}_R1.fastq.gz' % config['sample_pattern'])
 
+import shutil
+
 include: config['snake_dir'] + '/preprocess/trim_reads/trimmomatic.snake'
 include: config['snake_dir'] + '/preprocess/join_reads/pear.snake'
 include: config['snake_dir'] + '/assembly/assemblers/matam.snake'
@@ -17,6 +19,7 @@ include: config['snake_dir'] + '/metagenomics/report/tax_counts.snake'
 include: config['snake_dir'] + '/classification/classifiers/blast.snake'
 
 report_dir = 'report/{}'.format(config['report_dir'])
+reference = list(config['gene_pattern'].keys())
 cluster_limit = config['matam']['cluster_limit']
 otu_limit = config['otu']['cluster_limit']
 
@@ -26,33 +29,77 @@ assemblies = ['assembly', otu_assembly]
 rule process:
     input:
         # Contig read counts and proportions
-        expand('matam/{reference}/joined/assembly.{suffix}',
-                reference=reference,
-                suffix=['counts.tsv', 'ratios.tsv']),
+        counts = expand('matam/{reference}/joined/assembly.{suffix}',
+                        reference=reference,
+                        suffix=['counts.tsv', 'ratios.tsv']),
 
         # Alpha diversity
-        expand('matam/{reference}/joined/assembly.alpha.tsv',
-                reference=reference,
-                assembly=assemblies),
+        alphas = expand('matam/{reference}/joined/assembly.alpha.tsv',
+                        reference=reference,
+                        assembly=assemblies),
 
         # Multiple alignments
-        expand('matam/{reference}/joined/alignment/mafft/{assembly}.html',
-                reference=reference,
-                assembly=assemblies),
+        aligns = expand('matam/{reference}/joined/alignment/mafft/{assembly}.html',
+                        reference=reference,
+                        assembly=assemblies),
 
         # Phylogenetic trees
-        expand('matam/{reference}/joined/alignment/mafft/{assembly}.aln.treefile.{suffix}',
-                reference=reference, assembly=assemblies,
-                suffix=['svg', 'ascii']),
+        phylos = expand('matam/{reference}/joined/alignment/mafft/{assembly}.aln.treefile.{suffix}',
+                        reference=reference, assembly=assemblies,
+                        suffix=['svg', 'ascii']),
 
         # OTU and taxonomy read counts and proportions
-        expand('matam/{reference}/joined/{assembly}.{suffix}',
-                reference=reference, assembly=otu_assembly,
-                suffix=['counts.tsv', 'counts.tax.tsv', 'ratios.tsv', 'ratios.tax.tsv']),
+        otus =  expand('matam/{reference}/joined/{assembly}.{suffix}',
+                        reference=reference, assembly=otu_assembly,
+                        suffix=['counts.tsv', 'counts.tax.tsv', 'ratios.tsv', 'ratios.tax.tsv']),
 
 
         # Krona for annotated OTUs
-        expand('matam/{reference}/joined/{assembly}.krona.html',
-                reference=reference,
-                assembly=otu_assembly)
+        kronas = expand('matam/{reference}/joined/{assembly}.krona.html',
+                        reference=reference,
+                        assembly=otu_assembly)
 
+    output:
+        # Contig read counts and proportions
+        counts = expand('{report_dir}/{reference}/assembly.{suffix}',
+                        report_dir=report_dir, reference=reference,
+                        suffix=['counts.tsv', 'ratios.tsv']),
+
+        # Alpha diversity
+        alphas = expand('{report_dir}/{reference}/assembly.alpha.tsv',
+                        report_dir=report_dir, reference=reference,
+                        assembly=assemblies),
+
+        # Multiple alignments
+        aligns = expand('{report_dir}/{reference}/{assembly}.html',
+                        report_dir=report_dir, reference=reference,
+                        assembly=assemblies),
+
+        # Phylogenetic trees
+        phylos = expand('{report_dir}/{reference}/{assembly}.aln.treefile.{suffix}',
+                        report_dir=report_dir, reference=reference,
+                        assembly=assemblies, suffix=['svg', 'ascii']),
+
+        # OTU and taxonomy read counts and proportions
+        otus =  expand('{report_dir}/{reference}/{assembly}.{suffix}',
+                        report_dir=report_dir, reference=reference,
+                        assembly=otu_assembly,
+                        suffix=['counts.tsv', 'counts.tax.tsv', 'ratios.tsv', 'ratios.tax.tsv']),
+
+
+        # Krona for annotated OTUs
+        kronas = expand('{report_dir}/{reference}/{assembly}.krona.html',
+                        report_dir=report_dir, reference=reference,
+                        assembly=otu_assembly)
+
+    run:
+        def copy_files(in_files, out_files):
+            for in_file, out_file in zip(in_files, out_files):
+                shutil.copy(in_file, out_file)
+
+        copy_files(input.counts, output.counts)
+        copy_files(input.alphas, output.alphas)
+        copy_files(input.aligns, output.aligns)
+        copy_files(input.phylos, output.phylos)
+        copy_files(input.otus,   output.otus)
+        copy_files(input.kronas, output.kronas)

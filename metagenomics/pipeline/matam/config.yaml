@@ -1,9 +1,12 @@
-sample_pattern: .*               # Regex expression which samples from reads/original should be analysed
+sample_pattern: .*                # Regex expression which samples from reads/original should be analysed
+
+report_dir: public/01-matam       # Summaries would be copied at report/<report_dir> at the end of pipeline execution
+                                  # if you choose public/<subdir>, reports would be accessible from web through
+                                  # https://gen-clc.cusp.uniba.sk/<project>/<subdir>
 
 gene_pattern:                    # Split samples into different groups based on reference gene database
-    silva-ssu-128: .*-16S.*      # Here, for example all samples with -16S in name would be analysed against
-    refseq: .*-ITS               #        gene sequences stored in reference/silva-ssu-128/silva-ssu-128.fa
-
+    silva-ssu-128: .*16S.*       # Here, for example all samples with 16S in name would be analysed against
+    refseq: .*ITS.*              #        gene sequences stored in reference/silva-ssu-128/silva-ssu-128.fa
 
 trim:
     read_type: original
@@ -16,14 +19,15 @@ join:                            # Join paired reads to simulate single-end sequ
     read_type: trimmed           # What type of reads should be used for join (reads/<read_type>)
 
 matam:                           # Assembler for metagenomic reads
-    cluster_limit: 99            # Cluster genes from the reference gene sequences - This is threshold for sequence similarity
-    min_scaffold_length: 500     # Shorter assembled scaffold would be filtered
+    cluster_limit: 97            # Cluster genes from the reference gene sequences - This is threshold for sequence similarity
+    min_scaffold_length: 300     # Shorter assembled scaffold would be filtered
 
 otu:                             # Cluster assembled contigs according to the sequence similarity
     cluster_limit: 97            # Similarity threshold to assign sequences into the same cluster
 
 iqtree:                          # Generate phylogenetic tree from contig clusters
     model: GTR+I+G4              # Model to use for phylo tree generation - see iqtree documentation for more detail
+
 
 blast:
     enabled: True                 # Do you want to generate blast reports?
