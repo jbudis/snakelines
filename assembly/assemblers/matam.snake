@@ -39,7 +39,8 @@ rule matam_prepare_reference:
     output:
         ref = 'reference/{reference}/matam/{reference}_NR%d.clustered.fasta' % cluster_limit
     params:
-        db_dir = 'reference/{reference}/matam'
+        db_dir = 'reference/{reference}/matam',
+        cluster_limit = cluster_limit
     threads:
         int(config['threads'])
     shell:
@@ -51,7 +52,7 @@ rule matam_prepare_reference:
             --db_dir {params.db_dir} \
             --cpu {threads} \
             --max_memory 120000 \
-            --clustering_id_threshold 0.{wildcards.cluster_limit}
+            --clustering_id_threshold 0.{params.cluster_limit}
         '''
 
 
