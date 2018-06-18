@@ -170,3 +170,22 @@ rule blast_assign_taxonomy_assemblers:
                     tax = taxes[homologue]
 
                 outtax.write('{qid}\t{taxonomy}\n'.format(qid=query.id, taxonomy=tax))
+
+rule blast_index:
+    input:
+        fa = 'reference/{reference}/{reference}.fa'
+    output:
+        nhr = protected('reference/{reference}/blast_index/{reference}.nhr'),
+        nin = protected('reference/{reference}/blast_index/{reference}.nin'),
+        nsq = protected('reference/{reference}/blast_index/{reference}.nsq')
+    params:
+        index_prefix = 'reference/{reference}/blast_index/{reference}'
+    shell:
+        '''
+        makeblastdb \
+            -in {input.fa} \
+            -input_type fasta \
+            -dbtype nucl \
+            -title {wildcards.reference} \
+            -out {params.index_prefix}
+        '''
