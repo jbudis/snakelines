@@ -1,0 +1,21 @@
+rule interproscan_annotate:
+    input:
+        fasta = '{indir}/{name}.fa'
+    output:
+        svg  = '{indir}/interproscan/{name}.svg.tar.gz',
+        html = '{indir}/interproscan/{name}.html.tar.gz',
+        tsv  = '{indir}/interproscan/{name}.tsv',
+    threads:
+        int(config['threads'])
+    params:
+        outpref = '{indir}/interproscan/{name}',
+        applications = ','.join(config['interproscan']['applications'])
+    shell:
+        '''
+        interproscan \
+            --applications {params.applications} \
+            --output-file-base {params.outpref} \
+            --formats TSV,HTML,SVG,GFF3 \
+            --seqtype n \
+            --input {input.fasta}
+        '''
