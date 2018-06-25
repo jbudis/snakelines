@@ -1,5 +1,7 @@
 include: config['snake_dir'] + '/preprocess/conversion/unzip.snake'
 
+from glob import glob
+
 read_type  = config['metaxa2']['read_type']
 
 def r_file(wildcards, orientation):
@@ -94,15 +96,12 @@ rule metaxa2_summarize_classification:
     shell:
         '''
         TAXONOMY={input.taxonomy}
-        echo {input.taxonomy}  as
         if [ ! -s {input.taxonomy} ];
         then
-            echo in
             cp {input.nomatch_template} {params.nomatch_taxonomy}
             TAXONOMY={params.nomatch_taxonomy}
             echo $TAXONOMY
         fi
-        echo $TAXONOMY
         metaxa2_ttt \
                 -i $TAXONOMY \
                 -o {params.outpref} \
@@ -114,15 +113,26 @@ rule metaxa2_summarize_classification:
         fi
         '''
 
+def most_specialized_classification(wildcards):
+
+    def get_class_level(class_file):
+        level = class_file.split('_')[-1].split('.')[0]
+        return int(level)
+
+    class_files = glob('metaxa2/{gene}/classification/{sample}/{sample}.level_*.txt'.format(
+                       gene=wildcards.gene, sample=wildcards.sample))
+
+    return sorted(class_files, key=get_class_level)[-1]
+
 rule metaxa2_prepare_for_krona:
     input:
-        'metaxa2/{gene}/classification/{sample}/{sample}.level_7.txt'
+        classification = most_specialized_classification
     output:
-        'metaxa2/{gene}/report/krona/individual/{sample}.krn'
+        krona = 'metaxa2/{gene}/report/krona/individual/{sample}.krn'
     shell:
         '''
         cat \
-            {input} \
+            {input.classification} \
         | sed \
             's/ /@/g' \
         | awk \
@@ -133,7 +143,7 @@ rule metaxa2_prepare_for_krona:
             's/;/\t/g' \
         | sed \
             's/Unclassified //g' \
-        > {output}
+        > {output.krona}
         '''
 
 rule metaxa2_krona_report:
