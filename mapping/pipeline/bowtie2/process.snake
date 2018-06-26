@@ -1,3 +1,5 @@
+import shutil
+
 configfile: srcdir('config.yaml')
 
 pipeline = glob_wildcards('reads/original/{sample,%s}_R1.fastq.gz' % config['sample_pattern'])
