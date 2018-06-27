@@ -3,12 +3,12 @@ rule bowtie2_index:
     input:
         '{fadir}/{sequence}.fa'
     output:
-        protected('{fadir}/bowtie2_index/{sequence}.1.bt2'),
-        protected('{fadir}/bowtie2_index/{sequence}.2.bt2'),
-        protected('{fadir}/bowtie2_index/{sequence}.3.bt2'),
-        protected('{fadir}/bowtie2_index/{sequence}.4.bt2'),
-        protected('{fadir}/bowtie2_index/{sequence}.rev.1.bt2'),
-        protected('{fadir}/bowtie2_index/{sequence}.rev.2.bt2')
+        '{fadir}/bowtie2_index/{sequence}.1.bt2',
+        '{fadir}/bowtie2_index/{sequence}.2.bt2',
+        '{fadir}/bowtie2_index/{sequence}.3.bt2',
+        '{fadir}/bowtie2_index/{sequence}.4.bt2',
+        '{fadir}/bowtie2_index/{sequence}.rev.1.bt2',
+        '{fadir}/bowtie2_index/{sequence}.rev.2.bt2'
     params:
         index = '{fadir}/bowtie2_index/{sequence}'
     log:
