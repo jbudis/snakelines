@@ -9,9 +9,11 @@ trim:                                   # Pre-process of reads, eliminate low qu
     quality: 20                         # Cut read, once the average quality within the 5bp window falls below a threshold
     headcrop: 0                         # Cut the specified number of bases from the start of the read
     minlen: 35                          # Drop the read if it is below a specified length
+    temporary: True                     # Trimmed fastq files are deleted after all rules that use it as an input are completed
 
 deduplicate:
     read_type: trimmed
+    temporary: True
 
 assembly:
     read_type: deduplicated

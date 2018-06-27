@@ -8,12 +8,13 @@ gene_pattern:                    # Split samples into different groups based on 
     silva-ssu-128: .*16S.*       # Here, for example all samples with 16S in name would be analysed against
     refseq: .*ITS.*              #        gene sequences stored in reference/silva-ssu-128/silva-ssu-128.fa
 
-trim:
-    read_type: original
-    crop: 170
-    quality: 20
-    headcrop: 20
-    minlen: 35
+trim:                                   # Pre-process of reads, eliminate low quality sequences
+    read_type: original                 # Location of fastq files, would be searched in reads/<read_type>/*_R1.fastq.gz
+    crop: 500                           # Cut the read to a specified length
+    quality: 20                         # Cut read, once the average quality within the 5bp window falls below a threshold
+    headcrop: 20                         # Cut the specified number of bases from the start of the read
+    minlen: 35                          # Drop the read if it is below a specified length
+    temporary: True                     # Trimmed fastq files are deleted after all rules that use it as an input are completed
 
 join:                            # Join paired reads to simulate single-end sequencing (Matam requires it)
     read_type: trimmed           # What type of reads should be used for join (reads/<read_type>)
