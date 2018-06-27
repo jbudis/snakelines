@@ -4,7 +4,7 @@ temporary = config['trim'].get('temporary', False)
 def configured_temp(outfile):
     return temp(outfile) if temporary else outfile
 
-rule trim:
+rule trimmomatic_trim_reads:
     input:
         r1 = 'reads/%s/{sample}_R1.fastq.gz' % read_type,
         r2 = 'reads/%s/{sample}_R2.fastq.gz' % read_type
