@@ -1,15 +1,19 @@
 include: config['snake_dir'] + '/preprocess/conversion/unzip.snake'
 
 read_type = config['join']['read_type']
+temporary = config['join'].get('temporary', False)
+
+def configured_temp(outfile):
+    return temp(outfile) if temporary else outfile
 
 rule pear_join_read_pairs:
     input:
         r1 = 'reads/%s/{sample}_R1.fastq' % read_type,
         r2 = 'reads/%s/{sample}_R2.fastq' % read_type
     output:
-        r1 = 'reads/joined/{sample}_R1.fastq.gz',
-        r2 = 'reads/joined/{sample}_R2.fastq.gz',
-        rm = 'reads/joined/{sample}_RM.fastq.gz'
+        r1 = configured_temp('reads/joined/{sample}_R1.fastq.gz'),
+        r2 = configured_temp('reads/joined/{sample}_R2.fastq.gz'),
+        rm = configured_temp('reads/joined/{sample}_RM.fastq.gz')
     params:
         tmp_r1 = 'reads/joined/{sample}.unassembled.forward.fastq',
         tmp_r2 = 'reads/joined/{sample}.unassembled.reverse.fastq',
