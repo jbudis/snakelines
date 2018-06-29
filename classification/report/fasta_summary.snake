@@ -98,6 +98,18 @@ rule fasta_summary_coverage:
         infos = pd.DataFrame(info_list, index=seqids)
         infos.to_csv(output.tsv, sep='\t')
 
+rule fasta_summary_mapped_reads:
+    input:
+        bam = '{indir}/mapping/{name}.bam',
+        bai = '{indir}/mapping/{name}.bam.bai'
+    output:
+        tsv = '{indir}/fasta_summary/{name}/attributes/mapped_reads.tsv'
+    shell:
+        '''
+        echo -e '\tMapped reads' > {output.tsv}
+        samtools idxstats {input.bam} | cut -f 1,3 >> {output.tsv}
+        '''
+
 rule fasta_summary_virfinder:
     input:
         pvalues   = '{indir}/virfinder/{name}.pvalues.tsv'
@@ -155,9 +167,10 @@ rule fasta_summary:
         attrs_seqinfo   = '{indir}/fasta_summary/{name}/attributes/seqinfo.fa',
 
         # Optional columns of the table
-        attrs_blast     =  blast_attr_tsvs                                        if include_blast     else [],
-        attrs_coverage  = '{indir}/fasta_summary/{name}/attributes/coverage.tsv'  if include_coverage  else [],
-        attrs_virfinder = '{indir}/fasta_summary/{name}/attributes/virfinder.tsv' if include_virfinder else [],
+        attrs_blast         =  blast_attr_tsvs                                            if include_blast     else [],
+        attrs_coverage      = '{indir}/fasta_summary/{name}/attributes/coverage.tsv'      if include_coverage  else [],
+        attrs_mapped_reads  = '{indir}/fasta_summary/{name}/attributes/mapped_reads.tsv'  if include_coverage  else [],
+        attrs_virfinder     = '{indir}/fasta_summary/{name}/attributes/virfinder.tsv'     if include_virfinder else [],
 
     output:
         html = '{indir}/fasta_summary/{name}/summary.html',

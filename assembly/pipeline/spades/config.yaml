@@ -60,6 +60,7 @@ fasta_summary:
             - Coverage
             - VirFinder pvalue
             - Homologue link
+            - Mapped reads
 
 bandage:
     enabled: True
