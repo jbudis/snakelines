@@ -37,22 +37,14 @@ rule process:
     output:
         qualimaps = expand('{report_dir}/{reference}/{sample}/mapping-report.pdf',
                             report_dir=report_dir, reference=reference, sample=pipeline.sample),
-        map_summary = expand('{report_dir}/{reference}/summary.tsv',
-                              report_dir=report_dir, reference=reference),
-        mapped_reads_abs = expand('{report_dir}/{reference}/mapping.counts.tsv',
-                                   report_dir=report_dir, reference=reference),
-        mapped_reads_rel = expand('{report_dir}/{reference}/mapping.ratios.tsv',
-                                   report_dir=report_dir, reference=reference),
+        map_summary      = '{report_dir}/{reference}/summary.tsv'.format(report_dir=report_dir, reference=reference),
+        mapped_reads_abs = '{report_dir}/{reference}/mapping.counts.tsv'.format(report_dir=report_dir, reference=reference),
+        mapped_reads_rel = '{report_dir}/{reference}/mapping.ratios.tsv'.format(report_dir=report_dir, reference=reference)
 
     run:
         for in_file, out_file in zip(input.qualimaps, output.qualimaps):
             shutil.copy(in_file, out_file)
 
-        for in_file, out_file in zip(input.map_summary, output.map_summary):
-            shutil.copy(in_file, out_file)
-
-        for in_file, out_file in zip(input.mapped_reads_abs, output.mapped_reads_abs):
-            shutil.copy(in_file, out_file)
-
-        for in_file, out_file in zip(input.mapped_reads_rel, output.mapped_reads_rel):
-            shutil.copy(in_file, out_file)
+        shutil.copy(input.map_summary, output.map_summary)
+        shutil.copy(input.mapped_reads_abs, output.mapped_reads_abs)
+        shutil.copy(input.mapped_reads_rel, output.mapped_reads_rel)
