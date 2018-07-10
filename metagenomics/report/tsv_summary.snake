@@ -127,7 +127,26 @@ rule summarize_taxonomic_level:
     input:
         subtax_tsv = '{analysis_dir}/{gene}/report/tsv/subtaxes.tsv'
     output:
-        tax_level_tsv = '{analysis_dir}/{gene}/report/tsv/{tax_level, %s}.tsv' % ('|'.join(tax_ranks))
+        tax_level_tsv = '{analysis_dir}/{gene}/report/tsv/{tax_level, %s}.tsv' % ('|'.join(tax_ranks[:-1]))
     run:
-        with open(output.tax_level_tsv, 'w') as out:
-            out.write('')
+        global tax_ranks
+
+        join_table = pd.read_csv(input.subtax_tsv, sep='\t')
+
+        target_level = wildcards.tax_level
+        target_level_loc = tax_ranks.index(target_level)
+        next_level = tax_ranks[target_level_loc + 1]
+
+        if target_level not in join_table.columns:
+            with open(output.tax_level_tsv, 'w') as out:
+                out.write('')
+
+        tax_counts = join_table[~join_table[target_level].isnull()]
+        if next_level in join_table.columns:
+            tax_counts = tax_counts[tax_counts[next_level].isnull()]
+
+        samples = [tc for tc in tax_counts.columns if tc not in tax_ranks]
+        tax_counts = tax_counts[tax_ranks[:target_level_loc+1] + samples]
+
+        tax_counts.to_csv(output.tax_level_tsv, sep='\t', index=None)
+
