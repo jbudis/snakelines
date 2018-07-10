@@ -92,8 +92,14 @@ rule summarize_single:
             sub_counts.set_index('i', inplace=True)
             sub_tables.append(sub_counts)
 
-        join_table = pd.concat([tax_table] + sub_tables)[tax_ranks + samples]
-        join_table.drop_duplicates(inplace=True)
+        sub_tables.append(tax_table[~tax_table[tax_ranks[-1]].isnull()])
+
+        join_table = pd.concat(sub_tables)
+        for tax_rank in tax_ranks:
+            if tax_rank not in join_table.columns:
+                join_table[tax_rank] = np.nan
+
+        join_table = join_table[tax_ranks + samples]
         join_table.sort_values(tax_ranks, ascending=True, na_position='first', inplace=True)
 
         if 'report' in config and 'tsv' in config['report'] and 'remove_marginal_taxes' in config['report']['tsv'] and config['report']['tsv']['remove_marginal_taxes']:
