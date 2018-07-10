@@ -10,6 +10,9 @@ def individual_krn_files(wildcards):
     return expand('%s/%s/report/krona/individual/{sample}.krn' % (wildcards.analysis_dir, wildcards.gene),
                   sample=gene_sids)
 
+tax_ranks = ['domain', 'kingdom', 'phylum', 'class', 'order', 'family',
+             'genus', 'species', 'subspecies', 'subsubspecies', 'variety', 'form']
+
 rule summarize_single:
     input:
         individual_krn_files
@@ -21,12 +24,9 @@ rule summarize_single:
         normed_xlsx  = '{analysis_dir}/{gene}/report/tsv/subtaxes.norm.xlsx',
         normed_tsv   = '{analysis_dir}/{gene}/report/tsv/subtaxes.norm.tsv'
     run:
-
-        tax_ranks = ['domain', 'kingdom', 'phylum', 'class', 'order', 'family',
-                     'genus', 'species', 'subspecies', 'subsubspecies', 'variety', 'form']
-
-
         # Load stored taxonomic abundances from Emirge analysis step
+
+        global tax_ranks
 
         def load_abundances(sample_file):
             taxes = {}
@@ -122,3 +122,12 @@ rule summarize_single:
 
         normed.to_excel(output.normed_xlsx, index=False)
         normed.to_csv(output.normed_tsv, sep='\t', index=False)
+
+rule summarize_taxonomic_level:
+    input:
+        subtax_tsv = '{analysis_dir}/{gene}/report/tsv/subtaxes.tsv'
+    output:
+        tax_level_tsv = '{analysis_dir}/{gene}/report/tsv/{tax_level, %s}.tsv' % ('|'.join(tax_ranks))
+    run:
+        with open(output.tax_level_tsv, 'w') as out:
+            out.write('')
