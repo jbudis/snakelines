@@ -9,17 +9,23 @@ include: config['snake_dir'] + '/metagenomics/report/krona.snake'
 include: config['snake_dir'] + '/metagenomics/report/tsv_summary.snake'
 
 genes = list(config['gene_pattern'].keys())
+tax_levels = ['phylum', 'class', 'order', 'family', 'genus', 'species']
+count_types = ['abs', 'rel']
 report_dir = 'report/' + config['report_dir']
 
 rule process:
     input:
         fastqc_original = 'reads/original/stats/summary.html',
         fastqc_trimmed  = 'reads/trimmed/stats/summary.html',
-        krona = expand('metaxa2/{gene}/report/krona/krona.html', gene=genes),
-        table = expand('metaxa2/{gene}/report/tsv/summary.tsv', gene=genes)
+        krona    = expand('metaxa2/{gene}/report/krona/krona.html', gene=genes),
+        summary  = expand('metaxa2/{gene}/report/tsv/subtaxes.tsv', gene=genes),
+        tables   = expand('metaxa2/{gene}/report/tsv/{tax_level}.{count_type}.tsv', gene=genes, tax_level=tax_levels, count_type=count_types),
+        barplots = expand('metaxa2/{gene}/report/figures/{tax_level}.{count_type}.png', gene=genes, tax_level=tax_levels, count_type=count_types)
     output:
-        krona = expand('{report_dir}/{gene}/krona/krona.html', gene=genes, report_dir=report_dir),
-        table = expand('{report_dir}/{gene}/tsv/summary.tsv', gene=genes, report_dir=report_dir)
+        krona    = expand('{report_dir}/{gene}/krona/krona.html', gene=genes, report_dir=report_dir),
+        summary  = expand('{report_dir}/{gene}/tsv/subtaxes.tsv', gene=genes, report_dir=report_dir),
+        tables   = expand('{report_dir}/{gene}/tsv/{tax_level}.{count_type}.tsv', gene=genes, tax_level=tax_levels, count_type=count_types, report_dir=report_dir),
+        barplots = expand('{report_dir}/{gene}/figures/{tax_level}.{count_type}.png', gene=genes, tax_level=tax_levels, count_type=count_types, report_dir=report_dir)
     params:
         genes = genes,
         report_dir = report_dir
@@ -28,6 +34,5 @@ rule process:
         for GENE in {params.genes}; do
             REPORT_DIR={params.report_dir}/$GENE
             cp -R metaxa2/$GENE/report/* $REPORT_DIR
-            echo cp -R metaxa2/$GENE/report/* $REPORT_DIR
         done
         '''
