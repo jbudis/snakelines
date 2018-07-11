@@ -197,6 +197,7 @@ rule summarize_barplot:
         plot_counts.T.plot(kind='bar', stacked=True, legend=False, figsize=(18, 12))
         plt.legend(loc='upper center', bbox_to_anchor=(0.5,1.14), ncol=5)
         plt.tight_layout(pad=4)
+        plt.grid()
 
         # Store plot
         plt.savefig(output.barplot)
