@@ -1,6 +1,7 @@
 include: config['snake_dir'] + '/preprocess/conversion/unzip.snake'
 
 from glob import glob
+import pandas as pd
 
 read_type  = config['metaxa2']['read_type']
 
@@ -129,22 +130,31 @@ rule metaxa2_prepare_for_krona:
         classification = most_specialized_classification
     output:
         krona = 'metaxa2/{gene}/report/krona/individual/{sample}.krn'
-    shell:
-        '''
-        cat \
-            {input.classification} \
-        | sed \
-            's/ /@/g' \
-        | awk \
-            '{{print $2 "\t" $1}}' \
-        | sed \
-            's/@/ /g' \
-        | sed \
-            's/;/\t/g' \
-        | sed \
-            's/Unclassified //g' \
-        > {output.krona}
-        '''
+    run:
+        invalid_tags = ['unclassified', 'unknown', 'uncultured']
+
+        def is_informative(taxon):
+            for tag in invalid_tags:
+                if tag in taxon.lower():
+                    return False
+            return True
+
+        def to_krona_format(tax):
+            items = tax.strip(';').split(';')
+            for i, item in enumerate(items):
+                if not is_informative(item):
+                    items = items[:i]
+                    break
+            return '\t'.join(items)
+
+        counts = pd.read_csv(input.classification, sep='\t', header=None)
+        counts.columns = ['tax', 'reads']
+        counts['tax_refined'] = counts['tax'].apply(to_krona_format)
+
+        with open(output.krona, 'w') as out:
+            for _, row in counts.iterrows():
+                out.write('{row.reads}\t{row.tax_refined}\n'.format(row=row))
+
 
 rule metaxa2_krona_report:
     input:
