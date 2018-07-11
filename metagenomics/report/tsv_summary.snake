@@ -127,7 +127,8 @@ rule summarize_taxonomic_level:
     input:
         subtax_tsv = '{analysis_dir}/{gene}/report/tsv/subtaxes.tsv'
     output:
-        tax_level_tsv = '{analysis_dir}/{gene}/report/tsv/{tax_level, %s}.tsv' % ('|'.join(tax_ranks[:-1]))
+        tax_level_abs = '{analysis_dir}/{gene}/report/tsv/{tax_level, %s}.abs.tsv' % ('|'.join(tax_ranks[:-1])),
+        tax_level_rel = '{analysis_dir}/{gene}/report/tsv/{tax_level, %s}.rel.tsv' % ('|'.join(tax_ranks[:-1]))
     run:
         global tax_ranks
 
@@ -146,7 +147,14 @@ rule summarize_taxonomic_level:
             tax_counts = tax_counts[tax_counts[next_level].isnull()]
 
         samples = [tc for tc in tax_counts.columns if tc not in tax_ranks]
-        tax_counts = tax_counts[tax_ranks[:target_level_loc+1] + samples]
+        used_ranks = tax_ranks[:target_level_loc+1]
+        tax_counts = tax_counts[used_ranks + samples]
 
-        tax_counts.to_csv(output.tax_level_tsv, sep='\t', index=None)
+        tax_counts.to_csv(output.tax_level_abs, sep='\t', index=None)
 
+        # Relative counts
+        tax_ratios = tax_counts[used_ranks]
+        for sid, sample_counts in tax_counts[samples].iteritems():
+            tax_ratios[sid] = sample_counts / sample_counts.sum()
+
+        tax_ratios.to_csv(output.tax_level_rel, sep='\t', index=None)
