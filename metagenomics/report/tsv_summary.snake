@@ -3,6 +3,10 @@ import os
 import pandas as pd
 import csv
 import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+SUPPORTED_IMAGE_FORMATS = ['png', 'svg', 'pdf', 'tif', 'tiff', 'eps']
 
 def individual_krn_files(wildcards):
     gene_file_pattern = re.compile(config['gene_pattern'][wildcards.gene])
@@ -158,3 +162,41 @@ rule summarize_taxonomic_level:
             tax_ratios[sid] = sample_counts / sample_counts.sum()
 
         tax_ratios.to_csv(output.tax_level_rel, sep='\t', index=None)
+
+
+rule summarize_barplot:
+    input:
+        tax_level = '{analysis_dir}/{gene}/report/tsv/{tax_level}.{count_type}.tsv'
+    output:
+        barplot = '{analysis_dir}/{gene}/report/figures/{tax_level, %s}.{count_type, rel|abs}.{format, %s}' % ('|'.join(tax_ranks[:-1]),
+                                                                                                               '|'.join(SUPPORTED_IMAGE_FORMATS))
+    run:
+        SUM_COL = 'rowsum'
+        MAX_TAXONS = 9
+
+        global tax_ranks
+
+        # Load taxonomic counts from desired tax_level, e.g. phylum
+        counts = pd.read_csv(input.tax_level, sep='\t')
+        sids = [col for col in counts.columns if col not in tax_ranks]
+        used_ranks = [col for col in counts.columns if col in tax_ranks]
+
+        # Select only limited number of the most abundant taxons
+        counts[SUM_COL] = counts.sum(axis=1)
+        counts.sort_values(by=SUM_COL, inplace=True)
+        tops, rest = counts.iloc[-MAX_TAXONS:], counts.iloc[:-MAX_TAXONS]
+
+        # Aggregate the rest of taxons into the one "Other" taxon
+        rest_sum = rest[sids + [SUM_COL]].sum()
+        rest_sum.set_value(wildcards.tax_level, 'Other')
+        plot_counts = tops.iloc[::-1].append(rest_sum, ignore_index=True)[[wildcards.tax_level] + sids].set_index(wildcards.tax_level)
+
+        # Plot the most abundant and "Other" taxons
+        sns.set(context='paper', font_scale=2, palette=sns.color_palette("hls", MAX_TAXONS+1))
+        sns.set_style('whitegrid')
+        plot_counts.T.plot(kind='bar', stacked=True, legend=False, figsize=(18, 12))
+        plt.legend(loc='upper center', bbox_to_anchor=(0.5,1.14), ncol=5)
+        plt.tight_layout(pad=4)
+
+        # Store plot
+        plt.savefig(output.barplot)
