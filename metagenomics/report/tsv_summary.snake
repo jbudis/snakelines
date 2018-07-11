@@ -10,7 +10,7 @@ def individual_krn_files(wildcards):
     return expand('%s/%s/report/krona/individual/{sample}.krn' % (wildcards.analysis_dir, wildcards.gene),
                   sample=gene_sids)
 
-tax_ranks = ['domain', 'kingdom', 'phylum', 'class', 'order', 'family',
+tax_ranks = ['kingdom', 'phylum', 'class', 'order', 'family',
              'genus', 'species', 'subspecies', 'subsubspecies', 'variety', 'form']
 
 rule summarize_single:
