@@ -150,8 +150,10 @@ rule summarize_taxonomic_level:
     run:
         global tax_ranks
 
+        # Load subtax table
         join_table = pd.read_csv(input.subtax_tsv, sep='\t')
 
+        # Find location of desired tax_level in table columns
         target_level = wildcards.tax_level
         target_level_loc = tax_ranks.index(target_level)
         next_level = tax_ranks[target_level_loc + 1]
@@ -160,21 +162,31 @@ rule summarize_taxonomic_level:
             with open(output.tax_level_tsv, 'w') as out:
                 out.write('')
 
+        # Select rows from table with the classification up to desired tax_level
         tax_counts = join_table[~join_table[target_level].isnull()]
         if next_level in join_table.columns:
             tax_counts = tax_counts[tax_counts[next_level].isnull()]
 
+        # Remove unnecessary taxonomic levels that would be null otherwise
         samples = [tc for tc in tax_counts.columns if tc not in tax_ranks]
         used_ranks = tax_ranks[:target_level_loc+1]
         tax_counts = tax_counts[used_ranks + samples]
 
-        tax_counts.to_csv(output.tax_level_abs, sep='\t', index=None)
-
-        # Relative counts
+        # Normalize counts
         tax_ratios = tax_counts[used_ranks]
         for sid, sample_counts in tax_counts[samples].iteritems():
             tax_ratios[sid] = sample_counts / sample_counts.sum()
 
+        # Append additional row with the number of unclassified reads
+        classified_reads = tax_counts[samples].sum(axis=0)
+        total_reads = join_table.iloc[0]
+        assert np.isnan(total_reads[tax_ranks[0]]), 'The first row of the taxonomic counts represents number of reads per sample, and so should not have assigned taxonomy'
+        unclassified_reads = total_reads[samples] - classified_reads
+        unclassified_reads[tax_ranks[0]] = 'Unclassified'
+        tax_counts = tax_counts.append(unclassified_reads, ignore_index=True)
+
+        # Store tables
+        tax_counts.to_csv(output.tax_level_abs, sep='\t', index=None)
         tax_ratios.to_csv(output.tax_level_rel, sep='\t', index=None)
 
 
@@ -192,6 +204,7 @@ rule summarize_barplot:
 
         # Load taxonomic counts from desired tax_level, e.g. phylum
         counts = pd.read_csv(input.tax_level, sep='\t')
+        counts = counts[counts[tax_ranks[0]] != 'Unclassified']
         sids = [col for col in counts.columns if col not in tax_ranks]
         used_ranks = [col for col in counts.columns if col in tax_ranks]
 
