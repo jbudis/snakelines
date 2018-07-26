@@ -114,23 +114,26 @@ rule metaxa2_summarize_classification:
         fi
         '''
 
-def most_specialized_classification(wildcards):
 
-    def get_class_level(class_file):
-        level = class_file.split('_')[-1].split('.')[0]
-        return int(level)
-
-    class_files = glob('metaxa2/{gene}/classification/{sample}/{sample}.level_*.txt'.format(
-                       gene=wildcards.gene, sample=wildcards.sample))
-
-    return sorted(class_files, key=get_class_level)[-1]
 
 rule metaxa2_prepare_for_krona:
     input:
-        classification = most_specialized_classification
+        classification = 'metaxa2/{gene}/classification/{sample}/{sample}.level_7.txt'
     output:
         krona = 'metaxa2/{gene}/report/krona/individual/{sample}.krn'
     run:
+
+        def most_specialized_classification(wildcards):
+
+            def get_class_level(class_file):
+                level = class_file.split('_')[-1].split('.')[0]
+                return int(level)
+
+            class_files = glob('metaxa2/{gene}/classification/{sample}/{sample}.level_*.txt'.format(
+                               gene=wildcards.gene, sample=wildcards.sample))
+
+            return sorted(class_files, key=get_class_level)[-1]
+
         invalid_tags = ['unclassified', 'unknown', 'uncultured']
 
         def is_informative(taxon):
@@ -147,7 +150,7 @@ rule metaxa2_prepare_for_krona:
                     break
             return '\t'.join(items)
 
-        counts = pd.read_csv(input.classification, sep='\t', header=None)
+        counts = pd.read_csv(most_specialized_classification(wildcards), sep='\t', header=None)
         counts.columns = ['tax', 'reads']
         counts['tax_refined'] = counts['tax'].apply(to_krona_format)
 
