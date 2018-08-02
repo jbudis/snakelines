@@ -1,4 +1,4 @@
-rule html_report:
+rule msaviewer_html_report:
     input:
         '{path}/{sample}.aln'
     output:

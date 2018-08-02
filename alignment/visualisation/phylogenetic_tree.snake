@@ -4,7 +4,7 @@ from Bio import SeqIO
 
 
 
-rule visualise_phylogenetic_tree:
+rule phylo_visualise_phylogenetic_tree:
     input:
         contigs = '{path}/{genome}.aln',
         tree = '{path}/{genome}.aln.treefile'
