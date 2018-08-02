@@ -1,4 +1,3 @@
-import shutil
 import os
 
 configfile: srcdir('config.yaml')
