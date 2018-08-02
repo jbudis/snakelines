@@ -5,6 +5,9 @@ rule iqtree_infer_phylogeny:
         '{path}/{genome}.aln.treefile'
     params:
         model = config['iqtree']['model']
+    log:
+        out = '{path}/log/{genome}.iqtree.log',
+        err = '{path}/log/{genome}.iqtree.err'
     threads:
         int(config['threads'])
     shell:
@@ -13,5 +16,8 @@ rule iqtree_infer_phylogeny:
             -s {input} \
             -m {params.model} \
             -st DNA \
-            -nt {threads}
+            -redo \
+            -nt {threads} \
+         > {log.out} \
+        2> {log.err}
         '''
