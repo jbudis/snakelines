@@ -65,9 +65,14 @@ rule krona_summary_report:
         individual_krn_files
     output:
         '{analysis_dir}/{gene}/report/krona/krona.html'
+    log:
+        out = '{analysis_dir}/{gene}/report/krona/log/krona.log',
+        err = '{analysis_dir}/{gene}/report/krona/log/krona.err'
     shell:
         '''
         ktImportText \
             -o {output} \
-            {input}
+            {input} \
+         > {log.out} \
+        2> {log.err}
         '''
