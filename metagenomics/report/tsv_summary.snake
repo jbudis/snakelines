@@ -9,8 +9,13 @@ import matplotlib.pyplot as plt
 SUPPORTED_IMAGE_FORMATS = ['png', 'svg', 'pdf', 'tif', 'tiff', 'eps']
 
 def individual_krn_files(wildcards):
-    gene_file_pattern = re.compile(config['gene_pattern'][wildcards.gene])
-    gene_sids = list(filter(gene_file_pattern.match, pipeline.sample))
+
+    if 'gene_pattern' in config:
+        gene_file_pattern = re.compile(config['gene_pattern'][wildcards.gene])
+        gene_sids = list(filter(gene_file_pattern.match, pipeline.sample))
+    else:
+        gene_sids = pipeline.sample
+
     return expand('%s/%s/report/krona/individual/{sample}.krn' % (wildcards.analysis_dir, wildcards.gene),
                   sample=gene_sids)
 
