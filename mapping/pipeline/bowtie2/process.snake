@@ -50,7 +50,7 @@ rule process:
         mapped_reads_rel = 'bowtie2/{reference}/counts/mapping.ratios.tsv'.format(reference=reference),
 
     output:
-        qualimaps        = expand('{report_dir}/{reference}/{sample}/mapping-report.pdf',
+        qualimaps        = expand('{report_dir}/{reference}/mapping-reports/{sample}.pdf',
                                    report_dir=report_dir, reference=reference, sample=pipeline.sample),
 
         barplots         = expand('{report_dir}/{reference}/{tax_level}.{count_type}.png',
