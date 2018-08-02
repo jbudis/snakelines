@@ -13,9 +13,14 @@ include: config['snake_dir'] + '/mapping/postprocess/bam_index.snake'
 include: config['snake_dir'] + '/mapping/report/qualimap.snake'
 include: config['snake_dir'] + '/mapping/report/counts_table.snake'
 include: config['snake_dir'] + '/mapping/report/krona.snake'
+include: config['snake_dir'] + '/metagenomics/report/tsv_summary.snake'
+include: config['snake_dir'] + '/metagenomics/report/krona.snake'
 
-reference = config['mapping']['reference']
-krona_types = config['mapping'].get('report', {}).get('krona', [])
+reference   = config['mapping']['reference']
+
+generate_krona = config.get('report', {}).get('krona', False)
+tax_levels     = config.get('report', {}).get('barplot', {}).get('tax_levels', [])
+count_types    = config.get('report', {}).get('barplot', {}).get('count_types', [])
 
 rule process:
     input:
@@ -34,19 +39,24 @@ rule process:
                             reference=reference, sample=pipeline.sample),
 
         # Graphical summary reports
-        kronas = expand('bowtie2/{reference}/krona/{krona_type}.html',
-                        reference=reference, krona_type=krona_types),
+        barplots = expand('bowtie2/{reference}/report/figures/{tax_level}.{count_type}.png',
+                           reference=reference, tax_level=tax_levels, count_type=count_types),
 
+        krona = 'bowtie2/{reference}/report/krona/krona.html'.format(reference=reference) if generate_krona else [],
+
+        # Tabular summary reports
         map_summary = 'bowtie2/{reference}/stats-wgs/summary.tsv'.format(reference=reference),
         mapped_reads_abs = 'bowtie2/{reference}/counts/mapping.counts.tsv'.format(reference=reference),
         mapped_reads_rel = 'bowtie2/{reference}/counts/mapping.ratios.tsv'.format(reference=reference),
 
     output:
         qualimaps        = expand('{report_dir}/{reference}/{sample}/mapping-report.pdf',
-                                  report_dir=report_dir, reference=reference, sample=pipeline.sample),
+                                   report_dir=report_dir, reference=reference, sample=pipeline.sample),
 
-        kronas           = expand('{report_dir}/{reference}/krona.{krona_type}.html',
-                                  report_dir=report_dir, reference=reference, krona_type=krona_types),
+        barplots         = expand('{report_dir}/{reference}/{tax_level}.{count_type}.png',
+                                   report_dir=report_dir, reference=reference, tax_level=tax_levels, count_type=count_types),
+
+        krona            = '{report_dir}/{reference}/krona.html'.format(report_dir=report_dir, reference=reference) if generate_krona else [],
 
         map_summary      = '{report_dir}/{reference}/summary.tsv'.format(report_dir=report_dir, reference=reference),
         mapped_reads_abs = '{report_dir}/{reference}/mapping.counts.tsv'.format(report_dir=report_dir, reference=reference),
@@ -56,9 +66,12 @@ rule process:
         for in_file, out_file in zip(input.qualimaps, output.qualimaps):
             shutil.copy(in_file, out_file)
 
-        for in_file, out_file in zip(input.kronas, output.kronas):
+        for in_file, out_file in zip(input.barplots, output.barplots):
             shutil.copy(in_file, out_file)
 
         shutil.copy(input.map_summary, output.map_summary)
         shutil.copy(input.mapped_reads_abs, output.mapped_reads_abs)
         shutil.copy(input.mapped_reads_rel, output.mapped_reads_rel)
+
+        if generate_krona:
+            shutil.copy(input.krona, output.krona)

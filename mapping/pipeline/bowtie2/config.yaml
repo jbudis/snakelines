@@ -2,21 +2,32 @@ sample_pattern: .*
 
 report_dir: public/01-bowtie2
 
-trim:                                   # Pre-process of reads, eliminate low quality sequences
-    read_type: original                 # Location of fastq files, would be searched in reads/<read_type>/*_R1.fastq.gz
-    crop: 500                           # Cut the read to a specified length
-    quality: 20                         # Cut read, once the average quality within the 5bp window falls below a threshold
-    headcrop: 20                        # Cut the specified number of bases from the start of the read
-    minlen: 35                          # Drop the read if it is below a specified length
-    temporary: True                     # Trimmed fastq files are deleted after all rules that use it as an input are completed
+trim:                               # Pre-process of reads, eliminate low quality sequences
+    read_type: original             # Location of fastq files, would be searched in reads/<read_type>/*_R1.fastq.gz
+    crop: 500                       # Cut the read to a specified length
+    quality: 20                     # Cut read, once the average quality within the 5bp window falls below a threshold
+    headcrop: 20                    # Cut the specified number of bases from the start of the read
+    minlen: 35                      # Drop the read if it is below a specified length
+    temporary: True                 # Trimmed fastq files are deleted after all rules that use it as an input are completed
 
 mapping:
-    read_type: trimmed                  # Preprocessed reads, that would be mapped against reference
-    reference: dobrava                  # Reference sequences in Fasta format, have to be localised at references/{reference}/{reference}.fa
-    params: --very-sensitive            # Additional parameters to Bowtie2 executable
-    only_concordant: False              # Keep only concordantly mapped reads
+    read_type: trimmed              # Preprocessed reads, that would be mapped against reference
+    reference: dobrava              # Reference sequences in Fasta format, have to be localised at references/{reference}/{reference}.fa
+    params: --very-sensitive        # Additional parameters to Bowtie2 executable
+    only_concordant: False          # Keep only concordantly mapped reads
 
-    report:                             # Summary reports of mapped counts
-        krona:                          # Krona multi-pie charts
-            - seqid                     # Entities in charts are represented by sequence ids extracted from fasta file
-            - taxes                     # Entities are represented by taxonomies, require tax file references/{reference}/{reference}.tax
+report:                             # Summary reports of mapped counts
+    krona: True                     # Krona multi-pie charts, require tax file references/{reference}/{reference}.tax
+
+    barplot:                        # Barplot summary of the most common taxonomies
+        tax_levels:                 # Taxonomic levels to aggregate mapped reads
+            - kingdom
+            - phylum
+            - order
+            - family
+            - genus
+            - species
+
+        count_types:
+            - abs                   # Generate barplot from the number mapped counts
+            - rel                   # Generate barplot from the proportions of mapped counts (for each sample this would sum to 1)

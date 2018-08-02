@@ -2,52 +2,19 @@ import pandas as pd
 import tempfile
 import os
 
-
-def prepare_files_for_krona(counts_file, out_html, tax_file):
-    counts = pd.read_csv(counts_file, sep='\t', index_col=0)
-
-    if tax_file:
-        taxes = pd.read_csv(tax_file, sep='\t', index_col=0, header=None)[1]
-        taxes = taxes.apply(lambda x: x.replace(';', '\t')).to_dict()
-
-    else:
-        taxes = {seqid: seqid for seqid in counts.columns}
-
-    taxes['Unmapped'] = 'Unmapped'
-
-    krn_files = []
-    try:
-        for sid, sid_counts in counts.iterrows():
-            fd, path = tempfile.mkstemp()
-            krn_files.append(path)
-            with open(fd, 'w') as krn:
-                for seqid, count in sid_counts.iteritems():
-                    krn.write('{}\t{}\n'.format(count, taxes[seqid]))
-
-        sample_files = ['{},{}'.format(krn_file, sid) for sid, krn_file in zip(counts.index, krn_files)]
-        command = 'ktImportText {sample_files} -o {out_html}'.format(sample_files=' '.join(sample_files), out_html=out_html)
-        os.system(command)
-    finally:
-        for krn_file in krn_files:
-            if os.path.exists(krn_file):
-                os.remove(krn_file)
-
-
-
-rule custom_prepare_files_for_krona_with_seqids:
-    input:
-        counts = '{mapper}/{reference}/counts/mapping.counts.tsv'
-    output:
-        krona = '{mapper}/{reference}/krona/seqid.html'
-    run:
-        prepare_files_for_krona(counts_file=input.counts, out_html=output.krona, tax_file=None)
-
-
-rule custom_prepare_files_for_krona_with_taxonomy:
+rule custom_prepare_krona_input_files:
     input:
         counts = '{mapper}/{reference}/counts/mapping.counts.tsv',
         taxes = 'reference/{reference}/{reference}.tax'
     output:
-        krona = '{mapper}/{reference}/krona/taxes.html'
+        krona  = '{mapper}/{reference}/report/krona/individual/{sample}.krn'
     run:
-        prepare_files_for_krona(counts_file=input.counts, out_html=output.krona, tax_file=input.taxes)
+        counts = pd.read_csv(input.counts, sep='\t', index_col=0).loc[wildcards.sample]
+
+        taxes = pd.read_csv(input.taxes, sep='\t', index_col=0, header=None)[1]
+        taxes = taxes.apply(lambda x: x.replace(';', '\t')).to_dict()
+        taxes['Unmapped'] = 'Unmapped'
+
+        with open(output.krona, 'w') as out:
+            for seqid, count in counts.iteritems():
+                out.write('{}\t{}\n'.format(count, taxes[seqid]))
