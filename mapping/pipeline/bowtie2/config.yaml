@@ -15,3 +15,8 @@ mapping:
     reference: dobrava                  # Reference sequences in Fasta format, have to be localised at references/{reference}/{reference}.fa
     params: --very-sensitive            # Additional parameters to Bowtie2 executable
     only_concordant: False              # Keep only concordantly mapped reads
+
+    report:                             # Summary reports of mapped counts
+        krona:                          # Krona multi-pie charts
+            - seqid                     # Entities in charts are represented by sequence ids extracted from fasta file
+            - taxes                     # Entities are represented by taxonomies, require tax file references/{reference}/{reference}.tax

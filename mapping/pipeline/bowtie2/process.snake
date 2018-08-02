@@ -1,4 +1,5 @@
 import shutil
+import os
 
 configfile: srcdir('config.yaml')
 
@@ -11,8 +12,10 @@ include: config['snake_dir'] + '/mapping/mappers/bowtie2.snake'
 include: config['snake_dir'] + '/mapping/postprocess/bam_index.snake'
 include: config['snake_dir'] + '/mapping/report/qualimap.snake'
 include: config['snake_dir'] + '/mapping/report/counts_table.snake'
+include: config['snake_dir'] + '/mapping/report/krona.snake'
 
 reference = config['mapping']['reference']
+krona_types = config['mapping'].get('report', {}).get('krona', [])
 
 rule process:
     input:
@@ -30,19 +33,30 @@ rule process:
         qualimaps = expand('bowtie2/{reference}/stats-wgs/{sample}/report.pdf',
                             reference=reference, sample=pipeline.sample),
 
+        # Graphical summary reports
+        kronas = expand('bowtie2/{reference}/krona/{krona_type}.html',
+                        reference=reference, krona_type=krona_types),
+
         map_summary = 'bowtie2/{reference}/stats-wgs/summary.tsv'.format(reference=reference),
         mapped_reads_abs = 'bowtie2/{reference}/counts/mapping.counts.tsv'.format(reference=reference),
-        mapped_reads_rel = 'bowtie2/{reference}/counts/mapping.ratios.tsv'.format(reference=reference)
+        mapped_reads_rel = 'bowtie2/{reference}/counts/mapping.ratios.tsv'.format(reference=reference),
 
     output:
-        qualimaps = expand('{report_dir}/{reference}/{sample}/mapping-report.pdf',
-                            report_dir=report_dir, reference=reference, sample=pipeline.sample),
+        qualimaps        = expand('{report_dir}/{reference}/{sample}/mapping-report.pdf',
+                                  report_dir=report_dir, reference=reference, sample=pipeline.sample),
+
+        kronas           = expand('{report_dir}/{reference}/krona.{krona_type}.html',
+                                  report_dir=report_dir, reference=reference, krona_type=krona_types),
+
         map_summary      = '{report_dir}/{reference}/summary.tsv'.format(report_dir=report_dir, reference=reference),
         mapped_reads_abs = '{report_dir}/{reference}/mapping.counts.tsv'.format(report_dir=report_dir, reference=reference),
-        mapped_reads_rel = '{report_dir}/{reference}/mapping.ratios.tsv'.format(report_dir=report_dir, reference=reference)
+        mapped_reads_rel = '{report_dir}/{reference}/mapping.ratios.tsv'.format(report_dir=report_dir, reference=reference),
 
     run:
         for in_file, out_file in zip(input.qualimaps, output.qualimaps):
+            shutil.copy(in_file, out_file)
+
+        for in_file, out_file in zip(input.kronas, output.kronas):
             shutil.copy(in_file, out_file)
 
         shutil.copy(input.map_summary, output.map_summary)
