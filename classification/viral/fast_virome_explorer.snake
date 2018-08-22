@@ -1,35 +1,39 @@
+import shutil
+
 read_type = config['fast_virome_explorer']['read_type']
-kmer = config['fast_virome_explorer']['kmer_size']
+kmer_size = config['fast_virome_explorer']['kmer_size']
 
 rule fast_virome_explorer_estimate_virome_composition:
     input:
         r1 = 'reads/%s/{sample}_R1.fastq.gz' % read_type,
         r2 = 'reads/%s/{sample}_R2.fastq.gz' % read_type,
-        index = 'reference/{reference}/kallisto_index/{reference}-kallisto-k%s' % kmer_size
+        index = 'reference/{reference}/kallisto_index/{reference}-kallisto-index-k%s.idx' % kmer_size,
+        ref_lens = 'reference/{reference}/kallisto_index/{reference}.lens.txt'
     output:
-        composition = 'fast_virome_explorer/{reference}/classification/{sample}/nieco.tsv'
+        composition = 'fast_virome_explorer/{reference}/classification/{sample}/FastViromeExplorer-final-sorted-abundance.tsv'
     log:
-        out = 'fast_virome_explorer/log/{sample}.log',
-        err = 'fast_virome_explorer/log/{sample}.err'
+        out = 'fast_virome_explorer/{reference}/classification/{sample}/log/{sample}.log',
+        err = 'fast_virome_explorer/{reference}/classification/{sample}/log/{sample}.err'
     params:
-        outdir = 'fast_virome_explorer/'
+        outdir = 'fast_virome_explorer/{reference}/classification/{sample}'
     shell:
         '''
-        mkdir {params.outdir}
-
         fast_virome_explorer \
             -1 {input.r1} \
             -2 {input.r2} \
             -i {input.index} \
             -o {params.outdir} \
+            -l {input.ref_lens} \
          > {log.out} \
         2> {log.err}
         '''
 
 rule fast_virome_explorer_convert_to_krona:
     input:
-        composition = 'fast_virome_explorer/{reference}/classification/nieco.tsv'
+        composition = 'fast_virome_explorer/{reference}/classification/{sample}/FastViromeExplorer-final-sorted-abundance.tsv'
     output:
-        krona = 'fast_virome_explorer/{reference}/report/krona/individual/{sample}.krn
-    run:
-        pass
+        krona = 'fast_virome_explorer/{reference}/report/krona/individual/{sample}.krn'
+    shell:
+        '''
+        tail -n +2 {input.composition} > {output.krona}
+        '''

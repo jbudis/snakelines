@@ -1,0 +1,38 @@
+import os
+configfile: srcdir('config.yaml')
+
+pipeline = glob_wildcards('reads/original/{sample, %s}_R1.fastq.gz' % config['sample_pattern'])
+
+include: config['snake_dir'] + '/preprocess/trim_reads/trimmomatic.snake'
+include: config['snake_dir'] + '/preprocess/report/fastqc.snake'
+include: config['snake_dir'] + '/classification/viral/fast_virome_explorer.snake'
+include: config['snake_dir'] + '/metagenomics/report/krona.snake'
+include: config['snake_dir'] + '/metagenomics/report/tsv_summary.snake'
+
+reference = config['fast_virome_explorer']['reference']
+tax_levels = ['phylum', 'class', 'order', 'family', 'genus', 'species']
+count_types = ['abs', 'rel']
+report_dir = 'report/' + config['report_dir']
+
+rule process:
+    input:
+        fastqc_original = 'reads/original/stats/summary.html',
+        fastqc_trimmed  = 'reads/trimmed/stats/summary.html',
+        krona    = expand('fast_virome_explorer/{reference}/report/krona/krona.html', reference=reference),
+        summary  = expand('fast_virome_explorer/{reference}/report/tsv/subtaxes.tsv', reference=reference),
+        tables   = expand('fast_virome_explorer/{reference}/report/tsv/{tax_level}.{count_type}.tsv', reference=reference, tax_level=tax_levels, count_type=count_types),
+        barplots = expand('fast_virome_explorer/{reference}/report/figures/{tax_level}.{count_type}.png', reference=reference, tax_level=tax_levels, count_type=count_types)
+    output:
+        krona    = expand('{report_dir}/{reference}/krona/krona.html', reference=reference, report_dir=report_dir),
+        summary  = expand('{report_dir}/{reference}/tsv/subtaxes.tsv', reference=reference, report_dir=report_dir),
+        tables   = expand('{report_dir}/{reference}/tsv/{tax_level}.{count_type}.tsv', reference=reference, tax_level=tax_levels, count_type=count_types, report_dir=report_dir),
+        barplots = expand('{report_dir}/{reference}/figures/{tax_level}.{count_type}.png', reference=reference, tax_level=tax_levels, count_type=count_types, report_dir=report_dir)
+    run:
+        shutil.copy(input.krona, output.krona)
+        shutil.copy(input.summary, output.summary)
+
+        for in_file, out_file in zip(input.tables, output.tables):
+            shutil.copy(in_file, out_file)
+
+        for in_file, out_file in zip(input.barplots, output.barplots):
+            shutil.copy(in_file, out_file)
