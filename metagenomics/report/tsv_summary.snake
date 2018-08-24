@@ -209,9 +209,13 @@ rule summarize_barplot:
 
         # Load taxonomic counts from desired tax_level, e.g. phylum
         counts = pd.read_csv(input.tax_level, sep='\t')
-        counts = counts[counts[tax_ranks[0]] != 'Unclassified']
         sids = [col for col in counts.columns if col not in tax_ranks]
         used_ranks = [col for col in counts.columns if col in tax_ranks]
+
+        if len(tax_ranks) == 1:
+            counts = counts[counts[tax_ranks[0]] != 'Unclassified']
+        else:
+            counts = counts[~pd.isnull(counts[used_ranks[-1]])]
 
         # Select only limited number of the most abundant taxons
         counts[SUM_COL] = counts.sum(axis=1)
