@@ -1,4 +1,5 @@
 import shutil
+import pandas as pd
 
 read_type = config['fast_virome_explorer']['read_type']
 kmer_size = config['fast_virome_explorer']['kmer_size']
@@ -33,7 +34,13 @@ rule fast_virome_explorer_convert_to_krona:
         composition = 'fast_virome_explorer/{reference}/classification/{sample}/FastViromeExplorer-final-sorted-abundance.tsv'
     output:
         krona = 'fast_virome_explorer/{reference}/report/krona/individual/{sample}.krn'
-    shell:
-        '''
-        tail -n +2 {input.composition} > {output.krona}
-        '''
+    run:
+        viruses = pd.read_csv(input.composition, sep='\t', index_col=0)
+        with open(output.krona, 'w') as out:
+            if len(viruses) > 0:
+                tax_column = viruses.columns[1]
+                for _, virus in viruses.iterrows():
+                    out.write('{abundance}\t{tax}\n'.format(abundance=virus.EstimatedAbundance,
+                                                            tax=virus[tax_column].replace(';', '\t')))
+            else:
+                out.write('1\tNomatch\n')
