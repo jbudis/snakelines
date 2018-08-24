@@ -164,7 +164,7 @@ rule summarize_taxonomic_level:
         next_level = tax_ranks[target_level_loc + 1]
 
         if target_level not in join_table.columns:
-            with open(output.tax_level_tsv, 'w') as out:
+            with open(output.tax_level_abs, 'w') as out:
                 out.write('')
 
         # Select rows from table with the classification up to desired tax_level
