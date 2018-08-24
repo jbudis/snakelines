@@ -18,13 +18,13 @@ rule process:
     input:
         fastqc_original = 'reads/original/stats/summary.html',
         fastqc_trimmed  = 'reads/trimmed/stats/summary.html',
-        krona    = expand('fast_virome_explorer/{reference}/report/krona/krona.html', reference=reference),
-        summary  = expand('fast_virome_explorer/{reference}/report/tsv/subtaxes.tsv', reference=reference),
+        krona    = 'fast_virome_explorer/{reference}/report/krona/krona.html'.format(reference=reference),
+        summary  = 'fast_virome_explorer/{reference}/report/tsv/subtaxes.tsv'.format(reference=reference),
         tables   = expand('fast_virome_explorer/{reference}/report/tsv/{tax_level}.{count_type}.tsv', reference=reference, tax_level=tax_levels, count_type=count_types),
         barplots = expand('fast_virome_explorer/{reference}/report/figures/{tax_level}.{count_type}.png', reference=reference, tax_level=tax_levels, count_type=count_types)
     output:
-        krona    = expand('{report_dir}/{reference}/krona/krona.html', reference=reference, report_dir=report_dir),
-        summary  = expand('{report_dir}/{reference}/tsv/subtaxes.tsv', reference=reference, report_dir=report_dir),
+        krona    = '{report_dir}/{reference}/krona/krona.html'.format(reference=reference, report_dir=report_dir),
+        summary  = '{report_dir}/{reference}/tsv/subtaxes.tsv'.format(reference=reference, report_dir=report_dir),
         tables   = expand('{report_dir}/{reference}/tsv/{tax_level}.{count_type}.tsv', reference=reference, tax_level=tax_levels, count_type=count_types, report_dir=report_dir),
         barplots = expand('{report_dir}/{reference}/figures/{tax_level}.{count_type}.png', reference=reference, tax_level=tax_levels, count_type=count_types, report_dir=report_dir)
     run:
