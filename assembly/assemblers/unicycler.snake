@@ -13,6 +13,9 @@ rule unicycler_assemble_reads:
         contigs_unicycler = 'unicycler/{sample}/assembly.fasta'
     threads:
         int(config['threads'])
+    log:
+        out = 'unicycler/{sample}/log/unicycler.log',
+        err = 'unicycler/{sample}/log/unicycler.err'
     shell:
         '''
         unicycler \
@@ -20,7 +23,9 @@ rule unicycler_assemble_reads:
             -2 {input.r2} \
             -o {params.outdir} \
             -t {threads} \
-            --spades_path /usr/local/bin/spades
+            --spades_path /usr/local/bin/spades \
+        >  {log.out} \
+        2> {log.err}
 
         # Unite outputs of Unicycler with outputs of Spades
         sed 's/\ /_/g' {params.contigs_unicycler} > {output.contigs}
