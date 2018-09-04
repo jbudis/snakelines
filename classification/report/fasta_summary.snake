@@ -107,7 +107,7 @@ rule fasta_summary_mapped_reads:
     shell:
         '''
         echo -e '\tMapped reads' > {output.tsv}
-        samtools idxstats {input.bam} | cut -f 1,3 >> {output.tsv}
+        samtools idxstats {input.bam} | cut -f 1,3 | grep -v "*" > {output.tsv}
         '''
 
 rule fasta_summary_virfinder:
