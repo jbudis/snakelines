@@ -8,6 +8,7 @@ include: config['snake_dir'] + '/preprocess/report/fastqc.snake'
 include: config['snake_dir'] + '/preprocess/trim_reads/trimmomatic.snake'
 include: config['snake_dir'] + '/preprocess/deduplication/fastuniq.snake'
 include: config['snake_dir'] + '/assembly/assemblers/spades.snake'
+include: config['snake_dir'] + '/assembly/assemblers/unicycler.snake'
 include: config['snake_dir'] + '/assembly/postprocess/filter_contigs.snake'
 include: config['snake_dir'] + '/assembly/postprocess/bandage.snake'
 include: config['snake_dir'] + '/classification/classifiers/blast.snake'
@@ -18,7 +19,9 @@ include: config['snake_dir'] + '/mapping/mappers/bowtie2.snake'
 include: config['snake_dir'] + '/mapping/report/qualimap.snake'
 
 
-assembly_type = config['assembly']['analysis_type']
+assembler = config['assembly']['assembler']
+
+
 quast_reference = config['quast']['reference']
 blast_references = list(config['blast']['reference'].keys())
 
@@ -30,42 +33,42 @@ rule process:
         'reads/deduplicated/stats/summary.html',
 
         # Contigs
-        expand('spades-%s/{sample}/contigs.filtered.fa' % assembly_type,
-                sample=pipeline.sample),
+        expand('{assembler}/{sample}/contigs.filtered.fa',
+                assembler=assembler, sample=pipeline.sample),
 
         # Summary
-        summary_html = expand('spades-%s/{sample}/fasta_summary/contigs.filtered/summary.html' % assembly_type,
-                          sample=pipeline.sample),
+        summary_html = expand('{assembler}/{sample}/fasta_summary/contigs.filtered/summary.html',
+                               assembler=assembler, sample=pipeline.sample),
 
-        summary_tsv  = expand('spades-%s/{sample}/fasta_summary/contigs.filtered/summary.html.tsv' % assembly_type,
-                          sample=pipeline.sample),
+        summary_tsv  = expand('{assembler}/{sample}/fasta_summary/contigs.filtered/summary.html.tsv',
+                               assembler=assembler, sample=pipeline.sample),
 
         # Bandage
-        bandage = expand('spades-%s/{sample}/bandage/assembly_graph.png' % assembly_type,
-                          sample=pipeline.sample) if config['bandage']['enabled'] else [],
+        bandage  = expand('{assembler}/{sample}/bandage/assembly_graph.png',
+                           assembler=assembler, sample=pipeline.sample) if config['bandage']['enabled'] else [],
 
         # Quast
-        quast = expand('spades-%s/{sample}/quast-{quast_reference}/contigs.filtered/report.txt' % assembly_type,
-                        sample=pipeline.sample, quast_reference=quast_reference) if config['quast']['enabled'] else [],
+        quast    = expand('{assembler}/{sample}/quast-{quast_reference}/contigs.filtered/report.txt',
+                           assembler=assembler, sample=pipeline.sample, quast_reference=quast_reference) if config['quast']['enabled'] else [],
 
         # Coverage of assembly
-        coverage = expand('spades-%s/{sample}/mapping/stats-wgs/contigs.filtered/report.pdf' % assembly_type,
-                           sample=pipeline.sample),
+        coverage = expand('{assembler}/{sample}/mapping/stats-wgs/contigs.filtered/report.pdf',
+                           assembler=assembler, sample=pipeline.sample),
     output:
         summary_html = expand('{report_dir}/{sample}/summary.html',
                                report_dir=report_dir, sample=pipeline.sample),
         summary_tsv  = expand('{report_dir}/{sample}/summary.html.tsv',
                                report_dir=report_dir, sample=pipeline.sample),
-        bandage    = expand('{report_dir}/{sample}/assembly_graph.png',
-                             report_dir=report_dir, sample=pipeline.sample)  if config['bandage']['enabled'] else [],
-        coverage   = expand('{report_dir}/{sample}/coverage.pdf',
-                             report_dir=report_dir, sample=pipeline.sample)
+        bandage      = expand('{report_dir}/{sample}/assembly_graph.png',
+                               report_dir=report_dir, sample=pipeline.sample)  if config['bandage']['enabled'] else [],
+        coverage     = expand('{report_dir}/{sample}/coverage.pdf',
+                               report_dir=report_dir, sample=pipeline.sample)
 
     params:
-        in_contigs  = expand('spades-%s/{sample}/fasta_summary/contigs.filtered/sequences' % assembly_type,
-                                   sample=pipeline.sample) if config['blast']['enabled'] else [],
+        in_contigs  = expand('{assembler}/{sample}/fasta_summary/contigs.filtered/sequences',
+                              assembler=assembler, sample=pipeline.sample) if config['blast']['enabled'] else [],
         out_contigs = expand('{report_dir}/{sample}/sequences',
-                                   report_dir=report_dir, sample=pipeline.sample) if config['blast']['enabled'] else [],
+                              report_dir=report_dir, sample=pipeline.sample) if config['blast']['enabled'] else [],
 
     run:
         for in_dir, out_dir in zip(params.in_contigs, params.out_contigs):

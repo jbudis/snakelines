@@ -1,7 +1,7 @@
 sample_pattern: .*
-report_dir: public/01-spades # Summaries would be copied at report/<report_dir> at the end of pipeline execution
-                             # if you choose public/<subdir>, reports would be accessible from web through
-                             # https://gen-clc.cusp.uniba.sk/<project>/<subdir>
+report_dir: public/01-assembly # Summaries would be copied at report/<report_dir> at the end of pipeline execution
+                               # if you choose public/<subdir>, reports would be accessible from web through
+                               # https://gen-clc.cusp.uniba.sk/<project>/<subdir>
 
 trim:                                   # Pre-process of reads, eliminate low quality sequences
     read_type: original                 # Location of fastq files, would be searched in reads/<read_type>/*_R1.fastq.gz
@@ -16,12 +16,12 @@ deduplicate:
     temporary: True
 
 assembly:
+    assembler: unicycler                # spades-standard, spades-meta, spades-plasmid, spades-transcript, unicycler
     read_type: deduplicated
-    analysis_type: meta           # standard, meta, plasmid, transcript
     min_contig_len: 200
 
 blast:
-    enabled: True                 # Do you want to generate blast reports?
+    enabled: True                       # Do you want to generate blast reports?
 
     reference:
         nt:
@@ -63,7 +63,7 @@ fasta_summary:
             - Mapped reads
 
 bandage:
-    enabled: True
+    enabled: False
 
 quast:
     enabled: False
