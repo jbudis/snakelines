@@ -9,7 +9,8 @@ rule assembly_standard:
         contigs_fasta = 'spades-standard/{sample}/contigs.fasta',
         scaffolds_fasta = 'spades-standard/{sample}/scaffolds.fasta',
     output:
-        graph = 'spades-standard/{sample}/assembly_graph.fastg',
+        fastq = 'spades-standard/{sample}/assembly_graph.fastg',
+        fga = 'spades-standard/{sample}/assembly_graph.fga',
         contigs = 'spades-standard/{sample}/contigs.fa',
         scaffolds = 'spades-standard/{sample}/scaffolds.fa'
     threads:
@@ -40,7 +41,8 @@ rule assembly_meta:
         outdir = 'spades-meta/{sample}',
         contigs_fasta = 'spades-meta/{sample}/contigs.fasta'
     output:
-        graph = 'spades-meta/{sample}/assembly_graph.fastg',
+        fastq = 'spades-standard/{sample}/assembly_graph.fastg',
+        fga = 'spades-standard/{sample}/assembly_graph.fga',
         contigs = 'spades-meta/{sample}/contigs.fa'
     threads:
         int(config['threads'])
@@ -68,7 +70,8 @@ rule assembly_plasmid:
         outdir = 'spades-plasmid/{sample}',
         contigs = 'spades-plasmid/{sample}/contigs.fasta'
     output:
-        graph = 'spades-plasmid/{sample}/assembly_graph.fastg',
+        fastq = 'spades-standard/{sample}/assembly_graph.fastg',
+        fga = 'spades-standard/{sample}/assembly_graph.fga',
         contigs = 'spades-plasmid/{sample}/contigs.fa'
     threads:
         int(config['threads'])
@@ -94,6 +97,8 @@ rule assembly_transcriptome:
         r1 = 'reads/%s/{sample}_R1.fastq.gz' % read_type,
         r2 = 'reads/%s/{sample}_R2.fastq.gz' % read_type
     output:
+        fastq = 'spades-standard/{sample}/assembly_graph.fastg',
+        fga = 'spades-standard/{sample}/assembly_graph.fga',
         contigs = 'spades-transcript/{sample}/transcripts.fa'
     params:
         outdir = 'spades-transcript/{sample}',
