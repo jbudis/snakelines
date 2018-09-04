@@ -22,6 +22,9 @@ rule unicycler_assemble_reads:
             -t {threads} \
             --spades_path /usr/local/bin/spades
 
+        # Unite outputs of Unicycler with outputs of Spades
+        sed 's/\ /_/g' {params.contigs_unicycler} > {output.contigs}
+        rm {params.contigs_unicycler}
+
         mv {params.gfa_unicycler} {output.gfa}
-        mv {params.contigs_unicycler} {output.contigs}
         '''
