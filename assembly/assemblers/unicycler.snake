@@ -4,16 +4,16 @@ rule unicycler:
     input:
         r1 = 'reads/%s/{sample}_R1.fastq.gz' % read_type,
         r2 = 'reads/%s/{sample}_R2.fastq.gz' % read_type
-    params:
-        outdir = 'unicycler/{sample}'
     output:
+        gfa     = 'unicycler/{sample}/assembly_graph.gfa',
         contigs = 'unicycler/{sample}/contigs.fa'
+    params:
+        gfa_unicycler     = 'unicycler/{sample}/assembly.gfa'
+        contigs_unicycler = 'unicycler/{sample}/assembly.fasta'
     threads:
         int(config['threads'])
     shell:
         '''
-        mkdir -p {params.outdir}
-
         unicycler \
             -1 {input.r1} \
             -2 {input.r2} \
@@ -21,5 +21,6 @@ rule unicycler:
             -t {threads} \
             --spades_path /usr/local/bin/spades
 
-        mv {params.outdir}/assembly.fasta {output.contigs}
+        mv {params.gfa_unicycler} {output.gfa}
+        mv {params.contigs_unicycler} {output.contigs}
         '''
