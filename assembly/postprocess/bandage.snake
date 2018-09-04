@@ -1,6 +1,6 @@
-rule assembly_plot:
+rule bandage_assembly_plot:
     input:
-        '{path}/{sample}.fastg'
+        '{path}/{sample}.gfa'
     output:
         '{path}/bandage/{sample}.png'
     shell:
