@@ -57,9 +57,9 @@ rule metaxa2_create_index:
         fasta = 'reference/{reference}/{reference}.fa',
         tax = 'reference/{reference}/{reference}.tax'
     output:
-        blast = 'reference/{reference}/metaxa2_index/blast.nhr',
-        cutoffs = 'reference/{reference}/metaxa2_index/blast.cutoffs.txt',
-        hmm = 'reference/{reference}/metaxa2_index/HMMs/E.hmm',
+        blast = protected('reference/{reference}/metaxa2_index/blast.nhr'),
+        cutoffs = protected('reference/{reference}/metaxa2_index/blast.cutoffs.txt'),
+        hmm = protected('reference/{reference}/metaxa2_index/HMMs/E.hmm'),
     params:
         index_dir = 'reference/{reference}/metaxa2_index'
     threads:
