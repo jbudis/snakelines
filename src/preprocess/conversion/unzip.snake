@@ -1,0 +1,33 @@
+
+rule unzip_fastq:
+    input:
+        '{file}.fastq.gz'
+    output:
+        temp('{file}.fastq')
+    threads:
+        int(config['threads'])
+    shell:
+        '''
+        set +euo pipefail
+        pigz \
+            --decompress \
+            --keep \
+            --processes {threads} \
+            {input}
+        '''
+
+rule unzip_fa:
+    input:
+        '{file}.fa.gz'
+    output:
+        temp('{file}.fa')
+    threads:
+        int(config['threads'])
+    shell:
+        '''
+        pigz \
+            --decompress \
+            --keep \
+            --processes {threads} \
+            {input}
+        '''

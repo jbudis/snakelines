@@ -1,0 +1,73 @@
+read_type = config['dante']['read_type']
+
+import os
+import subprocess
+import pandas as pd
+from glob import glob
+
+def all_reports(wildcards):
+    return expand('dante/{sample}/report.html',
+                   sample=pipeline.sample)
+
+rule dante_summarize:
+    input:
+        reports = all_reports
+    output:
+        summary = 'dante/calls.tsv'
+    run:
+        def parse_allele(allele_code):
+            if allele_code == 'B':
+                allele, expanded, background = None, False, True
+            elif allele_code == 'E':
+                allele, expanded, background = None, True, False
+            else:
+                allele, expanded, background = int(allele_code), False, False
+            return allele, expanded, background
+
+        def parse_call_file(call_file):
+            with open(call_file) as call:
+                confidence_overall = float(next(call).strip().split()[-1][:-2]) / 100
+                call1, call2 = next(call), next(call)
+                allele1, expanded1, background1 = parse_allele(call1.strip().split()[0])
+                allele2, expanded2, background2 = parse_allele(call2.strip().split()[0])
+
+                confidence_1 = float(call1.split()[-1][:-2]) / 100
+                confidence_2 = float(call2.split()[-1][:-2]) / 100
+
+            return allele1, allele2, confidence_1, confidence_2, confidence_overall, \
+                   expanded1, expanded2, background1, background2
+
+        calls = []
+
+        report_dirs = [os.path.dirname(report) for report in input.reports]
+        sids = [rd.split('/')[-1] for rd in report_dirs]
+
+        def parse_readcount(call_file):
+            def n_reads(f):
+                return sum(1 for line in open(f) if line.startswith('>'))
+
+            partial_file = call_file.replace('allcall_new_', 'filtered_primer_')
+            full_file = call_file.replace('allcall_new_', 'annotations_')
+            return n_reads(partial_file), n_reads(full_file)
+
+        for report_dir, sid in zip(report_dirs, sids):
+            call_files = glob('%s/*/allcall_new*.txt' % report_dir)
+            for call_file in call_files:
+                readcount_partial, readcount_full = parse_readcount(call_file)
+                motif = '%s_%s' % (call_file.split('/')[-2], call_file[-5])
+                call1, call2, confidence_1, confidence_2, confidence_overall, \
+                       expanded1, expanded2, background1, background2 = parse_call_file(call_file)
+                call = [motif, readcount_partial + readcount_full,
+                        call1, call2,
+                        confidence_1, confidence_2, confidence_overall, \
+                        expanded1, expanded2, background1, background2,
+                        readcount_partial, readcount_full, sid]
+                calls.append(call)
+
+        # Summarise individual calls into a single table
+        summary = pd.DataFrame(calls)
+        summary.columns = ['motif', 'readcount',
+                           'call1', 'call2', 'conf1', 'conf2', 'confall',
+                           'expand1', 'expand2', 'back1', 'back2',
+                           'readcount_partial', 'readcount_full', 'sample']
+        summary.to_csv(output.summary, sep='\t', index=None)

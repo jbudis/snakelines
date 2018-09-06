@@ -1,0 +1,112 @@
+include: config['snake_dir'] + '/mapping/postprocess/bam_index.snake'
+
+map_type = config['variant']['map_type']
+map_subdir = '%s/' % map_type if map_type else ''
+
+rule vardict_prepare_bed_file:
+    input:
+        bed = 'reference/{reference}/annotation/{panel}/regions.bed',
+    output:
+        bed = 'reference/{reference}/annotation/{panel}/regions.vardict.bed',
+    shell:
+        '''
+        cut -f 1-4 {input.bed} > {output.bed}
+        '''
+
+rule vardict_call_exome_panel:
+    input:
+        bam = '{mapper}/{reference}/%s{sample}.bam' % map_subdir,
+        bai = '{mapper}/{reference}/%s{sample}.bam.bai' % map_subdir,
+        bed = 'reference/{reference}/annotation/{panel}/regions.vardict.bed',
+        reffasta = 'reference/{reference}/{reference}.fa',
+        reffaidx = 'reference/{reference}/{reference}.fa.fai'
+    threads:
+        int(config['threads'])
+    output:
+        vdc = '{mapper}/{reference}/vardict-{panel}/{sample}.germline.vdc'
+    shell:
+        '''
+        vardictjava \
+            -G {input.reffasta} \
+            -b {input.bam} \
+            -f {config[variant][hard_filter][min_nonref_allele_freq]} \
+            -r {config[variant][hard_filter][min_alternate_count]} \
+            -Q {config[variant][hard_filter][min_map_quality]} \
+            -th {threads} \
+            -c 1 \
+            -S 2 \
+            -E 3 \
+            -g 4 \
+            {input.bed} \
+        > {output.vdc}
+        '''
+
+rule vardict_test_strand_bias:
+    input:
+        vdc = '{path}/{sample}.vdc'
+    output:
+        tsb = '{path}/{sample}.tsb'
+    shell:
+        '''
+        BIAS_SCRIPT=/usr/local/tools/vardict-1.5.1/VarDict/teststrandbias.R
+        cat {input.vdc} | $BIAS_SCRIPT > {output.tsb}
+        '''
+
+
+rule vardict_tsb_to_vcf:
+    input:
+        '{path}/{sample}.tsb'
+    output:
+        '{path}/{sample}.vcf'
+    shell:
+        '''
+        /usr/local/tools/vardict-1.5.1/VarDict/var2vcf_valid.pl \
+            -S \
+            -A \
+            -q {config[variant][soft_filter][min_mean_base_quality]} \
+            -Q {config[variant][soft_filter][min_map_quality]} \
+            -d {config[variant][soft_filter][read_depth]} \
+            -f {config[variant][soft_filter][min_nonref_allele_freq]}  \
+            -N {wildcards.sample} \
+            {input} \
+        > {output}
+        '''
+
+rule vardict_call_population_wgs:
+    input:
+        bam = '{mapper}/{reference}/{sample}.bam',
+        bai = '{mapper}/{reference}/{sample}.bam.bai',
+        reffasta = 'reference/{reference}/{reference}.fa',
+        reffaidx = 'reference/{reference}/{reference}.fa.fai'
+    output:
+        vdc = '{mapper}/{reference}/vardict-wgs/{sample}.population.vdc'
+    shell:
+        '''
+        vardict \
+            -G {input.reffasta} \
+            -b {input.bam} \
+            -f {config[variant][hard_filter][min_nonref_allele_freq]} \
+            -r {config[variant][hard_filter][min_alternate_count]} \
+            -Q {config[variant][hard_filter][min_map_quality]} \
+        > {output.vdc}
+        '''
+
+rule vardict_call_population_subset:
+    input:
+        bam = '{mapper}/{reference}/{sample}.bam',
+        bai = '{mapper}/{reference}/{sample}.bam.bai',
+        reffasta = 'reference/{reference}/{reference}.fa',
+        reffaidx = 'reference/{reference}/{reference}.fa.fai'
+    output:
+        vcf = '{mapper}/{reference}/vardict-region/{sample}/{chrom}-{start}-{end}.population.vdc'
+    shell:
+        '''
+        vardict \
+            -R {wildcards.chrom}:{wildcards.start}-{wildcards.end} \
+            -G {input.reffasta} \
+            -b {input.bam} \
+            -f {config[variant][min_nonref_allele_freq]} \
+            -r {config[variant][min_nonref_allele_count]} \
+            -Q {config[variant][min_map_quality]} \
+        > {output.vcf}
+        '''

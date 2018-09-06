@@ -1,0 +1,130 @@
+import pandas as pd
+
+rule convert_to_lefse_tsv:
+    input:
+        summary='{report_dir}/tsv/subtaxes.norm.tsv',
+        description='description/classification/{attribute}.tsv'
+    output:
+        counts='{report_dir}/lefse/{attribute}/analysis/counts.tsv'
+    run:
+        # Load tsv table with relative tax abundance
+        counts = pd.read_csv(input.summary, sep='\t', index_col=None)
+        tax_ranks = ['domain', 'kingdom', 'phylum', 'class', 'order', 'family',
+                     'genus', 'species', 'subspecies', 'subsubspecies', 'variety', 'form']
+        tax_columns = [tax_rank for tax_rank in tax_ranks if tax_rank in counts.columns]
+
+        # Load tsv table with sample mappings to specific group
+        classification = pd.read_csv(input.description, sep='\t', index_col=0, header=None)
+        classification.columns = ['group']
+        classification.index = classification.index.astype(str)
+        classification = classification[classification.index.isin(counts.columns)]
+
+        # Convert counts to lefse format
+        def tax_to_lefse(row):
+            lefse_subtaxes = [row[tr] for tr in tax_columns if not pd.isnull(row[tr])]
+            return '|'.join(lefse_subtaxes)
+
+        lefse = pd.DataFrame(index=counts.apply(tax_to_lefse, axis=1))
+        for sid in classification.index:
+            lefse[sid] = list(counts[sid])
+
+        # Add classification attribute to the header
+        header = [(classification.loc[sid]['group'], sid) for sid in classification.index]
+        lefse.columns = pd.MultiIndex.from_tuples(header, names=[wildcards.attribute, 'sample name'])
+
+        # Store lefse table
+        lefse.to_csv(output.counts, sep='\t')
+
+rule lefse_format_input:
+    input:
+        counts='{report_dir}/lefse/{attribute}/analysis/counts.tsv'
+    output:
+        infile='{report_dir}/lefse/{attribute}/analysis/counts.in'
+    shell:
+        '''
+        $LEFSE_DIR/format_input.py \
+            {input.counts} \
+            {output.infile} \
+            -c 1 \
+            -s -1 \
+            -u 2 \
+            -o 100000
+        '''
+
+rule lefse_run:
+    input:
+        infile='{report_dir}/lefse/{attribute}/analysis/counts.in'
+    output:
+        result='{report_dir}/lefse/{attribute}/analysis/counts.res'
+    shell:
+        '''
+        $LEFSE_DIR/run_lefse.py \
+            {input.infile} \
+            {output.result}
+        '''
+
+rule lefse_plot_summary:
+    input:
+        result='{report_dir}/lefse/{attribute}/analysis/counts.res'
+    output:
+        pdf='{report_dir}/lefse/{attribute}/significant-taxes.pdf'
+    shell:
+        '''
+        $LEFSE_DIR/plot_res.py \
+            {input.result} \
+            {output.pdf} \
+            --format pdf
+        '''
+
+rule lefse_plot_treeview:
+    input:
+        result='{report_dir}/lefse/{attribute}/analysis/counts.res'
+    output:
+        pdf='{report_dir}/lefse/{attribute}/treeview.pdf'
+    shell:
+        '''
+        $LEFSE_DIR/plot_cladogram.py \
+            {input.result} \
+            {output.pdf} \
+            --format pdf
+        '''
+
+rule lefse_plot_features:
+    input:
+        infile='{report_dir}/lefse/{attribute}/analysis/counts.in',
+        result='{report_dir}/lefse/{attribute}/analysis/counts.res'
+    output:
+        success='{report_dir}/lefse/{attribute}/individual/success'
+    params:
+        indivdir='{report_dir}/lefse/{attribute}/individual/'
+    log:
+        '{report_dir}/lefse/{attribute}/individual/log/plot_features.log'
+    shell:
+        '''
+        $LEFSE_DIR/plot_features.py \
+            {input.infile} \
+            {input.result} \
+            {params.indivdir} \
+        > {log}
+
+        touch {output.success}
+        '''
+
+rule lefse_summarize_features:
+    input:
+        success='{report_dir}/lefse/{attribute}/individual/success'
+    output:
+        html='{report_dir}/lefse/{attribute}/comparison.html'
+    params:
+        indivdir='{report_dir}/lefse/{attribute}/individual/'
+    shell:
+        '''
+        echo "<h1>{wildcards.attribute}</h1>" > {output.html}
+        echo "<p><a href=".">Back</a> | <a href="..">Different comparison</a></p>" >> {output.html}
+        for PNG in {params.indivdir}/*.png; do
+            BASE=`basename $PNG`
+            echo "<img src=\"individual/$BASE\" \>" >> {output.html}
+        done
+        '''
+
+
