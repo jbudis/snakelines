@@ -1,13 +1,15 @@
-read_type = config['trim']['read_type']
-temporary = config['trim'].get('temporary', False)
+tool_config = config['reads']['preprocess']['trimmed']
+
+input_read_type = tool_config['input_read_type']
+temporary = tool_config.get('temporary', False)
 
 def configured_temp(outfile):
     return temp(outfile) if temporary else outfile
 
-rule trimmomatic_trim_reads:
+rule trimmomatic__trim_reads:
     input:
-        r1 = 'reads/%s/{sample}_R1.fastq.gz' % read_type,
-        r2 = 'reads/%s/{sample}_R2.fastq.gz' % read_type
+        r1 = 'reads/%s/{sample}_R1.fastq.gz' % input_read_type,
+        r2 = 'reads/%s/{sample}_R2.fastq.gz' % input_read_type
     output:
         r1 = configured_temp('reads/trimmed/{sample}_R1.fastq.gz'),
         r2 = configured_temp('reads/trimmed/{sample}_R2.fastq.gz')
@@ -16,19 +18,20 @@ rule trimmomatic_trim_reads:
         r2 = 'reads/trimmed/{sample}_R2.fastq',
         out1 = 'reads/trimmed/{sample}_R1.txt',
         out2 = 'reads/trimmed/{sample}_R2.txt',
-        adapter = 'ILLUMINACLIP:%s:%s:%s:%s' % (config['trim']['adapter']['fasta'],
-                                                config['trim']['adapter']['seed_mismatches'],
-                                                config['trim']['adapter']['palindrom_threshold'],
-                                                config['trim']['adapter']['clip_threshold']) \
-                   if 'adapter' in config['trim'] else '',
-        quality = 'SLIDINGWINDOW:5:%s' % config['trim']['quality'] if 'quality' in config['trim'] else '',
-        headcrop = 'HEADCROP:%s' % config['trim']['headcrop'] if 'headcrop' in config['trim'] else '',
-        crop = 'CROP:%s' % config['trim']['crop'] if 'crop' in config['trim'] else '',
-        auto = 'True' if ('auto' in config['trim']) and (config['trim']['auto']) else 'False',
+        adapter = 'ILLUMINACLIP:%s:%s:%s:%s' % (tool_config['adapter']['fasta'],
+                                                tool_config['adapter']['seed_mismatches'],
+                                                tool_config['adapter']['palindrom_threshold'],
+                                                tool_config['adapter']['clip_threshold']) \
+                   if 'adapter' in tool_config else '',
+        quality = 'SLIDINGWINDOW:5:%s' % tool_config['quality'] if 'quality' in tool_config else '',
+        headcrop = 'HEADCROP:%s' % tool_config['headcrop'] if 'headcrop' in tool_config else '',
+        crop = 'CROP:%s' % tool_config['crop'] if 'crop' in tool_config else '',
+        auto = 'True' if ('auto' in tool_config) and (tool_config['auto']) else 'False',
+        minlen = tool_config['minlen']
     threads:
         int(config['threads'])
     log:
-        'reads/%s/log/{sample}.log' % read_type
+        'reads/%s/log/{sample}.log' % input_read_type
     shell:
         '''
         if [ "{params.auto}" = "True" ]; then
@@ -60,7 +63,7 @@ rule trimmomatic_trim_reads:
                 CROP:$TRIM_TAIL \
                 HEADCROP:$TRIM_HEAD \
                 {params.quality} \
-                MINLEN:{config[trim][minlen]} \
+                MINLEN:{params.minlen} \
             > {log}
         else
             trimmomatic PE \
@@ -74,7 +77,7 @@ rule trimmomatic_trim_reads:
                 {params.crop} \
                 {params.headcrop} \
                 {params.quality} \
-                MINLEN:{config[trim][minlen]} \
+                MINLEN:{params.minlen} \
             > {log}
         fi
         '''

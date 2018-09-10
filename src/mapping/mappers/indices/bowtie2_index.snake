@@ -1,5 +1,5 @@
 
-rule bowtie2_index:
+rule bowtie2__prepare_index:
     input:
         '{fadir}/{sequence}.fa'
     output:
@@ -12,7 +12,7 @@ rule bowtie2_index:
     params:
         index = '{fadir}/bowtie2_index/{sequence}'
     log:
-        '{fadir}/log/bowtie2.log'
+        '{fadir}/log/{sequence}.log'
     threads:
         int(config['threads'])
     shell:

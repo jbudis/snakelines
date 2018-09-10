@@ -1,13 +1,15 @@
-read_type = config['deduplicate']['read_type']
-temporary = config['deduplicate'].get('temporary', False)
+tool_config = config['reads']['preprocess']['deduplicated']
+
+input_read_type = tool_config['input_read_type']
+temporary = tool_config.get('temporary', False)
 
 def configured_temp(outfile):
     return temp(outfile) if temporary else outfile
 
-rule fastuniq:
+rule fastuniq__deduplicate_reads:
     input:
-        r1 = 'reads/%s/{sample}_R1.fastq.gz' % read_type,
-        r2 = 'reads/%s/{sample}_R2.fastq.gz' % read_type
+        r1 = 'reads/%s/{sample}_R1.fastq.gz' % input_read_type,
+        r2 = 'reads/%s/{sample}_R2.fastq.gz' % input_read_type
     output:
         r1 = configured_temp('reads/deduplicated/{sample}_R1.fastq.gz'),
         r2 = configured_temp('reads/deduplicated/{sample}_R2.fastq.gz')

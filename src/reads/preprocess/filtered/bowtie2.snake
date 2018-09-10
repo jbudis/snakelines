@@ -1,18 +1,18 @@
+tool_config = config['reads']['preprocess']['filtered']
+
 include: config['snake_dir']  + '/mapping/mappers/indices/bowtie2_index.snake'
 
-rule bowtie2_filter_reads:
+rule bowtie2__filter_reads_from_reference:
     input:
-        r1 = 'reads/%s/{sample}_R1.fastq.gz' % config['prefilter']['read_type'],
-        r2 = 'reads/%s/{sample}_R2.fastq.gz' % config['prefilter']['read_type'],
-        index_files = expand('reference/{ref}/bowtie2_index/{ref}.1.bt2', ref=config['prefilter']['references'])
+        r1 = 'reads/%s/{sample}_R1.fastq.gz' % tool_config['input_read_type'],
+        r2 = 'reads/%s/{sample}_R2.fastq.gz' % tool_config['input_read_type'],
+        index_files = expand('reference/{ref}/bowtie2_index/{ref}.1.bt2', ref=tool_config['references'])
     output:
         r1 = 'reads/filtered/{sample}_R1.fastq.gz',
         r2 = 'reads/filtered/{sample}_R2.fastq.gz'
-    log:
-        'reads/filtered/log/{sample}.map'
     params:
-        indices = ['reference/%s/bowtie2_index/%s' % (ref, ref) for ref in config['prefilter']['references']],
-        keep_param = '--al-conc-gz' if 'keep' in config['prefilter'] and config['prefilter']['keep'] else '--un-conc-gz'
+        indices = expand('reference/{reference}/bowtie2_index/{reference}', reference=tool_config['references']),
+        keep_param = '--al-conc-gz' if tool_config.get('keep', False) else '--un-conc-gz'
     threads:
         int(config['threads'])
     shell:

@@ -1,0 +1,43 @@
+configfile: srcdir('config.yaml')
+include: config['snake_dir'] + '/common/preambule.snake'
+
+include: config['snake_dir'] + '/reads/report/fastqc.snake'
+include: config['snake_dir'] + '/reads/preprocess/trimmed/trimmomatic.snake'
+include: config['snake_dir'] + '/reads/preprocess/filtered/bowtie2.snake'
+include: config['snake_dir'] + '/reads/preprocess/deduplicated/fastuniq.snake'
+
+import shutil
+
+preprocess = config['reads']['preprocess']
+read_types = preprocess.keys()
+read_types_with_report = [read_type for read_type in read_types if preprocess[read_type].get('quality_report', False)]
+read_types_to_keep = [read_type for read_type in read_types if not preprocess[read_type].get('temporary', True)]
+
+rule finalise__preprocess_reads:
+    """
+    Pipeline filter and revise fastq files from the reads/original directory. All preprocess steps, such as trimming,
+    deduplication and filtering of contamination reads are defined in the configuration file, part 'preprocess'.
+    Preprocess steps are executed gradually, i.e. output reads of one step are input to the following step.
+    """
+    input:
+        # Fastq files of all preprocess types that are not configured as temporary
+        fastqs  = expand('reads/{read_type}/{sample}_R{orientation}.fastq.gz',
+                          read_type=read_types_to_keep, sample=pipeline.sample, orientation=[1,2]),
+
+        # Fastq quality reports of all preprocess types that are configured to be generated
+        reports = expand('reads/{read_type}/stats/summary.tsv', read_type=read_types_with_report)
+
+rule finalise__preprocess_reads_and_report:
+    """
+    Preprocess reads as the preprocess_reads rule and copy resulting reports into the directory specified
+    in the configuration file.
+    """
+    input:
+        rules.finalise__preprocess_reads.input
+    output:
+        # Fastq quality reports of all preprocess types that are configured to be generated
+        reports = expand('report/{report_dir}/quality_report/reads/{read_rype}.tsv',
+                         report_dir=config['report_dir'], read_type=read_types_with_report)
+    run:
+        for in_report, out_report in zip(input.reports, output.reports):
+            shutil.copy(in_report, out_report)

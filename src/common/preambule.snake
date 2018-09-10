@@ -1,0 +1,26 @@
+import oyaml
+
+# Filter samples according to the user configuration
+sample_pattern = config.get('sample_pattern', '.*')
+pipeline = glob_wildcards('reads/original/{sample, %s}_R1.fastq.gz' % sample_pattern)
+assert len(pipeline.sample) > 0, 'No samples in reads/original/ match configured pattern {}'.format(sample_pattern)
+
+# Impute read types into the preprocess steps
+ORIGINAL_READS = 'original'
+
+for config_file in workflow.configfiles:
+
+    # Load configuration with dictionary that keeps order of the preprocess steps
+    file_config = oyaml.load(open(config_file))
+
+    # Find configuration file with reads->preprocess attributes
+    if 'preprocess' not in file_config.get('reads', {}):
+        continue
+
+    # Add new read_type attribute to the main config, so rules for preprocess steps may deduce input read files
+    previous_type = ORIGINAL_READS
+    for read_type in file_config['reads']['preprocess'].keys():
+        config['reads']['preprocess'][read_type]['input_read_type'] = previous_type
+        previous_type = read_type
+
+

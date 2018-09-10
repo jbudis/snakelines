@@ -1,0 +1,29 @@
+sample_pattern: .*
+report_dir: report/01-preprocess
+threads: 10
+
+reads:
+    preprocess:
+        trimmed:
+            method: trimmomatic
+            temporary: False
+            crop: 500
+            quality: 20
+            headcrop: 20
+            minlen: 35
+
+        filtered:
+            method: bowtie2
+            temporary: False
+            references:
+                - mhv
+            keep: True
+
+        deduplicated:
+            method: fastuniq
+            temporary: False
+
+    report:
+        fastqc:
+            - trimmed
+            - deduplicated
