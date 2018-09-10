@@ -3,12 +3,13 @@ include: config['snake_dir'] + '/common/preambule.snake'
 
 import shutil
 
-preprocess = config['reads']['preprocess']
-read_types = preprocess.keys()
-read_types_with_report = [read_type for read_type in read_types if preprocess[read_type].get('quality_report', False)]
-read_types_to_keep = [read_type for read_type in read_types if not preprocess[read_type].get('temporary', True)]
+preprocess = extract_from_config(['reads', 'preprocess'], {})
+read_types_to_keep = [read_type for read_type in preprocess.keys() if not preprocess[read_type].get('temporary', True)]
+read_types_with_fastqc_report = extract_from_config(['reads', 'report', 'fastq'], [])
 
-rule finalise__preprocess_reads:
+localrules: finalise__preprocess_reads_and_report
+
+rule finalise__preprocess_reads_and_report:
     """
     Pipeline filter and revise fastq files from the reads/original directory. All preprocess steps, such as trimming,
     deduplication and filtering of contamination reads are defined in the configuration file, part 'preprocess'.
@@ -20,19 +21,11 @@ rule finalise__preprocess_reads:
                           read_type=read_types_to_keep, sample=pipeline.sample, orientation=[1,2]),
 
         # Fastq quality reports of all preprocess types that are configured to be generated
-        reports = expand('reads/{read_type}/stats/summary.tsv', read_type=read_types_with_report)
-
-rule finalise__preprocess_reads_and_report:
-    """
-    Preprocess reads as the preprocess_reads rule and copy resulting reports into the directory specified
-    in the configuration file.
-    """
-    input:
-        rules.finalise__preprocess_reads.input
+        reports = expand('reads/{read_type}/stats/summary.tsv', read_type=read_types_with_fastqc_report)
     output:
         # Fastq quality reports of all preprocess types that are configured to be generated
         reports = expand('report/{report_dir}/quality_report/reads/{read_rype}.tsv',
-                         report_dir=config['report_dir'], read_type=read_types_with_report)
+                         report_dir=config['report_dir'], read_type=read_types_with_fastqc_report)
     run:
         for in_report, out_report in zip(input.reports, output.reports):
             shutil.copy(in_report, out_report)
