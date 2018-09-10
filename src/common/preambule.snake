@@ -5,6 +5,7 @@ sample_pattern = config.get('sample_pattern', '.*')
 pipeline = glob_wildcards('reads/original/{sample, %s}_R1.fastq.gz' % sample_pattern)
 assert len(pipeline.sample) > 0, 'No samples in reads/original/ match configured pattern {}'.format(sample_pattern)
 
+
 # Impute read types into the preprocess steps
 ORIGINAL_READS = 'original'
 
@@ -24,3 +25,33 @@ for config_file in workflow.configfiles:
         previous_type = read_type
 
 
+# Automatically import snake files that match the configuration structure
+
+def import_files_in_config(subconfig, item_path):
+
+    # Check if path in the configuration match some snake file in src/ directory
+    import_file = '{}.snake'.format(item_path)
+    if os.path.isfile(import_file):
+        yield import_file
+        return
+
+    # Directories and lists are searched recursively
+    if type(subconfig) == dict:
+
+        # Search all elements of the current item
+        for next_item_name in subconfig:
+            next_item_path = item_path
+
+            # Do not include "method" attribute into the paths
+            if next_item_name != 'method':
+                next_item_path = '{}/{}'.format(next_item_path, next_item_name)
+
+            yield from import_files_in_config(subconfig[next_item_name], next_item_path)
+
+    # Items at the end of the configuration tree are checked as well
+    if type(subconfig) == str:
+        yield from import_files_in_config(None, '{}/{}'.format(item_path, subconfig))
+
+for import_file in import_files_in_config(config, config['snake_dir']):
+    print(import_file)
+    include: import_file

@@ -1,11 +1,6 @@
 configfile: srcdir('config.yaml')
 include: config['snake_dir'] + '/common/preambule.snake'
 
-include: config['snake_dir'] + '/reads/report/fastqc.snake'
-include: config['snake_dir'] + '/reads/preprocess/trimmed/trimmomatic.snake'
-include: config['snake_dir'] + '/reads/preprocess/filtered/bowtie2.snake'
-include: config['snake_dir'] + '/reads/preprocess/deduplicated/fastuniq.snake'
-
 import shutil
 
 preprocess = config['reads']['preprocess']
