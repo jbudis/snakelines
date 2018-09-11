@@ -1,7 +1,5 @@
 include: config['snake_dir'] + '/preprocess/conversion/unzip.snake'
 
-tool_config = config['reads']['preprocess']['joined']
-
 rule pear__join_read_pairs:
     input:
         r1 = 'reads/%s/{sample}_R1.fastq' % tool_config['read_type'],

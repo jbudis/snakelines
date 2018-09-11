@@ -1,4 +1,3 @@
-tool_config = config['reads']['preprocess']['trimmed']
 rule trimmomatic__trim_reads:
     input:
         r1 = 'reads/%s/{sample}_R1.fastq.gz' % tool_config['input_read_type'],

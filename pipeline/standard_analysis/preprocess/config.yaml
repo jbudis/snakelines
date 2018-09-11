@@ -26,9 +26,7 @@ reads:
         subsampled:
             method: seqtk
             n_reads: 10
-            temporary: False
             reads: 20
-
 
     report:
         method: fastqc

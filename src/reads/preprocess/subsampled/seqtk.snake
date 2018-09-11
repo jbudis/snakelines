@@ -1,5 +1,3 @@
-tool_config = config['reads']['preprocess']['subsampled']
-
 rule seqtk__subsample_reads:
     '''
     Randomly select user-configured number of reads from fastq files

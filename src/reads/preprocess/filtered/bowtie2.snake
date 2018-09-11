@@ -1,7 +1,5 @@
 include: config['snake_dir']  + '/mapping/mappers/indices/bowtie2_index.snake'
 
-tool_config = config['reads']['preprocess']['filtered']
-
 rule bowtie2__filter_reads_from_reference:
     input:
         r1 = 'reads/%s/{sample}_R1.fastq.gz' % tool_config['input_read_type'],
