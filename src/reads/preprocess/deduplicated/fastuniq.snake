@@ -1,36 +1,29 @@
+include: config['snake_dir'] + '/reads/conversion/unzip.snake'
+
 rule fastuniq__deduplicate_reads:
+    '''
+    Remove fragments with identical sequences that are usually consequence of extensive PCR multiplication
+    '''
     input:
-        r1 = 'reads/%s/{sample}_R1.fastq.gz' % tool_config['input_read_type'],
-        r2 = 'reads/%s/{sample}_R2.fastq.gz' % tool_config['input_read_type']
+        r1 = 'reads/%s/{sample}_R1.fastq' % tool_config['input_read_type'],
+        r2 = 'reads/%s/{sample}_R2.fastq' % tool_config['input_read_type']
     output:
         r1 = configured_temp('reads/deduplicated/{sample}_R1.fastq.gz'),
-        r2 = configured_temp('reads/deduplicated/{sample}_R2.fastq.gz')
-    params:
-        r1_ungz = 'reads/deduplicated/{sample}.tmp_R1.fastq',
-        r2_ungz = 'reads/deduplicated/{sample}.tmp_R2.fastq',
-        in_file = 'reads/deduplicated/{sample}.txt',
-        r1 = 'reads/deduplicated/{sample}_R1.fastq',
-        r2 = 'reads/deduplicated/{sample}_R2.fastq'
+        r2 = configured_temp('reads/deduplicated/{sample}_R2.fastq.gz'),
+        pair_description = temp('reads/deduplicated/{sample}.txt'),
+        unzipped_r1 = temp('reads/deduplicated/{sample}_R1.fastq'),
+        unzipped_r2 = temp('reads/deduplicated/{sample}_R2.fastq')
     shell:
         '''
-        mkdir -p 'reads/deduplicated'
-
-        gzip -cd {input.r1} > {params.r1_ungz}
-        gzip -cd {input.r2} > {params.r2_ungz}
-
-        echo "{params.r1_ungz}\n{params.r2_ungz}" > {params.in_file}
+        echo "{input.r1}\n{input.r2}" > {output.pair_description}
 
         fastuniq \
-            -i {params.in_file} \
-            -o {params.r1} \
-            -p {params.r2}
+            -i {output.pair_description} \
+            -o {output.unzipped_r1} \
+            -p {output.unzipped_r2}
 
-        gzip {params.r1}
-        gzip {params.r2}
-
-        rm {params.r1_ungz}
-        rm {params.r2_ungz}
-        rm {params.in_file}
+        gzip --keep {output.unzipped_r1}
+        gzip --keep {output.unzipped_r2}
         '''
 
 
