@@ -48,27 +48,26 @@ def copy_input_files_with_consistent_output_names(input, output):
     :param output: output files of the rule
     '''
 
-    print(getattr(output, 'reports'))
     # Iterate through all defined outputs in the rule
     for item_name in output.__dict__:
 
-        # If output items do not have matching partner in input, print warning message
+        # Skip internal snakemake attributes
+        if item_name.startswith('_'):
+            continue
+
+        # Skip output items do not have matching partner in input
         if not hasattr(input, item_name):
-            print('Output of the rule with the name {} has no input attribute with the same name.'.format(item_name))
             continue
 
         # Check if items with the same name have also same data type, both should be list or str
         input_item, output_item = getattr(input, item_name), getattr(output, item_name)
-        if type(input_item) != type(output_item):
-            print('Output and input items with name {} for the rule have different data types {} and {}'.format(
-                    item_name, type(input_item), type(output_item)))
-            continue
+        assert type(input_item) == type(output_item), 'Output and input items with name {} \
+                    for the rule have different data types {} and {}'.format( \
+                    item_name, type(input_item), type(output_item))
 
         # Check if items with the same name have also same length
-        if len(input_item) != len(output_item):
-            print('Output and input items with name {} for the rule have different lengths {} and {}'.format(
-                    item_name, len(input_item), len(output_item)))
-            continue
+        assert len(input_item) == len(output_item), 'Output and input items with name {} \
+                for the rule have different lengths {} and {}'.format(item_name, len(input_item), len(output_item))
 
         # Single file items are directly copied
         if type(input_item) == str:
@@ -126,8 +125,5 @@ def import_files_in_config(subconfig, item_path):
         yield from import_files_in_config(None, '{}/{}'.format(item_path, subconfig))
 
 for import_file in import_files_in_config(config, config['snake_dir']):
-    if os.path.isfile(import_file):
-        print('Automatically imported snake file {}'.format(import_file))
-        include: import_file
-    else:
-        print('Configured snake file {} does not exists'.format(import_file))
+    assert os.path.isfile(import_file), 'Configured snake file {} does not exists'.format(import_file)
+    include: import_file
