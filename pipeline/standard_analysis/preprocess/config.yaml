@@ -24,6 +24,7 @@ reads:
             temporary: False
 
     report:
-        fastqc:
+        method: fastqc
+        read_types:
             - trimmed
             - deduplicated

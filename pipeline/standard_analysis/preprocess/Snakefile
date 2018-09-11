@@ -3,7 +3,7 @@ include: config['snake_dir'] + '/common/preambule.snake'
 
 preprocess = extract_from_config(['reads', 'preprocess'], {})
 read_types_to_keep = [read_type for read_type in preprocess.keys() if not preprocess[read_type].get('temporary', True)]
-read_types_with_fastqc_report = extract_from_config(['reads', 'report', 'fastqc'], [])
+read_types_with_fastqc_report = extract_from_config(['reads', 'report', 'read_types'], [])
 
 localrules: finalise__preprocess_reads_and_report
 
