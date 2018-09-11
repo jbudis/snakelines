@@ -1,11 +1,9 @@
 configfile: srcdir('config.yaml')
 include: config['snake_dir'] + '/common/preambule.snake'
 
-import shutil
-
 preprocess = extract_from_config(['reads', 'preprocess'], {})
 read_types_to_keep = [read_type for read_type in preprocess.keys() if not preprocess[read_type].get('temporary', True)]
-read_types_with_fastqc_report = extract_from_config(['reads', 'report', 'fastq'], [])
+read_types_with_fastqc_report = extract_from_config(['reads', 'report', 'fastqc'], [])
 
 localrules: finalise__preprocess_reads_and_report
 
@@ -17,15 +15,16 @@ rule finalise__preprocess_reads_and_report:
     """
     input:
         # Fastq files of all preprocess types that are not configured as temporary
-        fastqs  = expand('reads/{read_type}/{sample}_R{orientation}.fastq.gz',
+        reads   = expand('reads/{read_type}/{sample}_R{orientation}.fastq.gz',
                           read_type=read_types_to_keep, sample=pipeline.sample, orientation=[1,2]),
 
         # Fastq quality reports of all preprocess types that are configured to be generated
-        reports = expand('reads/{read_type}/stats/summary.tsv', read_type=read_types_with_fastqc_report)
+        reports = expand('reads/{read_type}/stats/summary.html',
+                          read_type=read_types_with_fastqc_report)
+
     output:
         # Fastq quality reports of all preprocess types that are configured to be generated
-        reports = expand('report/{report_dir}/quality_report/reads/{read_rype}.tsv',
-                         report_dir=config['report_dir'], read_type=read_types_with_fastqc_report)
+        reports = expand('{report_dir}/read_quality_report/{read_type}/summary.html',
+                          report_dir=config['report_dir'], read_type=read_types_with_fastqc_report)
     run:
-        for in_report, out_report in zip(input.reports, output.reports):
-            shutil.copy(in_report, out_report)
+        copy_input_files_with_consistent_output_names(input, output)
