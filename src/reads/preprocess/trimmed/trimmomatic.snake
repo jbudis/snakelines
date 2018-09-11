@@ -1,15 +1,8 @@
 tool_config = config['reads']['preprocess']['trimmed']
-
-input_read_type = tool_config['input_read_type']
-temporary = tool_config.get('temporary', False)
-
-def configured_temp(outfile):
-    return temp(outfile) if temporary else outfile
-
 rule trimmomatic__trim_reads:
     input:
-        r1 = 'reads/%s/{sample}_R1.fastq.gz' % input_read_type,
-        r2 = 'reads/%s/{sample}_R2.fastq.gz' % input_read_type
+        r1 = 'reads/%s/{sample}_R1.fastq.gz' % tool_config['input_read_type'],
+        r2 = 'reads/%s/{sample}_R2.fastq.gz' % tool_config['input_read_type']
     output:
         r1 = configured_temp('reads/trimmed/{sample}_R1.fastq.gz'),
         r2 = configured_temp('reads/trimmed/{sample}_R2.fastq.gz')
@@ -31,7 +24,7 @@ rule trimmomatic__trim_reads:
     threads:
         int(config['threads'])
     log:
-        'reads/%s/log/{sample}.log' % input_read_type
+        'reads/%s/log/{sample}.log' % tool_config['input_read_type']
     shell:
         '''
         if [ "{params.auto}" = "True" ]; then

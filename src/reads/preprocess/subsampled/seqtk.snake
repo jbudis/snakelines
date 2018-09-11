@@ -1,8 +1,5 @@
 tool_config = config['reads']['preprocess']['subsampled']
 
-def configured_temp(outfile):
-    return temp(outfile) if temporary else outfile
-
 rule seqtk__subsample_reads:
     '''
     Randomly select user-configured number of reads from fastq files

@@ -7,6 +7,7 @@ pipeline = glob_wildcards('reads/original/{sample, %s}_R1.fastq.gz' % sample_pat
 assert len(pipeline.sample) > 0, 'No samples in reads/original/ match configured pattern {}'.format(sample_pattern)
 
 # Helper methods
+
 def extract_from_config(items, default_value):
     '''
     Load items from the configuration file based on series of keys. If some key is not found in hierarchy,
@@ -21,6 +22,22 @@ def extract_from_config(items, default_value):
             return default_value
         subconfig = subconfig[item]
     return subconfig
+
+
+def configured_temp(read_file):
+    '''
+    Choose if Fastq file should be marker by snakemake temporary flag temp() based on configuration
+
+    :param read_file: output read file of a read preprocess rule
+    '''
+    items = read_file.split('/')
+    assert items[0] == 'reads' and len(items) == 3, \
+           'Method can be used only for read files in reads/{preprocess}/ directory, provided {}'.format(read_file)
+
+    read_type = items[1]
+    temporary = extract_from_config(['reads', 'preprocess', read_type, 'temporary'], False)
+    return temp(read_file) if temporary else read_file
+
 
 def copy_input_files_with_consistent_output_names(input, output):
     '''
