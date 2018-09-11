@@ -1,0 +1,23 @@
+tool_config = config['reads']['preprocess']['subsampled']
+
+def configured_temp(outfile):
+    return temp(outfile) if temporary else outfile
+
+rule seqtk__subsample_reads:
+    '''
+    Randomly select user-configured number of reads from fastq files
+    '''
+    input:
+        r1 = 'reads/%s/{sample}_R1.fastq.gz' % tool_config['input_read_type'],
+        r2 = 'reads/%s/{sample}_R2.fastq.gz' % tool_config['input_read_type']
+    output:
+        r1 = configured_temp('reads/subsampled/{sample}_R1.fastq.gz'),
+        r2 = configured_temp('reads/subsampled/{sample}_R2.fastq.gz')
+    params:
+        seed = tool_config.get('seed', 1),
+        n_reads = tool_config['n_reads']
+    shell:
+        '''
+        seqtk sample -s{params.seed} {input.r1} {params.n_reads} | gzip > {output.r1}
+        seqtk sample -s{params.seed} {input.r2} {params.n_reads} | gzip > {output.r2}
+        '''

@@ -23,8 +23,16 @@ reads:
             method: fastuniq
             temporary: False
 
+        subsampled:
+            method: seqtk
+            n_reads: 10
+            temporary: False
+            reads: 20
+
+
     report:
         method: fastqc
         read_types:
             - trimmed
             - deduplicated
+            - subsampled
