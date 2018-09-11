@@ -1,4 +1,7 @@
 rule trimmomatic__trim_reads:
+    '''
+    Remove low quality ends of reads and then filter reads that are too short.
+    '''
     input:
         r1 = 'reads/%s/{sample}_R1.fastq.gz' % tool_config['input_read_type'],
         r2 = 'reads/%s/{sample}_R2.fastq.gz' % tool_config['input_read_type']
@@ -8,8 +11,6 @@ rule trimmomatic__trim_reads:
     params:
         r1 = 'reads/trimmed/{sample}_R1.fastq',
         r2 = 'reads/trimmed/{sample}_R2.fastq',
-        out1 = 'reads/trimmed/{sample}_R1.txt',
-        out2 = 'reads/trimmed/{sample}_R2.txt',
         adapter = 'ILLUMINACLIP:%s:%s:%s:%s' % (tool_config['adapter']['fasta'],
                                                 tool_config['adapter']['seed_mismatches'],
                                                 tool_config['adapter']['palindrom_threshold'],
@@ -18,59 +19,27 @@ rule trimmomatic__trim_reads:
         quality = 'SLIDINGWINDOW:5:%s' % tool_config['quality'] if 'quality' in tool_config else '',
         headcrop = 'HEADCROP:%s' % tool_config['headcrop'] if 'headcrop' in tool_config else '',
         crop = 'CROP:%s' % tool_config['crop'] if 'crop' in tool_config else '',
-        auto = 'True' if ('auto' in tool_config) and (tool_config['auto']) else 'False',
-        minlen = tool_config['minlen']
+        minlen = 'MINLEN:%s' % tool_config['minlen'] if 'minlen' in tool_config else ''
     threads:
         int(config['threads'])
     log:
-        'reads/%s/log/{sample}.log' % tool_config['input_read_type']
+        out = 'reads/trimmed/log/{sample}.log',
+        err = 'reads/trimmed/log/{sample}.err'
     shell:
         '''
-        if [ "{params.auto}" = "True" ]; then
-            gzip -cd {input.r1} > {params.r1}
-            gzip -cd {input.r2} > {params.r2}
-
-            R1_TRIM=`find_trim_params {params.r1} {params.out1}`
-            R2_TRIM=`find_trim_params {params.r2} {params.out2}`
-
-            R1_TRIM_HEAD=`echo "$R1_TRIM" | cut -f1`
-            R1_TRIM_TAIL=`echo "$R1_TRIM" | cut -f2`
-
-            R2_TRIM_HEAD=`echo "$R2_TRIM" | cut -f1`
-            R2_TRIM_TAIL=`echo "$R2_TRIM" | cut -f2`
-
-            TRIM_HEAD=$(( $R1_TRIM_HEAD > $R2_TRIM_HEAD ? $R1_TRIM_HEAD : $R2_TRIM_HEAD ))
-            TRIM_TAIL=$(( $R1_TRIM_TAIL < $R2_TRIM_TAIL ? $R1_TRIM_TAIL : $R2_TRIM_TAIL ))
-
-            echo -e "Trimming parameters set for: CROP:$TRIM_TAIL HEADCROP:$TRIM_HEAD"
-
-            trimmomatic PE \
-                -threads {threads} \
-                -phred33 \
-                {input.r1} \
-                {input.r2} \
-                {output.r1} /dev/null \
-                {output.r2} /dev/null \
-                {params.adapter} \
-                CROP:$TRIM_TAIL \
-                HEADCROP:$TRIM_HEAD \
-                {params.quality} \
-                MINLEN:{params.minlen} \
-            > {log}
-        else
-            trimmomatic PE \
-                -threads {threads} \
-                -phred33 \
-                {input.r1} \
-                {input.r2} \
-                {output.r1} /dev/null \
-                {output.r2} /dev/null \
-                {params.adapter} \
-                {params.crop} \
-                {params.headcrop} \
-                {params.quality} \
-                MINLEN:{params.minlen} \
-            > {log}
-        fi
+        trimmomatic PE \
+            -threads {threads} \
+            -phred33 \
+            {input.r1} \
+            {input.r2} \
+            {output.r1} /dev/null \
+            {output.r2} /dev/null \
+            {params.adapter} \
+            {params.crop} \
+            {params.headcrop} \
+            {params.quality} \
+            {params.minlen} \
+        >  {log.out} \
+        2> {log.err}
         '''
 
