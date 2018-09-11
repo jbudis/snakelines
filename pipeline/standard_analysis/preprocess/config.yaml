@@ -12,7 +12,7 @@ reads:
             headcrop: 20
             minlen: 35
 
-        filtered:
+        purified:
             method: bowtie2
             temporary: False
             references:

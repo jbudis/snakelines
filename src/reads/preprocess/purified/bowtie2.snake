@@ -6,8 +6,8 @@ rule bowtie2__filter_reads_from_reference:
         r2 = 'reads/%s/{sample}_R2.fastq.gz' % tool_config['input_read_type'],
         index_files = expand('reference/{ref}/bowtie2_index/{ref}.1.bt2', ref=tool_config['references'])
     output:
-        r1 = configured_temp('reads/filtered/{sample}_R1.fastq.gz'),
-        r2 = configured_temp('reads/filtered/{sample}_R2.fastq.gz')
+        r1 = configured_temp('reads/purified/{sample}_R1.fastq.gz'),
+        r2 = configured_temp('reads/purified/{sample}_R2.fastq.gz')
     params:
         indices = expand('reference/{reference}/bowtie2_index/{reference}', reference=tool_config['references']),
         keep_param = '--al-conc-gz' if tool_config.get('keep', False) else '--un-conc-gz'
