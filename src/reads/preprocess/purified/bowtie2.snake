@@ -1,6 +1,11 @@
 include: config['snake_dir']  + '/mapping/mappers/indices/bowtie2_index.snake'
 
 rule bowtie2__filter_reads_from_reference:
+    '''
+    Remove reads that do not map to the reference, and so may be caused by contamination in lab processing.
+    Alternatively, using keep: False configuration removes all fragments that belongs to reference, and so is suitable
+    to remove contamination caused by host with known genome, e.g. human fragments.
+    '''
     input:
         r1 = 'reads/%s/{sample}_R1.fastq.gz' % tool_config['input_read_type'],
         r2 = 'reads/%s/{sample}_R2.fastq.gz' % tool_config['input_read_type'],
@@ -13,15 +18,18 @@ rule bowtie2__filter_reads_from_reference:
         keep_param = '--al-conc-gz' if tool_config.get('keep', False) else '--un-conc-gz'
     threads:
         int(config['threads'])
+    log:
+        prefix = 'reads/purified/log/{sample}'
     shell:
         '''
+        TMP_DIR=reads/filtered/tmp
         R1_IN={input.r1}
         R2_IN={input.r2}
 
         for INDEX in {params.indices}; do
 
             REF=`basename $INDEX`
-            REF_DIR=reads/filtered-$REF
+            REF_DIR=$TMP_DIR/$REF
             mkdir -p $REF_DIR
 
             R1_OUT=$REF_DIR/{wildcards.sample}_R1.fastq.gz
@@ -36,7 +44,7 @@ rule bowtie2__filter_reads_from_reference:
                 --threads {threads} \
                 {params.keep_param} $R_MASK \
             > /dev/null \
-            2> $REF_DIR/{wildcards.sample}.log
+            2> {log.prefix}.$REF.log
 
             R1_IN=$R1_OUT
             R2_IN=$R2_OUT
@@ -44,4 +52,6 @@ rule bowtie2__filter_reads_from_reference:
 
         mv $R1_OUT {output.r1}
         mv $R2_OUT {output.r2}
+
+        rm -rf $TMP_DIR
         '''
