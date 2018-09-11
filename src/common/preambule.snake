@@ -84,23 +84,23 @@ for config_file in workflow.configfiles:
 # Automatically import snake files that match the configuration structure
 
 def import_files_in_config(subconfig, item_path):
+    '''
+    Recursively traverse configuration file and identify possible snake imports annotated by "method:" node
 
-    # Check if path in the configuration match some snake file in src/ directory
-    import_file = '{}.snake'.format(item_path)
-    if os.path.isfile(import_file):
-        yield import_file
-        return
+    :param subconfig: part of configuration file to traverse
+    :param item_path: already traversed path in the configuration file
+    '''
 
     # Directories and lists are searched recursively
     if type(subconfig) == dict:
 
         # Search all elements of the current item
         for next_item_name in subconfig:
-            next_item_path = item_path
+            if next_item_name == 'method':
+                yield '{}/{}.snake'.format(item_path, subconfig[next_item_name])
+                continue
 
-            # Do not include "method" attribute into the paths
-            if next_item_name != 'method':
-                next_item_path = '{}/{}'.format(next_item_path, next_item_name)
+            next_item_path = '{}/{}'.format(item_path, next_item_name)
 
             yield from import_files_in_config(subconfig[next_item_name], next_item_path)
 
@@ -109,5 +109,8 @@ def import_files_in_config(subconfig, item_path):
         yield from import_files_in_config(None, '{}/{}'.format(item_path, subconfig))
 
 for import_file in import_files_in_config(config, config['snake_dir']):
-    print('Automatically imported snake file {}'.format(import_file))
-    include: import_file
+    if os.path.isfile(import_file):
+        print('Automatically imported snake file {}'.format(import_file))
+        include: import_file
+    else:
+        print('Configured snake file {} does not exists'.format(import_file))
