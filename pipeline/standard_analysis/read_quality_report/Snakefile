@@ -1,0 +1,34 @@
+configfile: srcdir('config.yaml')
+include: config['snake_dir'] + '/common/preambule.snake'
+
+preprocess = extract_from_config(['reads', 'preprocess'], {})
+read_types_with_fastqc_report = extract_from_config(['reads', 'report', 'read_types'], [])
+
+localrules: finalise__quality_report
+
+rule finalise__quality_report:
+    """
+    Make FastQC quality reports for all reads of defined types. Should be used as the first assessment of
+    read quality of sequencing run. After that, preprocess pipeline may be utilize to eliminate sequencing artefacts.
+    """
+    input:
+        # FastQC quality reports of all preprocess types that are configured to be generated
+        fastqcs = expand('reads/{read_type}/stats/{sample}_R{orientation}_fastqc.html',
+                          read_type=read_types_with_fastqc_report, sample=pipeline.sample,
+                          orientation=[1,2]),
+
+        # Summary table of fastQC reports
+        reports = expand('reads/{read_type}/stats/summary.html',
+                          read_type=read_types_with_fastqc_report)
+
+    output:
+        # FastQC quality reports of all preprocess types that are configured to be generated
+        fastqcs = expand('{report_dir}/read_quality_report/{read_type}/{sample}_R{orientation}_fastqc.html',
+                          report_dir=config['report_dir'], read_type=read_types_with_fastqc_report,
+                          sample=pipeline.sample, orientation=[1,2]),
+
+        # Summary table of fastQC reports
+        reports = expand('{report_dir}/read_quality_report/{read_type}/index.html',
+                          report_dir=config['report_dir'], read_type=read_types_with_fastqc_report)
+    run:
+        copy_input_files_with_consistent_output_names(input, output)

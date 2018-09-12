@@ -1,0 +1,9 @@
+sample_pattern: .*
+report_dir: report/01-fastqc_report
+threads: 10
+
+reads:
+    report:
+        method: fastqc
+        read_types:
+            - original
