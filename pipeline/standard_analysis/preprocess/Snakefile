@@ -1,40 +1,28 @@
+# Load configuration file
 configfile: srcdir('config.yaml')
+
+# Run startup scripts that automatically loads imports from src/ and load helper methods
 include: config['snake_dir'] + '/common/preambule.snake'
 
+# Import sub-workflows
+include: srcdir('Snakefile.read_quality_report')
+
+# Find in configuration read preprocess types that should be generated
 preprocess = extract_from_config(['reads', 'preprocess'], {})
 read_types_to_keep = [read_type for read_type in preprocess.keys() if not preprocess[read_type].get('temporary', True)]
-read_types_with_fastqc_report = extract_from_config(['reads', 'report', 'read_types'], [])
 
-localrules: finalise__preprocess_reads_and_report
-
-rule finalise__preprocess_reads_and_report:
+rule finalise__preprocess_reads:
     """
     Pipeline filter and revise fastq files from the reads/original directory. All preprocess steps, such as trimming,
     deduplication and filtering of contamination reads are defined in the configuration file, part 'preprocess'.
     Preprocess steps are executed gradually, i.e. output reads of one step are input to the following step.
     """
     input:
+        rules.finalise__quality_report.output,
+
         # Fastq files of all preprocess types that are not configured as temporary
         reads   = expand('reads/{read_type}/{sample}_R{orientation}.fastq.gz',
-                          read_type=read_types_to_keep, sample=pipeline.sample, orientation=[1,2]),
+                              read_type=read_types_to_keep, sample=pipeline.sample, orientation=[1,2]),
 
-        # FastQC quality reports of all preprocess types that are configured to be generated
-        fastqcs = expand('reads/{read_type}/stats/{sample}_R{orientation}_fastqc.html',
-                          read_type=read_types_with_fastqc_report, sample=pipeline.sample,
-                          orientation=[1,2]),
-
-        # Summary table of fastQC reports
-        reports = expand('reads/{read_type}/stats/summary.html',
-                          read_type=read_types_with_fastqc_report)
-
-    output:
-        # FastQC quality reports of all preprocess types that are configured to be generated
-        fastqcs = expand('{report_dir}/read_quality_report/{read_type}/{sample}_R{orientation}_fastqc.html',
-                          report_dir=config['report_dir'], read_type=read_types_with_fastqc_report,
-                          sample=pipeline.sample, orientation=[1,2]),
-
-        # Summary table of fastQC reports
-        reports = expand('{report_dir}/read_quality_report/{read_type}/index.html',
-                          report_dir=config['report_dir'], read_type=read_types_with_fastqc_report)
-    run:
-        copy_input_files_with_consistent_output_names(input, output)
+# Target rule would be executed locally, not on cluster
+localrules: finalise__preprocess_reads

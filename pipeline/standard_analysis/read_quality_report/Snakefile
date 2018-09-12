@@ -1,10 +1,13 @@
+# Load configuration file
 configfile: srcdir('config.yaml')
+
+# Run startup scripts that automatically loads imports from src/ and load helper methods
 include: config['snake_dir'] + '/common/preambule.snake'
 
+
+# Find in configuration read preprocess types for which should be report generated
 preprocess = extract_from_config(['reads', 'preprocess'], {})
 read_types_with_fastqc_report = extract_from_config(['reads', 'report', 'read_types'], [])
-
-localrules: finalise__quality_report
 
 rule finalise__quality_report:
     """
@@ -32,3 +35,6 @@ rule finalise__quality_report:
                           report_dir=config['report_dir'], read_type=read_types_with_fastqc_report)
     run:
         copy_input_files_with_consistent_output_names(input, output)
+
+# Target rule would be executed locally, not on cluster
+localrules: finalise__quality_report
