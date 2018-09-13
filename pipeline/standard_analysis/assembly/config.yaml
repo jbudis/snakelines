@@ -39,3 +39,6 @@ assembly:
     report:
         assembly_graph:
             method: bandage
+
+        quality_report:
+            method: quast
