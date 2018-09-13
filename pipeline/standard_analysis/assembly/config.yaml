@@ -24,11 +24,12 @@ reads:
             temporary: False
 
     report:
-        method: fastqc
-        read_types:
-            - trimmed
-            - deduplicated
-            - subsampled
+        quality_report:
+            method: fastqc
+            read_types:
+                - trimmed
+                - deduplicated
+                - subsampled
 
 assembly:
     assembler:

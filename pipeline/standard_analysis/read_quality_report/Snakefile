@@ -7,7 +7,7 @@ include: config['snake_dir'] + '/common/preambule.snake'
 
 # Find in configuration read preprocess types for which should be report generated
 preprocess = extract_from_config(['reads', 'preprocess'], {})
-read_types_with_fastqc_report = extract_from_config(['reads', 'report', 'read_types'], [])
+read_types_with_fastqc_report = extract_from_config(['reads', 'report', 'quality_report', 'read_types'], [])
 
 rule finalise__quality_report:
     """
