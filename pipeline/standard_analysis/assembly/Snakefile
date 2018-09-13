@@ -21,5 +21,16 @@ rule finalise__assemble_reads:
         # Assembled contigs in Fasta format
         contigs = expand('assembly/{sample}/contigs.fa', sample=pipeline.sample),
 
+        # Contig overlap graph
+        overlap_graph = expand('assembly/{sample}/assembly_graph.svg', sample=pipeline.sample),
+
+    output:
+        # Contig overlap graph
+        overlap_graph = expand('{report_dir}/assembly/{sample}/contigs.svg',
+                                report_dir=config['report_dir'], sample=pipeline.sample),
+
+    run:
+        copy_input_files_with_consistent_output_names(input, output)
+
 # Target rule would be executed locally, not on cluster
 localrules: finalise__assemble_reads

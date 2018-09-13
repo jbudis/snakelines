@@ -1,0 +1,14 @@
+rule bandage__visualise_contig_overlaps:
+    '''
+    Plot overlap graph of contigs to visually inspect relationships between contigs.
+    '''
+    input:
+        '{path}/{sample}.gfa'
+    output:
+        '{path}/{sample}.svg'
+    shell:
+        '''
+        bandage image \
+            {input} \
+            {output}
+        '''

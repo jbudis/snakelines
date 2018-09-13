@@ -1,5 +1,5 @@
 sample_pattern: .*
-report_dir: report/01-preprocess
+report_dir: report/01-assembly
 threads: 10
 
 reads:
@@ -35,3 +35,7 @@ assembly:
         method: spades
         mode: standard
         careful: True
+
+    report:
+        assembly_graph:
+            method: bandage
