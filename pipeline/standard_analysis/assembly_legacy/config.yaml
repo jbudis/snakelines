@@ -1,0 +1,74 @@
+sample_pattern: .*
+report_dir: public/01-assembly # Summaries would be copied at report/<report_dir> at the end of pipeline execution
+                               # if you choose public/<subdir>, reports would be accessible from web through
+                               # https://gen-clc.cusp.uniba.sk/<project>/<subdir>
+
+trim:                                   # Pre-process of reads, eliminate low quality sequences
+    read_type: original                 # Location of fastq files, would be searched in reads/<read_type>/*_R1.fastq.gz
+    crop: 500                           # Cut the read to a specified length
+    quality: 20                         # Cut read, once the average quality within the 5bp window falls below a threshold
+    headcrop: 0                         # Cut the specified number of bases from the start of the read
+    minlen: 35                          # Drop the read if it is below a specified length
+    temporary: True                     # Trimmed fastq files are deleted after all rules that use it as an input are completed
+
+deduplicate:
+    read_type: trimmed
+    temporary: True
+
+assembly:
+    assembler: unicycler                # spades-standard, spades-meta, spades-plasmid, spades-transcript, unicycler
+    read_type: deduplicated
+    min_contig_len: 200
+
+blast:
+    enabled: True                       # Do you want to generate blast reports?
+
+    reference:
+        nt:
+            query_type: nucleotide        # Nucleotide or protein, according to sequence type in input .fa files
+            target_type: nucleotide       # Nucleotide or protein, according to sequence type in blast database
+            max_target_seqs: 10           # Number of best hit reference sequences from blast database for each input sequence
+
+        refviral:
+            query_type: nucleotide        # Nucleotide or protein, according to sequence type in input .fa files
+            target_type: protein          # Nucleotide or protein, according to sequence type in blast database
+            max_target_seqs: 10           # Number of best hit reference sequences from blast database for each input sequence
+
+        univiral:
+            query_type: nucleotide        # Nucleotide or protein, according to sequence type in input .fa files
+            target_type: protein          # Nucleotide or protein, according to sequence type in blast database
+            max_target_seqs: 10           # Number of best hit reference sequences from blast database for each input sequence
+
+
+fasta_summary:
+    max_query_seqs: 20000     # Number of input sequences that would be reported
+    max_target_seqs: 5        # Number of reported best hit reference sequences from blast database
+    min_query_coverage: 0.01  # Filter hits with lesser aligned part of the input sequence to the reference
+    include:                      # Optional columns in the summary HTML report
+        - virfinder               # Probability that contig is from virus
+        - coverage                # Number of aligned reads per contig
+        - blast                   # Homologues identified by Blast against specified reference databases
+
+    html:                     # Attributes applicable only for the HTML report, would NOT be used in the TSV table
+        seqs_per_page: 100        # Number of table rows (sequences) per page
+        sort_by: 'Sequence'       # Rows would be sorted according to values in this column
+        sort_how: 'asc'           # Values would be sorted in desc(ending) or asc(ending) order
+        columns:                  # Show only attributes that start with the name, in this order
+            - Sequence
+            - Length
+            - Compress ratio
+            - Coverage
+            - VirFinder pvalue
+            - Homologue link
+            - Mapped reads
+
+bandage:
+    enabled: False
+
+quast:
+    enabled: False
+    reference: persici
+
+mapping:
+    read_type: deduplicated
+    params: --very-sensitive

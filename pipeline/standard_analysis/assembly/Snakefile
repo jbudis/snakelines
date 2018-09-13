@@ -1,0 +1,25 @@
+# Load configuration file
+configfile: srcdir('config.yaml')
+
+# Run startup scripts that automatically loads imports from src/ and load helper methods
+include: config['snake_dir'] + '/common/preambule.snake'
+
+# Import sub-workflows
+include: srcdir('Snakefile.read_quality_report')
+include: srcdir('Snakefile.preprocess')
+
+rule finalise__assemble_reads:
+    """
+    Pipeline filter and revise fastq files from the reads/original directory. All preprocess steps, such as trimming,
+    deduplication and filtering of contamination reads are defined in the configuration file, part 'preprocess'.
+    Preprocess steps are executed gradually, i.e. output reads of one step are input to the following step.
+    """
+    input:
+        rules.finalise__quality_report.output,
+        rules.finalise__preprocess_reads.output,
+
+        # Assembled contigs in Fasta format
+        contigs = expand('assembly/{sample}/contigs.fa', sample=pipeline.sample),
+
+# Target rule would be executed locally, not on cluster
+localrules: finalise__assemble_reads

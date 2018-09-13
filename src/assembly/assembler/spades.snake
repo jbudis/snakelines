@@ -1,0 +1,39 @@
+rule spades__assemble_reads_into_contigs:
+    '''
+    Assemble preprocessed reads into the larger genomic sequences, contigs. Also generate contig overlap graphs and
+    initial scaffolds.
+    '''
+    input:
+        r1 = 'reads/%s/{sample}_R1.fastq.gz' % pipeline.preprocessed_read_type,
+        r2 = 'reads/%s/{sample}_R2.fastq.gz' % pipeline.preprocessed_read_type
+    params:
+        outdir    = 'assembly/{sample}',
+        contigs   = 'assembly/{sample}/contigs.fasta',
+        scaffolds = 'assembly/{sample}/scaffolds.fasta',
+        mode      = '--{}'.format(tool_config['mode']) if tool_config.get('mode', 'standard') != 'standard' else '',
+        careful   = '--careful' if tool_config.get('careful', False) else ''
+    output:
+        fastq     = 'assembly/{sample}/assembly_graph.fastg',
+        gfa       = 'assembly/{sample}/assembly_graph.gfa',
+        contigs   = 'assembly/{sample}/contigs.fa',
+        scaffolds = 'assembly/{sample}/scaffolds.fa'
+    threads:
+        int(config['threads'])
+    log:
+        out = 'assembly/{sample}/log/spades.log',
+        err = 'assembly/{sample}/log/spades.err'
+    shell:
+        '''
+        spades \
+            -1 {input.r1} \
+            -2 {input.r2} \
+            -o {params.outdir} \
+            --threads {threads} \
+            {params.mode} \
+            {params.careful} \
+        >  {log.out} \
+        2> {log.err}
+
+        mv {params.contigs} {output.contigs}
+        mv {params.scaffolds} {output.scaffolds}
+        '''

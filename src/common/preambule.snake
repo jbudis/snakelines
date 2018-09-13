@@ -3,8 +3,14 @@ import shutil
 
 # Filter samples according to the user configuration
 sample_pattern = config.get('sample_pattern', '.*')
-pipeline = glob_wildcards('reads/original/{sample, %s}_R1.fastq.gz' % sample_pattern)
-assert len(pipeline.sample) > 0, 'No samples in reads/original/ match configured pattern {}'.format(sample_pattern)
+wildcards = glob_wildcards('reads/original/{sample, %s}_R1.fastq.gz' % sample_pattern)
+assert len(wildcards.sample) > 0, 'No samples in reads/original/ match configured pattern {}'.format(sample_pattern)
+
+class Pipeline:
+    def __init__(self, sample):
+        self.sample = sample
+
+pipeline = Pipeline(sample=wildcards.sample)
 
 # Helper methods
 
@@ -80,6 +86,7 @@ def copy_input_files_with_consistent_output_names(input, output):
 
 # Impute read types into the preprocess steps
 ORIGINAL_READS = 'original'
+setattr(pipeline, 'preprocessed_read_type', ORIGINAL_READS)
 
 for config_file in workflow.configfiles:
 
@@ -95,6 +102,8 @@ for config_file in workflow.configfiles:
     for read_type in file_config['reads']['preprocess'].keys():
         config['reads']['preprocess'][read_type]['input_read_type'] = previous_type
         previous_type = read_type
+
+    setattr(pipeline, 'preprocessed_read_type', previous_type)
 
 
 # Automatically import snake files that match the configuration structure
