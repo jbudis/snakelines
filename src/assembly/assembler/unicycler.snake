@@ -1,21 +1,22 @@
-read_type = config['assembly']['read_type']
-
-rule unicycler_assemble_reads:
+rule unicycler__assemble_reads_into_contigs:
+    '''
+    Assemble preprocessed reads into the larger genomic sequences, contigs. Also generate contig overlap graphs.
+    '''
     input:
-        r1 = 'reads/%s/{sample}_R1.fastq.gz' % read_type,
-        r2 = 'reads/%s/{sample}_R2.fastq.gz' % read_type
+        r1 = 'reads/%s/{sample}_R1.fastq.gz' % pipeline.preprocessed_read_type,
+        r2 = 'reads/%s/{sample}_R2.fastq.gz' % pipeline.preprocessed_read_type
     output:
-        gfa     = 'unicycler/{sample}/assembly_graph.gfa',
-        contigs = 'unicycler/{sample}/contigs.fa'
+        gfa     = 'assembly/{sample}/assembly_graph.gfa',
+        contigs = 'assembly/{sample}/contigs.fa'
     params:
-        outdir            = 'unicycler/{sample}',
-        gfa_unicycler     = 'unicycler/{sample}/assembly.gfa',
-        contigs_unicycler = 'unicycler/{sample}/assembly.fasta'
+        outdir  = 'assembly/{sample}',
+        gfa     = 'assembly/{sample}/assembly.gfa',
+        contigs = 'assembly/{sample}/assembly.fasta'
     threads:
         int(config['threads'])
     log:
-        out = 'unicycler/{sample}/log/unicycler.log',
-        err = 'unicycler/{sample}/log/unicycler.err'
+        out = 'assembly/{sample}/log/unicycler.log',
+        err = 'assembly/{sample}/log/unicycler.err'
     shell:
         '''
         unicycler \
@@ -23,13 +24,13 @@ rule unicycler_assemble_reads:
             -2 {input.r2} \
             -o {params.outdir} \
             -t {threads} \
-            --spades_path /usr/local/bin/spades \
+            --spades_path spades \
         >  {log.out} \
         2> {log.err}
 
         # Unite outputs of Unicycler with outputs of Spades
-        sed 's/\ /_/g' {params.contigs_unicycler} > {output.contigs}
-        rm {params.contigs_unicycler}
+        sed 's/\ /_/g' {params.contigs} > {output.contigs}
+        rm {params.contigs}
 
-        mv {params.gfa_unicycler} {output.gfa}
+        mv {params.gfa} {output.gfa}
         '''

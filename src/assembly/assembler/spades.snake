@@ -6,17 +6,17 @@ rule spades__assemble_reads_into_contigs:
     input:
         r1 = 'reads/%s/{sample}_R1.fastq.gz' % pipeline.preprocessed_read_type,
         r2 = 'reads/%s/{sample}_R2.fastq.gz' % pipeline.preprocessed_read_type
+    output:
+        fastq     = 'assembly/{sample}/assembly_graph.fastg',
+        gfa       = 'assembly/{sample}/assembly_graph.gfa',
+        contigs   = 'assembly/{sample}/contigs.fa',
+        scaffolds = 'assembly/{sample}/scaffolds.fa'
     params:
         outdir    = 'assembly/{sample}',
         contigs   = 'assembly/{sample}/contigs.fasta',
         scaffolds = 'assembly/{sample}/scaffolds.fasta',
         mode      = '--{}'.format(tool_config['mode']) if tool_config.get('mode', 'standard') != 'standard' else '',
         careful   = '--careful' if tool_config.get('careful', False) else ''
-    output:
-        fastq     = 'assembly/{sample}/assembly_graph.fastg',
-        gfa       = 'assembly/{sample}/assembly_graph.gfa',
-        contigs   = 'assembly/{sample}/contigs.fa',
-        scaffolds = 'assembly/{sample}/scaffolds.fa'
     threads:
         int(config['threads'])
     log:
