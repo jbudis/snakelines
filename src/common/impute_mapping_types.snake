@@ -1,0 +1,20 @@
+# Impute map types into the mapping post-process steps
+ORIGINAL_MAPPING = 'original'
+setattr(pipeline, 'processed_map_type', ORIGINAL_MAPPING)
+
+for config_file in workflow.configfiles:
+
+    # Load configuration with dictionary that keeps order of the preprocess steps
+    file_config = oyaml.load(open(config_file))
+
+    # Find configuration file with reads->preprocess attributes
+    if 'postprocess' not in file_config.get('mapping', {}):
+        continue
+
+    # Add new read_type attribute to the main config, so rules for preprocess steps may deduce input read files
+    previous_type = ORIGINAL_MAPPING
+    for map_type in file_config['mapping']['postprocess'].keys():
+        config['mapping']['postprocess'][map_type]['input_map_type'] = previous_type
+        previous_type = map_type
+
+    setattr(pipeline, 'postprocessed_map_type', previous_type)

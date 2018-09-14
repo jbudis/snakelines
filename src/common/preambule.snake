@@ -1,16 +1,26 @@
 import oyaml
 import shutil
 
+# TODO split parts into separate snake scripts
+
 # Filter samples according to the user configuration
 sample_pattern = config.get('sample_pattern', '.*')
 wildcards = glob_wildcards('reads/original/{sample, %s}_R1.fastq.gz' % sample_pattern)
 assert len(wildcards.sample) > 0, 'No samples in reads/original/ match configured pattern {}'.format(sample_pattern)
 
-class Pipeline:
-    def __init__(self, sample):
+class SampleReference:
+    def __init__(self, sample, reference):
         self.sample = sample
+        self.reference = reference
 
-pipeline = Pipeline(sample=wildcards.sample)
+class Pipeline:
+    def __init__(self, sample, sample_reference):
+        self.sample = sample
+        self.sample_reference = sample_reference
+
+pipeline = Pipeline(sample=wildcards.sample, sample_reference=[SampleReference('example', 'mhv')])
+
+include: srcdir('impute_mapping_types.snake')
 
 # Helper methods
 
@@ -30,6 +40,7 @@ def extract_from_config(items, default_value):
     return subconfig
 
 
+# TODO: This should work for other types, such as mapping as well
 def configured_temp(read_file):
     '''
     Choose if Fastq file should be marker by snakemake temporary flag temp() based on configuration
@@ -84,12 +95,15 @@ def copy_input_files_with_consistent_output_names(input, output):
             shutil.copy(in_item, out_item)
 
 
-# Impute read types into the preprocess steps
+# Impute read types into the read preprocess steps
 ORIGINAL_READS = 'original'
+
+# TODO preprocessed should be called processed to unite with mapping
 setattr(pipeline, 'preprocessed_read_type', ORIGINAL_READS)
 
 for config_file in workflow.configfiles:
 
+    # TODO avoid using oyaml, return to list yaml representation
     # Load configuration with dictionary that keeps order of the preprocess steps
     file_config = oyaml.load(open(config_file))
 

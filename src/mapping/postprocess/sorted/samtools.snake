@@ -1,0 +1,25 @@
+rule samtools__sort_mapped_reads:
+    '''
+    Sort aligned reads according to mapped position on reference genome.
+    '''
+    input:
+        ref = 'reference/{reference}/{reference}.fa',
+        bam = 'mapping/{{reference}}/{map_type}/{{sample}}.bam'.format(map_type=tool_config['input_map_type'])
+    output:
+        bam = 'mapping/{reference}/sorted/{sample}.bam'
+    log:
+        out = 'mapping/{reference}/sorted/log/{sample}.log',
+        err = 'mapping/{reference}/sorted/log/{sample}.err'
+    threads:
+        int(config['threads'])
+    shell:
+        '''
+        samtools sort \
+            -o {output.bam} \
+            --threads {threads} \
+            --output-fmt BAM \
+            --reference {input.ref} \
+            {input.bam} \
+        >  {log.out} \
+        2> {log.err}
+        '''

@@ -1,33 +1,70 @@
 sample_pattern: .*
+reference:
+    mhv: example
 
-report_dir: public/01-bowtie2
+report_dir: report/01-assembly
+threads: 10
 
-trim:                               # Pre-process of reads, eliminate low quality sequences
-    read_type: original             # Location of fastq files, would be searched in reads/<read_type>/*_R1.fastq.gz
-    crop: 500                       # Cut the read to a specified length
-    quality: 20                     # Cut read, once the average quality within the 5bp window falls below a threshold
-    headcrop: 20                    # Cut the specified number of bases from the start of the read
-    minlen: 35                      # Drop the read if it is below a specified length
-    temporary: True                 # Trimmed fastq files are deleted after all rules that use it as an input are completed
+reads:
+    preprocess:
+        trimmed:
+            method: trimmomatic
+            temporary: False
+            crop: 500
+            quality: 20
+            headcrop: 20
+            minlen: 35
+
+        decontaminated:
+            method: bowtie2
+            temporary: False
+            references:
+                - mhv
+            keep: True
+
+        deduplicated:
+            method: fastuniq
+            temporary: False
+
+    report:
+        quality_report:
+            method: fastqc
+            read_types:
+                - trimmed
+                - deduplicated
+                - subsampled
 
 mapping:
-    read_type: trimmed              # Preprocessed reads, that would be mapped against reference
-    reference: dobrava              # Reference sequences in Fasta format, have to be localised at references/{reference}/{reference}.fa
-    params: --very-sensitive        # Additional parameters to Bowtie2 executable
-    only_concordant: False          # Keep only concordantly mapped reads
+    mapper:
+        method: bowtie2
+        params: --very-sensitive
+        only_concordant: False
 
-report:                             # Summary reports of mapped counts
-    krona: True                     # Krona multi-pie charts, require tax file references/{reference}/{reference}.tax
+    postprocess:
+        original:
+            temporary: True
+        sorted:
+            method: samtools
+            temporary: False
 
-    barplot:                        # Barplot summary of the most common taxonomies
-        tax_levels:                 # Taxonomic levels to aggregate mapped reads
-            - kingdom
-            - phylum
-            - order
-            - family
-            - genus
-            - species
-
-        count_types:
-            - abs                   # Generate barplot from the number mapped counts
-            - rel                   # Generate barplot from the proportions of mapped counts (for each sample this would sum to 1)
+#mapping:
+#    read_type: trimmed              # Preprocessed reads, that would be mapped against reference
+#    reference: dobrava              # Reference sequences in Fasta format, have to be localised at references/{reference}/{reference}.fa
+#    params: --very-sensitive        # Additional parameters to Bowtie2 executable
+#    only_concordant: False          # Keep only concordantly mapped reads
+#
+#report:                             # Summary reports of mapped counts
+#    krona: True                     # Krona multi-pie charts, require tax file references/{reference}/{reference}.tax
+#
+#    barplot:                        # Barplot summary of the most common taxonomies
+#        tax_levels:                 # Taxonomic levels to aggregate mapped reads
+#            - kingdom
+#            - phylum
+#            - order
+#            - family
+#            - genus
+#            - species
+#
+#        count_types:
+#            - abs                   # Generate barplot from the number mapped counts
+#            - rel                   # Generate barplot from the proportions of mapped counts (for each sample this would sum to 1)

@@ -1,0 +1,46 @@
+# Load configuration file
+configfile: srcdir('config.yaml')
+
+# Run startup scripts that automatically loads imports from src/ and load helper methods
+include: config['snake_dir'] + '/common/preambule.snake'
+
+# Import sub-workflows
+include: srcdir('Snakefile.read_quality_report')
+include: srcdir('Snakefile.preprocess')
+
+rule finalise__map_reads_to_reference:
+    """
+    Pipeline filter and revise fastq files from the reads/original directory. All preprocess steps, such as trimming,
+    deduplication and filtering of contamination reads are defined in the configuration file, part 'preprocess'.
+    Preprocess steps are executed gradually, i.e. output reads of one step are input to the following step.
+    """
+    input:
+        rules.finalise__quality_report.output,
+        rules.finalise__preprocess_reads.output,
+
+        # Mapped sorted reads in BAM file
+        alignments = expand('mapping/{sr.reference}/sorted/{sr.sample}.bam', sr=pipeline.sample_reference)
+
+
+'''
+        # Contig overlap graph
+        overlap_graphs = expand('assembly/{sample}/assembly_graph.svg', sample=pipeline.sample),
+
+        # Quality control metrics of assembled contigs
+        quality_reports = expand('assembly/{sample}/quality_report/report.pdf', sample=pipeline.sample),
+
+    output:
+        # Contig overlap graph
+        overlap_graphs = expand('{report_dir}/assembly/{sample}/contigs.svg',
+                                 report_dir=config['report_dir'], sample=pipeline.sample),
+
+        # Quality control metrics of assembled contigs
+        quality_reports = expand('{report_dir}/assembly/{sample}/report.pdf',
+                                  report_dir=config['report_dir'], sample=pipeline.sample),
+
+    run:
+        copy_input_files_with_consistent_output_names(input, output)
+'''
+
+# Target rule would be executed locally, not on cluster
+localrules: finalise__map_reads_to_reference
