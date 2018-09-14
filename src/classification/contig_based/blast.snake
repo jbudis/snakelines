@@ -109,6 +109,7 @@ rule blast__annotate_with_taxonomy:
                 out_blast.write('\t'.join(items))
                 out_blast.write('\n')
 
+# TODO do we need this?
 rule blast_filter_by_kingdom:
     input:
         blast = '{indir}/blast/{name}.blast.tax.tsv'
@@ -127,6 +128,7 @@ rule blast_filter_by_kingdom:
 
                 out_blast.write(line)
 
+# TODO do we need this?
 rule blast_extract_contigs_by_kingdom:
     input:
         blast = '{indir}/blast/{name}.blast.tax.{kingdom}.tsv',
@@ -152,7 +154,7 @@ rule blast_extract_contigs_by_kingdom:
                     already_stored.add(contig_id)
 
 
-
+# TODO do we need this?
 rule blast_assign_taxonomy_assemblers:
     input:
         fa = '{assembler}/{reference}/{indir}/{sample}.fa',
