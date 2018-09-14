@@ -1,18 +1,21 @@
-rule virfinder_identify_viral_sequences:
+rule virfinder__identify_viral_sequences:
+    '''
+    Method assigns each contig p-value that it originates from viral genome.
+    '''
     input:
-        '{indir}/{name}.fa'
+        fasta   = '{indir}/{name}.fa'
     output:
-        '{indir}/virfinder/{name}.pvalues.tsv'
+        pvalues = '{indir}/virfinder/{name}.pvalues.tsv'
     log:
-        out = '{indir}/virfinder/log/{name}.log',
-        err = '{indir}/virfinder/log/{name}.err'
+        out     = '{indir}/virfinder/log/{name}.log',
+        err     = '{indir}/virfinder/log/{name}.err'
     params:
         wrapper_script = srcdir('virfinder/virfinder_wrapper.R')
     shell:
         '''
         Rscript {params.wrapper_script} \
-            {input} \
-            {output} \
+            {input.fasta} \
+            {output.pvalues} \
          > {log.out} \
         2> {log.err}
         '''

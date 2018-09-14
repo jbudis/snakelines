@@ -78,7 +78,7 @@ classification:
             max_target_seqs: 5        # Number of reported best hit reference sequences from blast database
             min_query_coverage: 0.01  # Filter hits with lesser aligned part of the input sequence to the reference
             include:                      # Optional columns in the summary HTML report
-#                - virfinder               # Probability that contig is from virus
+                - virfinder               # Probability that contig is from virus
 #                - coverage                # Number of aligned reads per contig
                 - blast                   # Homologues identified by Blast against specified reference databases
 
