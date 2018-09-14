@@ -11,17 +11,17 @@ reads:
             quality: 20
             headcrop: 20
             minlen: 35
-#
-#        decontaminated:
-#            method: bowtie2
-#            temporary: False
-#            references:
-#                - mhv
-#            keep: True
-#
-#        deduplicated:
-#            method: fastuniq
-#            temporary: False
+
+        decontaminated:
+            method: bowtie2
+            temporary: False
+            references:
+                - mhv
+            keep: True
+
+        deduplicated:
+            method: fastuniq
+            temporary: False
 
     report:
         quality_report:
