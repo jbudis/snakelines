@@ -6,7 +6,7 @@ import os
 def qualimap_files(wildcards):
       bamdir = wildcards.bamdir if hasattr(wildcards, 'bamdir') else '%s/%s' % (wildcards.mapper, wildcards.reference)
       return expand('%s/stats-%s/{sample}/genome_results.txt' % (bamdir, wildcards.panel), \
-                     sample=pipeline.sample)
+                     sample=pipeline.samples)
 
 rule qualimap_wgs_report:
     input:

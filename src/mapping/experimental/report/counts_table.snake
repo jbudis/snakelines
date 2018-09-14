@@ -9,9 +9,9 @@ import numpy as np
 def filtered_sids(wildcards):
     if 'gene_pattern' in config:
         gene_file_pattern = re.compile(config['gene_pattern'][wildcards.reference])
-        return list(filter(gene_file_pattern.match, pipeline.sample))
+        return list(filter(gene_file_pattern.match, pipeline.samples))
     else:
-        return pipeline.sample
+        return pipeline.samples
 
 def bam_files(wildcards):
       return expand('{mapper}/{reference}/{sample}.bam',

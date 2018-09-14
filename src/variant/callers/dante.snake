@@ -7,7 +7,7 @@ from glob import glob
 
 def all_reports(wildcards):
     return expand('dante/{sample}/report.html',
-                   sample=pipeline.sample)
+                   sample=pipeline.samples)
 
 rule dante_summarize:
     input:

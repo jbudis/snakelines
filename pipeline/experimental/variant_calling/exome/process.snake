@@ -23,7 +23,7 @@ rule process:
 
         # BAM files
         expand('bowtie2/{reference}/realign/{sample}.bam',
-                reference=reference, sample=pipeline.sample),
+                reference=reference, sample=pipeline.samples),
 
         # Qualimap reports
         'bowtie2/{reference}/stats-{panel}/summary.tsv'.format(
@@ -31,5 +31,5 @@ rule process:
 
         # Variant files
         expand('bowtie2/{reference}/vardict-{panel}/{sample}.germline.vcf',
-                reference=reference, sample=pipeline.sample, panel=panel),
+                reference=reference, sample=pipeline.samples, panel=panel),
 

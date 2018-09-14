@@ -49,11 +49,11 @@ rule hipstr_call_str_genotype:
 
 def all_bams(wildcards):
     return expand('{mapper}/{reference}/{sample}.bam',
-                   sample=pipeline.sample, mapper=wildcards.mapper, reference=wildcards.reference)
+                   sample=pipeline.samples, mapper=wildcards.mapper, reference=wildcards.reference)
 
 def all_bais(wildcards):
     return expand('{mapper}/{reference}/{sample}.bam.bai',
-                   sample=pipeline.sample, mapper=wildcards.mapper, reference=wildcards.reference)
+                   sample=pipeline.samples, mapper=wildcards.mapper, reference=wildcards.reference)
 
 rule hipstr_denovo:
     input:
@@ -148,7 +148,7 @@ rule hipstr_summarize_denovo:
 
 def all_vcfs(wildcards):
     return expand('{mapper}/{reference}/hipstr/{sample}/genotype.vcf.gz',
-                   sample=pipeline.sample, mapper=wildcards.mapper, reference=wildcards.reference)
+                   sample=pipeline.samples, mapper=wildcards.mapper, reference=wildcards.reference)
 
 rule hipstr_summarize:
     input:

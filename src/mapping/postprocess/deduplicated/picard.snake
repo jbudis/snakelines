@@ -1,5 +1,3 @@
-include: config['snake_dir'] + '/mapping/postprocess/bam_index.snake'
-
 # TODO hardcoded tmp_dir, do we need it?
 rule picard__mark_duplicates:
     '''

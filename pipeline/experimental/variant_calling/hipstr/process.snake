@@ -19,10 +19,10 @@ rule process:
 
         # Mapping
         expand('bwa/{reference}/{sample}.bam',
-               reference=reference, sample=pipeline.sample),
+               reference=reference, sample=pipeline.samples),
 
         expand('bwa/{reference}/{sample}.bam.bai',
-               reference=reference, sample=pipeline.sample),
+               reference=reference, sample=pipeline.samples),
 
         'bwa/%s/stats-wgs/summary.tsv' % reference,
 

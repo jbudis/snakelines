@@ -58,7 +58,7 @@ rule matam_prepare_reference:
 
 def all_matam_assemblies(wildcards):
     gene_file_pattern = re.compile(config['gene_pattern'][wildcards.gene])
-    gene_sids = list(filter(gene_file_pattern.match, pipeline.sample))
+    gene_sids = list(filter(gene_file_pattern.match, pipeline.samples))
     return expand('matam/{gene}/assembly/{sample}/final_assembly.fa',
                    gene=wildcards.gene, cluster_limit=cluster_limit,
                    sample=gene_sids)

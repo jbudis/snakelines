@@ -21,12 +21,12 @@ rule finalise__identify_viruses:
 
         # Summary HTML report with annotations of assembled contigs
         summary_html = expand('assembly/{sample}/annotation/contigs/summary.html',
-                               sample=pipeline.sample),
+                               sample=pipeline.samples),
 
     output:
         # Summary HTML report with annotations of assembled contigs
         summary_html = expand('{report_dir}/{sample}/contig_annotations.html',
-                               sample=pipeline.sample, report_dir=config['report_dir']),
+                               sample=pipeline.samples, report_dir=config['report_dir']),
 
     run:
         copy_input_files_with_consistent_output_names(input, output)

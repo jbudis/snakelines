@@ -9,4 +9,4 @@ include: config['snake_dir'] + '/classification/report/fasta_summary.snake'
 rule process:
     input:
         expand('{fasta_dir}/blast-nocoverage/{sample}.html',
-                fasta_dir=fasta_dir, sample=pipeline.sample)
+                fasta_dir=fasta_dir, sample=pipeline.samples)

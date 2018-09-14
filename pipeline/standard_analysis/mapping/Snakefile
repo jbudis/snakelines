@@ -19,24 +19,24 @@ rule finalise__map_reads_to_reference:
         rules.finalise__preprocess_reads.output,
 
         # Mapped sorted reads in BAM file
-        alignments = expand('mapping/{sr.reference}/deduplicated/{sr.sample}.bam', sr=pipeline.sample_reference)
+        alignments = expand('mapping/{sr.reference}/deduplicated/{sr.sample}.bam', sr=pipeline.sample_references)
 
 
 '''
         # Contig overlap graph
-        overlap_graphs = expand('assembly/{sample}/assembly_graph.svg', sample=pipeline.sample),
+        overlap_graphs = expand('assembly/{sample}/assembly_graph.svg', sample=pipeline.samples),
 
         # Quality control metrics of assembled contigs
-        quality_reports = expand('assembly/{sample}/quality_report/report.pdf', sample=pipeline.sample),
+        quality_reports = expand('assembly/{sample}/quality_report/report.pdf', sample=pipeline.samples),
 
     output:
         # Contig overlap graph
         overlap_graphs = expand('{report_dir}/assembly/{sample}/contigs.svg',
-                                 report_dir=config['report_dir'], sample=pipeline.sample),
+                                 report_dir=config['report_dir'], sample=pipeline.samples),
 
         # Quality control metrics of assembled contigs
         quality_reports = expand('{report_dir}/assembly/{sample}/report.pdf',
-                                  report_dir=config['report_dir'], sample=pipeline.sample),
+                                  report_dir=config['report_dir'], sample=pipeline.samples),
 
     run:
         copy_input_files_with_consistent_output_names(input, output)

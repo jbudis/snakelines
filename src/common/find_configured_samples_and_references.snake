@@ -1,16 +1,35 @@
+import re
+
+# TODO documentation
+
 # Filter samples according to the user configuration
 sample_pattern = config.get('sample_pattern', '.*')
 wildcards = glob_wildcards('reads/original/{sample, %s}_R1.fastq.gz' % sample_pattern)
 assert len(wildcards.sample) > 0, 'No samples in reads/original/ match configured pattern {}'.format(sample_pattern)
+
 
 class SampleReference:
     def __init__(self, sample, reference):
         self.sample = sample
         self.reference = reference
 
-class Pipeline:
-    def __init__(self, sample, sample_reference):
-        self.sample = sample
-        self.sample_reference = sample_reference
 
-pipeline = Pipeline(sample=wildcards.sample, sample_reference=[SampleReference('example', 'mhv')])
+class Pipeline:
+
+    def __init__(self, samples, reference_patterns):
+        self.samples = samples
+        self.sample_references = self.__infer_sample_references(reference_patterns)
+
+    def __infer_sample_references(self, reference_patterns):
+
+        if not reference_patterns:
+            return []
+
+        sample_references = []
+        for reference, pattern in reference_patterns.items():
+            for sample in filter(re.compile(pattern).match, self.samples):
+                sample_references.append(SampleReference(sample, reference))
+
+        return sample_references
+
+pipeline = Pipeline(samples=wildcards.sample, reference_patterns=config.get('reference', []))

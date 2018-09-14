@@ -3,7 +3,7 @@ map_subdir = '%s/' % map_type if map_type else ''
 
 def all_bams(wildcards):
     bams = expand('%s/%s/%s{sample}.bam' % (wildcards.mapper, wildcards.reference, map_subdir) ,
-                  sample=pipeline.sample)
+                  sample=pipeline.samples)
     return bams
 
 rule samtools_merge_bams:

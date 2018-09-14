@@ -20,13 +20,13 @@ rule process:
 
         # Mapping
         expand('bowtie2/{reference}/{sample}.bam'    ,
-               reference=reference, sample=pipeline.sample),
+               reference=reference, sample=pipeline.samples),
 
         expand('bowtie2/{reference}/{sample}.bam.bai',
-               reference=reference, sample=pipeline.sample),
+               reference=reference, sample=pipeline.samples),
 
         'bowtie2/%s/stats-wgs/summary.tsv' % reference,
 
         # Variant calling
         expand('bowtie2/{reference}/freebayes/{sample}.population.vcf',
-               reference=reference, sample=pipeline.sample),
+               reference=reference, sample=pipeline.samples),

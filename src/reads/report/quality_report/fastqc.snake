@@ -2,14 +2,14 @@ def fastq_files_joined(read_type):
     '''
     All joined read files from the reads/{read_type}/ directory
     '''
-    return expand('reads/%s/stats-joined/{sample}_RM_fastqc.html' % read_type, sample=pipeline.sample)
+    return expand('reads/%s/stats-joined/{sample}_RM_fastqc.html' % read_type, sample=pipeline.samples)
 
 def fastq_files(read_type):
     '''
     All paired read files from the reads/{read_type}/ directory
     '''
-    return expand('reads/%s/stats/{sample}_R1_fastqc.html' % read_type, sample=pipeline.sample) + \
-           expand('reads/%s/stats/{sample}_R2_fastqc.html' % read_type, sample=pipeline.sample)
+    return expand('reads/%s/stats/{sample}_R1_fastqc.html' % read_type, sample=pipeline.samples) + \
+           expand('reads/%s/stats/{sample}_R2_fastqc.html' % read_type, sample=pipeline.samples)
 
 rule fastqc__html_summary_for_joined_reads:
     '''
