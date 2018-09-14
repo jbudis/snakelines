@@ -15,8 +15,10 @@ blast_db_suffices = {
     'protein':    'psq'
 }
 
+reference_config = tool_config['reference']
+
 def find_blast_db(wildcards):
-    target_type = config['blast']['reference'][wildcards.reference]['target_type']
+    target_type = reference_config[wildcards.reference]['target_type']
 
     db_suffix = blast_db_suffices[target_type]
     indices = glob('reference/{reference}/blast_index/{reference}.*{db_suffix}' \
@@ -24,27 +26,30 @@ def find_blast_db(wildcards):
     if indices:
         return indices
 
-    print('reference/{reference}/blast_index/{reference}.{db_suffix}' \
-                        .format(reference=wildcards.reference, db_suffix=db_suffix))
-
     return 'reference/{reference}/blast_index/{reference}.{db_suffix}' \
                         .format(reference=wildcards.reference, db_suffix=db_suffix)
 
-rule blast_tsv:
+rule blast__find_homologues:
+    '''
+    Find homologues for input sequences stored in fasta file in query reference database.
+    '''
     input:
-        fasta = '{indir}/{name}.fa',
-        db = find_blast_db
+        blast_db = find_blast_db,
+        fasta   = '{indir}/{name}.fa'
     output:
-        '{indir}/blast/{reference}/{name}.blast.tsv'
+        tsv     = '{indir}/blast/{reference}/{name}.blast.tsv'
+    log:
+        out     = '{indir}/blast/{reference}/log/{name}.log',
+        err     = '{indir}/blast/{reference}/log/{name}.err'
+    params:
+        nohead  = '{indir}/blast/{reference}/{name}.blast.tsv.tmp',
+        header  = '{indir}/blast/{reference}/{name}.blast.tsv.tmp.header',
+        max_target_seqs = lambda wc: reference_config[wc.reference]['max_target_seqs'],
+        blast_binary    = lambda wc: blast_binaries[(reference_config[wc.reference]['query_type'],
+                                                     reference_config[wc.reference]['target_type'])],
+        blast_database  = 'reference/{reference}/blast_index/{reference}'
     threads:
         int(config['threads'])
-    params:
-        nohead = '{indir}/blast/{reference}/{name}.blast.tsv.tmp',
-        header = '{indir}/blast/{reference}/{name}.blast.tsv.tmp.header',
-        max_target_seqs = lambda wc: config['blast']['reference'][wc.reference]['max_target_seqs'],
-        blast_binary    = lambda wc: blast_binaries[(config['blast']['reference'][wc.reference]['query_type'],
-                                                     config['blast']['reference'][wc.reference]['target_type'])],
-        blast_database  = 'reference/{reference}/blast_index/{reference}'
     shell:
         '''
         set +e pipefail
@@ -66,13 +71,16 @@ rule blast_tsv:
             -out {params.nohead} \
             -outfmt "6 `echo $HEADER`" \
             -num_threads {threads} \
-            -max_target_seqs {params.max_target_seqs}
+            -max_target_seqs {params.max_target_seqs} \
+        >  {log.out} \
+        2> {log.err}
 
         cat {params.header} {params.nohead} > {output}
         rm {params.header} {params.nohead}
         '''
 
-rule blast_annotate_with_taxonomy:
+# TODO this works for NCBI databases only find a way to load taxonomy directly from blast indices
+rule blast__annotate_with_taxonomy:
     input:
         blast = '{indir}/blast/{name}.blast.tsv',
         taxes = '/data/genome/metagenome/blast/nt/17-01-17/taxonomy/code_taxonomy.pickle'
@@ -83,7 +91,7 @@ rule blast_annotate_with_taxonomy:
 
         def get_tax(taxid):
             if not taxid or taxid == 'N/A':
-                return ''
+                return 'Unknown'
             taxid = int(taxid)
             return ';'.join(taxes.get(taxid, ''))
 
@@ -171,13 +179,20 @@ rule blast_assign_taxonomy_assemblers:
 
                 outtax.write('{qid}\t{taxonomy}\n'.format(qid=query.id, taxonomy=tax))
 
-rule blast_index:
+# TODO add reference indices for protein databases as well
+rule blast__prepare_reference_index_for_nucleotide:
+    '''
+    Creates blast indices from provided reference sequences in fasta format.
+    '''
     input:
-        fa = 'reference/{reference}/{reference}.fa'
+        fa  = 'reference/{reference}/{reference}.fa'
     output:
         nhr = protected('reference/{reference}/blast_index/{reference}.nhr'),
         nin = protected('reference/{reference}/blast_index/{reference}.nin'),
         nsq = protected('reference/{reference}/blast_index/{reference}.nsq')
+    log:
+        out = 'reference/{reference}/blast_index/log/{reference.log}',
+        err = 'reference/{reference}/blast_index/log/{reference.err}'
     params:
         index_prefix = 'reference/{reference}/blast_index/{reference}'
     shell:
@@ -187,5 +202,7 @@ rule blast_index:
             -input_type fasta \
             -dbtype nucl \
             -title {wildcards.reference} \
-            -out {params.index_prefix}
+            -out {params.index_prefix} \
+        >  {log.out} \
+        2> {log.err}
         '''
