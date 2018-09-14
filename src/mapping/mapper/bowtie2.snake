@@ -12,7 +12,7 @@ rule bowtie2__map_reads_to_reference:
     output:
         bam   = 'mapping/{reference}/original/{sample}.bam'
     log:
-        err   = 'mapping/{reference}/log/{sample}.bowtie2.map_stats'
+        err   = 'mapping/{reference}/original/log/{sample}.bowtie2.map_stats'
     params:
         index = 'reference/{reference}/bowtie2_index/{reference}',
         additional = tool_config.get('params', ''),
