@@ -40,12 +40,17 @@ mapping:
         params: --very-sensitive
         only_concordant: False
 
+    index:
+        method: samtools
+
     postprocess:
         original:
             temporary: True
         sorted:
             method: samtools
             temporary: False
+        deduplicated:
+            method: picard
 
 #mapping:
 #    read_type: trimmed              # Preprocessed reads, that would be mapped against reference

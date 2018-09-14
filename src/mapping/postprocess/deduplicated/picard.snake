@@ -1,0 +1,32 @@
+include: config['snake_dir'] + '/mapping/postprocess/bam_index.snake'
+
+# TODO hardcoded tmp_dir, do we need it?
+rule picard__mark_duplicates:
+    '''
+    This tool locates and tags duplicate reads in a BAM or SAM file, where duplicate reads are defined as
+    originating from a single fragment of DNA.
+    '''
+    input:
+        bam  = '{{mapper}}/{{reference}}/{map_type}/{{sample}}.bam'.format(map_type=tool_config['input_map_type']),
+        bai  = '{{mapper}}/{{reference}}/{map_type}/{{sample}}.bam.bai'.format(map_type=tool_config['input_map_type'])
+    output:
+        bam  = '{mapper}/{reference}/deduplicated/{sample}.bam'
+    log:
+        out  = '{mapper}/{reference}/deduplicated/log/{sample}.log',
+        err  = '{mapper}/{reference}/deduplicated/log/{sample}.err',
+        stat = '{mapper}/{reference}/deduplicated/log/{sample}.stats'
+    shell:
+        '''
+        TEMP_DIR=$(mktemp -d /data/tmp/XXXXXXXXXXX)
+
+        picard MarkDuplicates \
+            I={input.bam} \
+            O={output.bam} \
+            M={log.stat} \
+            TMP_DIR=$TEMP_DIR \
+            VALIDATION_STRINGENCY=SILENT \
+        >  {log.out} \
+        2> {log.err}
+
+        rm -r $TEMP_DIR
+        '''

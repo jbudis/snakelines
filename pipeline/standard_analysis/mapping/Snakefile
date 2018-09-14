@@ -19,7 +19,7 @@ rule finalise__map_reads_to_reference:
         rules.finalise__preprocess_reads.output,
 
         # Mapped sorted reads in BAM file
-        alignments = expand('mapping/{sr.reference}/sorted/{sr.sample}.bam', sr=pipeline.sample_reference)
+        alignments = expand('mapping/{sr.reference}/deduplicated/{sr.sample}.bam', sr=pipeline.sample_reference)
 
 
 '''
