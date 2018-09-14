@@ -1,3 +1,5 @@
+import oyaml
+
 # Impute map types into the mapping post-process steps
 ORIGINAL_MAPPING = 'original'
 setattr(pipeline, 'processed_map_type', ORIGINAL_MAPPING)

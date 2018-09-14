@@ -1,0 +1,39 @@
+import shutil
+
+def copy_input_files_with_consistent_output_names(input, output):
+    '''
+    Compare names of the inputs and outputs of the rule. All items with the same name in inputs and outputs are copied,
+    therefore generate output files.
+
+    :param input: input files of the rule
+    :param output: output files of the rule
+    '''
+
+    # Iterate through all defined outputs in the rule
+    for item_name in output.__dict__:
+
+        # Skip internal snakemake attributes
+        if item_name.startswith('_'):
+            continue
+
+        # Skip output items do not have matching partner in input
+        if not hasattr(input, item_name):
+            continue
+
+        # Check if items with the same name have also same data type, both should be list or str
+        input_item, output_item = getattr(input, item_name), getattr(output, item_name)
+        assert type(input_item) == type(output_item), 'Output and input items with name {} \
+                    for the rule have different data types {} and {}'.format( \
+                    item_name, type(input_item), type(output_item))
+
+        # Check if items with the same name have also same length
+        assert len(input_item) == len(output_item), 'Output and input items with name {} \
+                for the rule have different lengths {} and {}'.format(item_name, len(input_item), len(output_item))
+
+        # Single file items are directly copied
+        if type(input_item) == str:
+            shutil.copy(input_item, output_item)
+
+        # List items are copied item by item
+        for in_item, out_item in zip(input_item, output_item):
+            shutil.copy(in_item, out_item)
