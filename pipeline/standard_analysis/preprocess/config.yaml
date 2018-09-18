@@ -26,7 +26,6 @@ reads:
         subsampled:
             method: seqtk
             n_reads: 10
-            reads: 20
 
     report:
         quality_report:
