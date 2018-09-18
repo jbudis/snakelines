@@ -1,9 +1,13 @@
+# TODO do we need pipefail?
 
-rule unzip_fastq:
+rule pigz__unzip_file:
+    '''
+    Decompress gzipped fastq or fasta file
+    '''
     input:
-        '{file}.fastq.gz'
+        gzipped  = '{file}.{type}.gz'
     output:
-        temp('{file}.fastq')
+        unzipped = temp('{file}.{type, fa|fasta|fastq}')
     threads:
         int(config['threads'])
     shell:
@@ -13,21 +17,5 @@ rule unzip_fastq:
             --decompress \
             --keep \
             --processes {threads} \
-            {input}
-        '''
-
-rule unzip_fa:
-    input:
-        '{file}.fa.gz'
-    output:
-        temp('{file}.fa')
-    threads:
-        int(config['threads'])
-    shell:
-        '''
-        pigz \
-            --decompress \
-            --keep \
-            --processes {threads} \
-            {input}
+            {input.gzipped}
         '''
