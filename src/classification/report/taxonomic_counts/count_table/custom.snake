@@ -5,6 +5,18 @@ import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 
+tax_ranks = ['kingdom', 'phylum', 'class', 'order', 'family',
+             'genus', 'species', 'subspecies', 'subsubspecies', 'variety', 'form']
+
+def individual_krn_files(wildcards):
+    '''
+    Return list of krona files that should be generated for the reference defined in wildcards
+    :param wildcards: wildcards that are automatically added in the input section of a rule
+    '''
+    return expand('{analysis_dir}/{reference}/report/krona/individual/{sample}.krn',
+                    analysis_dir=wildcards.analysis_dir,
+                    reference=wildcards.reference,
+                    sample=pipeline.samples_for(wildcards.reference))
 
 rule custom__summarize_taxonomic_counts_into_tsv_table:
     '''
@@ -12,8 +24,7 @@ rule custom__summarize_taxonomic_counts_into_tsv_table:
     Also calculate number of reads per sample for each taxonomic unit.
     '''
     input:
-        krns  = expand('{analysis_dir}/{sr.reference}/report/krona/individual/{sr.sample}.krn',
-                        sr=pipeline.sample_references)
+        krns  = individual_krn_files
     output:
         summary_xlsx = '{analysis_dir}/{reference}/report/tsv/summary.xlsx',
         summary_tsv  = '{analysis_dir}/{reference}/report/tsv/summary.tsv',

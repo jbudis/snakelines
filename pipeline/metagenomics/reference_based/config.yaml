@@ -35,3 +35,9 @@ classification:
         taxonomic_counts:
             pieplot:
                 method: krona
+
+            count_table:
+                method: custom
+                tax_levels:
+                    - genus
+                    - species

@@ -8,6 +8,10 @@ include: config['snake_dir'] + '/common/preambule.snake'
 include: srcdir('Snakefile.read_quality_report')
 include: srcdir('Snakefile.preprocess')
 
+# Which taxonomic levels should be extracted in separate tables
+count_table_tax_levels = \
+    extract_from_config(['classification', 'report', 'taxonomic_counts', 'count_table', 'tax_levels'], [])
+
 rule finalise__classify_reads_reference_based:
     """
     Pipeline filter and revise fastq files from the reads/original directory. All preprocess steps, such as trimming,
@@ -20,12 +24,25 @@ rule finalise__classify_reads_reference_based:
 
         # Interactive multi-level pie plots of taxonomic counts
         kronas = expand('classification/{reference}/report/krona/taxonomic_counts.html',
-                         reference=pipeline.references)
+                         reference=pipeline.references),
+
+        # Summary tables with number and proportions of reads mapped to taxonomic units
+        count_tables = expand('classification/{reference}/report/tsv/subtaxes.tsv',
+                               reference=pipeline.references),
+        ratio_tables = expand('classification/{reference}/report/tsv/subtaxes.norm.tsv',
+                               reference=pipeline.references),
 
     output:
         # Interactive multi-level pie plots of taxonomic counts
         kronas = expand('{report_dir}/{reference}/krona/taxonomic_counts.html',
-                         report_dir=config['report_dir'], reference=pipeline.references)
+                         report_dir=config['report_dir'], reference=pipeline.references),
+
+        # Summary tables with number and proportions of reads mapped to taxonomic units
+        count_tables = expand('{report_dir}/{reference}/tsv/taxonomic_counts.tsv',
+                               report_dir=config['report_dir'], reference=pipeline.references),
+        ratio_tables = expand('{report_dir}/{reference}/tsv/taxonomic_ratios.tsv',
+                               report_dir=config['report_dir'], reference=pipeline.references)
+
     run:
         copy_input_files_with_consistent_output_names(input, output)
 
