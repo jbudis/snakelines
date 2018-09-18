@@ -5,6 +5,8 @@ import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 
+# TODO script throws warning RuntimeError: main thread is not in main loop, but still generates figures
+
 # TODO this should be loaded directly from matplotlib
 SUPPORTED_IMAGE_FORMATS = ['png', 'svg', 'pdf', 'tif', 'tiff', 'eps']
 
@@ -19,8 +21,8 @@ rule custom__visualise_taxonomic_counts_as_barplot:
     input:
         tax_level = '{analysis_dir}/{gene}/report/tsv/{tax_level}.{count_type}.tsv'
     output:
-        barplot = '{analysis_dir}/{gene}/report/figures/{tax_level, %s}.{count_type, rel|abs}.{format, %s}' % ('|'.join(tax_ranks[:-1]),
-                                                                                                               '|'.join(SUPPORTED_IMAGE_FORMATS))
+        barplot = '{analysis_dir}/{gene}/report/figures/{tax_level, %s}.{count_type, counts|ratios}.{format, %s}' % ('|'.join(tax_ranks[:-1]),
+                                                                                                                     '|'.join(SUPPORTED_IMAGE_FORMATS))
     run:
         SUM_COL = 'rowsum'
         MAX_TAXONS = 9

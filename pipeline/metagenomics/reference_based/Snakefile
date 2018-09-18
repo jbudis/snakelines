@@ -14,6 +14,12 @@ tax_levels_count_table = \
 
 tax_levels_count_table.append('alltaxes')
 
+# Which taxonomic levels should be visualised in barplots, and in which image formats
+tax_levels_barplot = \
+    extract_from_config(['classification', 'report', 'taxonomic_counts', 'barplot', 'tax_levels'], [])
+barplot_formats = \
+    extract_from_config(['classification', 'report', 'taxonomic_counts', 'barplot', 'formats'], ['png'])
+
 rule finalise__classify_reads_reference_based:
     """
     Pipeline classify preprocess reads against chosen reference sequences. According to their taxonomic labels,
@@ -29,8 +35,13 @@ rule finalise__classify_reads_reference_based:
 
         # Summary tables with number and proportions of reads mapped to taxonomic units
         tables = expand('classification/{reference}/report/tsv/{tax_level}.{type}.tsv',
-                               reference=pipeline.references, tax_level=tax_levels_count_table,
-                               type=['counts', 'ratios']),
+                         reference=pipeline.references, tax_level=tax_levels_count_table,
+                         type=['counts', 'ratios']),
+
+        # Barplots with number and proportions of reads mapped to taxonomic units
+        barplots = expand('classification/{reference}/report/figures/{tax_level}.{type}.{format}',
+                           reference=pipeline.references, tax_level=tax_levels_barplot,
+                           type=['counts', 'ratios'], format=barplot_formats),
 
     output:
         # Interactive multi-level pie plots of taxonomic counts
@@ -41,7 +52,13 @@ rule finalise__classify_reads_reference_based:
         tables = expand('{report_dir}/{reference}/tsv/{tax_level}.{type}.tsv',
                          report_dir=config['report_dir'],
                          reference=pipeline.references, tax_level=tax_levels_count_table,
-                         type=['counts', 'ratios'])
+                         type=['counts', 'ratios']),
+
+        # Barplots with number and proportions of reads mapped to taxonomic units
+        barplots = expand('{report_dir}/{reference}/figures/{tax_level}.{type}.{format}',
+                           report_dir=config['report_dir'],
+                           reference=pipeline.references, tax_level=tax_levels_barplot,
+                           type=['counts', 'ratios'], format=barplot_formats)
 
     run:
         copy_input_files_with_consistent_output_names(input, output)

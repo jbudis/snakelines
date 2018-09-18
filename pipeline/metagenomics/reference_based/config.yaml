@@ -41,3 +41,12 @@ classification:
                 tax_levels:
                     - class
                     - genus
+
+            barplot:
+                method: custom
+                formats:
+                    - png
+                    - svg
+                tax_levels:
+                    - class
+                    - genus
