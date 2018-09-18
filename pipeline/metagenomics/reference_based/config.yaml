@@ -1,0 +1,37 @@
+sample_pattern: .*
+reference:
+    silva-16S: .*-16S
+    unite: .*-ITS
+
+report_dir: report/public/01-classification
+threads: 10
+
+reads:
+    preprocess:
+        trimmed:
+            method: trimmomatic
+            temporary: False
+            crop: 500
+            quality: 20
+            headcrop: 20
+            minlen: 35
+
+        deduplicated:
+            method: fastuniq
+            temporary: False
+
+    report:
+        quality_report:
+            method: fastqc
+            read_types:
+                - deduplicated
+
+classification:
+    read_based:
+        method: metaxa2
+        confidence: 0.8
+
+    report:
+        taxonomic_counts:
+            pieplot:
+                method: krona

@@ -1,0 +1,33 @@
+# Load configuration file
+configfile: srcdir('config.yaml')
+
+# Run startup scripts that automatically loads imports from src/ and load helper methods
+include: config['snake_dir'] + '/common/preambule.snake'
+
+# Import sub-workflows
+include: srcdir('Snakefile.read_quality_report')
+include: srcdir('Snakefile.preprocess')
+
+rule finalise__classify_reads_reference_based:
+    """
+    Pipeline filter and revise fastq files from the reads/original directory. All preprocess steps, such as trimming,
+    deduplication and filtering of contamination reads are defined in the configuration file, part 'preprocess'.
+    Preprocess steps are executed gradually, i.e. output reads of one step are input to the following step.
+    """
+    input:
+        rules.finalise__quality_report.output,
+        rules.finalise__preprocess_reads.output,
+
+        # Interactive multi-level pie plots of taxonomic counts
+        kronas = expand('classification/{reference}/report/krona/taxonomic_counts.html',
+                         reference=pipeline.references)
+
+    output:
+        # Interactive multi-level pie plots of taxonomic counts
+        kronas = expand('{report_dir}/{reference}/krona/taxonomic_counts.html',
+                         report_dir=config['report_dir'], reference=pipeline.references)
+    run:
+        copy_input_files_with_consistent_output_names(input, output)
+
+# Target rule would be executed locally, not on cluster
+localrules: finalise__classify_reads_reference_based

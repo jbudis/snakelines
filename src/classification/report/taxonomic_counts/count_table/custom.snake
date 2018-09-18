@@ -1,37 +1,26 @@
 import os
-
 import pandas as pd
 import csv
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-SUPPORTED_IMAGE_FORMATS = ['png', 'svg', 'pdf', 'tif', 'tiff', 'eps']
 
-def individual_krn_files(wildcards):
-
-    if 'gene_pattern' in config:
-        gene_file_pattern = re.compile(config['gene_pattern'][wildcards.gene])
-        gene_sids = list(filter(gene_file_pattern.match, pipeline.samples))
-    else:
-        gene_sids = pipeline.samples
-
-    return expand('%s/%s/report/krona/individual/{sample}.krn' % (wildcards.analysis_dir, wildcards.gene),
-                  sample=gene_sids)
-
-tax_ranks = ['kingdom', 'phylum', 'class', 'order', 'family',
-             'genus', 'species', 'subspecies', 'subsubspecies', 'variety', 'form']
-
-rule summarize_single:
+rule custom__summarize_taxonomic_counts_into_tsv_table:
+    '''
+    Take taxonomic counts and proportions from several samples and merge them together into a single table.
+    Also calculate number of reads per sample for each taxonomic unit.
+    '''
     input:
-        individual_krn_files
+        krns  = expand('{analysis_dir}/{sr.reference}/report/krona/individual/{sr.sample}.krn',
+                        sr=pipeline.sample_references)
     output:
-        summary_xlsx = '{analysis_dir}/{gene}/report/tsv/summary.xlsx',
-        summary_tsv  = '{analysis_dir}/{gene}/report/tsv/summary.tsv',
-        subtax_xlsx  = '{analysis_dir}/{gene}/report/tsv/subtaxes.xlsx',
-        subtax_tsv   = '{analysis_dir}/{gene}/report/tsv/subtaxes.tsv',
-        normed_xlsx  = '{analysis_dir}/{gene}/report/tsv/subtaxes.norm.xlsx',
-        normed_tsv   = '{analysis_dir}/{gene}/report/tsv/subtaxes.norm.tsv'
+        summary_xlsx = '{analysis_dir}/{reference}/report/tsv/summary.xlsx',
+        summary_tsv  = '{analysis_dir}/{reference}/report/tsv/summary.tsv',
+        subtax_xlsx  = '{analysis_dir}/{reference}/report/tsv/subtaxes.xlsx',
+        subtax_tsv   = '{analysis_dir}/{reference}/report/tsv/subtaxes.tsv',
+        normed_xlsx  = '{analysis_dir}/{reference}/report/tsv/subtaxes.norm.xlsx',
+        normed_tsv   = '{analysis_dir}/{reference}/report/tsv/subtaxes.norm.tsv'
     run:
         # Load stored taxonomic abundances from Emirge analysis step
 
@@ -146,12 +135,16 @@ rule summarize_single:
         normed.to_excel(output.normed_xlsx, index=False)
         normed.to_csv(output.normed_tsv, sep='\t', index=False)
 
-rule summarize_taxonomic_level:
+
+rule custom__extract_taxonomic_level_from_taxonomic_table:
+    '''
+    Extract read counts for organisms at selected taxonomic level, such as genus, species.
+    '''
     input:
-        subtax_tsv = '{analysis_dir}/{gene}/report/tsv/subtaxes.tsv'
+        subtax_tsv    = '{analysis_dir}/{reference}/report/tsv/subtaxes.tsv'
     output:
-        tax_level_abs = '{analysis_dir}/{gene}/report/tsv/{tax_level, %s}.abs.tsv' % ('|'.join(tax_ranks[:-1])),
-        tax_level_rel = '{analysis_dir}/{gene}/report/tsv/{tax_level, %s}.rel.tsv' % ('|'.join(tax_ranks[:-1]))
+        tax_level_abs = '{analysis_dir}/{reference}/report/tsv/{tax_level, %s}.abs.tsv' % ('|'.join(tax_ranks[:-1])),
+        tax_level_rel = '{analysis_dir}/{reference}/report/tsv/{tax_level, %s}.rel.tsv' % ('|'.join(tax_ranks[:-1]))
     run:
         global tax_ranks
 
@@ -194,46 +187,3 @@ rule summarize_taxonomic_level:
         tax_counts.to_csv(output.tax_level_abs, sep='\t', index=None)
         tax_ratios.to_csv(output.tax_level_rel, sep='\t', index=None)
 
-
-rule summarize_barplot:
-    input:
-        tax_level = '{analysis_dir}/{gene}/report/tsv/{tax_level}.{count_type}.tsv'
-    output:
-        barplot = '{analysis_dir}/{gene}/report/figures/{tax_level, %s}.{count_type, rel|abs}.{format, %s}' % ('|'.join(tax_ranks[:-1]),
-                                                                                                               '|'.join(SUPPORTED_IMAGE_FORMATS))
-    run:
-        SUM_COL = 'rowsum'
-        MAX_TAXONS = 9
-
-        global tax_ranks
-
-        # Load taxonomic counts from desired tax_level, e.g. phylum
-        counts = pd.read_csv(input.tax_level, sep='\t')
-        sids = [col for col in counts.columns if col not in tax_ranks]
-        used_ranks = [col for col in counts.columns if col in tax_ranks]
-
-        if len(tax_ranks) == 1:
-            counts = counts[counts[tax_ranks[0]] != 'Unclassified']
-        else:
-            counts = counts[~pd.isnull(counts[used_ranks[-1]])]
-
-        # Select only limited number of the most abundant taxons
-        counts[SUM_COL] = counts.sum(axis=1)
-        counts.sort_values(by=SUM_COL, inplace=True)
-        tops, rest = counts.iloc[-MAX_TAXONS:], counts.iloc[:-MAX_TAXONS]
-
-        # Aggregate the rest of taxons into the one "Other" taxon
-        rest_sum = rest[sids + [SUM_COL]].sum()
-        rest_sum.set_value(wildcards.tax_level, 'Other')
-        plot_counts = tops.iloc[::-1].append(rest_sum, ignore_index=True)[[wildcards.tax_level] + sids].set_index(wildcards.tax_level)
-
-        # Plot the most abundant and "Other" taxons
-        sns.set(context='paper', font_scale=2, palette=sns.color_palette("hls", MAX_TAXONS+1))
-        sns.set_style('whitegrid')
-        plot_counts.T.plot(kind='bar', stacked=True, legend=False, figsize=(18, 12))
-        plt.legend(loc='upper center', bbox_to_anchor=(0.5,1.14), ncol=5)
-        plt.tight_layout(pad=4)
-        plt.grid()
-
-        # Store plot
-        plt.savefig(output.barplot)

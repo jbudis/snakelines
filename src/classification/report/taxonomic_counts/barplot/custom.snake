@@ -1,0 +1,59 @@
+include: config['snake_dir'] + '/classification/report/taxonomic_counts/count_table/custom.snake'
+
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# TODO this should be loaded directly from matplotlib
+SUPPORTED_IMAGE_FORMATS = ['png', 'svg', 'pdf', 'tif', 'tiff', 'eps']
+
+tax_ranks = ['kingdom', 'phylum', 'class', 'order', 'family',
+             'genus', 'species', 'subspecies', 'subsubspecies', 'variety', 'form']
+
+rule custom__visualise_taxonomic_counts_as_barplot:
+    '''
+    Generate barplot with proportions of reads per taxonomic unit. Several taxonomic levels,
+    such as genus, species... may be generated.
+    '''
+    input:
+        tax_level = '{analysis_dir}/{gene}/report/tsv/{tax_level}.{count_type}.tsv'
+    output:
+        barplot = '{analysis_dir}/{gene}/report/figures/{tax_level, %s}.{count_type, rel|abs}.{format, %s}' % ('|'.join(tax_ranks[:-1]),
+                                                                                                               '|'.join(SUPPORTED_IMAGE_FORMATS))
+    run:
+        SUM_COL = 'rowsum'
+        MAX_TAXONS = 9
+
+        global tax_ranks
+
+        # Load taxonomic counts from desired tax_level, e.g. phylum
+        counts = pd.read_csv(input.tax_level, sep='\t')
+        sids = [col for col in counts.columns if col not in tax_ranks]
+        used_ranks = [col for col in counts.columns if col in tax_ranks]
+
+        if len(tax_ranks) == 1:
+            counts = counts[counts[tax_ranks[0]] != 'Unclassified']
+        else:
+            counts = counts[~pd.isnull(counts[used_ranks[-1]])]
+
+        # Select only limited number of the most abundant taxons
+        counts[SUM_COL] = counts.sum(axis=1)
+        counts.sort_values(by=SUM_COL, inplace=True)
+        tops, rest = counts.iloc[-MAX_TAXONS:], counts.iloc[:-MAX_TAXONS]
+
+        # Aggregate the rest of taxons into the one "Other" taxon
+        rest_sum = rest[sids + [SUM_COL]].sum()
+        rest_sum.set_value(wildcards.tax_level, 'Other')
+        plot_counts = tops.iloc[::-1].append(rest_sum, ignore_index=True)[[wildcards.tax_level] + sids].set_index(wildcards.tax_level)
+
+        # Plot the most abundant and "Other" taxons
+        sns.set(context='paper', font_scale=2, palette=sns.color_palette("hls", MAX_TAXONS+1))
+        sns.set_style('whitegrid')
+        plot_counts.T.plot(kind='bar', stacked=True, legend=False, figsize=(18, 12))
+        plt.legend(loc='upper center', bbox_to_anchor=(0.5,1.14), ncol=5)
+        plt.tight_layout(pad=4)
+        plt.grid()
+
+        # Store plot
+        plt.savefig(output.barplot)

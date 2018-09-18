@@ -7,7 +7,7 @@ sample_pattern = config.get('sample_pattern', '.*')
 wildcards = glob_wildcards('reads/original/{sample, %s}_R1.fastq.gz' % sample_pattern)
 assert len(wildcards.sample) > 0, 'No samples in reads/original/ match configured pattern {}'.format(sample_pattern)
 
-
+# TODO this should be called SampleReferencePair
 class SampleReference:
     def __init__(self, sample, reference):
         self.sample = sample
@@ -18,7 +18,12 @@ class Pipeline:
 
     def __init__(self, samples, reference_patterns):
         self.samples = samples
+        self.references = list(reference_patterns.keys())
         self.sample_references = self.__infer_sample_references(reference_patterns)
+
+
+    def samples_for(self, reference):
+        return [sr.sample for sr in self.sample_references if sr.reference == reference]
 
     def __infer_sample_references(self, reference_patterns):
 
