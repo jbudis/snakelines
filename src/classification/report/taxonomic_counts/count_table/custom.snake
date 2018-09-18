@@ -28,10 +28,10 @@ rule custom__summarize_taxonomic_counts_into_tsv_table:
     output:
         summary_xlsx = '{analysis_dir}/{reference}/report/tsv/summary.xlsx',
         summary_tsv  = '{analysis_dir}/{reference}/report/tsv/summary.tsv',
-        subtax_xlsx  = '{analysis_dir}/{reference}/report/tsv/subtaxes.xlsx',
-        subtax_tsv   = '{analysis_dir}/{reference}/report/tsv/subtaxes.tsv',
-        normed_xlsx  = '{analysis_dir}/{reference}/report/tsv/subtaxes.norm.xlsx',
-        normed_tsv   = '{analysis_dir}/{reference}/report/tsv/subtaxes.norm.tsv'
+        subtax_xlsx  = '{analysis_dir}/{reference}/report/tsv/alltaxes.counts.xlsx',
+        subtax_tsv   = '{analysis_dir}/{reference}/report/tsv/alltaxes.counts.tsv',
+        normed_xlsx  = '{analysis_dir}/{reference}/report/tsv/alltaxes.ratios.xlsx',
+        normed_tsv   = '{analysis_dir}/{reference}/report/tsv/alltaxes.ratios.tsv'
     run:
         # Load stored taxonomic abundances from Emirge analysis step
 
@@ -152,10 +152,10 @@ rule custom__extract_taxonomic_level_from_taxonomic_table:
     Extract read counts for organisms at selected taxonomic level, such as genus, species.
     '''
     input:
-        subtax_tsv    = '{analysis_dir}/{reference}/report/tsv/subtaxes.tsv'
+        subtax_tsv    = '{analysis_dir}/{reference}/report/tsv/alltaxes.counts.tsv'
     output:
-        tax_level_abs = '{analysis_dir}/{reference}/report/tsv/{tax_level, %s}.abs.tsv' % ('|'.join(tax_ranks[:-1])),
-        tax_level_rel = '{analysis_dir}/{reference}/report/tsv/{tax_level, %s}.rel.tsv' % ('|'.join(tax_ranks[:-1]))
+        tax_level_abs = '{analysis_dir}/{reference}/report/tsv/{tax_level, %s}.counts.tsv' % ('|'.join(tax_ranks[:-1])),
+        tax_level_rel = '{analysis_dir}/{reference}/report/tsv/{tax_level, %s}.ratios.tsv' % ('|'.join(tax_ranks[:-1]))
     run:
         global tax_ranks
 

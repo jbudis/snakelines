@@ -9,8 +9,10 @@ include: srcdir('Snakefile.read_quality_report')
 include: srcdir('Snakefile.preprocess')
 
 # Which taxonomic levels should be extracted in separate tables
-count_table_tax_levels = \
+tax_levels_count_table = \
     extract_from_config(['classification', 'report', 'taxonomic_counts', 'count_table', 'tax_levels'], [])
+
+tax_levels_count_table.append('alltaxes')
 
 rule finalise__classify_reads_reference_based:
     """
@@ -27,10 +29,9 @@ rule finalise__classify_reads_reference_based:
                          reference=pipeline.references),
 
         # Summary tables with number and proportions of reads mapped to taxonomic units
-        count_tables = expand('classification/{reference}/report/tsv/subtaxes.tsv',
-                               reference=pipeline.references),
-        ratio_tables = expand('classification/{reference}/report/tsv/subtaxes.norm.tsv',
-                               reference=pipeline.references),
+        tables = expand('classification/{reference}/report/tsv/{tax_level}.{type}.tsv',
+                               reference=pipeline.references, tax_level=tax_levels_count_table,
+                               type=['counts', 'ratios']),
 
     output:
         # Interactive multi-level pie plots of taxonomic counts
@@ -38,10 +39,10 @@ rule finalise__classify_reads_reference_based:
                          report_dir=config['report_dir'], reference=pipeline.references),
 
         # Summary tables with number and proportions of reads mapped to taxonomic units
-        count_tables = expand('{report_dir}/{reference}/tsv/taxonomic_counts.tsv',
-                               report_dir=config['report_dir'], reference=pipeline.references),
-        ratio_tables = expand('{report_dir}/{reference}/tsv/taxonomic_ratios.tsv',
-                               report_dir=config['report_dir'], reference=pipeline.references)
+        tables = expand('{report_dir}/{reference}/tsv/{tax_level}.{type}.tsv',
+                         report_dir=config['report_dir'],
+                         reference=pipeline.references, tax_level=tax_levels_count_table,
+                         type=['counts', 'ratios'])
 
     run:
         copy_input_files_with_consistent_output_names(input, output)
