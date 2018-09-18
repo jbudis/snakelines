@@ -16,15 +16,12 @@ reads:
             headcrop: 20
             minlen: 35
 
-        deduplicated:
-            method: fastuniq
-            temporary: False
-
     report:
         quality_report:
             method: fastqc
             read_types:
-                - deduplicated
+                - original
+                - trimmed
 
 classification:
     read_based:
