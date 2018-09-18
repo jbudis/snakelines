@@ -4,6 +4,7 @@ threads: 10
 
 reads:
     report:
-        method: fastqc
-        read_types:
-            - original
+        quality_report:
+            method: fastqc
+            read_types:
+                - original

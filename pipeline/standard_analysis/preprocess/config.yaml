@@ -29,8 +29,9 @@ reads:
             reads: 20
 
     report:
-        method: fastqc
-        read_types:
-            - trimmed
-            - deduplicated
-            - subsampled
+        quality_report:
+            method: fastqc
+            read_types:
+                - trimmed
+                - deduplicated
+                - subsampled
