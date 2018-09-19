@@ -19,8 +19,8 @@ class Pipeline:
 
     def __init__(self, samples, reference_patterns):
         self.samples = samples
-        self.references = list(reference_patterns.keys())
         self.sample_references = self.__infer_sample_references(reference_patterns)
+        self.references = sorted(set([sr.reference for sr in self.sample_references]))
 
 
     def samples_for(self, reference):
