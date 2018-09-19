@@ -1,3 +1,5 @@
+# TODO common scripts should be separated in separate folder, not in src. E.g in ../control
+
 include: srcdir('find_configured_samples_and_references.snake')
 
 include: srcdir('configuration_values_retrieval.snake')
