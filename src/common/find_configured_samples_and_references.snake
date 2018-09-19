@@ -8,6 +8,7 @@ wildcards = glob_wildcards('reads/original/{sample, %s}_R1.fastq.gz' % sample_pa
 assert len(wildcards.sample) > 0, 'No samples in reads/original/ match configured pattern {}'.format(sample_pattern)
 
 # TODO this should be called SampleReferencePair
+# TODO we may change it to namedtuple
 class SampleReference:
     def __init__(self, sample, reference):
         self.sample = sample
