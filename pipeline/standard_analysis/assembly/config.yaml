@@ -28,8 +28,8 @@ reads:
             method: fastqc
             read_types:
                 - trimmed
+                - decontaminated
                 - deduplicated
-                - subsampled
 
 assembly:
     assembler:
