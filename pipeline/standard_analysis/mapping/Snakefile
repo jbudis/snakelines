@@ -8,39 +8,40 @@ include: config['snake_dir'] + '/common/preambule.snake'
 include: srcdir('Snakefile.read_quality_report')
 include: srcdir('Snakefile.preprocess')
 
+# Find in configuration map post-process types for which should be report generated
+map_types_with_quality_report = extract_from_config(['mapping', 'report', 'quality_report', 'map_types'], [])
+
+print(expand('mapping/{sr.reference}/{map_type}/stats-wgs/{sr.sample}.bam',
+                                  sr=pipeline.sample_references, map_type=pipeline.postprocessed_map_type))
+
+# TODO allow to change panels
+
 rule finalise__map_reads_to_reference:
     """
-    Pipeline filter and revise fastq files from the reads/original directory. All preprocess steps, such as trimming,
-    deduplication and filtering of contamination reads are defined in the configuration file, part 'preprocess'.
-    Preprocess steps are executed gradually, i.e. output reads of one step are input to the following step.
+    Pipeline maps preprocessed reads to the selected reference sequences. Mapped reads in bam files
+    are further processed using sorting, deduplication, realignment... Final mapping statistics and quality
+    reports are generated as well.
     """
     input:
         rules.finalise__quality_report.output,
         rules.finalise__preprocess_reads.output,
 
         # Mapped sorted reads in BAM file
-        alignments = expand('mapping/{sr.reference}/deduplicated/{sr.sample}.bam', sr=pipeline.sample_references)
+        alignments = expand('mapping/{sr.reference}/{map_type}/{sr.sample}.bam',
+                             sr=pipeline.sample_references, map_type=pipeline.postprocessed_map_type),
 
-
-'''
-        # Contig overlap graph
-        overlap_graphs = expand('assembly/{sample}/assembly_graph.svg', sample=pipeline.samples),
-
-        # Quality control metrics of assembled contigs
-        quality_reports = expand('assembly/{sample}/quality_report/report.pdf', sample=pipeline.samples),
+        # Mapping statistics retrieved from BAM file
+        quality_reports = expand('mapping/{sr.reference}/{map_type}/stats-wgs/{sr.sample}/report.pdf',
+                                  sr=pipeline.sample_references, map_type=pipeline.postprocessed_map_type),
 
     output:
-        # Contig overlap graph
-        overlap_graphs = expand('{report_dir}/assembly/{sample}/contigs.svg',
-                                 report_dir=config['report_dir'], sample=pipeline.samples),
+        # Mapping statistics retrieved from BAM file
+        quality_reports = expand('{report_dir}/{sr.reference}/samples/{sr.sample}/mapping_quality.pdf',
+                                  report_dir=config['report_dir'], sr=pipeline.sample_references),
 
-        # Quality control metrics of assembled contigs
-        quality_reports = expand('{report_dir}/assembly/{sample}/report.pdf',
-                                  report_dir=config['report_dir'], sample=pipeline.samples),
 
     run:
         copy_input_files_with_consistent_output_names(input, output)
-'''
 
 # Target rule would be executed locally, not on cluster
 localrules: finalise__map_reads_to_reference

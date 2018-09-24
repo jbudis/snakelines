@@ -1,0 +1,73 @@
+include: config['snake_dir'] + '/mapping/index/samtools.snake'
+
+import pandas as pd
+import os
+
+# TODO refactor
+# TODO We can include multi-bam QC as well
+
+
+rule qualimap__mapping_quality_report_accross_reference:
+    '''
+    Generate summary statistics for mapped reads stored in BAM files. Statistics are calculated across
+    whole reference genome.
+    '''
+    input:
+        bam    = '{bamdir}/{sample}.bam',
+        bai    = '{bamdir}/{sample}.bam.bai'
+    output:
+        html   = '{bamdir}/stats-wgs/{sample}/qualimapReport.html',
+        pdf    = '{bamdir}/stats-wgs/{sample}/report.pdf',
+        text   = '{bamdir}/stats-wgs/{sample}/genome_results.txt'
+    params:
+        outdir = '{bamdir}/stats-wgs/{sample}'
+    threads:
+        int(config['threads'])
+    log:
+        out    = '{bamdir}/stats-wgs/{sample}/log/analysis.log',
+        err    = '{bamdir}/stats-wgs/{sample}/log/analysis.err',
+    shell:
+        '''
+        qualimap bamqc \
+            --java-mem-size=100G \
+            -bam {input.bam} \
+            --paint-chromosome-limits \
+            -outdir {params.outdir} \
+            -outformat PDF:HTML \
+            -nt {threads} \
+        >  {log.out} \
+        2> {log.err}
+        '''
+
+rule qualimap__mapping_quality_report_accross_panel:
+    '''
+    Generate summary statistics for mapped reads stored in BAM files. Statistics are calculated across
+    genomic regions specified in the BED file.
+    '''
+    input:
+        bam    = '{mapper}/{reference}/{sample}.bam',
+        bai    = '{mapper}/{reference}/{sample}.bam.bai',
+        bed    = 'reference/{reference}/annotation/{panel}/regions.bed'
+    output:
+        html   = '{mapper}/{reference}/stats-{panel}/{sample}/qualimapReport.html',
+        pdf    = '{mapper}/{reference}/stats-{panel}/{sample}/report.pdf',
+        text   = '{mapper}/{reference}/stats-{panel}/{sample}/genome_results.txt'
+    params:
+        outdir = '{mapper}/{reference}/stats-{panel}/{sample}'
+    threads:
+        int(config['threads'])
+    log:
+        out    = '{mapper}/{reference}/stats-{panel}/{sample}/analysis.log',
+        err    = '{mapper}/{reference}/stats-{panel}/{sample}/analysis.err',
+    shell:
+        '''
+        qualimap bamqc \
+            --java-mem-size=100G \
+            -bam {input.bam} \
+            --feature-file {input.bed} \
+            -outdir {params.outdir} \
+            -outformat PDF:HTML \
+            -nt {threads} \
+        >  {log.out} \
+        2> {log.err}
+        '''

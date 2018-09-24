@@ -2,7 +2,10 @@ sample_pattern: .*
 reference:
     mhv: example
 
-report_dir: report/01-assembly
+panel:
+    mhv: wgs
+
+report_dir: report/public/01-mapping
 threads: 10
 
 reads:
@@ -51,6 +54,12 @@ mapping:
             temporary: False
         deduplicated:
             method: picard
+
+    report:
+        quality_report:
+            method: qualimap
+            map_types:
+                - deduplicated
 
 #mapping:
 #    read_type: trimmed              # Preprocessed reads, that would be mapped against reference
