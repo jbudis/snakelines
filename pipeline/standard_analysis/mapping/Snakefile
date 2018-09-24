@@ -15,6 +15,7 @@ map_types_with_quality_report = extract_from_config(['mapping', 'report', 'quali
 multisample_references = [reference for reference in pipeline.references if len(pipeline.samples_for(reference)) > 1]
 
 # TODO allow to change panels
+# TODO this pipeline could produce also barplots and krona plots, when reference contains .tax files
 
 rule finalise__map_reads_to_reference:
     """

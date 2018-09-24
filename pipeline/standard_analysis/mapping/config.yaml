@@ -59,25 +59,3 @@ mapping:
             method: qualimap
             map_types:
                 - deduplicated
-
-#mapping:
-#    read_type: trimmed              # Preprocessed reads, that would be mapped against reference
-#    reference: dobrava              # Reference sequences in Fasta format, have to be localised at references/{reference}/{reference}.fa
-#    params: --very-sensitive        # Additional parameters to Bowtie2 executable
-#    only_concordant: False          # Keep only concordantly mapped reads
-#
-#report:                             # Summary reports of mapped counts
-#    krona: True                     # Krona multi-pie charts, require tax file references/{reference}/{reference}.tax
-#
-#    barplot:                        # Barplot summary of the most common taxonomies
-#        tax_levels:                 # Taxonomic levels to aggregate mapped reads
-#            - kingdom
-#            - phylum
-#            - order
-#            - family
-#            - genus
-#            - species
-#
-#        count_types:
-#            - abs                   # Generate barplot from the number mapped counts
-#            - rel                   # Generate barplot from the proportions of mapped counts (for each sample this would sum to 1)
