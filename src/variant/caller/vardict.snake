@@ -1,0 +1,121 @@
+include: config['snake_dir'] + '/mapping/index/samtools.snake'
+include: config['snake_dir'] + '/reference/index/faidx.snake'
+
+rule vardict__create_wgs_bed_file:
+    '''
+    Creates bed file with whole genomic regions in reference fasta file. Simple way to unite WGS and panel analysis.
+    '''
+    input:
+        fai = 'reference/{reference}/{reference}.fa.fai'
+    output:
+        bed = 'reference/{reference}/annotation/wgs/regions.bed'
+    shell:
+        '''
+        awk \
+            '{{print $1, 1, $2, $1}}' \
+            {input.fai} \
+        | sed \
+            's/ /\t/g' \
+        > {output.bed}
+        '''
+
+rule vardict__prepare_bed_file:
+    '''
+    Vardict throws error for bed files with more than 4 columns, rule therefore cut other columns
+    '''
+    input:
+        bed = 'reference/{reference}/annotation/{panel}/regions.bed',
+    output:
+        bed = 'reference/{reference}/annotation/{panel}/regions.vardict.bed',
+    shell:
+        '''
+        cut -f 1-4 {input.bed} > {output.bed}
+        '''
+
+rule vardict__call_germline_variants:
+    '''
+    Identify small variation (SNP and indels) from the mapped reads.
+    '''
+    input:
+        bam      = '{{mapper}}/{{reference}}/{map_type}/{{sample}}.bam'.format(map_type=pipeline.postprocessed_map_type),
+        bai      = '{{mapper}}/{{reference}}/{map_type}/{{sample}}.bam.bai'.format(map_type=pipeline.postprocessed_map_type),
+        bed      = 'reference/{reference}/annotation/{panel}/regions.vardict.bed',
+        reffasta = 'reference/{reference}/{reference}.fa',
+        reffaidx = 'reference/{reference}/{reference}.fa.fai'
+    output:
+        vdc      = temp('{{mapper}}/{{reference}}/{map_type}/vardict-{{panel}}/{{sample}}.vdc'.format(map_type=pipeline.postprocessed_map_type))
+    log:
+        err      = '{{mapper}}/{{reference}}/{map_type}/vardict-{{panel}}/log/{{sample}}.vdc.err'.format(map_type=pipeline.postprocessed_map_type)
+    params:
+        min_nonref_allele_freq = tool_config.get('hard_filter', {}).get('min_nonref_allele_freq', 0.05),
+        min_alternate_count    = tool_config.get('hard_filter', {}).get('min_alternate_count', 2),
+        min_map_quality        = tool_config.get('hard_filter', {}).get('min_map_quality', 15)
+    threads:
+        int(config['threads'])
+    shell:
+        '''
+        vardictjava \
+            -G {input.reffasta} \
+            -b {input.bam} \
+            -f {params.min_nonref_allele_freq} \
+            -r {params.min_alternate_count} \
+            -Q {params.min_map_quality} \
+            -th {threads} \
+            -c 1 \
+            -S 2 \
+            -E 3 \
+            -g 4 \
+            {input.bed} \
+        >  {output.vdc} \
+        2> {log.err}
+        '''
+
+# TODO hardcoded path
+rule vardict__test_strand_bias:
+    '''
+    Perform statistical testing of strand bias.
+    '''
+    input:
+        vdc = '{path}/{sample}.vdc'
+    output:
+        tsb = temp('{path}/{sample}.tsb')
+    log:
+        err = '{path}/log/{sample}.test_strand_bias.err'
+    shell:
+        '''
+        BIAS_SCRIPT=/usr/local/tools/vardict-1.5.1/VarDict/teststrandbias.R
+
+        cat {input.vdc} \
+        | $BIAS_SCRIPT \
+        >  {output.tsb} \
+        2> {log.err}
+        '''
+
+
+# TODO hardcoded path
+rule vardict__tsb_to_vcf:
+    '''
+    Convert intermediate files of Vardict to VCF format
+    '''
+    input:
+        tsb = '{path}/{sample}.tsb'
+    output:
+        vcf = '{path}/{sample}.vcf'
+    params:
+        min_mean_base_quality  = tool_config.get('soft_filter', {}).get('min_mean_base_quality', 20),
+        min_map_quality        = tool_config.get('soft_filter', {}).get('min_map_quality', 20),
+        read_depth             = tool_config.get('soft_filter', {}).get('read_depth', 10),
+        min_nonref_allele_freq = tool_config.get('soft_filter', {}).get('min_nonref_allele_freq', 0.2)
+    shell:
+        '''
+        /usr/local/tools/vardict-1.5.1/VarDict/var2vcf_valid.pl \
+            -S \
+            -A \
+            -q {params.min_mean_base_quality} \
+            -Q {params.min_map_quality} \
+            -d {params.read_depth} \
+            -f {params.min_nonref_allele_freq}  \
+            -N {wildcards.sample} \
+            {input} \
+        > {output}
+        '''

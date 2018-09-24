@@ -1,0 +1,29 @@
+# Load configuration file
+configfile: srcdir('config.yaml')
+
+# Run startup scripts that automatically loads imports from src/ and load helper methods
+include: config['snake_dir'] + '/common/preambule.snake'
+
+# Import sub-workflows
+include: srcdir('Snakefile.read_quality_report')
+include: srcdir('Snakefile.preprocess')
+include: srcdir('Snakefile.mapping')
+
+# TODO add panel
+rule finalise__call_germline_variants:
+    """
+    Pipeline identify SNPs and small insertions/deletions from mapped reads.
+    """
+    input:
+        rules.finalise__quality_report.output,
+        rules.finalise__preprocess_reads.output,
+        rules.finalise__map_reads_to_reference.output,
+
+        variants = expand('mapping/{sr.reference}/{map_type}/vardict-wgs/{sr.sample}.vcf',
+                           sr=pipeline.sample_references, map_type=pipeline.postprocessed_map_type),
+
+    run:
+        copy_input_files_with_consistent_output_names(input, output)
+
+# Target rule would be executed locally, not on cluster
+localrules: finalise__call_germline_variants

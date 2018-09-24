@@ -1,0 +1,74 @@
+sample_pattern: .*
+reference:
+    mhv: example
+
+panel:
+    mhv: wgs
+
+report_dir: report/public/01-mapping
+threads: 10
+
+reads:
+    preprocess:
+        trimmed:
+            method: trimmomatic
+            temporary: False
+            crop: 500
+            quality: 20
+            headcrop: 20
+            minlen: 35
+
+        decontaminated:
+            method: bowtie2
+            temporary: False
+            references:
+                - mhv
+            keep: True
+
+        deduplicated:
+            method: fastuniq
+            temporary: False
+
+    report:
+        quality_report:
+            method: fastqc
+            read_types:
+                - trimmed
+                - deduplicated
+
+mapping:
+    mapper:
+        method: bowtie2
+        params: --very-sensitive
+        only_concordant: False
+
+    index:
+        method: samtools
+
+    postprocess:
+        original:
+            temporary: True
+        sorted:
+            method: samtools
+            temporary: False
+        deduplicated:
+            method: picard
+
+    report:
+        quality_report:
+            method: qualimap
+            map_types:
+                - deduplicated
+
+variant:
+    caller:
+        method: vardict
+        hard_filter:                        # Variants that do not pass any of these filters would NOT be present in the VCF file
+            min_nonref_allele_freq: 0.05    # Minimal proportion of reads with alternative allele against all observations
+            min_alternate_count: 2          # Minimal number of reads with alternative allele
+            min_map_quality: 15             # Minimal average mapping quality of reads with alternative allele
+        soft_filter:                        # Failing these filters would be indicated in the FILTER field of the VCF file
+            min_map_quality: 20             # Minimal average mapping quality of reads with alternative allele
+            read_depth: 10                  # Minimal number of reads with alternative allele
+            min_nonref_allele_freq: 0.20    # Minimal proportion of reads with alternative allele against all observations
+            min_mean_base_quality: 20       # Minimal average base quality of bases that support alternative allele
