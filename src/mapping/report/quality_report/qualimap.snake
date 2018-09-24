@@ -16,16 +16,16 @@ rule qualimap__mapping_quality_report_accross_reference:
         bam    = '{bamdir}/{sample}.bam',
         bai    = '{bamdir}/{sample}.bam.bai'
     output:
-        html   = '{bamdir}/stats-wgs/{sample}/qualimapReport.html',
-        pdf    = '{bamdir}/stats-wgs/{sample}/report.pdf',
-        text   = '{bamdir}/stats-wgs/{sample}/genome_results.txt'
+        html   = '{bamdir}/stats-wgs/samples/{sample}/qualimapReport.html',
+        pdf    = '{bamdir}/stats-wgs/samples/{sample}/report.pdf',
+        text   = '{bamdir}/stats-wgs/samples/{sample}/genome_results.txt'
     params:
-        outdir = '{bamdir}/stats-wgs/{sample}'
+        outdir = '{bamdir}/stats-wgs/samples/{sample}'
     threads:
         int(config['threads'])
     log:
-        out    = '{bamdir}/stats-wgs/{sample}/log/analysis.log',
-        err    = '{bamdir}/stats-wgs/{sample}/log/analysis.err',
+        out    = '{bamdir}/stats-wgs/samples/{sample}/log/analysis.log',
+        err    = '{bamdir}/stats-wgs/samples/{sample}/log/analysis.err',
     shell:
         '''
         qualimap bamqc \
@@ -39,26 +39,27 @@ rule qualimap__mapping_quality_report_accross_reference:
         2> {log.err}
         '''
 
+# TODO validate if this rule is working
 rule qualimap__mapping_quality_report_accross_panel:
     '''
     Generate summary statistics for mapped reads stored in BAM files. Statistics are calculated across
     genomic regions specified in the BED file.
     '''
     input:
-        bam    = '{mapper}/{reference}/{sample}.bam',
-        bai    = '{mapper}/{reference}/{sample}.bam.bai',
+        bam    = '{mapper}/{reference}/{map_type}/{sample}.bam',
+        bai    = '{mapper}/{reference}/{map_type}/{sample}.bam.bai',
         bed    = 'reference/{reference}/annotation/{panel}/regions.bed'
     output:
-        html   = '{mapper}/{reference}/stats-{panel}/{sample}/qualimapReport.html',
-        pdf    = '{mapper}/{reference}/stats-{panel}/{sample}/report.pdf',
-        text   = '{mapper}/{reference}/stats-{panel}/{sample}/genome_results.txt'
+        html   = '{mapper}/{reference}/{map_type}/stats-{panel}/samples/{sample}/qualimapReport.html',
+        pdf    = '{mapper}/{reference}/{map_type}/stats-{panel}/samples/{sample}/report.pdf',
+        text   = '{mapper}/{reference}/{map_type}/stats-{panel}/samples/{sample}/genome_results.txt'
     params:
-        outdir = '{mapper}/{reference}/stats-{panel}/{sample}'
+        outdir = '{mapper}/{reference}/{map_type}/stats-{panel}/samples/{sample}'
     threads:
         int(config['threads'])
     log:
-        out    = '{mapper}/{reference}/stats-{panel}/{sample}/analysis.log',
-        err    = '{mapper}/{reference}/stats-{panel}/{sample}/analysis.err',
+        out    = '{mapper}/{reference}/{map_type}/stats-{panel}/samples/{sample}/log/analysis.log',
+        err    = '{mapper}/{reference}/{map_type}/stats-{panel}/samples/{sample}/log/analysis.err',
     shell:
         '''
         qualimap bamqc \
@@ -70,4 +71,47 @@ rule qualimap__mapping_quality_report_accross_panel:
             -nt {threads} \
         >  {log.out} \
         2> {log.err}
+        '''
+
+# TODO there could be a description file that would split bam files into categories
+def qualimap_pdf_reports(wildcards):
+    '''
+    Pdf qualimap report files for all samples of a reference from the path
+    '''
+    return expand('{mapper}/{reference}/{map_type}/stats-{panel}/samples/{sample}/report.pdf',
+                   mapper=wildcards.mapper, reference=wildcards.reference,
+                   map_type=wildcards.map_type, panel=wildcards.panel,
+                   sample=pipeline.samples_for(wildcards.reference))
+
+rule qualimap__summarize_quality_reports:
+    '''
+    Aggregate results from individual bamqc results to a single summary report
+    '''
+    input:
+        reports     = qualimap_pdf_reports
+    output:
+        html        = '{mapper}/{reference}/{map_type}/stats-{panel}/summary/multisampleBamQcReport.html',
+        pdf         = '{mapper}/{reference}/{map_type}/stats-{panel}/summary/report.pdf',
+    params:
+        sample_list = '{mapper}/{reference}/{map_type}/stats-{panel}/summary/samples.list',
+        out_dir     = '{mapper}/{reference}/{map_type}/stats-{panel}/summary'
+    log:
+        out         = '{mapper}/{reference}/{map_type}/stats-{panel}/summary/log/analysis.log',
+        err         = '{mapper}/{reference}/{map_type}/stats-{panel}/summary/log/analysis.err',
+    shell:
+        '''
+        # Prepare sample list file for the qualimap
+        ## Column1: Sample name
+        ## Column2: Path to precomputed bamqc report
+        for REPORT in {input.reports}; do
+            REPORT_DIR=`dirname $REPORT`
+            SAMPLE=`basename $REPORT_DIR`
+            echo -e "$SAMPLE\t$REPORT_DIR" >> {params.sample_list}
+        done
+
+        # Run qualimap on samples specified in sample list
+        qualimap multi-bamqc \
+            -d {params.sample_list} \
+            -outdir {params.out_dir} \
+            -outformat PDF:HTML
         '''

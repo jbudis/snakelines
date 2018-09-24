@@ -11,8 +11,8 @@ include: srcdir('Snakefile.preprocess')
 # Find in configuration map post-process types for which should be report generated
 map_types_with_quality_report = extract_from_config(['mapping', 'report', 'quality_report', 'map_types'], [])
 
-print(expand('mapping/{sr.reference}/{map_type}/stats-wgs/{sr.sample}.bam',
-                                  sr=pipeline.sample_references, map_type=pipeline.postprocessed_map_type))
+# References with at least 2 samples
+multisample_references = [reference for reference in pipeline.references if len(pipeline.samples_for(reference)) > 1]
 
 # TODO allow to change panels
 
@@ -31,14 +31,21 @@ rule finalise__map_reads_to_reference:
                              sr=pipeline.sample_references, map_type=pipeline.postprocessed_map_type),
 
         # Mapping statistics retrieved from BAM file
-        quality_reports = expand('mapping/{sr.reference}/{map_type}/stats-wgs/{sr.sample}/report.pdf',
+        quality_reports = expand('mapping/{sr.reference}/{map_type}/stats-wgs/samples/{sr.sample}/report.pdf',
                                   sr=pipeline.sample_references, map_type=pipeline.postprocessed_map_type),
+
+        # Aggregated mapping statistics
+        summary_report = expand('mapping/{reference}/{map_type}/stats-wgs/summary/report.pdf',
+                                 reference=multisample_references, map_type=pipeline.postprocessed_map_type),
 
     output:
         # Mapping statistics retrieved from BAM file
         quality_reports = expand('{report_dir}/{sr.reference}/samples/{sr.sample}/mapping_quality.pdf',
                                   report_dir=config['report_dir'], sr=pipeline.sample_references),
 
+        # Aggregated mapping statistics
+        summary_report = expand('{report_dir}/{reference}/summary/mapping_quality.pdf',
+                                 report_dir=config['report_dir'], reference=multisample_references),
 
     run:
         copy_input_files_with_consistent_output_names(input, output)

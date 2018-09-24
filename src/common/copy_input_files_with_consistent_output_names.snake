@@ -1,5 +1,6 @@
 import shutil
 
+# TODO this should be renamed to matching
 def copy_input_files_with_consistent_output_names(input, output):
     '''
     Compare names of the inputs and outputs of the rule. All items with the same name in inputs and outputs are copied,
