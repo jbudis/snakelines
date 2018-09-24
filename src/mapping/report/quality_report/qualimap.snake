@@ -115,3 +115,5 @@ rule qualimap__summarize_quality_reports:
             -outdir {params.out_dir} \
             -outformat PDF:HTML
         '''
+
+ruleorder: qualimap__mapping_quality_report_accross_reference > qualimap__mapping_quality_report_accross_panel
