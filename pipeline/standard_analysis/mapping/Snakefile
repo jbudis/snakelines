@@ -31,6 +31,10 @@ rule finalise__map_reads_to_reference:
         alignments = expand('mapping/{sr.reference}/{map_type}/{sr.sample}.bam',
                              sr=pipeline.sample_references, map_type=pipeline.postprocessed_map_type),
 
+        # BAM file indices
+        bam_indices = expand('mapping/{sr.reference}/{map_type}/{sr.sample}.bam.bai',
+                              sr=pipeline.sample_references, map_type=pipeline.postprocessed_map_type),
+
         # Mapping statistics retrieved from BAM file
         quality_reports = expand('mapping/{sr.reference}/{map_type}/stats-wgs/samples/{sr.sample}/report.pdf',
                                   sr=pipeline.sample_references, map_type=pipeline.postprocessed_map_type),
