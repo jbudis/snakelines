@@ -1,6 +1,9 @@
 import re
 
 # TODO documentation
+# TODO check if references exists
+# TODO check if panels exists
+
 
 # Filter samples according to the user configuration
 sample_pattern = config.get('sample_pattern', '.*')
