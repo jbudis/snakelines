@@ -3,8 +3,8 @@ configfile: srcdir('config.yaml')
 fasta_dir = config['blast']['fasta_dir']
 pipeline = glob_wildcards('%s/{sample, %s}.fa' % (fasta_dir, config['sample_pattern']))
 
-include: config['snake_dir'] + '/classification/classifiers/blast.snake'
-include: config['snake_dir'] + '/classification/report/fasta_summary.snake'
+include: config['snakelines_dir'] + '/rules/classification/classifiers/blast.snake'
+include: config['snakelines_dir'] + '/rules/classification/report/fasta_summary.snake'
 
 rule process:
     input:

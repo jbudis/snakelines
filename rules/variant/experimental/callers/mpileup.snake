@@ -1,4 +1,4 @@
-include: config['snake_dir'] + '/reference/indices/faidx.snake'
+include: config['snakelines_dir'] + '/rules/reference/indices/faidx.snake'
 
 import vcf
 

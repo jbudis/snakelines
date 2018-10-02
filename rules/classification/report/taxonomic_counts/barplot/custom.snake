@@ -1,4 +1,4 @@
-include: config['snake_dir'] + '/classification/report/taxonomic_counts/count_table/custom.snake'
+include: config['snakelines_dir'] + '/rules/classification/report/taxonomic_counts/count_table/custom.snake'
 
 import pandas as pd
 import numpy as np

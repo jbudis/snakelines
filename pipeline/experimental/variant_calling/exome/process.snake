@@ -2,15 +2,15 @@ configfile: srcdir('config.yaml')
 
 pipeline = glob_wildcards('reads/original/{sample,%s}_R1.fastq.gz' % config['sample_pattern'])
 
-include: config['snake_dir'] + '/preprocess/report/fastqc.snake'
-include: config['snake_dir'] + '/preprocess/trim_reads/trimmomatic.snake'
-include: config['snake_dir'] + '/mapping/mappers/bowtie2.snake'
-include: config['snake_dir'] + '/mapping/postprocess/bam_index.snake'
-include: config['snake_dir'] + '/mapping/postprocess/read_group/custom.snake'
-include: config['snake_dir'] + '/mapping/postprocess/deduplication/picard.snake'
-include: config['snake_dir'] + '/mapping/postprocess/realignment/gatk.snake'
-include: config['snake_dir'] + '/mapping/report/qualimap.snake'
-include: config['snake_dir'] + '/variant/callers/vardict.snake'
+include: config['snakelines_dir'] + '/rules/preprocess/report/fastqc.snake'
+include: config['snakelines_dir'] + '/rules/preprocess/trim_reads/trimmomatic.snake'
+include: config['snakelines_dir'] + '/rules/mapping/mappers/bowtie2.snake'
+include: config['snakelines_dir'] + '/rules/mapping/postprocess/bam_index.snake'
+include: config['snakelines_dir'] + '/rules/mapping/postprocess/read_group/custom.snake'
+include: config['snakelines_dir'] + '/rules/mapping/postprocess/deduplication/picard.snake'
+include: config['snakelines_dir'] + '/rules/mapping/postprocess/realignment/gatk.snake'
+include: config['snakelines_dir'] + '/rules/mapping/report/qualimap.snake'
+include: config['snakelines_dir'] + '/rules/variant/callers/vardict.snake'
 
 reference = config['mapping']['reference']
 panel = config['variant']['panel']

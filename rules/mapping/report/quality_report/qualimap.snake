@@ -1,4 +1,4 @@
-include: config['snake_dir'] + '/mapping/index/samtools.snake'
+include: config['snakelines_dir'] + '/rules/mapping/index/samtools.snake'
 
 import pandas as pd
 import os

@@ -4,19 +4,19 @@ pipeline = glob_wildcards('reads/original/{sample,%s}_R1.fastq.gz' % config['sam
 
 import shutil
 
-include: config['snake_dir'] + '/preprocess/trim_reads/trimmomatic.snake'
-include: config['snake_dir'] + '/preprocess/join_reads/pear.snake'
-include: config['snake_dir'] + '/assembly/assemblers/matam.snake'
-include: config['snake_dir'] + '/alignment/aligners/mafft.snake'
-include: config['snake_dir'] + '/alignment/visualisation/msaviewer.snake'
-include: config['snake_dir'] + '/alignment/phylogeny/iqtree.snake'
-include: config['snake_dir'] + '/alignment/visualisation/phylogenetic_tree.snake'
-include: config['snake_dir'] + '/metagenomics/diversity/alpha.snake'
-include: config['snake_dir'] + '/metagenomics/diversity/beta.snake'
-include: config['snake_dir'] + '/metagenomics/clustering/cdhit.snake'
-include: config['snake_dir'] + '/metagenomics/report/krona.snake'
-include: config['snake_dir'] + '/metagenomics/report/tax_counts.snake'
-include: config['snake_dir'] + '/classification/classifiers/blast.snake'
+include: config['snakelines_dir'] + '/rules/preprocess/trim_reads/trimmomatic.snake'
+include: config['snakelines_dir'] + '/rules/preprocess/join_reads/pear.snake'
+include: config['snakelines_dir'] + '/rules/assembly/assemblers/matam.snake'
+include: config['snakelines_dir'] + '/rules/alignment/aligners/mafft.snake'
+include: config['snakelines_dir'] + '/rules/alignment/visualisation/msaviewer.snake'
+include: config['snakelines_dir'] + '/rules/alignment/phylogeny/iqtree.snake'
+include: config['snakelines_dir'] + '/rules/alignment/visualisation/phylogenetic_tree.snake'
+include: config['snakelines_dir'] + '/rules/metagenomics/diversity/alpha.snake'
+include: config['snakelines_dir'] + '/rules/metagenomics/diversity/beta.snake'
+include: config['snakelines_dir'] + '/rules/metagenomics/clustering/cdhit.snake'
+include: config['snakelines_dir'] + '/rules/metagenomics/report/krona.snake'
+include: config['snakelines_dir'] + '/rules/metagenomics/report/tax_counts.snake'
+include: config['snakelines_dir'] + '/rules/classification/classifiers/blast.snake'
 
 report_dir = 'report/{}'.format(config['report_dir'])
 reference = list(config['gene_pattern'].keys())

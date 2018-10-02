@@ -1,6 +1,6 @@
-include: config['snake_dir'] + '/mapping/postprocess/bam_index.snake'
-include: config['snake_dir'] + '/variant/callers/mpileup.snake'
-include: config['snake_dir'] + '/variant/postprocess/index.snake'
+include: config['snakelines_dir'] + '/rules/mapping/postprocess/bam_index.snake'
+include: config['snakelines_dir'] + '/rules/variant/callers/mpileup.snake'
+include: config['snakelines_dir'] + '/rules/variant/postprocess/index.snake'
 
 map_type = config['variant']['map_type']
 map_subdir = '%s/' % map_type if map_type else ''

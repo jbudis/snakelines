@@ -1,4 +1,4 @@
-include: config['snake_dir'] + '/preprocess/conversion/unzip.snake'
+include: config['snakelines_dir'] + '/rules/preprocess/conversion/unzip.snake'
 
 rule pear__join_read_pairs:
     '''

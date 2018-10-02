@@ -2,14 +2,14 @@ configfile: srcdir('config.yaml')
 
 pipeline = glob_wildcards('reads/original/{sample,%s}_R1.fastq.gz' % config['sample_pattern'])
 
-include: config['snake_dir'] + '/preprocess/report/fastqc.snake'
-include: config['snake_dir'] + '/preprocess/trim_reads/trimmomatic.snake'
-include: config['snake_dir'] + '/preprocess/deduplication/fastuniq.snake'
-include: config['snake_dir'] + '/assembly/assemblers/trinity.snake'
-include: config['snake_dir'] + '/classification/classifiers/blast.snake'
-include: config['snake_dir'] + '/classification/report/fasta_summary.snake'
-include: config['snake_dir'] + '/transcript/quantifiers/kallisto.snake'
-include: config['snake_dir'] + '/transcript/report/abundances.snake'
+include: config['snakelines_dir'] + '/rules/preprocess/report/fastqc.snake'
+include: config['snakelines_dir'] + '/rules/preprocess/trim_reads/trimmomatic.snake'
+include: config['snakelines_dir'] + '/rules/preprocess/deduplication/fastuniq.snake'
+include: config['snakelines_dir'] + '/rules/assembly/assemblers/trinity.snake'
+include: config['snakelines_dir'] + '/rules/classification/classifiers/blast.snake'
+include: config['snakelines_dir'] + '/rules/classification/report/fasta_summary.snake'
+include: config['snakelines_dir'] + '/rules/transcript/quantifiers/kallisto.snake'
+include: config['snakelines_dir'] + '/rules/transcript/report/abundances.snake'
 
 design = config['trinity']['design']
 

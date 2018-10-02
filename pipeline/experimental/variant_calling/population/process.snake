@@ -2,13 +2,13 @@ configfile: srcdir('config.yaml')
 
 pipeline = glob_wildcards('reads/original/{sample,%s}_R1.fastq.gz' % config['sample_pattern'])
 
-include: config['snake_dir'] + '/preprocess/report/fastqc.snake'
-include: config['snake_dir'] + '/preprocess/trim_reads/trimmomatic.snake'
-include: config['snake_dir'] + '/preprocess/deduplication/fastuniq.snake'
-include: config['snake_dir'] + '/mapping/mappers/bowtie2.snake'
-include: config['snake_dir'] + '/mapping/postprocess/bam_index.snake'
-include: config['snake_dir'] + '/mapping/report/qualimap.snake'
-include: config['snake_dir'] + '/variant/callers/freebayes.snake'
+include: config['snakelines_dir'] + '/rules/preprocess/report/fastqc.snake'
+include: config['snakelines_dir'] + '/rules/preprocess/trim_reads/trimmomatic.snake'
+include: config['snakelines_dir'] + '/rules/preprocess/deduplication/fastuniq.snake'
+include: config['snakelines_dir'] + '/rules/mapping/mappers/bowtie2.snake'
+include: config['snakelines_dir'] + '/rules/mapping/postprocess/bam_index.snake'
+include: config['snakelines_dir'] + '/rules/mapping/report/qualimap.snake'
+include: config['snakelines_dir'] + '/rules/variant/callers/freebayes.snake'
 
 reference = config['mapping']['reference']
 

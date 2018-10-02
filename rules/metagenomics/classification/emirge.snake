@@ -2,8 +2,8 @@ shell.executable('bash')
 
 import re
 
-include: config['snake_dir'] + '/preprocess/conversion/unzip.snake'
-include: config['snake_dir'] + '/mapping/mappers/bowtie.snake'
+include: config['snakelines_dir'] + '/rules/preprocess/conversion/unzip.snake'
+include: config['snakelines_dir'] + '/rules/mapping/mappers/bowtie.snake'
 
 rule emirge_prepare_reference:
     input:

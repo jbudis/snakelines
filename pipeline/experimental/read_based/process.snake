@@ -3,11 +3,11 @@ configfile: srcdir('config.yaml')
 
 pipeline = glob_wildcards('reads/original/{sample, %s}_R1.fastq.gz' % config['sample_pattern'])
 
-include: config['snake_dir'] + '/preprocess/trim_reads/trimmomatic.snake'
-include: config['snake_dir'] + '/preprocess/report/fastqc.snake'
-include: config['snake_dir'] + '/classification/viral/fast_virome_explorer.snake'
-include: config['snake_dir'] + '/metagenomics/report/krona.snake'
-include: config['snake_dir'] + '/metagenomics/report/tsv_summary.snake'
+include: config['snakelines_dir'] + '/rules/preprocess/trim_reads/trimmomatic.snake'
+include: config['snakelines_dir'] + '/rules/preprocess/report/fastqc.snake'
+include: config['snakelines_dir'] + '/rules/classification/viral/fast_virome_explorer.snake'
+include: config['snakelines_dir'] + '/rules/metagenomics/report/krona.snake'
+include: config['snakelines_dir'] + '/rules/metagenomics/report/tsv_summary.snake'
 
 reference = config['fast_virome_explorer']['reference']
 tax_levels = ['phylum', 'class', 'order', 'family', 'genus', 'species']

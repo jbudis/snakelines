@@ -2,10 +2,10 @@ import os
 
 configfile: srcdir('config.yaml')
 
-include: config['snake_dir'] + '/alignment/aligners/mafft.snake'
-include: config['snake_dir'] + '/alignment/phylogeny/iqtree.snake'
-include: config['snake_dir'] + '/alignment/visualisation/msaviewer.snake'
-include: config['snake_dir'] + '/alignment/visualisation/phylogenetic_tree.snake'
+include: config['snakelines_dir'] + '/rules/alignment/aligners/mafft.snake'
+include: config['snakelines_dir'] + '/rules/alignment/phylogeny/iqtree.snake'
+include: config['snakelines_dir'] + '/rules/alignment/visualisation/msaviewer.snake'
+include: config['snakelines_dir'] + '/rules/alignment/visualisation/phylogenetic_tree.snake'
 
 report_dir = 'report/{}'.format(config['report_dir'])
 

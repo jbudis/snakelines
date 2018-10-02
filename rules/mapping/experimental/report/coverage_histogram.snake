@@ -1,4 +1,4 @@
-include: config['snake_dir'] + '/mapping/postprocess/bam_index.snake'
+include: config['snakelines_dir'] + '/rules/mapping/postprocess/bam_index.snake'
 
 rule genome_coverage_histogram:
     input:

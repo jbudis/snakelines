@@ -6,12 +6,12 @@ gene = config['metaxa2']['gene']
 
 pipeline = glob_wildcards('reads/%s/{sample, %s}_R1.fastq.gz' % (read_type, config['sample_pattern']))
 
-include: config['snake_dir'] + '/preprocess/subsample/head.snake'
-include: config['snake_dir'] + '/preprocess/report/fastqc.snake'
-include: config['snake_dir'] + '/metagenomics/classification/metaxa2.snake'
-include: config['snake_dir'] + '/metagenomics/report/krona.snake'
-include: config['snake_dir'] + '/metagenomics/report/tsv_summary.snake'
-include: config['snake_dir'] + '/metagenomics/comparison/lefse.snake'
+include: config['snakelines_dir'] + '/rules/preprocess/subsample/head.snake'
+include: config['snakelines_dir'] + '/rules/preprocess/report/fastqc.snake'
+include: config['snakelines_dir'] + '/rules/metagenomics/classification/metaxa2.snake'
+include: config['snakelines_dir'] + '/rules/metagenomics/report/krona.snake'
+include: config['snakelines_dir'] + '/rules/metagenomics/report/tsv_summary.snake'
+include: config['snakelines_dir'] + '/rules/metagenomics/comparison/lefse.snake'
 
 rule process:
     input:

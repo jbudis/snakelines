@@ -2,7 +2,7 @@
 configfile: srcdir('config.yaml')
 
 # Run startup scripts that automatically loads imports from src/ and load helper methods
-include: config['snake_dir'] + '/common/preambule.snake'
+include: config['snakelines_dir'] + '/rules/src/snakelines.snake'
 
 # Import sub-workflows
 include: srcdir('Snakefile.read_quality_report')

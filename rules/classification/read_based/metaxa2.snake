@@ -1,4 +1,4 @@
-include: config['snake_dir'] + '/reads/conversion/unzip.snake'
+include: config['snakelines_dir'] + '/rules/reads/conversion/unzip.snake'
 
 from glob import glob
 import pandas as pd
