@@ -1,9 +1,7 @@
-sample_pattern: .*
-reference:
-    mhv: example
-
-panel:
-    mhv: wgs
+samples:
+    - name: .*
+      reference: mhv
+      panel: wgs
 
 report_dir: report/public/01-mapping
 threads: 10
