@@ -1,5 +1,8 @@
-sample_pattern: .*
-report_dir: report/01-assembly
+samples:
+    - name: example.*
+      reference: mhv
+
+report_dir: report/01-viral
 threads: 10
 
 reads:

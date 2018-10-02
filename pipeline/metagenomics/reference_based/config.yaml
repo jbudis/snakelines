@@ -1,7 +1,8 @@
-sample_pattern: .*
-reference:
-    silva-16S: .*-16S
-    unite: .*-ITS
+samples:
+    - name: .*-16S
+      reference: silva-16S
+    - name: .*-ITS
+      reference: unite
 
 report_dir: report/public/01-classification
 threads: 10

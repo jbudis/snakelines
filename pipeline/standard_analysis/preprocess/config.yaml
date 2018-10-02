@@ -1,4 +1,7 @@
-sample_pattern: .*
+samples:
+    - name: example.*
+      reference: mhv
+
 report_dir: report/01-preprocess
 threads: 10
 

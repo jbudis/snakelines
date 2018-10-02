@@ -1,7 +1,9 @@
 samples:
-    - name: .*
+    - name: example_A
       reference: mhv
-      panel: wgs
+
+    - name: example_B
+      reference: mhv
 
 report_dir: report/public/01-mapping
 threads: 10
