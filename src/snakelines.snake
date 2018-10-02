@@ -1,0 +1,9 @@
+include: srcdir('config/values_retrieval.snake')
+include: srcdir('config/impute_mapping_types.snake')
+include: srcdir('config/impute_read_types.snake')
+
+include: srcdir('output/copy_files.snake')
+
+include: srcdir('pipeline/samples.snake')
+
+include: srcdir('config/load_imports.snake')
