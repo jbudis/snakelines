@@ -27,6 +27,7 @@ def import_files_in_config(subconfig, item_path):
     if type(subconfig) == str:
         yield from import_files_in_config(None, '{}/{}'.format(item_path, subconfig))
 
-for import_file, tool_config in import_files_in_config(config, config['snake_dir']):
+rules_dir = '{}/rules'.format(config['snakelines_dir'])
+for import_file, tool_config in import_files_in_config(config, rules_dir):
     assert os.path.isfile(import_file), 'Configured snake file {} does not exists'.format(import_file)
     include: import_file
