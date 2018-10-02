@@ -113,7 +113,9 @@ rule qualimap__summarize_quality_reports:
         qualimap multi-bamqc \
             -d {params.sample_list} \
             -outdir {params.out_dir} \
-            -outformat PDF:HTML
+            -outformat PDF:HTML \
+        >  {log.out} \
+        2> {log.err}
         '''
 
 ruleorder: qualimap__mapping_quality_report_accross_reference > qualimap__mapping_quality_report_accross_panel
