@@ -2,7 +2,7 @@
 configfile: srcdir('config.yaml')
 
 # Run startup scripts that automatically loads imports from src/ and load helper methods
-include: config['snakelines_dir'] + '/rules/src/snakelines.snake'
+include: config['snakelines_dir'] + '/src/snakelines.snake'
 
 
 # Find in configuration read preprocess types for which should be report generated

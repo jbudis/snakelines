@@ -2,7 +2,7 @@
 configfile: srcdir('config.yaml')
 
 # Run startup scripts that automatically loads imports from src/ and load helper methods
-include: config['snakelines_dir'] + '/rules/src/snakelines.snake'
+include: config['snakelines_dir'] + '/src/snakelines.snake'
 
 
 # Find in configuration read preprocess types for which should be report generated
@@ -27,7 +27,7 @@ rule finalise__quality_report:
     output:
         # FastQC quality reports of all preprocess types that are configured to be generated
         fastqcs = expand('{report_dir}/read_quality_report/{read_type}/{sample}_R{orientation}_fastqc.html',
-                          report_dir=config['report_dir'], read_type=read_types_with_fastqc_report,
+                          report_dir=config['report_dir'], s=read_types_with_fastqc_report,
                           sample=pipeline.samples, orientation=[1,2]),
 
         # Summary table of fastQC reports
