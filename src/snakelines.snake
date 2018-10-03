@@ -4,8 +4,6 @@ include: srcdir('config/values_retrieval.snake')
 include: srcdir('config/impute_mapping_types.snake')
 include: srcdir('config/impute_read_types.snake')
 
-print(pipeline.__dict__)
-
 include: srcdir('output/copy_files.snake')
 
 include: srcdir('config/load_imports.snake')
