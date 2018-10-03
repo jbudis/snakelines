@@ -5,8 +5,8 @@ rule fastuniq__deduplicate_reads:
     Remove fragments with identical sequences that are usually consequence of extensive PCR multiplication
     '''
     input:
-        r1 = 'reads/%s/{sample}_R1.fastq' % tool_config['input_read_type'],
-        r2 = 'reads/%s/{sample}_R2.fastq' % tool_config['input_read_type']
+        r1 = 'reads/%s/{sample}_R1.fastq' % method_config['input_read_type'],
+        r2 = 'reads/%s/{sample}_R2.fastq' % method_config['input_read_type']
     output:
         r1 = configured_temp('reads/deduplicated/{sample}_R1.fastq.gz'),
         r2 = configured_temp('reads/deduplicated/{sample}_R2.fastq.gz'),

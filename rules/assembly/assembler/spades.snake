@@ -15,8 +15,8 @@ rule spades__assemble_reads_into_contigs:
         outdir    = 'assembly/{sample}',
         contigs   = 'assembly/{sample}/contigs.fasta',
         scaffolds = 'assembly/{sample}/scaffolds.fasta',
-        mode      = '--{}'.format(tool_config['mode']) if tool_config.get('mode', 'standard') != 'standard' else '',
-        careful   = '--careful' if tool_config.get('careful', False) else ''
+        mode      = '--{}'.format(method_config['mode']) if method_config.get('mode', 'standard') != 'standard' else '',
+        careful   = '--careful' if method_config.get('careful', False) else ''
     threads:
         int(config['threads'])
     log:

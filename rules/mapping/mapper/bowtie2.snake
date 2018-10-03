@@ -15,8 +15,8 @@ rule bowtie2__map_reads_to_reference:
         err   = 'mapping/{reference}/original/log/{sample}.bowtie2.map_stats'
     params:
         index = 'reference/{reference}/bowtie2_index/{reference}',
-        additional = tool_config.get('params', ''),
-        concordant = '--no-mixed --no-discordant --no-unal' if tool_config.get('only_concordant', False) else ''
+        additional = method_config.get('params', ''),
+        concordant = '--no-mixed --no-discordant --no-unal' if method_config.get('only_concordant', False) else ''
     threads:
         int(config['threads'])
     shell:

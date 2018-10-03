@@ -5,8 +5,8 @@ rule pear__join_read_pairs:
     Join paired reads into single end reads based on sequence overlap
     '''
     input:
-        r1 = 'reads/%s/{sample}_R1.fastq' % tool_config['read_type'],
-        r2 = 'reads/%s/{sample}_R2.fastq' % tool_config['read_type']
+        r1 = 'reads/%s/{sample}_R1.fastq' % method_config['read_type'],
+        r2 = 'reads/%s/{sample}_R2.fastq' % method_config['read_type']
     output:
         r1 = configured_temp('reads/joined/{sample}_R1.fastq.gz'),
         r2 = configured_temp('reads/joined/{sample}_R2.fastq.gz'),

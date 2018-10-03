@@ -18,7 +18,7 @@ rule metaxa2__classify_reads:
         outpref      = 'classification/{reference}/samples/{sample}/{sample}',
         hmm_dir      = 'reference/{reference}/metaxa2_index/HMMs',
         blast_prefix = 'reference/{reference}/metaxa2_index/blast',
-        confidence = int(100*float(tool_config.get('confidence', 0.8)))
+        confidence = int(100*float(method_config.get('confidence', 0.8)))
     log:
         out          = 'classification/{reference}/samples/{sample}/log/metaxa2.log',
         err          = 'classification/{reference}/samples/{sample}/log/metaxa2.err'

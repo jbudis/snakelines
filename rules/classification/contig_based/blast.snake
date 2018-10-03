@@ -15,7 +15,7 @@ blast_db_suffices = {
     'protein':    'psq'
 }
 
-reference_config = tool_config['reference']
+reference_config = method_config['reference']
 
 def find_blast_db(wildcards):
     target_type = reference_config[wildcards.reference]['target_type']

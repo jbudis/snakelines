@@ -3,23 +3,23 @@ rule trimmomatic__trim_reads:
     Remove low quality ends of reads and then filter reads that are too short.
     '''
     input:
-        r1 = 'reads/%s/{sample}_R1.fastq.gz' % tool_config['input_read_type'],
-        r2 = 'reads/%s/{sample}_R2.fastq.gz' % tool_config['input_read_type']
+        r1 = 'reads/%s/{sample}_R1.fastq.gz' % method_config['input_read_type'],
+        r2 = 'reads/%s/{sample}_R2.fastq.gz' % method_config['input_read_type']
     output:
         r1 = configured_temp('reads/trimmed/{sample}_R1.fastq.gz'),
         r2 = configured_temp('reads/trimmed/{sample}_R2.fastq.gz')
     params:
         r1 = 'reads/trimmed/{sample}_R1.fastq',
         r2 = 'reads/trimmed/{sample}_R2.fastq',
-        adapter = 'ILLUMINACLIP:%s:%s:%s:%s' % (tool_config['adapter']['fasta'],
-                                                tool_config['adapter']['seed_mismatches'],
-                                                tool_config['adapter']['palindrom_threshold'],
-                                                tool_config['adapter']['clip_threshold']) \
-                   if 'adapter' in tool_config else '',
-        quality = 'SLIDINGWINDOW:5:%s' % tool_config['quality'] if 'quality' in tool_config else '',
-        headcrop = 'HEADCROP:%s' % tool_config['headcrop'] if 'headcrop' in tool_config else '',
-        crop = 'CROP:%s' % tool_config['crop'] if 'crop' in tool_config else '',
-        minlen = 'MINLEN:%s' % tool_config['minlen'] if 'minlen' in tool_config else ''
+        adapter = 'ILLUMINACLIP:%s:%s:%s:%s' % (method_config['adapter']['fasta'],
+                                                method_config['adapter']['seed_mismatches'],
+                                                method_config['adapter']['palindrom_threshold'],
+                                                method_config['adapter']['clip_threshold']) \
+                   if 'adapter' in method_config else '',
+        quality = 'SLIDINGWINDOW:5:%s' % method_config['quality'] if 'quality' in method_config else '',
+        headcrop = 'HEADCROP:%s' % method_config['headcrop'] if 'headcrop' in method_config else '',
+        crop = 'CROP:%s' % method_config['crop'] if 'crop' in method_config else '',
+        minlen = 'MINLEN:%s' % method_config['minlen'] if 'minlen' in method_config else ''
     threads:
         int(config['threads'])
     log:

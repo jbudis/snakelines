@@ -4,7 +4,7 @@ rule samtools__sort_mapped_reads:
     '''
     input:
         ref = 'reference/{reference}/{reference}.fa',
-        bam = 'mapping/{{reference}}/{map_type}/{{sample}}.bam'.format(map_type=tool_config['input_map_type'])
+        bam = 'mapping/{{reference}}/{map_type}/{{sample}}.bam'.format(map_type=method_config['input_map_type'])
     output:
         bam = 'mapping/{reference}/sorted/{sample}.bam'
     log:

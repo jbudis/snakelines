@@ -5,8 +5,8 @@ rule picard__mark_duplicates:
     originating from a single fragment of DNA.
     '''
     input:
-        bam  = '{{mapper}}/{{reference}}/{map_type}/{{sample}}.bam'.format(map_type=tool_config['input_map_type']),
-        bai  = '{{mapper}}/{{reference}}/{map_type}/{{sample}}.bam.bai'.format(map_type=tool_config['input_map_type'])
+        bam  = '{{mapper}}/{{reference}}/{map_type}/{{sample}}.bam'.format(map_type=method_config['input_map_type']),
+        bai  = '{{mapper}}/{{reference}}/{map_type}/{{sample}}.bam.bai'.format(map_type=method_config['input_map_type'])
     output:
         bam  = '{mapper}/{reference}/deduplicated/{sample}.bam'
     log:

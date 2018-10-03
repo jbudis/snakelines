@@ -7,15 +7,15 @@ rule bowtie2__filter_reads_from_reference:
     to remove contamination caused by host with known genome, e.g. human fragments.
     '''
     input:
-        r1 = 'reads/%s/{sample}_R1.fastq.gz' % tool_config['input_read_type'],
-        r2 = 'reads/%s/{sample}_R2.fastq.gz' % tool_config['input_read_type'],
-        index_files = expand('reference/{ref}/bowtie2_index/{ref}.1.bt2', ref=tool_config['references'])
+        r1 = 'reads/%s/{sample}_R1.fastq.gz' % method_config['input_read_type'],
+        r2 = 'reads/%s/{sample}_R2.fastq.gz' % method_config['input_read_type'],
+        index_files = expand('reference/{ref}/bowtie2_index/{ref}.1.bt2', ref=method_config['references'])
     output:
         r1 = configured_temp('reads/decontaminated/{sample}_R1.fastq.gz'),
         r2 = configured_temp('reads/decontaminated/{sample}_R2.fastq.gz')
     params:
-        indices = expand('reference/{reference}/bowtie2_index/{reference}', reference=tool_config['references']),
-        keep_param = '--al-conc-gz' if tool_config.get('keep', False) else '--un-conc-gz'
+        indices = expand('reference/{reference}/bowtie2_index/{reference}', reference=method_config['references']),
+        keep_param = '--al-conc-gz' if method_config.get('keep', False) else '--un-conc-gz'
     threads:
         int(config['threads'])
     log:

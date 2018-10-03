@@ -48,9 +48,9 @@ rule vardict__call_germline_variants:
     log:
         err      = '{{mapper}}/{{reference}}/{map_type}/vardict-{{panel}}/log/{{sample}}.vdc.err'.format(map_type=pipeline.postprocessed_map_type)
     params:
-        min_nonref_allele_freq = tool_config.get('hard_filter', {}).get('min_nonref_allele_freq', 0.05),
-        min_alternate_count    = tool_config.get('hard_filter', {}).get('min_alternate_count', 2),
-        min_map_quality        = tool_config.get('hard_filter', {}).get('min_map_quality', 15)
+        min_nonref_allele_freq = method_config.get('hard_filter', {}).get('min_nonref_allele_freq', 0.05),
+        min_alternate_count    = method_config.get('hard_filter', {}).get('min_alternate_count', 2),
+        min_map_quality        = method_config.get('hard_filter', {}).get('min_map_quality', 15)
     threads:
         int(config['threads'])
     shell:
@@ -103,10 +103,10 @@ rule vardict__tsb_to_vcf:
     output:
         vcf = '{path}/{sample}.vcf'
     params:
-        min_mean_base_quality  = tool_config.get('soft_filter', {}).get('min_mean_base_quality', 20),
-        min_map_quality        = tool_config.get('soft_filter', {}).get('min_map_quality', 20),
-        read_depth             = tool_config.get('soft_filter', {}).get('read_depth', 10),
-        min_nonref_allele_freq = tool_config.get('soft_filter', {}).get('min_nonref_allele_freq', 0.2)
+        min_mean_base_quality  = method_config.get('soft_filter', {}).get('min_mean_base_quality', 20),
+        min_map_quality        = method_config.get('soft_filter', {}).get('min_map_quality', 20),
+        read_depth             = method_config.get('soft_filter', {}).get('read_depth', 10),
+        min_nonref_allele_freq = method_config.get('soft_filter', {}).get('min_nonref_allele_freq', 0.2)
     shell:
         '''
         /usr/local/tools/vardict-1.5.1/VarDict/var2vcf_valid.pl \

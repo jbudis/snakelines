@@ -1,5 +1,5 @@
 # TODO: this source should be thoroughly documented
-# TODO: tool_config should be renamed to method_config
+# TODO: method_config should be renamed to method_config
 
 import subprocess
 import snakemake
@@ -18,7 +18,7 @@ pd.options.display.float_format = '{:.3f}'.format
 
 DEFAULT_MAX_TARGET_SEQS = 10
 
-summary_columns_def = tool_config.get('include', [])
+summary_columns_def = method_config.get('include', [])
 if not summary_columns_def:
     summary_columns_def = []
 
@@ -36,8 +36,8 @@ rule fasta_summary__blast:
     output:
         tsv   = '{indir}/annotation/{name}/attributes/blast/{reference}.blast.tsv'
     params:
-        min_query_coverage = tool_config.get('min_query_coverage', 0),
-        max_target_seqs = tool_config.get('max_target_seqs', 999999999)
+        min_query_coverage = method_config.get('min_query_coverage', 0),
+        max_target_seqs = method_config.get('max_target_seqs', 999999999)
     run:
         blast = pd.DataFrame.from_csv(input.blast, sep='\t', index_col=None)
         seqids, info_list = [], []
@@ -178,11 +178,11 @@ rule fasta_summary__summarize_annotations:
         tsv  = '{indir}/annotation/{name}/summary.html.tsv'
     params:
         contig_dir = '{indir}/annotation/sequences',
-        max_query_seqs = tool_config.get('max_query_seqs', None),
-        sort_by = tool_config['html'].get('sort_by', ''),
-        sort_how = tool_config['html'].get('sort_how', 'asc'),
+        max_query_seqs = method_config.get('max_query_seqs', None),
+        sort_by = method_config['html'].get('sort_by', ''),
+        sort_how = method_config['html'].get('sort_how', 'asc'),
         fasta_dir = 'sequences',
-        html_columns = tool_config['html'].get('columns', [])
+        html_columns = method_config['html'].get('columns', [])
     run:
         def flatten(files):
             flat = []
