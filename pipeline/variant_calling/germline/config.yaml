@@ -1,12 +1,12 @@
-samples:
-    - name: example_A
-      reference: mhv
+sample_pattern: .*
+reference:
+    mhv: example
 
-    - name: example_B
-      reference: mhv
+panel:
+    mhv: wgs
 
 report_dir: report/public/01-mapping
-threads: 10
+threads: 16
 
 reads:
     preprocess:

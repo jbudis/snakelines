@@ -1,9 +1,6 @@
-samples:
-    - name: example.*
-      reference: mhv
-
-report_dir: report/01-assembly
-threads: 10
+sample_pattern: .*
+report_dir: report/public/01-assembly
+threads: 16
 
 reads:
     preprocess:

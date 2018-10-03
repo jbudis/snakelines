@@ -1,9 +1,6 @@
-samples:
-    - name: example.*
-      reference: mhv
-
-report_dir: report/01-fastqc_report
-threads: 10
+sample_pattern: .*
+report_dir: report/public/01-fastqc_report
+threads: 16
 
 reads:
     report:
