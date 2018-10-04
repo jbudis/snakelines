@@ -1,4 +1,7 @@
-rule gatk_dict_index:
+rule picard__prepare_dict_index:
+    '''
+    Index fasta file to quicker retrieve substring sequences
+    '''
     input:
         'reference/{genome}/{genome}.fa'
     output:
