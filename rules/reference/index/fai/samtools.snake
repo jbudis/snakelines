@@ -1,0 +1,12 @@
+rule samtools__prepare_fai_index:
+    '''
+    Index fasta file to quicker retrieve substring sequences
+    '''
+    input:
+        '{genome}.fa'
+    output:
+        '{genome}.fa.fai'
+    shell:
+        '''
+        samtools faidx {input}
+        '''
