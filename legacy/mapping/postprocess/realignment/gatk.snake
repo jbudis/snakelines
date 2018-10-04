@@ -1,4 +1,4 @@
-include: config['snakelines_dir'] + '/rules/reference/indices/gatk_dict.snake'
+include: config['snakelines_dir'] + '/rules/reference/index/dict/picard.snake'
 include: config['snakelines_dir'] + '/rules/mapping/postprocess/realignment/gatk.snake'
 
 map_type = config['mapping']['realign']['map_type']
