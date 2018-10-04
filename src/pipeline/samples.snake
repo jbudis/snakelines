@@ -43,7 +43,6 @@ class Pipeline:
 
         # Extend lists
         self.samples.extend(samples)
-        self.panels.append(panel)
 
         if reference:
 
