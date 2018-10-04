@@ -1,5 +1,5 @@
 include: config['snakelines_dir'] + '/rules/mapping/index/samtools.snake'
-include: config['snakelines_dir'] + '/rules/reference/index/faidx.snake'
+include: config['snakelines_dir'] + '/rules/reference/index/fai/samtools.snake'
 
 rule vardict__create_wgs_bed_file:
     '''

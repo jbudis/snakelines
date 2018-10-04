@@ -1,7 +1,7 @@
 configfile: srcdir('config.yaml')
 
 include: config['snakelines_dir'] + '/rules/reference/download/ncbi.snake'
-include: config['snakelines_dir'] + '/rules/reference/indices/faidx.snake'
+include: config['snakelines_dir'] + '/rules/reference/index/fai/samtools.snake'
 
 gene = config['ncbi']['gene']
 
