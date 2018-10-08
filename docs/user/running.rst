@@ -39,3 +39,6 @@ Example minimal input file configuration for a reference (hg38), targeted panel 
            |-- annotation/sureselect6
                    |-- regions.bed
 
+Bioinformatic tools typically requires preprocess reference sequences to condensed files called indices.
+All required reference indices and auxiliary files are generated, when necessary, during pipeline execution.
+
