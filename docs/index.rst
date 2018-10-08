@@ -11,9 +11,9 @@ User documentation
 
 .. toctree::
    :maxdepth: 1
-   :caption: User documentation
 
    user/running
+   user/aliases
 
 
 Development
@@ -21,7 +21,6 @@ Development
 
 .. toctree::
    :maxdepth: 1
-   :caption: Development notes
 
    development/rules
 
