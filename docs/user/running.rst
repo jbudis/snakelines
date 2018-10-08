@@ -15,10 +15,28 @@ Minimal software requirements are:
 * Linux (tested on Ubuntu 16.04.1)
 * `SnakeMake <https://snakemake.readthedocs.io/en/stable/>`_ (tested on 5.2.2)
 
+
+Installation
+---------------
+
+Sources codes for SnakeLines pipelines are stored at `GitHub repository <https://github.com/jbudis/snakelines>`_.
+You may download them directly or clone them using git.
+
+.. code:: bash
+
+   # Download directly
+   wget https://github.com/jbudis/snakelines/archive/master.zip
+   unzip master.zip
+
+   # Or clone using git
+   git clone https://github.com/jbudis/snakelines
+
+Compiling is not required, scripts are ready for using after download.
+
 Directory structure of input files
 ----------------------------------
 
-SnakeLines takes as input files of two types.
+SnakeLines takes as input files of two types; reads and reference-based files.
 Read files in Fastq files represent sequenced DNA fragments.
 SnakeLines in current version supports only paired-end reads that are represented by pair of files, with _R1.fastq.gz and _R2.fastq.gz extension.
 Read files must be gzipped and located in the reads/original directory.
@@ -42,3 +60,54 @@ Example minimal input file configuration for a reference (hg38), targeted panel 
 Bioinformatic tools typically requires preprocess reference sequences to condensed files called indices.
 All required reference indices and auxiliary files are generated, when necessary, during pipeline execution.
 
+Reference directories with frequently used references may be linked to the project directory, to avoid redundant copies and repeated creation of sequence indices.
+For example, if you have fasta file for human genome in separate directory (/data/genome/human/hg38-ucsc/hg38.fa), you may link it to example project (/data/projects/example) using
+
+.. code:: bash
+
+   ln --symbolic \
+      /data/genome/human/hg38-ucsc \
+      /data/projects/example/reference/hg38
+
+Make sure, that the name of the link is the same as the name of the fasta file (without .fa suffix).
+
+Running scripts
+---------------
+
+All bioinformatics pipelines are stored at the pipeline/ directory in the SnakeLines installation.
+Pipelines typically contains a master file (Snakefile), several sub-workflows (Snakefile.<sub-workflow>) and a configuration file (config.yaml).
+We recommend copy of a directory with selected pipeline to the project directory.
+This way, configuration for the pipeline is project specific, and therefore would not be shared between different projects.
+
+Example project structure with pipeline definition copied from the <snakelines_dir>/pipeline/variant_calling/germline>
+::
+   |-- reads/original
+           |-- example_A_R1.fastq.gz
+           |-- example_A_R2.fastq.gz
+           |-- example_B_R1.fastq.gz
+           |-- example_B_R2.fastq.gz
+   |-- reference/hg38
+           |-- hg38.fa
+           |-- annotation/sureselect6
+                   |-- regions.bed
+   |-- scripts/variant_calling/germline
+           |-- config.yaml
+           |-- Snakefile
+           |-- Snakefile.mapping
+           |-- Snakefile.preprocess
+           |-- Snakefile.read_quality_report
+
+Edit config.yaml file according to your preference.
+Each configured attribute is explained by a comment in the file.
+
+Now you may run SnakeLines pipeline using Snakemake.
+You need to specify one additional attribute, to tell Snakemake, where are SnakeLines sources located.
+For example, if SnakeLines sources has been downloaded to the /usr/local/snakelines directory, use:
+
+.. code:: bash
+
+   snakemake \
+      --config snakelines_dir=/usr/local/snakelines \
+      scripts/variant_calling/germline/Snakefile
+
+Snakemake is very flexible in workflow execution, see `its documentation <https://snakemake.readthedocs.io/en/stable/executable.html#all-options>`_ for detailed description, and `useful bash aliases for SnakeLines`.
