@@ -5,9 +5,25 @@
 
 .. include:: ../README.rst
 
+
+User documentation
+==================
+
+.. toctree::
+   :maxdepth: 1
+   :caption: User documentation:
+
+   user/running
+
+
+Development
+===========
+
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :caption: Development notes:
+
+   development/rules
 
 
 Indices and tables
