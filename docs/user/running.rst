@@ -14,6 +14,7 @@ Minimal software requirements are:
 
 * Linux (tested on Ubuntu 16.04.1)
 * `SnakeMake <https://snakemake.readthedocs.io/en/stable/>`_ (tested on 5.2.2)
+* Miniconda (tested on 4.5.11)
 
 
 Installation
@@ -47,6 +48,7 @@ Annotation is typically bed file with targeted genomic regions and habe to be lo
 
 Example minimal input file configuration for a reference (hg38), targeted panel (sureselect6) and reads for samples example_A and example_B:
 ::
+
    |-- reads/original
            |-- example_A_R1.fastq.gz
            |-- example_A_R2.fastq.gz
@@ -81,6 +83,7 @@ This way, configuration for the pipeline is project specific, and therefore woul
 
 Example project structure with pipeline definition copied from the <snakelines_dir>/pipeline/variant_calling/germline>
 ::
+
    |-- reads/original
            |-- example_A_R1.fastq.gz
            |-- example_A_R2.fastq.gz

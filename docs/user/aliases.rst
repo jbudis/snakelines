@@ -25,6 +25,7 @@ Add aliases for using pipelines locally
 
    # Basic
    THREADS_LOCAL=4     # Number of used threads, when running pipelines locally
+   SNAKELINES_DIR=/data/snakelines/$USER   # Path to snakelines source files
 
    alias basesnake='snakemake -d `pwd` --jobname {rulename}.{jobid} --reason --printshellcmds --config snakelines_dir=$SNAKELINES_DIR'
    alias snake='basesnake threads=$THREADS_LOCAL --cores $THREADS_LOCAL'
