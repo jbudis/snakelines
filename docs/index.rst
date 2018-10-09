@@ -13,6 +13,7 @@ User documentation
    :maxdepth: 1
 
    user/running
+   user/configuration
    user/aliases
 
 

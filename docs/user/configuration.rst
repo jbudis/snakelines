@@ -50,6 +50,94 @@ User may define, where to put output reports.
    report_dir: report/public/01-exome  # Generated reports and essential output files would be stored there
 
 
+Adjust rules parameters
+-----------------------
+
+Each step of the analysis have its own configuration, that would be used to parametrize designated rule.
+The first argument is a method, that may be easily swap to another supported one by changing configuration.
+The rest is the set of parameters that would be passed to designated rule.
+
+
+test
+
+.. code-block:: yaml
+
+   reads:                           # Prepare reads and quality reports for downstream analysis
+      preprocess:                   # Pre-process of reads, eliminate sequencing artifacts, contamination ...
+         trimmed:                   # Remove low quality parts of reads
+            method: trimmomatic     # Supported values: trimmomatic
+            temporary: False        # If True, generated files would be removed after successful analysis
+            crop: 500               # Maximal number of bases in read to keep. Longer reads would be truncated.
+            quality: 20             # Minimal average quality of read bases to keep (inside sliding window of length 5)
+            headcrop: 20            # Number of bases to remove from the start of read
+            minlen: 35              # Minimal length of trimmed read. Shorter reads would be removed.
+
+This example snippet would be roughly translated to
+
+
+.. code-block:: python
+
+   method_config = {'temporary': False,
+                    'crop': 500,
+                    'quality': 20,
+                    'headcrop': 20,
+                    'minlen': 35}
+
+   # Configuration would be passed to the included, trimmomatic rule
+   include rules/reads/preprocess/trimmed/trimmomatic.snake
+
+Skipping preprocess steps
+-------------------------
+
+Parts of preprocess and postprocess steps may be easily skipped by removal of corresponding configuration parts.
+This snipped would at first trim reads, then decontaminate them, and finally deduplicate them.
+
+.. code-block:: yaml
+
+   reads:                              # Prepare reads and quality reports for downstream analysis
+       preprocess:                     # Pre-process of reads, eliminate sequencing artifacts, contamination ...
+
+           trimmed:                    # Remove low quality parts of reads
+               method: trimmomatic     # Supported values: trimmomatic
+               temporary: False        # If True, generated files would be removed after successful analysis
+               crop: 500               # Maximal number of bases in read to keep. Longer reads would be truncated.
+               quality: 20             # Minimal average quality of read bases to keep (inside sliding window of length 5)
+               headcrop: 20            # Number of bases to remove from the start of read
+               minlen: 35              # Minimal length of trimmed read. Shorter reads would be removed.
+
+           decontaminated:             # Eliminate fragments from known artificial source, e.g. contamination by human
+               method: bowtie2         # Supported values: bowtie2
+               temporary: False        # If True, generated files would be removed after successful analysis
+               references:             # List of reference genomes
+                   - mhv
+               keep: True              # Keep reads mapped to references (True) of remove them as contamination (False)
+
+           deduplicated:               # Remove fragments with the same sequence (PCR duplicated)
+               method: fastuniq        # Supported values: fastuniq
+               temporary: False        # If True, generated files would be removed after successful analysis
+
+
+Omitting configuration for the decontamination step would restrict read preprocessing to the trimming and the deduplication step, only.
+
+.. code-block:: yaml
+
+   reads:                              # Prepare reads and quality reports for downstream analysis
+       preprocess:                     # Pre-process of reads, eliminate sequencing artifacts, contamination ...
+
+           trimmed:                    # Remove low quality parts of reads
+               method: trimmomatic     # Supported values: trimmomatic
+               temporary: False        # If True, generated files would be removed after successful analysis
+               crop: 500               # Maximal number of bases in read to keep. Longer reads would be truncated.
+               quality: 20             # Minimal average quality of read bases to keep (inside sliding window of length 5)
+               headcrop: 20            # Number of bases to remove from the start of read
+               minlen: 35              # Minimal length of trimmed read. Shorter reads would be removed.
+
+           deduplicated:               # Remove fragments with the same sequence (PCR duplicated)
+               method: fastuniq        # Supported values: fastuniq
+               temporary: False        # If True, generated files would be removed after successful analysis
+
+
+
 Example configuration
 ---------------------
 
