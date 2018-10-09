@@ -7,30 +7,22 @@
 
 .. include:: user/benefits.rst
 
-User documentation
-==================
+
+Contents
+========
 
 .. toctree::
-   :maxdepth: 1
+   :caption: User documentation
+   :maxdepth: 2
 
    user/running
    user/configuration
    user/aliases
 
 
-Development
-===========
-
 .. toctree::
-   :maxdepth: 1
+   :caption: Developer notes
+   :maxdepth: 2
 
    development/structure
    development/rules
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
