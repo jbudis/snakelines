@@ -58,8 +58,6 @@ The first argument is a method, that may be easily swap to another supported one
 The rest is the set of parameters that would be passed to designated rule.
 
 
-test
-
 .. code-block:: yaml
 
    reads:                           # Prepare reads and quality reports for downstream analysis
