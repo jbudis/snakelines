@@ -5,6 +5,7 @@
 
 .. include:: ../README.rst
 
+.. include:: user/benefits.rst
 
 User documentation
 ==================
