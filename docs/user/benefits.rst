@@ -14,6 +14,7 @@ In addition to standard secondary analysis, such as mapping and assembly, SnakeM
 
 * identification of variation in mapped reads
 * identification of viruses in reads or assembled contigs
+* classify assembled contigs
 * metagenomics analysis
 * transcriptomics (in preparation)
 * chromatin-seq (in preparation)
