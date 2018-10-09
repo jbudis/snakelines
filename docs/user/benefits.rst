@@ -1,5 +1,5 @@
 
-Why using SnakeLines
+Why use SnakeLines
 ====================
 
 Several workflow management systems have been proposed to date, most notably `Galaxy <https://galaxyproject.org/>`_ and `Snakemake <https://snakemake.readthedocs.io/en/stable/>`_.
