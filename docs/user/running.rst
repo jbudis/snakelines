@@ -14,6 +14,7 @@ Minimal software requirements are:
 
 * Linux (tested on Ubuntu 16.04.1)
 * `SnakeMake <https://snakemake.readthedocs.io/en/stable/>`_ (tested on 5.2.2)
+* Miniconda (tested on 4.5.11)
 
 
 Installation
