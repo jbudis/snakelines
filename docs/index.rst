@@ -25,4 +25,5 @@ Contents
    :maxdepth: 2
 
    development/structure
-   development/rules
+   development/new_rules
+   development/replace_methods
