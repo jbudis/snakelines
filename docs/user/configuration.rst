@@ -37,6 +37,17 @@ For `sureselect6` samples you may use different genome and panel.
         panel: sureselect6   # Bed file with target region coordinates (reference/hg19/annotation/sureselect6/regions.bed)
 
 
+Report directory
+----------------
+
+Using Snakemake generally leads to a wide hierarchy of intermediate directories and files.
+Typically only few final files and reports are used for interpretation.
+SnakeLines therefore copies relevant files to the separate, `report` directory in the last step of a pipeline.
+User may define, where to put output reports.
+
+.. code-block:: yaml
+
+   report_dir: report/public/01-exome  # Generated reports and essential output files would be stored there
 
 
 Example configuration
