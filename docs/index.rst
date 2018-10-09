@@ -22,6 +22,7 @@ Development
 .. toctree::
    :maxdepth: 1
 
+   development/structure
    development/rules
 
 
