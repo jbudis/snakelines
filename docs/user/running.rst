@@ -44,7 +44,7 @@ Read files must be gzipped and located in the reads/original directory.
 
 Reference-based files define sequence and annotation of reference genome.
 Sequence file must be in the fasta format and have to be located in the reference/<genome>/<genome>.fa file.
-Annotation is typically bed file with targeted genomic regions and habe to be located in the reference/<genome>/<genome>/annotation/<panel>/regions.bed file.
+Annotation is typically bed file with targeted genomic regions and have to be located in the reference/<genome>/<genome>/annotation/<panel>/regions.bed file.
 
 Example minimal input file configuration for a reference (hg38), targeted panel (sureselect6) and reads for samples example_A and example_B:
 ::
