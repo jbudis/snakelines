@@ -14,3 +14,25 @@ All required bioinformatic tools are installed automatically by SnakeLines insid
 Download SnakeLines scripts
 ---------------------------
 
+Use git to download sources
+
+.. code-block:: bash
+
+   git clone https://github.com/jbudis/snakelines.git
+   cd snakelines
+
+Alternately you may `download sources directly <running.html#installation>`_.
+
+Execute pipeline
+----------------
+
+Toy example read files and references are stored at the `/example` directory of downloaded sources.
+Assuming, that sources are downloaded in /usr/local/snakelines, `variant_calling` pipeline may be executed using
+
+.. code-block:: bash
+
+   cd /usr/local/snakelines/example/mhv
+
+   snakemake \
+      --config snakelines_dir=/usr/local/snakelines \
+      scripts/variant_calling/germline/Snakefile
