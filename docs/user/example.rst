@@ -35,4 +35,4 @@ Assuming, that sources are downloaded in /usr/local/snakelines, `variant_calling
 
    snakemake \
       --config snakelines_dir=/usr/local/snakelines \
-      scripts/variant_calling/germline/Snakefile
+      --snakefile scripts/variant_calling/germline/Snakefile

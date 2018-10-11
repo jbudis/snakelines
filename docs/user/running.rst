@@ -111,6 +111,6 @@ For example, if SnakeLines sources has been downloaded to the /usr/local/snakeli
 
    snakemake \
       --config snakelines_dir=/usr/local/snakelines \
-      scripts/variant_calling/germline/Snakefile
+      --snakefile scripts/variant_calling/germline/Snakefile
 
 Snakemake is very flexible in workflow execution, see `detailed documentation <https://snakemake.readthedocs.io/en/stable/executable.html#all-options>`_ and `useful bash aliases for SnakeLines <./aliases.html>`_.
