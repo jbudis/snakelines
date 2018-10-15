@@ -1,0 +1,38 @@
+include: "custom.py"
+
+rule custom__summary_report:
+    input:
+        fastqc_original = expand(
+            'reads/original/stats/{{sample}}_R{orientation}_fastqc/summary.txt',
+            orientation=[1,2],
+        ),
+        fastqc_trimmed = expand(
+            'reads/{read_type}/stats/{{sample}}_R{orientation}_fastqc/summary.txt',
+            orientation=[1,2],
+            read_type=pipeline.preprocessed_read_type,
+        ),
+        qualimap_txt = 'mapping/{reference}/{map_type}/stats-{panel}/samples/{sample}/genome_results.txt',
+        qualimap_html = 'mapping/{reference}/{map_type}/stats-{panel}/samples/{sample}/qualimapReport.html',
+        # calling_report = 'mapping/{reference}/{caller}-{panel}/gatk_stats/{sample}.variant_calling_summary_metrics'
+    output:
+        xml  = 'mapping/{reference}/{map_type}/stats-{panel}/summary_report/{sample}.xml',
+        html = 'mapping/{reference}/{map_type}/stats-{panel}/summary_report/{sample}.html',
+        pdf  = 'mapping/{reference}/{map_type}/stats-{panel}/summary_report/{sample}.pdf',
+    run:
+        reporter = QcReporter(config['snakelines_dir'])
+        reporter.run(
+            wildcards.sample,
+            wildcards.panel,
+            input.fastqc_original[0],
+            input.fastqc_original[1],
+            input.fastqc_trimmed[0],
+            input.fastqc_trimmed[1],
+            input.qualimap_txt,
+            input.qualimap_html,
+            # input.calling_report,
+            output.xml,
+            output.html,
+            output.pdf
+        )
+
+

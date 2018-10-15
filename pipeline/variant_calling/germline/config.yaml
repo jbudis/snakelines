@@ -72,3 +72,11 @@ variant:                                    # Identify variation in reads given 
             read_depth: 10                  # Minimal number of reads with alternative allele
             min_nonref_allele_freq: 0.20    # Minimal proportion of reads with alternative allele against all observations
             min_mean_base_quality: 20       # Minimal average base quality of bases that support alternative allele
+
+    report:
+#        calling_statistics:
+#            method: gatk
+#            dbsnp_version: v150
+
+        summary_report:
+            method: custom

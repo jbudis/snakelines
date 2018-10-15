@@ -20,13 +20,27 @@ rule finalise__call_germline_variants:
         rules.finalise__map_reads_to_reference.output,
 
         # SNP and indel variants in VCF file
-        variants = expand('mapping/{sr.reference}/{map_type}/vardict-wgs/{sr.sample}.vcf',
-                           sr=pipeline.sample_references, map_type=pipeline.postprocessed_map_type),
+        variants = expand(
+            'mapping/{sr.reference}/{map_type}/vardict-wgs/{sr.sample}.vcf',
+            sr=pipeline.sample_references, map_type=pipeline.postprocessed_map_type
+        ),
+
+        quality_report = expand(
+            'mapping/{sr.reference}/{map_type}/stats-wgs/summary_report/{sr.sample}.pdf',
+            sr=pipeline.sample_references, map_type=pipeline.postprocessed_map_type
+        ),
 
     output:
         # SNP and indel variants in VCF file
-        variants = expand('{report_dir}/{sr.reference}/samples/{sr.sample}/variants.vcf',
-                           report_dir=config['report_dir'], sr=pipeline.sample_references),
+        variants = expand(
+            '{report_dir}/{sr.reference}/samples/{sr.sample}/variants.vcf',
+            report_dir=config['report_dir'], sr=pipeline.sample_references
+        ),
+
+        quality_report = expand(
+            '{report_dir}/{sr.reference}/samples/{sr.sample}/quality_report.pdf',
+            report_dir=config['report_dir'], sr=pipeline.sample_references,
+        )
 
     run:
         copy_input_files_with_consistent_output_names(input, output)

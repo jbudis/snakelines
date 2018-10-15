@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<head>
+	<meta charset="UTF-8">
+	<title>Quality Report {{ sample_name }}</title>
+	<style>
+		body {
+			font-family: Arial, Verdana, sans-serif;
+			font-size: 12pt;
+		}
+
+		td, th {
+			text-align: left;
+			padding: 4pt 8pt;
+		}
+
+		td.status.pass {
+			color: darkgreen;
+		}
+
+		td.status.warn {
+			color: darkorange;
+		}
+
+		td.status.fail {
+			color: darkred;
+		}
+
+		td.value {
+			text-align: right;
+		}
+
+		{##calling .status {#}
+		{#	width: 50pt;#}
+		{#}#}
+		{##calling .value {#}
+		{#	width: 50pt;#}
+		{#}#}
+		{##calling .z_score {#}
+		{#	width: 50pt;#}
+		{#}#}
+		td.z_score {
+			text-align: right;
+		}
+	</style>
+</head>
+<body>
+<h1>Sample: {{ sample_name }}</h1>
+<h2>FastQC</h2>
+<table id="fastqc">
+	<tr>
+		<th>Validator</th>
+		<th>Raw Status</th>
+		<th>Trimmed Status</th>
+	</tr>
+	{%- for original, trimmed in fastqc %}
+		<tr>
+			<th>{{ original.name }}</th>
+			<td class="status {{ original.status | lower }}">{{ original.status }}</td>
+			<td class="status {{ trimmed.status | lower }}">{{ trimmed.status }}</td>
+		</tr>
+	{%- endfor %}
+</table>
+<h2>Qualimap</h2>
+<table id="qualimap">
+	<tr>
+		<th class="name">Validator</th>
+		<th class="status">Status</th>
+		<th class="value">Value</th>
+	</tr>
+	{%- for validator in qualimap %}
+		<tr>
+			<th class="name">{{ validator.name }}</th>
+			<td class="status {{ validator.status | lower }}">{{ validator.status }}</td>
+			<td class="value">{{ validator.format % validator.value }}</td>
+		</tr>
+	{%- endfor %}
+</table>
+{%- if calling %}
+<h2>GATK Calling Metrics</h2>
+<table id="calling">
+	<tr>
+		<th class="name">Validator</th>
+		<th class="status">Status</th>
+		<th class="value">Value</th>
+		<th class="z_score">Z-score</th>
+	</tr>
+	{%- for validator in calling %}
+		<tr>
+			<th class="name">{{ validator.name }}</th>
+			<td class="status {{ validator.status | lower }}">{{ validator.status }}</td>
+			<td class="value">{{ validator.format % validator.value }}</td>
+			<td class="z_score">{{ validator.z_score }}</td>
+		</tr>
+	{%- endfor %}
+</table>
+{%- endif %}
+</body>
