@@ -1,3 +1,4 @@
+import os
 import re
 
 from bs4 import BeautifulSoup
@@ -298,7 +299,7 @@ class GatkCallingParser:
             try:
                 value = float(value)
             except ValueError:
-                pass
+                value = float('nan')
             
             new_data.append(value)
         
@@ -375,6 +376,7 @@ class GatkCallingParser:
             format_str = cls._format(config_format)
             value = cls._value(config_format, data[key]) if key in data else float('nan')
             name = config[key]['name'] if key in config else key
+            
             if key in cls.ZERO_PASS_KEYS:
                 if value == 0:
                     status = Status.PASS
@@ -417,7 +419,7 @@ class GatkCallingParser:
 class QcReporter:
     def __init__(self, src_dir: str):
         self._src_dir = src_dir
-        template_dir = self._src_dir + '/rules/variant/report/summary_report/templates'
+        template_dir = self._src_dir + '/rules/variant/report/summary/templates'
         env = Environment(loader=FileSystemLoader(template_dir), autoescape=True)
         self._xml_template = env.get_template('quality_report.xml')
         self._html_template = env.get_template('quality_report.html')
@@ -441,10 +443,10 @@ class QcReporter:
         trimmed_summary = FastQCParser.parse_summary_pair(trimmed_fastqc_r1, trimmed_fastqc_r2)
         qualimap_summary = QualimapParser.parse_summmary(qualimap_txt, qualimap_html)
         
-        format_filename = '%s/variant/validation/calling/name_format' % self._src_dir
-        stats_filename = '%s/variant/validation/calling/%s_mean_std' % (self._src_dir, panel_name)
+        format_filename = '%s/rules/variant/report/calling/stats/name_format' % self._src_dir
+        stats_filename = '%s/rules/variant/report/calling/stats/%s_mean_std' % (self._src_dir, panel_name)
         
-        if calling_report is not None:
+        if calling_report is not None and os.path.isfile(stats_filename):
             calling_summary = GatkCallingParser.parse_summary(calling_report, format_filename, stats_filename)
         else:
             calling_summary = []

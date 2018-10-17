@@ -5,6 +5,11 @@ samples:                            # List of sample categories to be analysed
 report_dir: report/01-variant       # Generated reports and essential output files would be stored there
 threads: 16                         # Number of threads to use in analysis
 
+reference:
+    index:
+        dict:
+            method: picard
+
 reads:                              # Prepare reads and quality reports for downstream analysis
     preprocess:                     # Pre-process of reads, eliminate sequencing artifacts, contamination ...
 
@@ -74,9 +79,8 @@ variant:                                    # Identify variation in reads given 
             min_mean_base_quality: 20       # Minimal average base quality of bases that support alternative allele
 
     report:
-#        calling_statistics:
-#            method: gatk
-#            dbsnp_version: v150
+        calling:
+            method: gatk
 
-        summary_report:
+        summary:
             method: custom
