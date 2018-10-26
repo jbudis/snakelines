@@ -2,24 +2,31 @@ import smtplib, socket
 import datetime
 import subprocess
 from typing import Optional, Union, List
+from email.mime.text import MIMEText
 
 
-def prepare_email(receiver: Union[str, List[str]], sender: str, message: str, subject: Optional[str] = None) -> str:
+def prepare_email(receiver: Union[str, List[str]], sender: str, message: str, subject: Optional[str] = None) -> MIMEText:
     """
     Prepare message to send.
     :param receiver: email address or list of adresses where to send the email
     :param message: message to send
     :param subject: optional subject of the message
     :param sender: address of sender (that should be in From:)
-    :return: formatted memail message
+    :return: formatted email message
     """
-    # Add the From: and To: headers at the start!
-    email_text = """From: {from_addr}\nTo: {to_addr}\nSubject: {subject}\n\n{message}"""
-    return email_text.format(from_addr=sender, to_addr=", ".join(receiver), subject=subject, message=message)
+    # create a Mimetext
+    msg = MIMEText(message)
+    msg["From"] = sender
+    msg["To"] = ", ".join(receiver)
+    if subject is None:
+        subject = "Snakelines report {date}".format(date=datetime.datetime.now().strftime("%Y-%m-%d %H:%M"))
+    msg["Subject"] = subject
+
+    return msg
 
 
 def send_email_smtp(receiver: Union[str, List[str]], message: str, host: str, port: int, subject: Optional[str] = None,
-                    login_name: Optional[str] = None, login_pass: Optional[str] = None) -> bool:
+                    login_name: Optional[str] = None, login_pass: Optional[str] = None, quiet: bool = True) -> bool:
     """
     Sends email using SMTP through host:port gate to receiver with message and subject.
     Additionally, if login name and pass if specified, logins to specified account and sends it from there.
@@ -30,6 +37,7 @@ def send_email_smtp(receiver: Union[str, List[str]], message: str, host: str, po
     :param subject: optional subject of the message
     :param login_name: optional login name
     :param login_pass: optional login password
+    :param quiet: suppress printouts?
     :return: True if completed successfully
     """
     # setup defaults:
@@ -37,16 +45,14 @@ def send_email_smtp(receiver: Union[str, List[str]], message: str, host: str, po
     if login_name is not None:
         from_addr = login_name
 
+    # prepare receiver addresses
     if type(receiver) is str:
         to_addr = [receiver]
     else:
         to_addr = receiver
 
-    if subject is None:
-        subject = "Snakelines report {date}".format(date=datetime.datetime.now().strftime("%Y-%m-%d %H:%M"))
-
     # prepare email
-    msg = prepare_email(to_addr, from_addr, message, subject)
+    msg = prepare_email(to_addr, from_addr, message, subject).as_string()
 
     # try to send it
     success = False
@@ -66,21 +72,21 @@ def send_email_smtp(receiver: Union[str, List[str]], message: str, host: str, po
 
     # catch errors and finalize
     except socket.error as e:
-        print("Could not connect to {host}:{port:d} - is it listening / up? ({error})".format(host=host, port=port, error=repr(e)))
+        if not quiet:
+            print("Could not connect to {host}:{port:d} - is it listening / up? ({error})".format(host=host, port=port, error=repr(e)))
     except Exception as e:
-        print("Unknown error ({error})".format(error=repr(e)))
+        if not quiet:
+            print("Unknown error ({error})".format(error=repr(e)))
     finally:
         if server is not None:
             server.quit()
-
-    print(msg, from_addr, to_addr, subject)
 
     # return success flag
     return success
 
 
 def send_email_sendmail(receiver: Union[str, List[str]], message: str, subject: Optional[str] = None, sender: Optional[str] = None,
-                        command: str = 'sendmail', params: str = '-t -oi') -> int:
+                        command: str = '/usr/sbin/sendmail', params: str = '-t -oi', quiet: bool = True) -> int:
     """
     Sends email using linux command to receiver with message and subject.
     :param receiver: email address or list of adresses where to send the email
@@ -89,6 +95,7 @@ def send_email_sendmail(receiver: Union[str, List[str]], message: str, subject: 
     :param sender: optional sender address
     :param command: linux command for email sending
     :param params: parameters for the command
+    :param quiet: suppress printouts?
     :return: integer returncode of send email command, (0 if success)
     """
     # set defaults
@@ -96,23 +103,27 @@ def send_email_sendmail(receiver: Union[str, List[str]], message: str, subject: 
     if sender is not None:
         from_addr = sender
 
-    # prepare message
+    # prepare receiver addresses
     if type(receiver) is str:
         to_addr = [receiver]
     else:
         to_addr = receiver
+
+    # prepare message
     msg = prepare_email(to_addr, from_addr, message, subject)
 
     # send message
-    p = subprocess.Popen("{command} {params}".format(command=command, params=params), stdin=subprocess.PIPE)
-    _, stderr = p.communicate(msg)
+    p = subprocess.Popen(["{command} {params}".format(command=command, params=params)], stdin=subprocess.PIPE, stderr=subprocess.PIPE, stdout=subprocess.PIPE, shell=True)
+    stdout_str, stderr_str = p.communicate(msg.as_bytes())
 
     # check if successful
-    if p.returncode != 0:
-        print("Sending of email failed with error:\n" + stderr)
+    if p.returncode != 0 and not quiet:
+        print("Sending of email failed with error (returncode={error}, stderr={stderr}, stdout={stdout}):\n".format(error=p.returncode, stderr=stderr_str, stdout=stdout_str))
 
     # return returncode
     return p.returncode
 
 
-send_email_smtp('mkmarcelgg@gmail.com', 'test', host='smtp.gmail.com', port=587, login_name="snakelines.mailclient@gmail.com", login_pass="hesielko")
+# send_email_smtp('mkmarcelgg@gmail.com', 'test', host='smtp.gmail.com', port=587, login_name="snakelines.mailclient@gmail.com", login_pass="hesielko", quiet = False)
+# send_email_sendmail('mkmarcelgg@gmail.com', 'test', quiet = False)
+
