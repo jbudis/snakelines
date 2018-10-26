@@ -24,37 +24,37 @@ rule finalise__classify_reads_reference_based:
     """
     Pipeline classify preprocess reads against chosen reference sequences. According to their taxonomic labels,
     number of reads per taxonomic units are summarized into graphical and tabular reports.
+    :input kronas: interactive multi-level pie plots of taxonomic counts
+    :input tables: summary tables with number and proportions of reads mapped to taxonomic units
+    :input barplots: barplots with number and proportions of reads mapped to taxonomic units
+    :output kronas: interactive multi-level pie plots of taxonomic counts (in the report directory)
+    :output tables: summary tables with number and proportions of reads mapped to taxonomic units (in the report directory)
+    :output barplots: barplots with number and proportions of reads mapped to taxonomic units (in the report directory)
     """
     input:
         rules.finalise__quality_report.output,
         rules.finalise__preprocess_reads.output,
 
-        # Interactive multi-level pie plots of taxonomic counts
         kronas = expand('classification/{reference}/report/krona/taxonomic_counts.html',
                          reference=pipeline.references),
 
-        # Summary tables with number and proportions of reads mapped to taxonomic units
         tables = expand('classification/{reference}/report/tsv/{tax_level}.{type}.tsv',
                          reference=pipeline.references, tax_level=tax_levels_count_table,
                          type=['counts', 'ratios']),
 
-        # Barplots with number and proportions of reads mapped to taxonomic units
         barplots = expand('classification/{reference}/report/figures/{tax_level}.{type}.{format}',
                            reference=pipeline.references, tax_level=tax_levels_barplot,
                            type=['counts', 'ratios'], format=barplot_formats),
 
     output:
-        # Interactive multi-level pie plots of taxonomic counts
         kronas = expand('{report_dir}/{reference}/krona/taxonomic_counts.html',
                          report_dir=config['report_dir'], reference=pipeline.references),
 
-        # Summary tables with number and proportions of reads mapped to taxonomic units
         tables = expand('{report_dir}/{reference}/tsv/{tax_level}.{type}.tsv',
                          report_dir=config['report_dir'],
                          reference=pipeline.references, tax_level=tax_levels_count_table,
                          type=['counts', 'ratios']),
 
-        # Barplots with number and proportions of reads mapped to taxonomic units
         barplots = expand('{report_dir}/{reference}/figures/{tax_level}.{type}.{format}',
                            report_dir=config['report_dir'],
                            reference=pipeline.references, tax_level=tax_levels_barplot,

@@ -1,7 +1,7 @@
 rule spades__assemble_reads_into_contigs:
     """
     Assemble preprocessed reads into the larger genomic sequences, contigs. Also generate contig overlap graphs and
-    initial scaffolds.
+    initial scaffolds. Use 'spades' program.
     :input r1: gzipped fastq file with left reads
     :input r2: gzipped fastq file with right reads
     :output fastq: assembly graph .fastq file

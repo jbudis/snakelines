@@ -13,18 +13,18 @@ include: srcdir('Snakefile.mapping')
 rule finalise__call_germline_variants:
     """
     Pipeline identify SNPs and small insertions/deletions from mapped reads.
+    :input variant: SNP and indel variants in VCF file
+    :output variant: SNP and indel variants in VCF file (in the report directory)
     """
     input:
         rules.finalise__quality_report.output,
         rules.finalise__preprocess_reads.output,
         rules.finalise__map_reads_to_reference.output,
 
-        # SNP and indel variants in VCF file
         variants = expand('mapping/{sr.reference}/{map_type}/vardict-wgs/{sr.sample}.vcf',
                            sr=pipeline.sample_references, map_type=pipeline.postprocessed_map_type),
 
     output:
-        # SNP and indel variants in VCF file
         variants = expand('{report_dir}/{sr.reference}/samples/{sr.sample}/variants.vcf',
                            report_dir=config['report_dir'], sr=pipeline.sample_references),
 

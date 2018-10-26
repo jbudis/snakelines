@@ -26,8 +26,8 @@ rule finalise__map_reads_to_reference:
     :input bam_indices: BAM file indices (.bam.bai)
     :input quality_reports: mapping statistics retrieved from BAM file (.pdf)
     :input summary_report: aggregated mapping statistics (.pdf)
-    :output quality_reports: mapping statistics retrieved from BAM file (.pdf)
-    :output summary_report: aggregated mapping statistics (.pdf)
+    :output quality_reports: mapping statistics retrieved from BAM file (.pdf) (in the report directory)
+    :output summary_report: aggregated mapping statistics (.pdf) (in the report directory)
     """
     input:
         rules.finalise__quality_report.output,

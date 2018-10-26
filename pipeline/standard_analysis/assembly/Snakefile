@@ -13,26 +13,26 @@ rule finalise__assemble_reads:
     Pipeline filter and revise fastq files from the reads/original directory. All preprocess steps, such as trimming,
     deduplication and filtering of contamination reads are defined in the configuration file, part 'preprocess'.
     Preprocess steps are executed gradually, i.e. output reads of one step are input to the following step.
+    :input contigs: assembled contigs in Fasta format
+    :input overlap_graphs: contig overlap graph
+    :input quality_reports: quality control metrics of assembled contigs
+    :output overlap_graphs: contig overlap graph (in the report directory)
+    :output quality_reports: quality control metrics of assembled contigs (in the report directory)
     """
     input:
         rules.finalise__quality_report.output,
         rules.finalise__preprocess_reads.output,
 
-        # Assembled contigs in Fasta format
         contigs = expand('assembly/{sample}/contigs.fa', sample=pipeline.samples),
 
-        # Contig overlap graph
         overlap_graphs = expand('assembly/{sample}/assembly_graph.svg', sample=pipeline.samples),
 
-        # Quality control metrics of assembled contigs
         quality_reports = expand('assembly/{sample}/quality_report/report.pdf', sample=pipeline.samples),
 
     output:
-        # Contig overlap graph
         overlap_graphs = expand('{report_dir}/assembly/{sample}/contigs.svg',
                                  report_dir=config['report_dir'], sample=pipeline.samples),
 
-        # Quality control metrics of assembled contigs
         quality_reports = expand('{report_dir}/assembly/{sample}/report.pdf',
                                   report_dir=config['report_dir'], sample=pipeline.samples),
 

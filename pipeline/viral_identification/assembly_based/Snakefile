@@ -15,18 +15,18 @@ rule finalise__identify_viruses:
     """
     Pipeline annotates assembled contigs from preprocessed reads. Annotations, such as homologies with
     reference databases, coverage and results of prediction tools are presented in sortable, filterable HTML table.
+    :input summary_html: summary HTML report with annotations of assembled contigs
+    :output summary_html: summary HTML report with annotations of assembled contigs (in the report directory)
     """
     input:
         rules.finalise__quality_report.output,
         rules.finalise__preprocess_reads.output,
         rules.finalise__assemble_reads.output,
 
-        # Summary HTML report with annotations of assembled contigs
         summary_html = expand('assembly/{sample}/annotation/contigs/summary.html',
                                sample=pipeline.samples),
 
     output:
-        # Summary HTML report with annotations of assembled contigs
         summary_html = expand('{report_dir}/{sample}/contig_annotations.html',
                                sample=pipeline.samples, report_dir=config['report_dir']),
 

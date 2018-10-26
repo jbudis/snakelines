@@ -224,6 +224,7 @@ def crawl_snakedir(input_snakedir, docs_snakedir):
     files_done = 0
     rules_written = 0
     rules_wo_docs = 0
+    summary_name = 'summary.rst'
 
     if not input_snakedir.endswith('/'):
         input_snakedir += '/'
@@ -231,17 +232,25 @@ def crawl_snakedir(input_snakedir, docs_snakedir):
     if not docs_snakedir.endswith('/'):
         docs_snakedir += '/'
 
+    # define templates
+    rst = ""
+    file_template = ":download:`File: {filename} <{filepath}>` ({doc_rules}/{all_rules} documented/all rule(s))\n"
+    dir_template = ":download:`Directory: {filename} <{filepath}>` ({doc_rules}/{all_rules} documented/all rule(s), {file_count} file(s))\n"
+
     # look at the dir:
     root, dirs, files = next(os.walk(input_snakedir))
 
     # first do files
     for filename in files:
         if filename.endswith('.snake') or filename.startswith('Snakefile'):
-            rw, rwo_docs = generate_rst(input_snakedir + filename, docs_snakedir + filename + '.rst')
+            rst_path = docs_snakedir + filename + '.rst'
+            rst_file = filename + '.rst'
+            rw, rwo_docs = generate_rst(input_snakedir + filename, rst_path)
             if rw > 0 or rwo_docs > 0:
                 files_done += 1
                 rules_written += rw
                 rules_wo_docs += rwo_docs
+            rst += file_template.format(filename=rst_file, filepath=rst_path, doc_rules=rw, all_rules=rw + rwo_docs)
 
     # recursive do directories
     for directory in dirs:
@@ -250,11 +259,22 @@ def crawl_snakedir(input_snakedir, docs_snakedir):
         rules_written += rw
         rules_wo_docs += rwo_docs
 
+        rst += dir_template.format(filename=directory, filepath=docs_snakedir + directory + '/' + summary_name,
+                                   doc_rules=rw, all_rules=rw + rules_wo_docs, file_count=fd)
+
+    # write the summary doc:
+    if rst != "":
+        # open and write file
+        dirname = os.path.dirname(docs_snakedir + summary_name)
+        if not os.path.exists(dirname):
+            os.makedirs(dirname)
+        with open(docs_snakedir + summary_name, 'w') as f:
+            f.write(rst)
+
     return files_done, rules_written, rules_wo_docs
 
 
 if __name__ == '__main__':
-
     # run documentation generation for rules and pipelines:
     files, rules, missing = crawl_snakedir('rules', 'docs/rules')
     files_p, rules_p, missing_p = crawl_snakedir('pipeline', 'docs/pipeline')
