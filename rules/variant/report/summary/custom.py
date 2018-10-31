@@ -100,7 +100,7 @@ class QualimapParser:
     PERCENTAGE_REGEX = FLOAT_REGEX + '%'
     MEAN_COVERAGE_REGEX = 'mean coverageData = ' + FLOAT_REGEX + 'X'
     COVERAGE_RATIO_REGEX = 'There is a ' + PERCENTAGE_REGEX + ' of reference with a coverageData >='
-    ERROR_RATE_REGEX = 'general error rate = ' + PERCENTAGE_REGEX
+    ERROR_RATE_REGEX = 'general error rate = ' + FLOAT_REGEX
     MAPPING_QUALITY_REGEX = 'mean mapping quality = ' + FLOAT_REGEX
     
     @classmethod
@@ -117,6 +117,11 @@ class QualimapParser:
     
     @classmethod
     def _parse_value(cls, text, is_percentage=False) -> float:
+        """
+        :param text:
+        :param is_percentage: if text value is in form of percetnage (e.g. '98.3 %')
+        :return: percentage is returned as ratio (e.g. '98.3 %' == 0.983)
+        """
         if is_percentage:
             match_obj = re.search(cls.PERCENTAGE_REGEX, text)
         else:
@@ -124,7 +129,7 @@ class QualimapParser:
         
         if match_obj is not None:
             if is_percentage:
-                result = float(match_obj.group()[:-1])
+                result = float(match_obj.group()[:-1]) / 100
             else:
                 result = float(match_obj.group())
         else:
@@ -180,25 +185,18 @@ class QualimapParser:
             element.find_next_sibling('table') \
                 .find('td', text='Mapped reads') \
                 .find_next_sibling()
-            
-            match_obj = re.search(cls.PERCENTAGE_REGEX, element.text)
-            if match_obj is not None:
-                result = float(match_obj.group()[:-1])
-            else:
-                raise ValueError('percentage not found in line %s' % element.text)
+            result = cls._parse_value(element.text, True)
         
         return result
     
     @classmethod
     def parse_summmary(cls, qualimap_txt: str, report_html: str) -> list:
         summary = []
-        
-        # TODO fix percentage thresholds
-        
+
         all_mapped_ratio = cls._all_mapped_reads(report_html)
         status = cls._value2status(all_mapped_ratio, 0.9, 0.95)
         summary.append(
-            {'name': cls.ALL_MAPPED_RATIO, 'status': status, 'value': all_mapped_ratio, 'format': '%.2f %%'}
+            {'name': cls.ALL_MAPPED_RATIO, 'status': status, 'value': all_mapped_ratio * 100, 'format': '%.2f%%'}
         )
         
         mapped_ratio = cls._panel_mapped_reads(report_html)
@@ -206,13 +204,13 @@ class QualimapParser:
             # panel was used
             status = cls._value2status(mapped_ratio, 0.6, 0.8)
             summary.append(
-                {'name': cls.MAPPED_RATIO, 'status': status, 'value': mapped_ratio, 'format': '%.2f %%'}
+                {'name': cls.MAPPED_RATIO, 'status': status, 'value': mapped_ratio * 100, 'format': '%.2f%%'}
             )
         
         mean_coverage = cls._mean_coverage(qualimap_txt)
         status = cls._value2status(mean_coverage, 0.2, 0.3)
         summary.append(
-            {'name': cls.MEAN_COVERAGE, 'status': status, 'value': mean_coverage, 'format': '%.2f'}
+            {'name': cls.MEAN_COVERAGE, 'status': status, 'value': mean_coverage, 'format': '%.2fX'}
         )
         
         mapping_quality = cls._parse_mapping_quality(qualimap_txt)
@@ -224,40 +222,40 @@ class QualimapParser:
         general_error = cls._parse_general_error(qualimap_txt)
         status = cls._value2status(general_error, 0.5, 0.4)
         summary.append(
-            {'name': cls.ERROR_RATE, 'status': status, 'value': general_error, 'format': '%.3f %%'}
+            {'name': cls.ERROR_RATE, 'status': status, 'value': general_error, 'format': '%.4f'}
         )
         
         covered_ratio = cls._coverage_ratio(qualimap_txt, 1)
         status = cls._value2status(covered_ratio, 0.8, 0.9)
         summary.append(
-            {'name': cls.COVERAGE_RATIO, 'status': status, 'value': covered_ratio, 'format': '%.2f %%'}
+            {'name': cls.COVERAGE_RATIO, 'status': status, 'value': covered_ratio * 100, 'format': '%.2f %%'}
         )
         
         multi_covered_ratio = cls._coverage_ratio(qualimap_txt, 10)
         status = cls._value2status(multi_covered_ratio, 0.7, 0.8)
         summary.append({
-            'name': cls.MULTI_COVERAGE_RATIO, 'status': status, 'value': multi_covered_ratio, 'format': '%.2f %%'})
+            'name': cls.MULTI_COVERAGE_RATIO, 'status': status, 'value': multi_covered_ratio * 100, 'format': '%.2f %%'})
         
         return summary
     
     @classmethod
     def _value2status(cls, value: float, fail_limit: float, warn_limit: float) -> str:
-        if fail_limit < warn_limit:
+        assert fail_limit != warn_limit
+        
+        status = Status.FAIL
+        if warn_limit > fail_limit:
             # greater is better
-            if value < fail_limit:
-                status = Status.FAIL
-            elif value < warn_limit:
-                status = Status.WARN
-            else:
+            if value >= warn_limit:
                 status = Status.PASS
-        else:
+            elif value >= fail_limit:
+                status = Status.WARN
+        
+        elif fail_limit > warn_limit:
             # lower is better
-            if value > fail_limit:
-                status = Status.FAIL
-            elif value > warn_limit:
-                status = Status.WARN
-            else:
+            if value <= warn_limit:
                 status = Status.PASS
+            elif value <= fail_limit:
+                status = Status.WARN
         
         return status
 
