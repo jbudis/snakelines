@@ -18,7 +18,7 @@ rule spades__assemble_reads_into_contigs:
         r1 = 'reads/%s/{sample}_R1.fastq.gz' % pipeline.preprocessed_read_type,
         r2 = 'reads/%s/{sample}_R2.fastq.gz' % pipeline.preprocessed_read_type
     output:
-        fastq     = 'assembly/{sample}/assembly_graph.fastq',
+        fastq     = 'assembly/{sample}/assembly_graph.fastg',
         gfa       = 'assembly/{sample}/assembly_graph.gfa',
         contigs   = 'assembly/{sample}/contigs.fa',
         scaffolds = 'assembly/{sample}/scaffolds.fa'
