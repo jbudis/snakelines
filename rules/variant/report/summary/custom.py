@@ -192,49 +192,71 @@ class QualimapParser:
     @classmethod
     def parse_summmary(cls, qualimap_txt: str, report_html: str) -> list:
         summary = []
-
+        
         all_mapped_ratio = cls._all_mapped_reads(report_html)
         status = cls._value2status(all_mapped_ratio, 0.9, 0.95)
-        summary.append(
-            {'name': cls.ALL_MAPPED_RATIO, 'status': status, 'value': all_mapped_ratio * 100, 'format': '%.2f%%'}
-        )
+        summary.append({
+            'name': cls.ALL_MAPPED_RATIO,
+            'status': status,
+            'value': all_mapped_ratio,
+            'value_str': '%.2f%%' % (all_mapped_ratio * 100)
+        })
         
         mapped_ratio = cls._panel_mapped_reads(report_html)
         if mapped_ratio is not None:
             # panel was used
             status = cls._value2status(mapped_ratio, 0.6, 0.8)
-            summary.append(
-                {'name': cls.MAPPED_RATIO, 'status': status, 'value': mapped_ratio * 100, 'format': '%.2f%%'}
-            )
+            summary.append({
+                'name': cls.MAPPED_RATIO,
+                'status': status,
+                'value': mapped_ratio,
+                'value_str': '%.2f%%' % (mapped_ratio * 100)
+            })
         
         mean_coverage = cls._mean_coverage(qualimap_txt)
         status = cls._value2status(mean_coverage, 0.2, 0.3)
-        summary.append(
-            {'name': cls.MEAN_COVERAGE, 'status': status, 'value': mean_coverage, 'format': '%.2fX'}
-        )
+        summary.append({
+            'name': cls.MEAN_COVERAGE,
+            'status': status,
+            'value': mean_coverage,
+            'value_str': '%.2fX' % mean_coverage,
+        })
         
         mapping_quality = cls._parse_mapping_quality(qualimap_txt)
         status = cls._value2status(mapping_quality, 0.35, 0.38)
-        summary.append(
-            {'name': cls.MAPPING_QUALITY, 'status': status, 'value': mapping_quality, 'format': '%.2f'}
-        )
+        summary.append({
+            'name': cls.MAPPING_QUALITY,
+            'status': status,
+            'value': mapping_quality,
+            'value_str': '%.2f' % mapping_quality,
+        })
         
         general_error = cls._parse_general_error(qualimap_txt)
         status = cls._value2status(general_error, 0.5, 0.4)
-        summary.append(
-            {'name': cls.ERROR_RATE, 'status': status, 'value': general_error, 'format': '%.4f'}
-        )
+        summary.append({
+            'name': cls.ERROR_RATE,
+            'status': status,
+            'value': general_error,
+            'value_str': '%.4f' % general_error,
+        })
         
         covered_ratio = cls._coverage_ratio(qualimap_txt, 1)
         status = cls._value2status(covered_ratio, 0.8, 0.9)
-        summary.append(
-            {'name': cls.COVERAGE_RATIO, 'status': status, 'value': covered_ratio * 100, 'format': '%.2f %%'}
-        )
+        summary.append({
+            'name': cls.COVERAGE_RATIO,
+            'status': status,
+            'value': covered_ratio,
+            'value_str': '%.2f%%' % (covered_ratio * 100),
+        })
         
         multi_covered_ratio = cls._coverage_ratio(qualimap_txt, 10)
         status = cls._value2status(multi_covered_ratio, 0.7, 0.8)
         summary.append({
-            'name': cls.MULTI_COVERAGE_RATIO, 'status': status, 'value': multi_covered_ratio * 100, 'format': '%.2f %%'})
+            'name': cls.MULTI_COVERAGE_RATIO,
+            'status': status,
+            'value': multi_covered_ratio,
+            'value_str': '%.2f%%' % (multi_covered_ratio * 100),
+        })
         
         return summary
     
@@ -267,15 +289,8 @@ class GatkCallingParser:
     Z_SCORE_WARN = 3.0
     Z_SCORE_FAIL = 5.0
     
-    ZERO_PASS_KEYS = [
-        'FILTERED_INDELS',
-        'FILTERED_SNPS',
-        'NUM_IN_DB_SNP_MULTIALLELIC',
-        'TOTAL_MULTIALLELIC_SNPS'
-    ]
-    
     @classmethod
-    def _parse_report(cls, calling_report: str) -> dict:
+    def _parse_data(cls, calling_report: str) -> dict:
         """
         :param calling_report: *.variant_calling_summary_metrics
         :return:
@@ -291,21 +306,21 @@ class GatkCallingParser:
         return dict(zip(header, cls._numify(data)))
     
     @classmethod
-    def _numify(cls, data):
+    def _numify(cls, data) -> list:
         new_data = []
         for value in data:
             try:
                 value = float(value)
             except ValueError:
-                value = float('nan')
+                value = None
             
             new_data.append(value)
         
         return new_data
     
     @classmethod
-    def _parse_stats(cls, panel_stats: str) -> list:
-        stats = []
+    def _parse_stats(cls, panel_stats: str) -> dict:
+        stats = {}
         with open(panel_stats, 'r') as stats_file:
             for line in stats_file:
                 line = line.strip()
@@ -313,7 +328,7 @@ class GatkCallingParser:
                     continue
                 
                 key, mean, std = line.split('\t')
-                stats.append((key, float(mean), float(std)))
+                stats[key] = {'mean': float(mean), 'std': float(std)}
         
         return stats
     
@@ -328,8 +343,8 @@ class GatkCallingParser:
         return status
     
     @classmethod
-    def _parse_format(cls, format_filename: str) -> dict:
-        result = {}
+    def _parse_config(cls, format_filename: str) -> list:
+        result = []
         with open(format_filename, 'r') as in_file:
             for line in in_file:
                 line = line.strip()
@@ -337,18 +352,18 @@ class GatkCallingParser:
                     continue
                 
                 key, name, value_type = line.split('\t')
-                result[key] = {'name': name, 'format': value_type}
+                result.append((key, name, value_type))
         
         return result
     
     @classmethod
-    def _format(cls, config_format: dict):
-        if config_format == 'int':
+    def _format(cls, value_type: str):
+        if value_type == 'int':
             result = '%d'
-        elif config_format == 'float':
+        elif value_type == 'float':
             result = '%.3f'
-        elif config_format == 'pct':
-            result = '%.2f %%'
+        elif value_type == 'pct':
+            result = '%.2f%%'
         else:
             result = '%s'
         return result
@@ -363,53 +378,92 @@ class GatkCallingParser:
         return result
     
     @classmethod
-    def parse_summary(cls, calling_report: str, format_filename: str, stats_filename: str) -> list:
-        data = cls._parse_report(calling_report)  # type: dict
-        stats = cls._parse_stats(stats_filename)  # type: list
-        config = cls._parse_format(format_filename)  # type: dict
+    def _normal_validation(cls, name: str, value: float, value_type: str, mean: float, std: float) -> dict:
+        """
+        Normal is good.
+        :param name:
+        :param value:
+        :param value_type:
+        :param mean:
+        :param std:
+        :return:
+        """
+        if value is None:
+            z_score = ''
+            z_score_str = ''
+            status = Status.NONE
+            value = ''
+            value_str = ''
+        else:
+            z_score = 0 if std == 0 else (value - mean) / std
+            z_score_str = '%.2f' % z_score
+            status = cls._zscore2status(z_score)
+            value_str = cls._format(value_type) % value
+        
+        return {
+            'name': name,
+            'status': status,
+            'value': value,
+            'value_str': value_str,
+            'z_score': z_score,
+            'z_score_str': z_score_str
+        }
+    
+    @classmethod
+    def _zero_validation(cls, name: str, value: float, value_type: str) -> dict:
+        """
+        Zero is good.
+        :param name:
+        :param value:
+        :param value_type:
+        :return:
+        """
+        if value is None:
+            status = Status.NONE
+            value = ''
+            value_str = ''
+        else:
+            if value == 0:
+                status = Status.PASS
+            elif 1 <= value <= 5:
+                status = Status.WARN
+            else:
+                status = Status.FAIL
+            
+            value_str = cls._format(value_type) % value
+        
+        return {
+            'name': name,
+            'status': status,
+            'value': value,
+            'value_str': value_str,
+            'z_score': '',
+            'z_score_str': ''
+        }
+    
+    @classmethod
+    def parse_summary(cls, data_filename: str, config_filename: str, stats_filename: str) -> list:
+        """
+        https://broadinstitute.github.io/picard/picard-metric-definitions.html#CollectVariantCallingMetrics.VariantCallingDetailMetrics
+        :param data_filename:
+        :param config_filename:
+        :param stats_filename:
+        :return:
+        """
+        data = cls._parse_data(data_filename)  # type: dict
+        stats = cls._parse_stats(stats_filename)  # type: dict
+        config = cls._parse_config(config_filename)  # type: list
         
         summary = []
-        for key, std, mean in stats:
-            config_format = config[key]['format'] if key in config else 'float'
-            format_str = cls._format(config_format)
-            value = cls._value(config_format, data[key]) if key in data else float('nan')
-            name = config[key]['name'] if key in config else key
-            
-            if key in cls.ZERO_PASS_KEYS:
-                if value == 0:
-                    status = Status.PASS
-                elif 1 <= value <= 5:
-                    status = Status.WARN
-                elif 5 <= value:
-                    status = Status.FAIL
-                else:
-                    status = Status.NONE
-                
-                summary.append({
-                    'name': name,
-                    'status': status,
-                    'value': value,
-                    'format': format_str,
-                    'z_score': ''
-                })
-            elif std != 0:
-                z_score = (data[key] - mean) / std
-                status = cls._zscore2status(z_score)
-                summary.append({
-                    'name': name,
-                    'status': status,
-                    'value': value,
-                    'format': format_str,
-                    'z_score': '%.2f' % z_score
-                })
+        for key, name, value_type in config:
+            assert key in data
+            value = data[key]
+            if key in stats:
+                mean = stats[key]['mean']
+                std = stats[key]['std']
+                summary.append(cls._normal_validation(name, value, value_type, mean, std))
             else:
-                summary.append({
-                    'name': name,
-                    'status': Status.NONE,
-                    'value': value,
-                    'format': format_str,
-                    'z_score': float('nan')
-                })
+                summary.append(cls._zero_validation(name, value, value_type))
         
         return summary
 
