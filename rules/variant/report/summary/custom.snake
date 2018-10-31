@@ -11,13 +11,13 @@ rule custom__summary_report:
             orientation=[1,2],
             read_type=pipeline.preprocessed_read_type,
         ),
-        qualimap_txt = 'mapping/{reference}/{map_type}/stats-{panel}/samples/{sample}/genome_results.txt',
-        qualimap_html = 'mapping/{reference}/{map_type}/stats-{panel}/samples/{sample}/qualimapReport.html',
-        calling_report = 'mapping/{reference}/{map_type}/{caller}-{panel}/report/calling/{sample}.variant_calling_summary_metrics'
+        qualimap_txt = 'mapping/{reference}/deduplicated/stats-{panel}/samples/{sample}/genome_results.txt',
+        qualimap_html = 'mapping/{reference}/deduplicated/stats-{panel}/samples/{sample}/qualimapReport.html',
+        calling_stats = 'variant/{reference}-{panel}/original/calling_metrics/{sample}.variant_calling_summary_metrics'
     output:
-        xml  = 'mapping/{reference}/{map_type}/{caller}-{panel}/report/{sample}.xml',
-        html = 'mapping/{reference}/{map_type}/{caller}-{panel}/report/{sample}.html',
-        pdf  = 'mapping/{reference}/{map_type}/{caller}-{panel}/report/{sample}.pdf',
+        xml = 'variant/{reference}-{panel}/original/report/{sample}.xml',
+        html = 'variant/{reference}-{panel}/original/report/{sample}.html',
+        pdf = 'variant/{reference}-{panel}/original/report/{sample}.pdf'
     run:
         reporter = QcReporter(config['snakelines_dir'])
         reporter.run(
@@ -32,7 +32,7 @@ rule custom__summary_report:
             output.xml,
             output.html,
             output.pdf,
-            input.calling_report
+            input.calling_stats
         )
 
 

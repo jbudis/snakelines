@@ -21,13 +21,14 @@ rule finalise__call_germline_variants:
 
         # SNP and indel variants in VCF file
         variants = expand(
-            'mapping/{sr.reference}/{map_type}/vardict-wgs/{sr.sample}.vcf',
-            sr=pipeline.sample_references, map_type=pipeline.postprocessed_map_type
+            # TODO match with vardict output
+            'variant/{sr.reference}-wgs/original/{sr.sample}.vcf',
+            sr=pipeline.sample_references
         ),
 
-        quality_report = expand(
-            'mapping/{sr.reference}/{map_type}/vardict-wgs/report/{sr.sample}.pdf',
-            sr=pipeline.sample_references, map_type=pipeline.postprocessed_map_type
+        report = expand(
+            'variant/{sr.reference}-wgs/original/report/{sr.sample}.pdf',
+            sr=pipeline.sample_references
         ),
 
     output:
@@ -37,8 +38,8 @@ rule finalise__call_germline_variants:
             report_dir=config['report_dir'], sr=pipeline.sample_references
         ),
 
-        quality_report = expand(
-            '{report_dir}/{sr.reference}/samples/{sr.sample}/quality_report.pdf',
+        report = expand(
+            '{report_dir}/{sr.reference}/samples/{sr.sample}/summary.pdf',
             report_dir=config['report_dir'], sr=pipeline.sample_references,
         )
 
