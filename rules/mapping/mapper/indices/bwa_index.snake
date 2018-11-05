@@ -1,0 +1,26 @@
+rule bwa__prepare_index:
+    '''
+    Generate mapping index that is utilized by BWA algorithm to map reads to a reference genome
+    '''
+    input:
+        '{fadir}/{sequence}.fa'
+    output:
+        '{fadir}/bwa_index/{sequence}.amb',
+        '{fadir}/bwa_index/{sequence}.ann',
+        '{fadir}/bwa_index/{sequence}.bwt',
+        '{fadir}/bwa_index/{sequence}.pac',
+        '{fadir}/bwa_index/{sequence}.sa'
+    params:
+        index = '{fadir}/bwa_index/{sequence}'
+    log:
+        out = '{fadir}/bwa_index/log/{sequence}.log',
+        err = '{fadir}/bwa_index/log/{sequence}.err',
+    shell:
+        '''
+        bwa index \
+            -p {params.index} \
+            -a bwtsw \
+            {input} \
+        >  {log.out} \
+        2> {log.err}
+        '''

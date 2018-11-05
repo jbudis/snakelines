@@ -1,0 +1,29 @@
+include: srcdir('indices/bwa_index.snake')
+
+rule bwa__map_reads_to_reference:
+    '''
+    For input preprocessed reads bwa finds the most similar genomic region in the provided reference genome.
+    '''
+    input:
+        r1    = 'reads/%s/{sample}_R1.fastq.gz' % pipeline.preprocessed_read_type,
+        r2    = 'reads/%s/{sample}_R2.fastq.gz' % pipeline.preprocessed_read_type,
+        index = 'reference/{reference}/bwa_index/{reference}.bwt',
+    output:
+        bam   = 'mapping/{reference}/original/{sample}.bam'
+    log:
+        err   = 'mapping/{reference}/original/log/{sample}.bwa.map_stats'
+    params:
+        index = 'reference/{reference}/bwa_index/{reference}',
+    threads:
+        int(config['threads'])
+    shell:
+        '''
+        bwa mem \
+            -t {threads} \
+            {params.index} \
+            {input.r1} \
+            {input.r2} \
+        2> {log.err} \
+        | samtools view -bS - \
+        > {output.bam}
+        '''
