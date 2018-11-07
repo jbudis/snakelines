@@ -398,6 +398,7 @@ class GatkCallingParser:
             z_score = 0 if std == 0 else (value - mean) / std
             z_score_str = '%.2f' % z_score
             status = cls._zscore2status(z_score)
+            value = value * 100 if value_type == 'pct' else value
             value_str = cls._format(value_type) % value
         
         return {
@@ -429,7 +430,8 @@ class GatkCallingParser:
                 status = Status.WARN
             else:
                 status = Status.FAIL
-            
+
+            value = value * 100 if value_type == 'pct' else value
             value_str = cls._format(value_type) % value
         
         return {

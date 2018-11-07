@@ -13,7 +13,7 @@ NUM_IN_DB_SNP_MULTIALLELIC	Known Multi-allelic SNPs	int
 NUM_SINGLETONS	Variants in single sample	int
 PCT_DBSNP	Ratio of known SNPs	pct
 PCT_DBSNP_INDELS	Ratio of known INDELs	pct
-SNP_REFERENCE_BIAS	Ratio of ref at hetero site	pct
+SNP_REFERENCE_BIAS	Ratio of REF at hetero site	pct
 TOTAL_COMPLEX_INDELS	Total complex INDELs	int
 TOTAL_INDELS	Total INDELs	int
 TOTAL_MULTIALLELIC_SNPS	Total multi-allelic SNPs	int

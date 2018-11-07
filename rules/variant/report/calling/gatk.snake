@@ -22,28 +22,18 @@ rule gatk__fix_vcf_header:
             2>{log.err}
         '''
 
-#rule gatk__index_dbsnp:
-#    '''
-#    generates .idx index file for DBSNP VCF
-#    '''
-#    input:
-#        dbsnp = 'reference/{reference}/dbsnp/dbsnp.vcf',
-#        fasta = 'reference/{reference}/{reference}.fa'
-#    output:
-#        dbsnp = 'reference/{reference}/dbsnp/dbsnp.fixed.vcf',
-#        dbsnp_index = 'reference/{reference}/dbsnp/dbsnp.fixed.vcf.idx',
-#    log:
-#        out = 'reference/{reference}/dbsnp/log/index.out',
-#        err = 'reference/{reference}/dbsnp/log/index.err'
-#    shell:
-#        '''
-#        gatk4 SelectVariants \
-#            -V {input.dbsnp} \
-#            -R {input.fasta} \
-#            -O {output.dbsnp} \
-#            1> {log.out} \
-#            2> {log.err}
-#        '''
+rule tabix__index_vcf:
+    input:
+        '{path}/{filename}.vcf.gz'
+    output:
+        '{path}/{filename}.vcf.gz.tbi'
+    log:
+        out = '{path}/log/{filename}_tabix.out',
+        err = '{path}/log/{filename}_tabix.err'
+    shell:
+        '''
+        tabix -p vcf {input} 1>{log.out} 2>{log.err}
+        '''
 
 rule picard__bed_to_interval_list:
     input:
@@ -71,8 +61,8 @@ rule gatk__collect_variant_calling_metrics:
         vcf = 'variant/{reference}-{panel}/original/{sample}.vcf',
         vcf_index = 'variant/{reference}-{panel}/original/{sample}.vcf.idx',
 
-        dbsnp = 'reference/{reference}/dbsnp/dbsnp.vcf',
-        dbsnp_index = 'reference/{reference}/dbsnp/dbsnp.vcf.idx',
+        dbsnp = 'reference/{reference}/dbsnp/dbsnp.vcf.gz',
+        dbsnp_index = 'reference/{reference}/dbsnp/dbsnp.vcf.gz.tbi',
 
         intervals = 'variant/{reference}-{panel}/original/interval_list/{sample}.interval_list'
     output:
