@@ -1,8 +1,7 @@
 rule gatk__fix_vcf_header:
-    '''
-    add missing sequence dictionary to vcf header
-    this job also generates vcf index (.idx)
-    '''
+    """
+    Adds missing sequence dictionary to VCF header. This job also generates VCF index (.idx).
+    """
     input:
         vcf = 'variant/{reference}-wgs/original/{sample}.vardict.vcf',
         fasta = 'reference/{reference}/{reference}.fa'
@@ -23,6 +22,11 @@ rule gatk__fix_vcf_header:
         '''
 
 rule tabix__index_vcf:
+    """
+    Create tabix intex on BGZF (bgzipped) VCF file.
+    :input: bgzipped vcf
+    :output: tabix index of bgzipped VCF file
+    """
     input:
         '{path}/{filename}.vcf.gz'
     output:
@@ -36,6 +40,12 @@ rule tabix__index_vcf:
         '''
 
 rule picard__bed_to_interval_list:
+    """
+    Conversion of BED file to GATK specific interval_list.
+    :input bed: BED file
+    :input seq_dict: sequence dictionary
+    :output intervals: interval list
+    """
     input:
         bed      = 'reference/{reference}/annotation/wgs/regions.bed',
         seq_dict = 'reference/{reference}/{reference}.dict'
@@ -57,6 +67,15 @@ rule picard__bed_to_interval_list:
         '''
 
 rule gatk__collect_variant_calling_metrics:
+    """
+    GATK tool for generating
+    :input vcf: called variants
+    :input vcf_index: index of called variants
+    :input dbsnp: DBSNP in BGZF format.
+    :input dbsnp_index: DBSNP index of BGZF format.
+    :input intervals: Genomic regions of interest.
+    :output filename: Text file with summary of calling metrics.
+    """
     input:
         vcf = 'variant/{reference}-{panel}/original/{sample}.vcf',
         vcf_index = 'variant/{reference}-{panel}/original/{sample}.vcf.idx',

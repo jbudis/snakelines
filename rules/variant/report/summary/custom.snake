@@ -1,6 +1,18 @@
 include: "custom.py"
 
 rule custom__summary_report:
+    """
+    Summarizing key metrics from sequencing (FASTQC),
+    mapping (Qualimap) and variant calling (GATK) in a single report file.
+    :input fastqc_original: FASTQC report on original reads.
+    :input fastqc_trimmed: FASTQC report on trimmed reads.
+    :input qualimap_txt: Plain text Qualimap report on deduplicated mapped reads.
+    :input qualimap_html: HTML Qualimap report on deduplicated mapped reads.
+    :input calling_stats: GATK variant calling metrics.
+    :output xml: Report for further computer processing.
+    :output html: Formatted report which is used to generate PDF report.
+    :output pdf: Human readable report in form of PDF document.
+    """
     input:
         fastqc_original = expand(
             'reads/original/stats/{{sample}}_R{orientation}_fastqc/summary.txt',
