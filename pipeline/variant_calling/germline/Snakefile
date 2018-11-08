@@ -24,7 +24,7 @@ rule finalise__call_germline_variants:
         rules.finalise__map_reads_to_reference.output,
 
         variants = expand(
-            'mapping/{sr.reference}/{map_type}/vardict-wgs/{sr.sample}.vcf',
+            'variant/{sr.reference}-wgs/original/{sr.sample}.vcf',
             sr=pipeline.sample_references,
             map_type=pipeline.postprocessed_map_type
         ),
