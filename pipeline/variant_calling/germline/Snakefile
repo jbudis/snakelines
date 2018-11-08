@@ -14,21 +14,37 @@ rule finalise__call_germline_variants:
     """
     Pipeline identify SNPs and small insertions/deletions from mapped reads.
     :input variant: SNP and indel variants in VCF file
+    :input report: Summary PDF report
     :output variant: SNP and indel variants in VCF file (in the report directory)
+    :output report: Summary PDF report (in the report directory)
     """
     input:
         rules.finalise__quality_report.output,
         rules.finalise__preprocess_reads.output,
         rules.finalise__map_reads_to_reference.output,
 
-        # SNP and indel variants in VCF file
-        variants = expand('mapping/{sr.reference}/{map_type}/vardict-wgs/{sr.sample}.vcf',
-                           sr=pipeline.sample_references, map_type=pipeline.postprocessed_map_type),
+        variants = expand(
+            'mapping/{sr.reference}/{map_type}/vardict-wgs/{sr.sample}.vcf',
+            sr=pipeline.sample_references,
+            map_type=pipeline.postprocessed_map_type
+        ),
+
+        report = expand(
+            'variant/{sr.reference}-wgs/original/report/{sr.sample}.pdf',
+            sr=pipeline.sample_references
+        ),
 
     output:
-        # SNP and indel variants in VCF file
-        variants = expand('{report_dir}/{sr.reference}/samples/{sr.sample}/variants.vcf',
-                           report_dir=config['report_dir'], sr=pipeline.sample_references),
+        variants = expand(
+            '{report_dir}/{sr.reference}/samples/{sr.sample}/variants.vcf',
+            report_dir=config['report_dir'],
+            sr=pipeline.sample_references
+        ),
+
+        report = expand(
+            '{report_dir}/{sr.reference}/samples/{sr.sample}/summary.pdf',
+            report_dir=config['report_dir'], sr=pipeline.sample_references,
+        )
 
     run:
         copy_input_files_with_consistent_output_names(input, output)
