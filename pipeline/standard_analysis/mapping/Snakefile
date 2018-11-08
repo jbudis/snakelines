@@ -20,35 +20,35 @@ multisample_references = [reference for reference in pipeline.references if len(
 rule finalise__map_reads_to_reference:
     """
     Pipeline maps preprocessed reads to the selected reference sequences. Mapped reads in bam files
-    are further processed using sorting, deduplication, realignment... Final mapping statistics and quality
-    reports are generated as well.
+    are further processed - sorting, deduplication, realignment... Final mapping statistics and quality
+    reports are generated in the end.
+    :input alignments: mapped sorted reads in BAM file (.bam) (for each of the sample references and map types)
+    :input bam_indices: BAM file indices (.bam.bai)
+    :input quality_reports: mapping statistics retrieved from BAM file (.pdf)
+    :input summary_report: aggregated mapping statistics (.pdf)
+    :output quality_reports: mapping statistics retrieved from BAM file (.pdf) (in the report directory)
+    :output summary_report: aggregated mapping statistics (.pdf) (in the report directory)
     """
     input:
         rules.finalise__quality_report.output,
         rules.finalise__preprocess_reads.output,
 
-        # Mapped sorted reads in BAM file
         alignments = expand('mapping/{sr.reference}/{map_type}/{sr.sample}.bam',
                              sr=pipeline.sample_references, map_type=pipeline.postprocessed_map_type),
 
-        # BAM file indices
         bam_indices = expand('mapping/{sr.reference}/{map_type}/{sr.sample}.bam.bai',
                               sr=pipeline.sample_references, map_type=pipeline.postprocessed_map_type),
 
-        # Mapping statistics retrieved from BAM file
         quality_reports = expand('mapping/{sr.reference}/{map_type}/stats-wgs/samples/{sr.sample}/report.pdf',
                                   sr=pipeline.sample_references, map_type=pipeline.postprocessed_map_type),
 
-        # Aggregated mapping statistics
         summary_report = expand('mapping/{reference}/{map_type}/stats-wgs/summary/report.pdf',
                                  reference=multisample_references, map_type=pipeline.postprocessed_map_type),
 
     output:
-        # Mapping statistics retrieved from BAM file
         quality_reports = expand('{report_dir}/{sr.reference}/samples/{sr.sample}/mapping_quality.pdf',
                                   report_dir=config['report_dir'], sr=pipeline.sample_references),
 
-        # Aggregated mapping statistics
         summary_report = expand('{report_dir}/{reference}/summary/mapping_quality.pdf',
                                  report_dir=config['report_dir'], reference=multisample_references),
 

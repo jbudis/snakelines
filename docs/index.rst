@@ -15,6 +15,7 @@ Contents
    :caption: User documentation
    :maxdepth: 2
 
+   user/example
    user/running
    user/configuration
    user/aliases
