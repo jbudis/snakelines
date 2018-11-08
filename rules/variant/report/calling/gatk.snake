@@ -1,6 +1,10 @@
 rule gatk__fix_vcf_header:
     """
     Adds missing sequence dictionary to VCF header. This job also generates VCF index (.idx).
+    :input vcf: Raw VCF from variant caller vardict.
+    :input fasta: Reference sequence.
+    :output vcf: Fixed VCF.
+    :output vcf_index: Fixed VCF index.
     """
     input:
         vcf = 'variant/{reference}-wgs/original/{sample}.vardict.vcf',
