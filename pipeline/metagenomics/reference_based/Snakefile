@@ -10,15 +10,15 @@ include: srcdir('Snakefile.preprocess')
 
 # Which taxonomic levels should be extracted in separate tables
 tax_levels_count_table = \
-    extract_from_config(['classification', 'report', 'taxonomic_counts', 'count_table', 'tax_levels'], [])
+    extract_from_config(config, ['classification', 'report', 'taxonomic_counts', 'count_table', 'tax_levels'], [])
 
 tax_levels_count_table.append('alltaxes')
 
 # Which taxonomic levels should be visualised in barplots, and in which image formats
 tax_levels_barplot = \
-    extract_from_config(['classification', 'report', 'taxonomic_counts', 'barplot', 'tax_levels'], [])
+    extract_from_config(config, ['classification', 'report', 'taxonomic_counts', 'barplot', 'tax_levels'], [])
 barplot_formats = \
-    extract_from_config(['classification', 'report', 'taxonomic_counts', 'barplot', 'formats'], ['png'])
+    extract_from_config(config, ['classification', 'report', 'taxonomic_counts', 'barplot', 'formats'], ['png'])
 
 rule finalise__classify_reads_reference_based:
     """

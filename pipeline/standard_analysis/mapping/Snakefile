@@ -9,7 +9,7 @@ include: srcdir('Snakefile.read_quality_report')
 include: srcdir('Snakefile.preprocess')
 
 # Find in configuration map post-process types for which should be report generated
-map_types_with_quality_report = extract_from_config(['mapping', 'report', 'quality_report', 'map_types'], [])
+map_types_with_quality_report = extract_from_config(config, ['mapping', 'report', 'quality_report', 'map_types'], [])
 
 # References with at least 2 samples
 multisample_references = [reference for reference in pipeline.references if len(pipeline.samples_for(reference)) > 1]
