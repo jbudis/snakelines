@@ -1,12 +1,12 @@
 rule samtools__bam_index:
-    '''
+    """
     Generate .bai index to .bam files to quick recover reads from genomic location of interest.
-    '''
+    """
     input:
         '{path}/{sample}.bam'
     output:
         '{path}/{sample}.bam.bai'
     shell:
-        '''
+        """
         samtools index {input}
-        '''
+        """

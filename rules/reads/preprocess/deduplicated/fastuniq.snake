@@ -1,9 +1,9 @@
 include: config['snakelines_dir'] + '/rules/reads/conversion/unzip.snake'
 
 rule fastuniq__deduplicate_reads:
-    '''
+    """
     Remove fragments with identical sequences that are usually consequence of extensive PCR multiplication
-    '''
+    """
     input:
         r1 = 'reads/%s/{sample}_R1.fastq' % method_config['input_read_type'],
         r2 = 'reads/%s/{sample}_R2.fastq' % method_config['input_read_type']
@@ -14,7 +14,7 @@ rule fastuniq__deduplicate_reads:
         unzipped_r1 = temp('reads/deduplicated/{sample}_R1.fastq'),
         unzipped_r2 = temp('reads/deduplicated/{sample}_R2.fastq')
     shell:
-        '''
+        """
         echo "{input.r1}\n{input.r2}" > {output.pair_description}
 
         fastuniq \
@@ -24,7 +24,7 @@ rule fastuniq__deduplicate_reads:
 
         gzip --keep {output.unzipped_r1}
         gzip --keep {output.unzipped_r2}
-        '''
+        """
 
 
     

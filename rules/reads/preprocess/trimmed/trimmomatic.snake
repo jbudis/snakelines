@@ -1,7 +1,7 @@
 rule trimmomatic__trim_reads:
-    '''
+    """
     Remove low quality ends of reads and then filter reads that are too short.
-    '''
+    """
     input:
         r1 = 'reads/%s/{sample}_R1.fastq.gz' % method_config['input_read_type'],
         r2 = 'reads/%s/{sample}_R2.fastq.gz' % method_config['input_read_type']
@@ -26,7 +26,7 @@ rule trimmomatic__trim_reads:
         out = 'reads/trimmed/log/{sample}.log',
         err = 'reads/trimmed/log/{sample}.err'
     shell:
-        '''
+        """
         trimmomatic PE \
             -threads {threads} \
             -phred33 \
@@ -41,5 +41,5 @@ rule trimmomatic__trim_reads:
             {params.minlen} \
         >  {log.out} \
         2> {log.err}
-        '''
+        """
 

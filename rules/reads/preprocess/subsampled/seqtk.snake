@@ -1,7 +1,7 @@
 rule seqtk__subsample_reads:
-    '''
+    """
     Randomly select user-configured number of reads from fastq files
-    '''
+    """
     input:
         r1 = 'reads/%s/{sample}_R1.fastq.gz' % method_config['input_read_type'],
         r2 = 'reads/%s/{sample}_R2.fastq.gz' % method_config['input_read_type']
@@ -12,7 +12,7 @@ rule seqtk__subsample_reads:
         seed = method_config.get('seed', 1),
         n_reads = method_config['n_reads']
     shell:
-        '''
+        """
         seqtk sample -s{params.seed} {input.r1} {params.n_reads} | gzip > {output.r1}
         seqtk sample -s{params.seed} {input.r2} {params.n_reads} | gzip > {output.r2}
-        '''
+        """

@@ -1,21 +1,21 @@
 def fastq_files_joined(read_type):
-    '''
+    """
     All joined read files from the reads/{read_type}/ directory
-    '''
+    """
     return expand('reads/%s/stats-joined/{sample}_RM_fastqc.html' % read_type, sample=pipeline.samples)
 
 def fastq_files(read_type):
-    '''
+    """
     All paired read files from the reads/{read_type}/ directory
-    '''
+    """
     return expand('reads/%s/stats/{sample}_R1_fastqc.html' % read_type, sample=pipeline.samples) + \
            expand('reads/%s/stats/{sample}_R2_fastqc.html' % read_type, sample=pipeline.samples)
 
 rule fastqc__html_summary_for_joined_reads:
-    '''
+    """
     Aggregate quality control results from all FastQC reports and generate summary HTML table with
     PASS/WARN/FAIL icons
-    '''
+    """
     input:
         fastq_files_joined
     output:
@@ -23,18 +23,18 @@ rule fastqc__html_summary_for_joined_reads:
     params:
         summary_script = srcdir("scripts/fastqc-summary.py")
     shell:
-        '''
+        """
         python {params.summary_script} \
             {output} \
             {input}
-        '''
+        """
 
 
 rule fastqc__html_summary_for_paired_reads:
-    '''
+    """
     Aggregate quality control results from all FastQC reports and generate summary HTML table with
     PASS/WARN/FAIL icons
-    '''
+    """
     input:
         fastq_files
     output:
@@ -42,16 +42,16 @@ rule fastqc__html_summary_for_paired_reads:
     params:
         summary_script = srcdir("scripts/fastqc-summary.py")
     shell:
-        '''
+        """
         python {params.summary_script} \
             {output} \
             {input}
-        '''
+        """
 
 rule fastqc__quality_report:
-    '''
+    """
     Generate HTML report with plots assessing various quality control aspects of NGS reads
-    '''
+    """
     input:
         'reads/{read_type}/{fastq}.fastq.gz'
     output:
@@ -63,7 +63,7 @@ rule fastqc__quality_report:
         out = 'reads/{read_type}/stat{stats_type}/log/{fastq}.log',
         err = 'reads/{read_type}/stat{stats_type}/log/{fastq}.err',
     shell:
-        '''
+        """
         fastqc \
             -o reads/{wildcards.read_type}/stat{wildcards.stats_type} \
             --extract \
@@ -71,4 +71,4 @@ rule fastqc__quality_report:
             {input} \
         >  {log.out} \
         2> {log.err}
-        '''
+        """

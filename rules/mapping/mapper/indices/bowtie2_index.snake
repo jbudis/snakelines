@@ -1,7 +1,7 @@
 rule bowtie2__prepare_index:
-    '''
+    """
     Generate mapping index that is utilized by Bowtie2 algorithm to map reads to a reference genome
-    '''
+    """
     input:
         '{fadir}/{sequence}.fa'
     output:
@@ -19,11 +19,11 @@ rule bowtie2__prepare_index:
     threads:
         int(config['threads'])
     shell:
-        '''
+        """
         bowtie2-build \
             --threads {threads} \
             {input} \
             {params.index} \
         >  {log.out} \
         2> {log.err}
-        '''
+        """
