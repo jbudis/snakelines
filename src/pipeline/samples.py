@@ -1,12 +1,13 @@
-import re
 import os
 from collections import namedtuple
 
+
 class Pipeline:
-    '''
+    """
     Stores information of samples, their references and targeted panels in structures suitable
     for SnakeMake expand() function
-    '''
+    """
+
     def __init__(self):
         self.samples = []
         self.references = []
@@ -15,14 +16,13 @@ class Pipeline:
         self.sample_defs = []
         self.__reference_map = {}
 
-
     def add(self, samples, reference, panel):
-        '''
+        """
         Add samples intended for analysis.
         :param samples: list of sample names to be analysed
         :param reference: name of reference fasta file for samples
         :param panel: name of targeted panel for samples
-        '''
+        """
 
         # Check if both R1 and R2 files for all samples exist
         for sample in samples:
@@ -65,32 +65,15 @@ class Pipeline:
                 # TODO here should be check if tuple already stored
                 self.sample_defs.append(namedtuple('SampleDef', 'sample reference panel')(sample, reference, panel))
 
-
     def is_empty(self):
-        '''
+        """
         Has at least one sample to be analysed?
-        '''
+        """
         return len(self.samples) == 0
 
-
     def samples_for(self, reference):
-        '''
+        """
         Samples that should be analysed with defined reference
         :param reference: name of the reference
-        '''
+        """
         return self.__reference_map[reference]
-
-
-pipeline = Pipeline()
-
-DEFAULT_SAMPLE_CONFIGURATION = [{'name': '.*'}]
-sample_configurations = config.get('samples', DEFAULT_SAMPLE_CONFIGURATION)
-for sample_configuration in sample_configurations:
-
-    # Filter samples according to the user configuration
-    wildcards = glob_wildcards('reads/original/{sample, %s}_R1.fastq.gz' % sample_configuration['name'])
-    assert len(wildcards.sample) > 0, 'No samples in reads/original/ match configured pattern {}'.format(sample_configuration['name'])
-    pipeline.add(wildcards.sample, sample_configuration.get('reference', None), sample_configuration.get('panel', None))
-
-assert not pipeline.is_empty(), 'No samples to analyse'
-

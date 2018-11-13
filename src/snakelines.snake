@@ -1,9 +1,47 @@
-include: srcdir('pipeline/samples.snake')
+include: srcdir('pipeline/samples.py')
+include: srcdir('config/values_retrieval.py')
+include: srcdir('config/impute_mapping_types.py')
+include: srcdir('config/load_imports.py')
+include: srcdir('output/copy_files.py')
+include: srcdir('output/send_email.py')
 
-include: srcdir('config/values_retrieval.snake')
-include: srcdir('config/impute_mapping_types.snake')
-include: srcdir('config/impute_read_types.snake')
+# TODO: This should work for other types, such as mapping as well
+def configured_temp(read_file):
+    """
+    Choose if Fastq file should be marker by snakemake temporary flag temp() based on configuration. This function cannot(??) be made into pure python.
 
-include: srcdir('output/copy_files.snake')
+    :param read_file: output read file of a read preprocess rule
+    :return: temporary output or normal output
+    """
+    items = read_file.split('/')
+    assert items[0] == 'reads' and len(items) == 3, \
+           'Method can be used only for read files in reads/{preprocess}/ directory, provided {}'.format(read_file)
 
-include: srcdir('config/load_imports.snake')
+    read_type = items[1]
+    temporary = extract_from_config(config, ['reads', 'preprocess', read_type, 'temporary'], False)
+    return temp(read_file) if temporary else read_file
+
+
+# create pipeline
+pipeline = Pipeline()
+
+DEFAULT_SAMPLE_CONFIGURATION = [{'name': '.*'}]
+sample_configurations = config.get('samples', DEFAULT_SAMPLE_CONFIGURATION)
+for sample_configuration in sample_configurations:
+
+    # Filter samples according to the user configuration
+    wildcards = glob_wildcards('reads/original/{sample, %s}_R1.fastq.gz' % sample_configuration['name'])
+    assert len(wildcards.sample) > 0, 'No samples in reads/original/ match configured pattern {}'.format(sample_configuration['name'])
+    pipeline.add(wildcards.sample, sample_configuration.get('reference', None), sample_configuration.get('panel', None))
+
+assert not pipeline.is_empty(), 'No samples to analyse'
+
+# impute types:
+impute_mapping_types(pipeline, workflow, config)
+impute_read_types(pipeline, workflow, config)
+
+# load imports
+rules_dir = '{}/rules'.format(config['snakelines_dir'])
+for import_file, method_config in import_files_in_config(config, rules_dir):
+    assert os.path.isfile(import_file), 'Configured snake file {} does not exists'.format(import_file)
+    include: import_file
