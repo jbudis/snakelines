@@ -1,8 +1,13 @@
 samples:                            # List of sample categories to be analysed
-    - name: example.*               # Regex expression of sample names to be analysed (reads/original/example.*_R1.fastq.gz)
-      reference: mhv                # Reference genome for reads in the category (reference/mhv/mhv.fa)
+    - name: 28S.*               # Regex expression of sample names to be analysed (reads/original/example.*_R1.fastq.gz)
+      reference: silva-28S                # Reference genome for reads in the category (reference/mhv/mhv.fa)
+      panel: sureselect
 
-report_dir: report/01-variant       # Generated reports and essential output files would be stored there
+    - name: 16S.*               # Regex expression of sample names to be analysed (reads/original/example.*_R1.fastq.gz)
+      reference: silva-16S                # Reference genome for reads in the category (reference/mhv/mhv.fa)
+      panel: truseq
+
+report_dir: report/public/01-variant # Generated reports and essential output files would be stored there
 threads: 16                         # Number of threads to use in analysis
 
 reference:
@@ -43,7 +48,7 @@ reads:                              # Prepare reads and quality reports for down
 
 mapping:                            # Find the most similar genomic region to reads in reference (mapping process)
     mapper:                         # Method for mapping
-        method: bowtie2             # Supported values: bowtie2
+        method: bwa                 # Supported values: bowtie2
         params: --very-sensitive    # Additional parameters for the method
         only_concordant: False      # Keep only reads with consistently mapped reads from both paired-ends
 
@@ -67,9 +72,9 @@ mapping:                            # Find the most similar genomic region to re
 
 variant:                                    # Identify variation in reads given reference genome
     caller:                                 # Method for variant identification
-        method: vardict                     # Supported values: vardict
+        method: gatk                     # Supported values: vardict
         hard_filter:                        # Variants that do not pass any of these filters would NOT be present in the VCF file
-            min_nonref_allele_freq: 0.05    # Minimal proportion of reads with alternative allele against all observations
+            min_nonref_allele_freq: 0.10    # Minimal proportion of reads with alternative allele against all observations
             min_alternate_count: 2          # Minimal number of reads with alternative allele
             min_map_quality: 15             # Minimal average mapping quality of reads with alternative allele
         soft_filter:                        # Failing these filters would be indicated in the FILTER field of the VCF file
