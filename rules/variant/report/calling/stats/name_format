@@ -1,0 +1,20 @@
+DBSNP_INS_DEL_RATIO	INS / DEL ratio of known INDELs	float
+DBSNP_TITV	TI / TV ratio of known SNPs	float
+FILTERED_INDELS	Filtered INDELs	int
+FILTERED_SNPS	Filtered SNPs	int
+NOVEL_INDELS	Novel INDELs	int
+NOVEL_INS_DEL_RATIO	INS / DEL ratio of novel INDELs	float
+NOVEL_SNPS	Novel SNPs	int
+NOVEL_TITV	TI / TV ratio of novel SNPs	float
+NUM_IN_DB_SNP	Known SNPs	int
+NUM_IN_DB_SNP_COMPLEX_INDELS	Known complex INDELs	int
+NUM_IN_DB_SNP_INDELS	Known INDELs	int
+NUM_IN_DB_SNP_MULTIALLELIC	Known Multi-allelic SNPs	int
+NUM_SINGLETONS	Variants in single sample	int
+PCT_DBSNP	Ratio of known SNPs	pct
+PCT_DBSNP_INDELS	Ratio of known INDELs	pct
+SNP_REFERENCE_BIAS	Ratio of REF at hetero site	pct
+TOTAL_COMPLEX_INDELS	Total complex INDELs	int
+TOTAL_INDELS	Total INDELs	int
+TOTAL_MULTIALLELIC_SNPS	Total multi-allelic SNPs	int
+TOTAL_SNPS	Total SNPs	int
