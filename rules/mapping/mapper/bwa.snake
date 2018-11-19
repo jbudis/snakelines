@@ -14,7 +14,7 @@ rule bwa__map_reads_to_reference:
         err   = 'mapping/{reference}/original/log/{sample}.bwa.map_stats'
     params:
         index = 'reference/{reference}/bwa_index/{reference}',
-        additional = method_config.get('params', ''),
+        additional = method_config.get('bwa_params', ''),
         concordant = '-B 40 -O 60 -E 10  –L100' if method_config.get('only_concordant', False) else ''
     threads:
         int(config['threads'])
