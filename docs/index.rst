@@ -28,3 +28,4 @@ Contents
    development/structure
    development/new_rules
    development/replace_methods
+   development/documentation
