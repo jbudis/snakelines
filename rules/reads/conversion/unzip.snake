@@ -1,9 +1,9 @@
 # TODO do we need pipefail?
 
 rule pigz__unzip_file:
-    '''
+    """
     Decompress gzipped fastq or fasta file
-    '''
+    """
     input:
         gzipped  = '{file}.{type}.gz'
     output:
@@ -11,11 +11,11 @@ rule pigz__unzip_file:
     threads:
         int(config['threads'])
     shell:
-        '''
+        """
         set +euo pipefail
         pigz \
             --decompress \
             --keep \
             --processes {threads} \
             {input.gzipped}
-        '''
+        """

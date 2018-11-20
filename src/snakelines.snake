@@ -1,9 +1,8 @@
-include: srcdir('pipeline/samples.snake')
+include: srcdir('pipeline/samples.py')
+include: srcdir('config/values_retrieval.py')
+include: srcdir('config/impute_mapping_types.py')
+include: srcdir('config/load_imports.py')
+include: srcdir('output/copy_files.py')
+include: srcdir('output/send_email.py')
 
-include: srcdir('config/values_retrieval.snake')
-include: srcdir('config/impute_mapping_types.snake')
-include: srcdir('config/impute_read_types.snake')
-
-include: srcdir('output/copy_files.snake')
-
-include: srcdir('config/load_imports.snake')
+include: srcdir('common.snake')

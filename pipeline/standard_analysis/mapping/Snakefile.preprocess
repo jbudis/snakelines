@@ -8,7 +8,7 @@ include: config['snakelines_dir'] + '/src/snakelines.snake'
 include: srcdir('Snakefile.read_quality_report')
 
 # Find in configuration read preprocess types that should be generated
-preprocess = extract_from_config(['reads', 'preprocess'], {})
+preprocess = extract_from_config(config, ['reads', 'preprocess'], {})
 read_types_to_keep = [read_type for read_type in preprocess.keys() if not preprocess[read_type].get('temporary', True)]
 
 rule finalise__preprocess_reads:

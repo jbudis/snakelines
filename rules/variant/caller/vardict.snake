@@ -2,41 +2,41 @@ include: config['snakelines_dir'] + '/rules/mapping/index/samtools.snake'
 include: config['snakelines_dir'] + '/rules/reference/index/fai/samtools.snake'
 
 rule vardict__create_wgs_bed_file:
-    '''
+    """
     Creates bed file with whole genomic regions in reference fasta file. Simple way to unite WGS and panel analysis.
-    '''
+    """
     input:
         fai = 'reference/{reference}/{reference}.fa.fai'
     output:
         bed = 'reference/{reference}/annotation/wgs/regions.bed'
     shell:
-          '''
+          """
         awk \
             '{{print $1, 1, $2, $1}}' \
       {input.fai} \
               | sed \
               's/ /\t/g' \
               > {output.bed}
-              '''
+              """
 
 rule vardict__prepare_bed_file:
-    '''
+    """
     Vardict throws error for bed files with more than 4 columns, rule therefore cut other columns
-    '''
+    """
     input:
         bed = 'reference/{reference}/annotation/{panel}/regions.bed',
     output:
         bed = 'reference/{reference}/annotation/{panel}/regions.vardict.bed',
     shell:
-        '''
+        """
         cut -f 1-4 {input.bed} > {output.bed}
-        '''
+        """
 
 # TODO variants should ve stored in original/ folder
 rule vardict__call_germline_variants:
-    '''
+    """
     Identify small variation (SNP and indels) from the mapped reads.
-    '''
+    """
     input:
         bam      = 'mapping/{reference}/deduplicated/{sample}.bam',
         bai      = 'mapping/{reference}/deduplicated/{sample}.bam.bai',
@@ -54,7 +54,7 @@ rule vardict__call_germline_variants:
     threads:
         int(config['threads'])
     shell:
-        '''
+        """
         vardictjava \
             -G {input.reffasta} \
             -b {input.bam} \
@@ -69,13 +69,13 @@ rule vardict__call_germline_variants:
             {input.bed} \
         >  {output.vdc} \
         2> {log.err}
-        '''
+        """
 
 # TODO hardcoded path
 rule vardict__test_strand_bias:
-    '''
+    """
     Perform statistical testing of strand bias.
-    '''
+    """
     input:
         vdc = 'variant/{reference}-{panel}/{state}/{sample}.vdc'
     output:

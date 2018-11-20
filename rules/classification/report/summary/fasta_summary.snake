@@ -28,7 +28,7 @@ include_blast     = 'blast'     in summary_columns_def
 
 if include_blast:
     # TODO: change extract_from_config to something like config_for_method('blast')
-    blast_references = list(extract_from_config(['classification', 'contig_based', 'reference'], {}).keys())
+    blast_references = list(extract_from_config(config, ['classification', 'contig_based', 'reference'], {}).keys())
 
 rule fasta_summary__blast:
     input:

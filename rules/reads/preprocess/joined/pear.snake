@@ -1,9 +1,9 @@
 include: config['snakelines_dir'] + '/rules/preprocess/conversion/unzip.snake'
 
 rule pear__join_read_pairs:
-    '''
+    """
     Join paired reads into single end reads based on sequence overlap
-    '''
+    """
     input:
         r1 = 'reads/%s/{sample}_R1.fastq' % method_config['read_type'],
         r2 = 'reads/%s/{sample}_R2.fastq' % method_config['read_type']
@@ -23,7 +23,7 @@ rule pear__join_read_pairs:
         out = 'reads/joined/log/{sample}.log',
         err = 'reads/joined/log/{sample}.err',
     shell:
-        '''
+        """
         pear \
             --forward-fastq {input.r1} \
             --reverse-fastq {input.r2} \
@@ -43,11 +43,11 @@ rule pear__join_read_pairs:
         mv {params.tmp_rm}.gz {output.rm}
 
         rm {params.tmp_rd}
-        '''
+        """
 rule pear__concat_assembled_and_unassambled:
-    '''
+    """
     Unite joined reads, and reads that could not be joined into a single fastq file
-    '''
+    """
     input:
         r1 = 'reads/joined/{sample}_R1.fastq.gz',
         r2 = 'reads/joined/{sample}_R2.fastq.gz',
@@ -55,10 +55,10 @@ rule pear__concat_assembled_and_unassambled:
     output:
         rc = 'reads/joined/{sample}_RC.fastq.gz'
     shell:
-        '''
+        """
         cat \
             {input.rm} \
             {input.r1} \
             {input.r2} \
         > {output.rc} \
-        '''
+        """

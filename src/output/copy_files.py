@@ -1,31 +1,31 @@
 import shutil
 
+
 # TODO this should be renamed to matching
-def copy_input_files_with_consistent_output_names(input, output):
-    '''
+def copy_input_files_with_consistent_output_names(input_files, output_files):
+    """
     Compare names of the inputs and outputs of the rule. All items with the same name in inputs and outputs are copied,
     therefore generate output files.
 
-    :param input: input files of the rule
-    :param output: output files of the rule
-    '''
+    :param input_files: input files of the rule
+    :param output_files: output files of the rule
+    """
 
     # Iterate through all defined outputs in the rule
-    for item_name in output.__dict__:
+    for item_name in output_files.__dict__:
 
         # Skip internal snakemake attributes
         if item_name.startswith('_'):
             continue
 
         # Skip output items do not have matching partner in input
-        if not hasattr(input, item_name):
+        if not hasattr(input_files, item_name):
             continue
 
         # Check if items with the same name have also same data type, both should be list or str
-        input_item, output_item = getattr(input, item_name), getattr(output, item_name)
-        assert type(input_item) == type(output_item), 'Output and input items with name {} \
-                    for the rule have different data types {} and {}'.format( \
-                    item_name, type(input_item), type(output_item))
+        input_item, output_item = getattr(input_files, item_name), getattr(output_files, item_name)
+        assert type(input_item) == type(output_item), 'Output and input items with name {} for the rule have different data types {} and {}'.format(
+            item_name, type(input_item), type(output_item))
 
         # Check if items with the same name have also same length
         assert len(input_item) == len(output_item), 'Output and input items with name {} \

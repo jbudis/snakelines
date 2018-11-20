@@ -1,14 +1,10 @@
-import os
-
-# Automatically import snake files that match the configuration structure
-
 def import_files_in_config(subconfig, item_path):
-    '''
+    """
     Recursively traverse configuration file and identify possible snake imports annotated by "method:" node
 
     :param subconfig: part of configuration file to traverse
     :param item_path: already traversed path in the configuration file
-    '''
+    """
 
     # Directories and lists are searched recursively
     if type(subconfig) == dict:
@@ -26,8 +22,3 @@ def import_files_in_config(subconfig, item_path):
     # Items at the end of the configuration tree are checked as well
     if type(subconfig) == str:
         yield from import_files_in_config(None, '{}/{}'.format(item_path, subconfig))
-
-rules_dir = '{}/rules'.format(config['snakelines_dir'])
-for import_file, method_config in import_files_in_config(config, rules_dir):
-    assert os.path.isfile(import_file), 'Configured snake file {} does not exists'.format(import_file)
-    include: import_file
