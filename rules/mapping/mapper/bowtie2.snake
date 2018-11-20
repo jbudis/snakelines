@@ -3,6 +3,14 @@ include: srcdir('indices/bowtie2_index.snake')
 rule bowtie2__map_reads_to_reference:
     """
     For input preprocessed reads bowtie2 finds the most similar genomic region in the provided reference genome.
+    :input r1: gzipped fastq file with left reads, e.g. 'reads/%s/{sample}_R1.fastq.gz'
+    :input r2: gzipped fastq file with right reads, e.g. 'reads/%s/{sample}_R2.fastq.gz'
+    :input index: reference index (created by rule bowtie2__prepare_index), e.g. 'reference/{reference}/bowtie2_index/{reference}.1.bt2'
+    :input ref: reference genome, e.g. 'reference/{reference}/{reference}.fa'
+    :output bam: mapped read in BAM file, e.g. 'mapping/{reference}/original/{sample}.bam'
+    :param index: name of reference, technically filename's path prefix, e.g. 'reference/{reference}/bowtie2_index/{reference}'
+    :param additional: additional params
+    :param concordant: only concordant reads
     """
     input:
         r1    = 'reads/%s/{sample}_R1.fastq.gz' % pipeline.preprocessed_read_type,
@@ -20,7 +28,7 @@ rule bowtie2__map_reads_to_reference:
     threads:
         int(config['threads'])
     shell:
-        """
+        '''
         bowtie2 \
             -x {params.index} \
             -1 {input.r1} \
@@ -31,4 +39,4 @@ rule bowtie2__map_reads_to_reference:
         2> {log.err} \
         | samtools view -bS - \
         > {output.bam}
-        """
+        '''

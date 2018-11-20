@@ -1,7 +1,10 @@
 rule bwa__prepare_index:
-    '''
+    """
     Generate mapping index that is utilized by BWA algorithm to map reads to a reference genome
-    '''
+    :input fa: fasta reference genome
+    :output indecis: 5 files with indeces. e.g '{fadir}/bwa_index/{sequence}.[amb,ann,bwt,pac,sa]'
+    :param index: output filename's path prefix, e.g. '{fadir}/bwa_index/{sequence}'
+    """
     input:
         '{fadir}/{sequence}.fa'
     output:
