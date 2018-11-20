@@ -35,5 +35,5 @@ impute_read_types(pipeline, workflow, config)
 # load imports
 rules_dir = '{}/rules'.format(config['snakelines_dir'])
 for import_file, method_config in import_files_in_config(config, rules_dir):
-    assert os.path.isfile(import_file), 'Configured snake file {} does not exists'.format(import_file)
+    assert os.path.isfile(import_file), 'Configured snake file {} does not exist'.format(import_file)
     include: import_file

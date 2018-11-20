@@ -15,6 +15,7 @@ Contents
    :caption: User documentation
    :maxdepth: 2
 
+   user/benefits
    user/example
    user/running
    user/configuration
@@ -28,3 +29,11 @@ Contents
    development/structure
    development/new_rules
    development/replace_methods
+
+
+.. toctree::
+   :caption: Documentation
+   :maxdepth: 2
+
+   pipeline/outline
+   rules/outline

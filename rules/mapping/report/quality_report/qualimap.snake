@@ -103,6 +103,7 @@ rule qualimap__summarize_quality_reports:
         # Prepare sample list file for the qualimap
         ## Column1: Sample name
         ## Column2: Path to precomputed bamqc report
+
         for REPORT in {input.reports}; do
             REPORT_DIR=`dirname $REPORT`
             SAMPLE=`basename $REPORT_DIR`
