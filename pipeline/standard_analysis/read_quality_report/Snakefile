@@ -12,7 +12,7 @@ read_types_with_fastqc_report = extract_from_config(config, ['reads', 'report', 
 rule finalise__quality_report:
     """
     Make FastQC quality reports for all reads of defined types. Should be used as the first assessment of
-    read quality of sequencing run. After that, preprocess pipeline may be utilize to eliminate sequencing artefacts.
+    read quality of sequencing run. After that, preprocess pipeline may be utilized to eliminate sequencing artefacts.
     :input fastqcs: fastQC quality reports of all preprocess types that are configured to be generated
     :input reports: Summary table of fastQC reports
     :output fastqcs: fastQC quality reports of all preprocess types that are configured to be generated (in the report directory)

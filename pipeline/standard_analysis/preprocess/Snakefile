@@ -4,8 +4,8 @@ configfile: srcdir('config.yaml')
 # Run startup scripts that automatically loads imports from src/ and load helper methods
 include: config['snakelines_dir'] + '/src/snakelines.snake'
 
-# Import sub-workflows
-include: srcdir('Snakefile.read_quality_report')
+# Import sub-workflow
+include: config['snakelines_dir'] + '/pipeline/standard_analysis/read_quality_report/Snakefile'
 
 # Find in configuration read preprocess types that should be generated
 preprocess = extract_from_config(config, ['reads', 'preprocess'], {})
