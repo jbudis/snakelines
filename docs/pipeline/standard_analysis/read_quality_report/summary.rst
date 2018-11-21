@@ -2,7 +2,7 @@ Quality Report
 -----------------------------
 
 Make FastQC quality reports for all reads of defined types. Should be used as the first assessment of
-read quality of sequencing run. After that, preprocess pipeline may be utilize to eliminate sequencing artefacts.
+read quality of sequencing run. After that, preprocess pipeline may be utilized to eliminate sequencing artefacts.
 
 **Location**
 

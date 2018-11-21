@@ -10,13 +10,13 @@ Randomly select user-configured number of reads from fastq files.
 
 **Input(s):**
 
-- *r1:* filename of R1 reads
-- *r2:* filename of R2 reads
+- *r1:* filename with R1 reads
+- *r2:* filename with R2 reads
 
 **Output(s):**
 
-- *r1:* filename of subsampled R1 reads
-- *r2:* filename of subsampled R2 reads
+- *r1:* filename with subsampled R1 reads
+- *r2:* filename with subsampled R2 reads
 
 **Param(s):**
 
