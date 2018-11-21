@@ -1,26 +1,41 @@
-rule qualimap__mapping_quality_report_accross_reference
+Qualimap - Mapping Quality Report Accross Reference
 -------------------------------------------------------
-located in: '<SnakeLines_dir>/rules/mapping/report/quality_report/qualimap.snake'
 
 Generate summary statistics for mapped reads stored in BAM files. Statistics are calculated across
 whole reference genome.
 
-Input(s):
+**Location**
 
-rule qualimap__mapping_quality_report_accross_panel
+- *Filepath:* <SnakeLines_dir>/rules/mapping/report/quality_report/qualimap.snake
+- *Rule name:* qualimap__mapping_quality_report_accross_reference
+
+**Input(s):**
+
+
+Qualimap - Mapping Quality Report Accross Panel
 ---------------------------------------------------
-located in: '<SnakeLines_dir>/rules/mapping/report/quality_report/qualimap.snake'
 
 Generate summary statistics for mapped reads stored in BAM files. Statistics are calculated across
 genomic regions specified in the BED file.
 
-Input(s):
+**Location**
 
-rule qualimap__summarize_quality_reports
+- *Filepath:* <SnakeLines_dir>/rules/mapping/report/quality_report/qualimap.snake
+- *Rule name:* qualimap__mapping_quality_report_accross_panel
+
+**Input(s):**
+
+
+Qualimap - Summarize Quality Reports
 ----------------------------------------
-located in: '<SnakeLines_dir>/rules/mapping/report/quality_report/qualimap.snake'
 
 Aggregate results from individual bamqc results to a single summary report
 
-Input(s):
+**Location**
+
+- *Filepath:* <SnakeLines_dir>/rules/mapping/report/quality_report/qualimap.snake
+- *Rule name:* qualimap__summarize_quality_reports
+
+**Input(s):**
+
 

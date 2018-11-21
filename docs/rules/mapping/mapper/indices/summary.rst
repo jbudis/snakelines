@@ -1,8 +1,13 @@
-rule bowtie2__prepare_index
+Bowtie2 - Prepare Index
 ---------------------------
-located in: '<SnakeLines_dir>/rules/mapping/mapper/indices/bowtie2_index.snake'
 
 Generate mapping index that is utilized by Bowtie2 algorithm to map reads to a reference genome
 
-Input(s):
+**Location**
+
+- *Filepath:* <SnakeLines_dir>/rules/mapping/mapper/indices/bowtie2_index.snake
+- *Rule name:* bowtie2__prepare_index
+
+**Input(s):**
+
 

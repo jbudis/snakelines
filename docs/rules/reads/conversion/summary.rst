@@ -1,8 +1,13 @@
-rule pigz__unzip_file
+Pigz - Unzip File
 ---------------------
-located in: '<SnakeLines_dir>/rules/reads/conversion/unzip.snake'
 
 Decompress gzipped fastq or fasta file
 
-Input(s):
+**Location**
+
+- *Filepath:* <SnakeLines_dir>/rules/reads/conversion/unzip.snake
+- *Rule name:* pigz__unzip_file
+
+**Input(s):**
+
 

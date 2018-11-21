@@ -1,6 +1,12 @@
 rule seqtk__subsample_reads:
     """
-    Randomly select user-configured number of reads from fastq files
+    Randomly select user-configured number of reads from fastq files.
+    :input r1: filename of R1 reads
+    :input r2: filename of R2 reads
+    :output r1: filename of subsampled R1 reads
+    :output r2: filename of subsampled R2 reads
+    :param seed: int - seed of the random generator for subsampling
+    :param n_reads: int - number of reads to keep in subsampled set
     """
     input:
         r1 = 'reads/%s/{sample}_R1.fastq.gz' % method_config['input_read_type'],

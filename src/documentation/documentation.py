@@ -118,6 +118,33 @@ def parse_snakemake(filename):
             return parse_snakemake_str(f.read())
 
 
+def pretify_rule_name(rule_name, extract_tool=True):
+    """
+    Pretify the rule name.
+    :param rule_name: str - rule name (first one is name of the tool, then name of the rule)
+    :param extract_tool: bool - extract tool name?
+    :return: str - pretified rule name
+    """
+    # first extract the tool name
+    tool = ''
+    if extract_tool:
+        split = rule_name.split('__')
+        if len(split) == 2:
+            tool = split[0].title()
+            rule_name = split[1]
+        else:
+            assert False, "Bad name of a rule: " + rule_name
+
+    # pretify the rest
+    title = rule_name.replace('_', ' ').title()
+
+    # prepare the full name
+    if extract_tool and tool.upper() not in ('FINALISE', 'FINALIZE'):
+        title = tool + ' - ' + title
+
+    return title
+
+
 def generate_rst(snakemake_file, docs_file, append=False):
     """
     Generate .rst doc file from the docstring.
@@ -131,12 +158,12 @@ def generate_rst(snakemake_file, docs_file, append=False):
     rules_wo_docs = 0
 
     # templates:
-    rule_template = """rule {name}\n{underscore}\nlocated in: '<SnakeLines_dir>/{filename}'\n\n{description}\n\n"""
-    param_begin_template = "{pname}:\n"
-    param_template = "\t{name}: {doc}\n"
-    rule_end_template = "\n"
-    undoc_rules_beg_template = "undocumented rules\n------------------\nWARNING: found {many:2d} undocumented rules:\n"
-    undoc_rules_template = "\t- rule {rule} is UNDOCUMENTED\n"
+    rule_template = """{pretified}\n{underscore}\n\n{description}\n\n**Location**\n\n- *Filepath:* <SnakeLines_dir>/{filename}\n- *Rule name:* {name}\n\n"""
+    param_begin_template = "**{pname}:**\n\n"
+    param_template = "- *{name}:* {doc}\n"
+    param_end_template = "\n"
+    undoc_rules_beg_template = "Undocumented rules\n------------------\nWARNING: found {many:2d} undocumented rules:\n\n"
+    undoc_rules_template = "- rule {rule} is UNDOCUMENTED\n"
 
     # print("Parsing", snakemake_file, docs_file)
 
@@ -163,23 +190,25 @@ def generate_rst(snakemake_file, docs_file, append=False):
 
                 # write begining
                 underscore = '-' * (len(name) + 5)
-                rst += rule_template.format(name=name, description=docstr_dict['description'], underscore=underscore, filename=snakemake_file)
+                rst += rule_template.format(name=name, description=docstr_dict['description'], underscore=underscore, filename=snakemake_file, pretified=pretify_rule_name(name))
 
                 # write all inputs/outputs/params
                 rst += param_begin_template.format(pname='Input(s)')
                 for param in docstr_dict['inputs']:
                     rst += param_template.format(name=param['name'], doc=param['doc'])
+                rst += param_end_template.format()
                 if len(docstr_dict['outputs']) > 0:
                     rst += param_begin_template.format(pname='Output(s)')
                     for param in docstr_dict['outputs']:
                         rst += param_template.format(name=param['name'], doc=param['doc'])
+                    rst += param_end_template.format()
                 if len(docstr_dict['params']) > 0:
                     rst += param_begin_template.format(pname='Param(s)')
                     for param in docstr_dict['params']:
                         rst += param_template.format(name=param['name'], doc=param['doc'])
+                    rst += param_end_template.format()
 
                 # finalize
-                rst += rule_end_template.format()
                 written_rules += 1
 
         # write undocumented rule names
@@ -200,7 +229,7 @@ def generate_rst(snakemake_file, docs_file, append=False):
             dirname = os.path.dirname(docs_file)
             if not os.path.exists(dirname):
                 os.makedirs(dirname)
-            with open(docs_file, 'a' if append else 'w') as f:
+            with open(docs_file, 'a' if append else 'w', newline='\n') as f:
                 f.write(rst)
 
     except Exception as e:
@@ -215,19 +244,24 @@ def generate_rst(snakemake_file, docs_file, append=False):
     return written_rules, rules_wo_docs
 
 
-def crawl_snakedir(input_snakedir, docs_snakedir, depth, first_line=""):
+def crawl_snakedir(input_snakedir, docs_snakedir, depth):
     """
     Crawl input snakedir, if found Snakefile, create docs and output them into docs dir.
     :param input_snakedir: str - path to snakedir to crawl
     :param docs_snakedir: str - path to snakedir, where to output documentation
     :param depth: int - depth of recursion
-    :param first_line: str - first line of the .rst string
     :return: int, int, int, str - number of files (re)created, number of written rules with docstrings, number of rules with missing docstrings, rst string generated so far
     """
     files_done = 0
     rules_written = 0
     rules_wo_docs = 0
     summary_name = 'summary.rst'
+
+    # fix inputs
+    first_line = 'Rules'
+    pipeline_crawl = input_snakedir.lower() in ('pipeline', 'pipelines', 'pipeline/', 'pipelines/')
+    if pipeline_crawl:
+        first_line = 'Pipelines'
 
     if not input_snakedir.endswith('/'):
         input_snakedir += '/'
@@ -237,8 +271,8 @@ def crawl_snakedir(input_snakedir, docs_snakedir, depth, first_line=""):
 
     # define templates
     rst = ""
-    dir_template = "{depth}- {filename} ({doc_rules}/{all_rules} documented/all rule(s), {file_count} file(s))\n"
-    first_line_template = "{first_line}\n{underscore}\nThis document contains {doc_rules}/{all_rules} documented/all rule(s) in {file_count} file(s):\n"
+    dir_template = "{depth}- {filename}\n\n"
+    first_line_template = "{first_line}\n{underscore}\n"
 
     # look at the dir:
     root, dirs, files = next(os.walk(input_snakedir))
@@ -255,8 +289,8 @@ def crawl_snakedir(input_snakedir, docs_snakedir, depth, first_line=""):
             rules_wo_docs += rwo_docs
 
     if len(files_filtered) > 0:
-        rst += '{depth}.. toctree::\n'.format(depth='\t'*depth)
-        rst += '{depth}{filename}\n\n'.format(depth='\t'*(depth+1), filename=relative_rst_path)
+        rst += '{depth}.. toctree::\n'.format(depth='  ' * depth)
+        rst += '{depth}{filename}\n\n'.format(depth='  ' * (depth + 1), filename=relative_rst_path)
 
     # recursive do directories
     for directory in dirs:
@@ -266,14 +300,13 @@ def crawl_snakedir(input_snakedir, docs_snakedir, depth, first_line=""):
         rules_wo_docs += rwo_docs
 
         if fd > 0:
-            rst += dir_template.format(filename=directory, filepath=docs_snakedir + directory + '/' + summary_name,
-                                       doc_rules=rw, all_rules=rw + rules_wo_docs, file_count=fd, depth="\t" * depth)
+            rst += dir_template.format(filename=pretify_rule_name(directory, extract_tool=False), depth='  ' * depth)
             rst += rst_so_far
 
     # add first line:
-    if depth == 1 and first_line != "":
+    if depth == 0 and first_line != "":
         underscore = "=" * len(first_line)
-        rst = first_line_template.format(first_line=first_line, underscore=underscore, doc_rules=rules_written, all_rules=rules_written + rules_wo_docs, file_count=files_done) + rst + '\n'
+        rst = first_line_template.format(first_line=first_line, underscore=underscore) + rst + '\n'
 
     return files_done, rules_written, rules_wo_docs, rst
 
@@ -297,18 +330,18 @@ def write_rst(rst, docs_snakedir):
         dirname = os.path.dirname(docs_snakedir + summary_name)
         if not os.path.exists(dirname):
             os.makedirs(dirname)
-        with open(docs_snakedir + summary_name, 'w') as f:
+        with open(docs_snakedir + summary_name, 'w', newline='\n') as f:
             f.write(rst)
 
 
 if __name__ == '__main__':
     # run documentation generation for rules and pipelines:
-    files, rules, missing, outline = crawl_snakedir('rules',  'docs/rules', 1, "Rules")
-    files_p, rules_p, missing_p, outline_p = crawl_snakedir('pipeline', 'docs/pipeline', 1, "Pipeline")
+    files, rules, missing, outline = crawl_snakedir('rules', 'docs/rules', 0)
+    files_p, rules_p, missing_p, outline_p = crawl_snakedir('pipeline', 'docs/pipeline', 0)
 
     # write the summary doc:
     write_rst(outline, 'docs/rules')
     write_rst(outline_p, 'docs/pipeline')
 
-    # if we have all pipeline rules documented, then commit else fail
+    # if we have all pipeline rules documented, then exit with code 0
     exit(missing_p)

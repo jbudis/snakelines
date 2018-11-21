@@ -1,36 +1,57 @@
-rule vardict__create_wgs_bed_file
+Vardict - Create Wgs Bed File
 ---------------------------------
-located in: '<SnakeLines_dir>/rules/variant/caller/vardict.snake'
 
 Creates bed file with whole genomic regions in reference fasta file. Simple way to unite WGS and panel analysis.
 
-Input(s):
+**Location**
 
-rule vardict__prepare_bed_file
+- *Filepath:* <SnakeLines_dir>/rules/variant/caller/vardict.snake
+- *Rule name:* vardict__create_wgs_bed_file
+
+**Input(s):**
+
+
+Vardict - Prepare Bed File
 ------------------------------
-located in: '<SnakeLines_dir>/rules/variant/caller/vardict.snake'
 
 Vardict throws error for bed files with more than 4 columns, rule therefore cut other columns
 
-Input(s):
+**Location**
 
-rule vardict__call_germline_variants
+- *Filepath:* <SnakeLines_dir>/rules/variant/caller/vardict.snake
+- *Rule name:* vardict__prepare_bed_file
+
+**Input(s):**
+
+
+Vardict - Call Germline Variants
 ------------------------------------
-located in: '<SnakeLines_dir>/rules/variant/caller/vardict.snake'
 
 Identify small variation (SNP and indels) from the mapped reads.
 
-Input(s):
+**Location**
 
-rule vardict__test_strand_bias
+- *Filepath:* <SnakeLines_dir>/rules/variant/caller/vardict.snake
+- *Rule name:* vardict__call_germline_variants
+
+**Input(s):**
+
+
+Vardict - Test Strand Bias
 ------------------------------
-located in: '<SnakeLines_dir>/rules/variant/caller/vardict.snake'
 
 Perform statistical testing of strand bias.
 
-Input(s):
+**Location**
 
-undocumented rules
+- *Filepath:* <SnakeLines_dir>/rules/variant/caller/vardict.snake
+- *Rule name:* vardict__test_strand_bias
+
+**Input(s):**
+
+
+Undocumented rules
 ------------------
 WARNING: found  1 undocumented rules:
-	- rule vardict__tsb_to_vcf is UNDOCUMENTED
+
+- rule vardict__tsb_to_vcf is UNDOCUMENTED
