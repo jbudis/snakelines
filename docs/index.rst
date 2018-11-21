@@ -12,7 +12,6 @@ Contents
    :caption: User documentation
    :maxdepth: 2
 
-   user/benefits
    user/example
    user/running
    user/configuration
