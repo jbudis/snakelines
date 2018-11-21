@@ -5,9 +5,6 @@
 
 .. include:: ../README.rst
 
-.. include:: user/benefits.rst
-
-
 Contents
 ========
 
