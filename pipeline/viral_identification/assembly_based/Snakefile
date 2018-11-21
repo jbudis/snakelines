@@ -1,4 +1,4 @@
-# TODO check fi blast references exists
+# TODO check if blast references exists
 
 # Load configuration file
 configfile: srcdir('config.yaml')

@@ -9,6 +9,8 @@ include: config['snakelines_dir'] + '/pipeline/standard_analysis/read_quality_re
 include: config['snakelines_dir'] + '/pipeline/standard_analysis/preprocess/Snakefile'
 include: config['snakelines_dir'] + '/pipeline/standard_analysis/mapping/Snakefile'
 
+configfile: srcdir('config.yaml')
+
 # TODO add panel
 rule finalise__call_germline_variants:
     """
