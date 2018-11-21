@@ -12,6 +12,12 @@ Laboratories are generally using computational pipelines consisting of several b
 We propose several computational pipelines for processing of paired-end Illumina reads; including mapping, assembly, variant calling, viral identification, RNA-seq and metagenomics analysis.
 All provided pipelines are embedded into virtual environments that ensures isolation of required resources from host operating system, rapid deployment and reproducibilty of results accross different platforms.
 
+Availability
+============
+
+Source code of the SnakeLines pipelines can be downloaded from `the Github repository <https://github.com/jbudis/snakelines>`_.
+The documentation is accessible from the `ReadTheDocs <https://snakelines.readthedocs.io/en/latest/>`_.
+See the `Quick start <https://snakelines.readthedocs.io/en/latest/user/example.html#>`_ or the `Running SnakeLines <https://snakelines.readthedocs.io/en/latest/user/running.html>`_ section of the documentation to see instructions for execution of pipelines.
 
 Why use SnakeLines
 ====================
