@@ -1,6 +1,10 @@
 # TODO allow to change panels
 # TODO this pipeline could produce also barplots and krona plots, when reference contains .tax files
 
+# Import sub-workflows
+include: config['snakelines_dir'] + '/pipeline/standard_analysis/preprocess/Snakefile.rule'
+include: config['snakelines_dir'] + '/pipeline/standard_analysis/read_quality_report/Snakefile.rule'
+
 rule finalise__map_reads_to_reference:
     """
     Pipeline maps preprocessed reads to the selected reference sequences. Mapped reads in bam files

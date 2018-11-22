@@ -6,4 +6,3 @@ include: config['snakelines_dir'] + '/src/snakelines.snake'
 
 # Import sub-workflow
 include: config['snakelines_dir'] + '/pipeline/standard_analysis/preprocess/Snakefile.rule'
-include: config['snakelines_dir'] + '/pipeline/standard_analysis/read_quality_report/Snakefile.rule'

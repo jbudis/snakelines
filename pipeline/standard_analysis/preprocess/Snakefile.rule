@@ -1,3 +1,6 @@
+# Import sub-workflows
+include: config['snakelines_dir'] + '/pipeline/standard_analysis/read_quality_report/Snakefile.rule'
+
 rule finalise__preprocess_reads:
     """
     Pipeline filter and revise fastq files from the reads/original directory. All preprocess steps, such as trimming,

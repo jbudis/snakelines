@@ -5,7 +5,6 @@ configfile: srcdir('config.yaml')
 include: config['snakelines_dir'] + '/src/snakelines.snake'
 
 # Import sub-workflows
-include: config['snakelines_dir'] + '/pipeline/standard_analysis/read_quality_report/Snakefile.rule'
 include: config['snakelines_dir'] + '/pipeline/standard_analysis/preprocess/Snakefile.rule'
 
 rule finalise__assemble_reads:
