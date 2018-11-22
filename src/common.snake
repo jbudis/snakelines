@@ -37,3 +37,16 @@ rules_dir = '{}/rules'.format(config['snakelines_dir'])
 for import_file, method_config in import_files_in_config(config, rules_dir):
     assert os.path.isfile(import_file), 'Configured snake file {} does not exist'.format(import_file)
     include: import_file
+
+# Find in configuration map post-process types for which should be report generated
+map_types_with_quality_report = extract_from_config(config, ['mapping', 'report', 'quality_report', 'map_types'], [])
+
+# References with at least 2 samples
+multisample_references = [reference for reference in pipeline.references if len(pipeline.samples_for(reference)) > 1]
+
+# Find in configuration read preprocess types that should be generated
+preprocess = extract_from_config(config, ['reads', 'preprocess'], {})
+read_types_to_keep = [read_type for read_type in preprocess.keys() if not preprocess[read_type].get('temporary', True)]
+
+# Find in configuration read preprocess types for which should be report generated
+read_types_with_fastqc_report = extract_from_config(config, ['reads', 'report', 'quality_report', 'read_types'], [])

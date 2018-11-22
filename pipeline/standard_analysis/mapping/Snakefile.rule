@@ -1,12 +1,6 @@
 # TODO allow to change panels
 # TODO this pipeline could produce also barplots and krona plots, when reference contains .tax files
 
-# Find in configuration map post-process types for which should be report generated
-map_types_with_quality_report = extract_from_config(config, ['mapping', 'report', 'quality_report', 'map_types'], [])
-
-# References with at least 2 samples
-multisample_references = [reference for reference in pipeline.references if len(pipeline.samples_for(reference)) > 1]
-
 rule finalise__map_reads_to_reference:
     """
     Pipeline maps preprocessed reads to the selected reference sequences. Mapped reads in bam files

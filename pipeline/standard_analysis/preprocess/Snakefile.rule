@@ -1,7 +1,3 @@
-# Find in configuration read preprocess types that should be generated
-preprocess = extract_from_config(config, ['reads', 'preprocess'], {})
-read_types_to_keep = [read_type for read_type in preprocess.keys() if not preprocess[read_type].get('temporary', True)]
-
 rule finalise__preprocess_reads:
     """
     Pipeline filter and revise fastq files from the reads/original directory. All preprocess steps, such as trimming,

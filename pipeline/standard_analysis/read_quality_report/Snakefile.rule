@@ -1,7 +1,3 @@
-# Find in configuration read preprocess types for which should be report generated
-preprocess = extract_from_config(config, ['reads', 'preprocess'], {})
-read_types_with_fastqc_report = extract_from_config(config, ['reads', 'report', 'quality_report', 'read_types'], [])
-
 rule finalise__quality_report:
     """
     Make FastQC quality reports for all reads of defined types. Should be used as the first assessment of
