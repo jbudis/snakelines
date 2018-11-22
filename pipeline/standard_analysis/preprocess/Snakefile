@@ -1,9 +1,9 @@
-# Import sub-workflow
-include: config['snakelines_dir'] + '/pipeline/standard_analysis/preprocess/Snakefile.rule'
-include: config['snakelines_dir'] + '/pipeline/standard_analysis/read_quality_report/Snakefile.rule'
-
 # Load configuration file
 configfile: srcdir('config.yaml')
 
 # Run startup scripts that automatically loads imports from src/ and load helper methods
 include: config['snakelines_dir'] + '/src/snakelines.snake'
+
+# Import sub-workflow
+include: config['snakelines_dir'] + '/pipeline/standard_analysis/preprocess/Snakefile.rule'
+include: config['snakelines_dir'] + '/pipeline/standard_analysis/read_quality_report/Snakefile.rule'
