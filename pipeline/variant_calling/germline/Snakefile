@@ -1,15 +1,13 @@
-# Load configuration file
-configfile: srcdir('config.yaml')
-
-# Run startup scripts that automatically loads imports from src/ and load helper methods
-include: config['snakelines_dir'] + '/src/snakelines.snake'
-
 # Import sub-workflows
 include: config['snakelines_dir'] + '/pipeline/standard_analysis/read_quality_report/Snakefile'
 include: config['snakelines_dir'] + '/pipeline/standard_analysis/preprocess/Snakefile'
 include: config['snakelines_dir'] + '/pipeline/standard_analysis/mapping/Snakefile'
 
+# Load configuration file
 configfile: srcdir('config.yaml')
+
+# Run startup scripts that automatically loads imports from src/ and load helper methods
+include: config['snakelines_dir'] + '/src/snakelines.snake'
 
 # TODO add panel
 rule finalise__call_germline_variants:

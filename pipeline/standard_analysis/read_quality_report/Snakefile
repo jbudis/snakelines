@@ -4,7 +4,6 @@ configfile: srcdir('config.yaml')
 # Run startup scripts that automatically loads imports from src/ and load helper methods
 include: config['snakelines_dir'] + '/src/snakelines.snake'
 
-
 # Find in configuration read preprocess types for which should be report generated
 preprocess = extract_from_config(config, ['reads', 'preprocess'], {})
 read_types_with_fastqc_report = extract_from_config(config, ['reads', 'report', 'quality_report', 'read_types'], [])
