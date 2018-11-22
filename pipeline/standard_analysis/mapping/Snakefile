@@ -7,3 +7,8 @@ include: config['snakelines_dir'] + '/src/snakelines.snake'
 # Import sub-workflows
 include: config['snakelines_dir'] + '/pipeline/standard_analysis/mapping/Snakefile.rule'
 
+rule all:
+    """
+    """
+    input:
+        rule.finalise__map_reads_to_reference.output
