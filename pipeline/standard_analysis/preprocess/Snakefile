@@ -1,6 +1,8 @@
 # Load configuration file
 configfile: srcdir('config.yaml')
 
+print(config)
+
 # Run startup scripts that automatically loads imports from src/ and load helper methods
 include: config['snakelines_dir'] + '/src/snakelines.snake'
 
@@ -11,4 +13,4 @@ rule all:
     """
     """
     input:
-        rules.finalise__preprocess_reads.output
+        rules.finalise__preprocess_reads.input

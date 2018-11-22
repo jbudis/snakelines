@@ -19,7 +19,7 @@ rule finalise__map_reads_to_reference:
     """
     input:
         rules.finalise__quality_report.output,
-        rules.finalise__preprocess_reads.output,
+        rules.finalise__preprocess_reads.input,
 
         alignments = expand('mapping/{sr.reference}/{map_type}/{sr.sample}.bam',
                              sr=pipeline.sample_references, map_type=pipeline.postprocessed_map_type),
