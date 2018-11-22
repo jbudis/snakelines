@@ -6,7 +6,7 @@ read quality of sequencing run. After that, preprocess pipeline may be utilized 
 
 **Location**
 
-- *Filepath:* <SnakeLines_dir>/pipeline/standard_analysis/read_quality_report/Snakefile.rule
+- *Filepath:* <SnakeLines_dir>/pipeline/standard_analysis/read_quality_report/Snakefile
 - *Rule name:* finalise__quality_report
 
 **Input(s):**
