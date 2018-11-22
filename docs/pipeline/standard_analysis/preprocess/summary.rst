@@ -7,7 +7,7 @@ Preprocess steps are executed gradually, i.e. output reads of one step are input
 
 **Location**
 
-- *Filepath:* <SnakeLines_dir>/pipeline/standard_analysis/preprocess/Snakefile
+- *Filepath:* <SnakeLines_dir>/pipeline/standard_analysis/preprocess/Snakefile.rule
 - *Rule name:* finalise__preprocess_reads
 
 **Input(s):**

@@ -7,7 +7,7 @@ reports are generated in the end.
 
 **Location**
 
-- *Filepath:* <SnakeLines_dir>/pipeline/standard_analysis/mapping/Snakefile
+- *Filepath:* <SnakeLines_dir>/pipeline/standard_analysis/mapping/Snakefile.rule
 - *Rule name:* finalise__map_reads_to_reference
 
 **Input(s):**
