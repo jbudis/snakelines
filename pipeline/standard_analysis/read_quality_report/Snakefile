@@ -1,3 +1,6 @@
+# Import sub-workflow
+include: config['snakelines_dir'] + '/pipeline/standard_analysis/read_quality_report/Snakefile.rule'
+
 # Load configuration file
 configfile: srcdir('config.yaml')
 
@@ -7,33 +10,3 @@ include: config['snakelines_dir'] + '/src/snakelines.snake'
 # Find in configuration read preprocess types for which should be report generated
 preprocess = extract_from_config(config, ['reads', 'preprocess'], {})
 read_types_with_fastqc_report = extract_from_config(config, ['reads', 'report', 'quality_report', 'read_types'], [])
-
-rule finalise__quality_report:
-    """
-    Make FastQC quality reports for all reads of defined types. Should be used as the first assessment of
-    read quality of sequencing run. After that, preprocess pipeline may be utilized to eliminate sequencing artefacts.
-    :input fastqcs: fastQC quality reports of all preprocess types that are configured to be generated
-    :input reports: Summary table of fastQC reports
-    :output fastqcs: fastQC quality reports of all preprocess types that are configured to be generated (in the report directory)
-    :output reports: Summary table of fastQC reports (in the report directory)
-    """
-    input:
-        fastqcs = expand('reads/{read_type}/stats/{sample}_R{orientation}_fastqc.html',
-                          read_type=read_types_with_fastqc_report, sample=pipeline.samples,
-                          orientation=[1,2]),
-
-        reports = expand('reads/{read_type}/stats/summary.html',
-                          read_type=read_types_with_fastqc_report)
-
-    output:
-        fastqcs = expand('{report_dir}/read_quality_report/{read_type}/{sample}_R{orientation}_fastqc.html',
-                          report_dir=config['report_dir'], read_type=read_types_with_fastqc_report,
-                          sample=pipeline.samples, orientation=[1,2]),
-
-        reports = expand('{report_dir}/read_quality_report/{read_type}/index.html',
-                          report_dir=config['report_dir'], read_type=read_types_with_fastqc_report)
-    run:
-        copy_input_files_with_consistent_output_names(input, output)
-
-# Target rule would be executed locally, not on cluster
-localrules: finalise__quality_report
