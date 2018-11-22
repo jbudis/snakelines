@@ -1,11 +1,13 @@
 # Load configuration file
 configfile: srcdir('config.yaml')
+assembly_config = config
 
 # Run startup scripts that automatically loads imports from src/ and load helper methods
 include: config['snakelines_dir'] + '/src/snakelines.snake'
 
 # Import sub-workflows
 include: config['snakelines_dir'] + '/pipeline/standard_analysis/preprocess/Snakefile'
+config = assembly_config
 
 rule finalise__assemble_reads:
     """
