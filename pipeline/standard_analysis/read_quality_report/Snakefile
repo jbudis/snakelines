@@ -11,4 +11,4 @@ rule all:
     """
     """
     input:
-        rule.finalise__quality_report.output
+        rules.finalise__quality_report.output

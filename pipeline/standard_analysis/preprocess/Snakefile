@@ -11,4 +11,4 @@ rule all:
     """
     """
     input:
-        rule.finalise__preprocess_reads.output
+        rules.finalise__preprocess_reads.output

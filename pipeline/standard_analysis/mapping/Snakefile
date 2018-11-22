@@ -11,4 +11,4 @@ rule all:
     """
     """
     input:
-        rule.finalise__map_reads_to_reference.output
+        rules.finalise__map_reads_to_reference.output
