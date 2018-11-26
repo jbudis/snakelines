@@ -18,6 +18,9 @@ blast_db_suffices = {
 reference_config = method_config['reference']
 
 def find_blast_db(wildcards):
+    '''
+    Determine path to the blast index files according to reference name and type of sequences (nucleotide/protein)
+    '''
     target_type = reference_config[wildcards.reference]['target_type']
 
     db_suffix = blast_db_suffices[target_type]
@@ -32,6 +35,14 @@ def find_blast_db(wildcards):
 rule blast__find_homologues:
     '''
     Find homologues for input sequences stored in fasta file in query reference database.
+    :input blast_db: Blast index of reference sequences, made by makeblastdb command
+    :input fasta: Genomic sequences to be classified
+    :output tsv: Homologues for input sequences in tabular format
+    :param nohead: Auxiliary file for immediate results
+    :param header: Auxiliary file for immediate results
+    :param max_target_seqs: Maximal number of homologue sequences to be reported for each query sequence
+    :param blast_binary: Blast tool to use - this differ in types of input files (nucleotide/protein)
+    :param blast_database: Prefix name of the input blast database files
     '''
     input:
         blast_db = find_blast_db,
@@ -79,8 +90,14 @@ rule blast__find_homologues:
         rm {params.header} {params.nohead}
         '''
 
-# TODO this works for NCBI databases only find a way to load taxonomy directly from blast indices
+# TODO this works for NCBI databases only find a way to load taxonomy directly from blast indices, do we need this rule?
 rule blast__annotate_with_taxonomy:
+    '''
+    Append additional column to the blast tabular output with the taxonomy of homology sequence
+    :input blast: Blast tabular output
+    :input taxes: Preprocessed taxonomies in .pickle
+    :output blast: Blast tabular output with additional column with the taxonomy of homology sequence
+    '''
     input:
         blast = '{indir}/blast/{name}.blast.tsv',
         taxes = '/data/genome/metagenome/blast/nt/17-01-17/taxonomy/code_taxonomy.pickle'
@@ -109,82 +126,16 @@ rule blast__annotate_with_taxonomy:
                 out_blast.write('\t'.join(items))
                 out_blast.write('\n')
 
-# TODO do we need this?
-rule blast_filter_by_kingdom:
-    input:
-        blast = '{indir}/blast/{name}.blast.tax.tsv'
-    output:
-        blast = '{indir}/blast/{name}.blast.tax.{kingdom, [a-z]+}.tsv'
-    run:
-        with open(input.blast) as in_blast, open(output.blast, 'w') as out_blast:
-            for i, line in enumerate(in_blast):
-                items = line.strip().split("\t")
-                if i == 0:
-                    tax_col = items.index('taxonomy')
-                else:
-                    tax = items[tax_col].lower()
-                    if not tax.startswith(wildcards.kingdom):
-                        continue
-
-                out_blast.write(line)
-
-# TODO do we need this?
-rule blast_extract_contigs_by_kingdom:
-    input:
-        blast = '{indir}/blast/{name}.blast.tax.{kingdom}.tsv',
-        fasta = '{indir}/{name}.fa'
-    output:
-        fasta = '{indir}/{name}.blast.tax.{kingdom}.fa'
-    run:
-        # Store all fasta contigs into memory
-        contigs = {contig.id: contig for contig in SeqIO.parse(input.fasta, 'fasta')}
-
-        already_stored = set()
-        with open(input.blast) as in_blast, open(output.fasta, 'w') as out_fasta:
-            for i, line in enumerate(in_blast):
-                items = line.strip().split("\t")
-                if i == 0:
-                    contig_id_col = items.index('qseqid')
-                else:
-                    contig_id = items[contig_id_col]
-                    if contig_id in already_stored:
-                        continue
-
-                    SeqIO.write(contigs[contig_id], out_fasta, 'fasta')
-                    already_stored.add(contig_id)
-
-
-# TODO do we need this?
-rule blast_assign_taxonomy_assemblers:
-    input:
-        fa = '{assembler}/{reference}/{indir}/{sample}.fa',
-        blast = '{assembler}/{reference}/{indir}/blast/{reference}/{sample}.blast.tsv',
-        tax = 'reference/{reference}/{reference}.tax'
-    output:
-        tax = '{assembler, matam}/{reference}/{indir, [a-z]+}/{sample}.tax'
-    run:
-        # Load ids and taxonomies for reference sequences
-        taxes = pd.read_csv(input.tax, header=None, index_col=0, sep='\t')[1]
-
-        # Load homologues found by blast
-        blast = pd.read_csv(input.blast, index_col=None, sep='\t') \
-                  .drop_duplicates(subset=['qseqid'], keep='first') \
-                  .set_index('qseqid')
-
-        # Assign taxonomies for best hit homologues to sequences from fasta
-        with open(output.tax, 'w') as outtax:
-            for query in SeqIO.parse(input.fa, 'fasta'):
-                tax = 'Unknown'
-                if query.id in blast.index:
-                    homologue = blast.loc[query.id]['sacc']
-                    tax = taxes[homologue]
-
-                outtax.write('{qid}\t{taxonomy}\n'.format(qid=query.id, taxonomy=tax))
 
 # TODO add reference indices for protein databases as well
 rule blast__prepare_reference_index_for_nucleotide:
     '''
-    Creates blast indices from provided reference sequences in fasta format.
+    Creates blast indices from genomic sequences.
+    :input fa: Genomic nucleotide sequences in fasta format
+    :output nhr: Part of blast index
+    :output nin: Part of blast index
+    :output nsq: Part of blast index
+    :params index_prefix: Prefix name of output blast database files
     '''
     input:
         fa  = 'reference/{reference}/{reference}.fa'

@@ -1,12 +1,14 @@
 rule samtools__prepare_fai_index:
     '''
     Index fasta file to quicker retrieve substring sequences
+    :input reference: Genomic sequence file in fasta format to index
+    :output dict: Index for the input reference genomic file
     '''
     input:
-        '{genome}.fa'
+        reference = '{genome}.fa'
     output:
-        '{genome}.fa.fai'
+        fai = '{genome}.fa.fai'
     shell:
         '''
-        samtools faidx {input}
+        samtools faidx {input.reference}
         '''

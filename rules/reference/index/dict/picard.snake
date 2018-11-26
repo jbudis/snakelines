@@ -1,19 +1,21 @@
 rule picard__prepare_dict_index:
     '''
     Index fasta file to quicker retrieve substring sequences
+    :input reference: Genomic sequence file in fasta format to index
+    :output dict: Index for the input reference genomic file
     '''
     input:
-        'reference/{reference}/{reference}.fa'
+        reference = 'reference/{reference}/{reference}.fa'
     output:
-        protected('reference/{reference}/{reference}.dict')
+        dict = protected('reference/{reference}/{reference}.dict')
     log:
         out = 'reference/{reference}/log/picard_index.log',
         err = 'reference/{reference}/log/picard_index.err'
     shell:
         '''
         picard CreateSequenceDictionary \
-            REFERENCE={input} \
-            OUTPUT={output} \
+            REFERENCE={input.reference} \
+            OUTPUT={output.dict} \
             1>{log.out} \
             2>{log.err}
         '''

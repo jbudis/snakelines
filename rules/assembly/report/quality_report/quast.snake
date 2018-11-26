@@ -2,6 +2,11 @@ rule quast__quality_report_for_assembled_contigs:
     '''
     Evaluate genome assembly by standard metrics, such as N50, number of contigs, length of contigs.
     Metrics are summarised in an HTML, PDF and text reports.
+    :input contigs: Assembled configs in fasta format
+    :output txt: Quality report statistics in text format suitable for automated evaluation
+    :output html: Quality report statistics in HTML format
+    :output pdf: Quality report statistics in Pdf format
+    :params outdir: Directory with output files
     '''
     input:
         contigs = 'assembly/{sample}/contigs.fa'
