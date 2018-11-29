@@ -1,0 +1,45 @@
+include: srcdir('indices/bismark_index.snake')
+
+rule bismark__map_methyl_seq_reads_to_reference:
+    """
+    For input preprocessed reads treated by Bisulfide Bismark finds the most similar genomic region in the provided reference genome.
+    :input r1: gzipped fastq file with left reads, e.g. 'reads/%s/{sample}_R1.fastq.gz'
+    :input r2: gzipped fastq file with right reads, e.g. 'reads/%s/{sample}_R2.fastq.gz'
+    :input ct_index: CT reference index (created by rule bismark__prepare_index)
+    :input ga_index: GA reference index (created by rule bismark__prepare_index)
+    :input ref: reference genome, i.e. 'reference/{reference}/{reference}.fa'
+    :output bam: mapped reads in BAM format
+    :param aux_bam: bam file that have preset name by Bismark. Has to be renamed to match downstream analysis.
+    :param bam_dir: directory with the output bam file
+    :param reference_dir: directory with reference fasta, i.e. 'reference/{reference}'
+    """
+    input:
+        r1    = 'reads/%s/{sample}_R1.fastq.gz' % pipeline.preprocessed_read_type,
+        r2    = 'reads/%s/{sample}_R2.fastq.gz' % pipeline.preprocessed_read_type,
+        ct_index = 'reference/{reference}/Bisulfite_Genome/CT_conversion/BS_CT.1.bt2',
+        ga_index = 'reference/{reference}/Bisulfite_Genome/GA_conversion/BS_GA.1.bt2',
+        ref   = 'reference/{reference}/{reference}.fa'
+    output:
+        bam   = 'mapping/{reference}/original/{sample}.bam'
+    log:
+        out   = 'mapping/{reference}/original/log/{sample}.bismark.log',
+        err   = 'mapping/{reference}/original/log/{sample}.bismark.err'
+    params:
+        aux_bam = 'mapping/{reference}/original/{sample}_R1_bismark_bt2_pe.bam',
+        bam_dir = 'mapping/{reference}/original',
+        reference_dir = 'reference/{reference}'
+    threads:
+        int(int(config['threads']) / 4)
+    shell:
+        '''
+        bismark \
+            --output_dir {params.bam_dir} \
+            -p {threads} \
+            {params.reference_dir} \
+            -1 {input.r1} \
+            -2 {input.r2} \
+         > {log.out} \
+        2> {log.err}
+
+        mv {params.aux_bam} {output.bam}
+        '''
