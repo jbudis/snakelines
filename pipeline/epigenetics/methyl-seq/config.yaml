@@ -50,3 +50,6 @@ mapping:                            # Find the most similar genomic region to re
             method: qualimap        # Supported values: qualimap
             map_types:              # List of post-process steps for quality reports
                 - deduplicated
+
+        methylation:
+            method: bismark

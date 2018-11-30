@@ -26,8 +26,10 @@ rule finalise__map_reads_to_reference:
     :input bam_indices: BAM file indices (.bam.bai)
     :input quality_reports: mapping statistics retrieved from BAM file (.pdf)
     :input summary_report: aggregated mapping statistics (.pdf)
+    :input methylation_reports: summary report of discovered methylation patterns (.html)
     :output quality_reports: mapping statistics retrieved from BAM file (.pdf) (in the report directory)
     :output summary_report: aggregated mapping statistics (.pdf) (in the report directory)
+    :output methylation_reports: summary report of discovered methylation patterns (.html) (in the report directory)
     """
     input:
         rules.finalise__quality_report.output,
@@ -45,9 +47,15 @@ rule finalise__map_reads_to_reference:
         summary_report = expand('mapping/{reference}/{map_type}/stats-wgs/summary/report.pdf',
                                  reference=multisample_references, map_type=pipeline.postprocessed_map_type),
 
+        methylation_reports = expand('mapping/{sr.reference}/original/bismark/{sr.sample}.html',
+                                     sr=pipeline.sample_references),
+
     output:
         quality_reports = expand('{report_dir}/{sr.reference}/samples/{sr.sample}/mapping_quality.pdf',
                                   report_dir=config['report_dir'], sr=pipeline.sample_references),
+
+        methylation_reports = expand('{report_dir}/{sr.reference}/samples/{sr.sample}/methylation.html',
+                                      report_dir=config['report_dir'], sr=pipeline.sample_references),
 
         summary_report = expand('{report_dir}/{reference}/summary/mapping_quality.pdf',
                                  report_dir=config['report_dir'], reference=multisample_references),
