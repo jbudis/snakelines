@@ -1,3 +1,5 @@
+#TODO test files for Methylation pipeline
+
 # Load configuration file
 configfile: srcdir('config.yaml')
 
