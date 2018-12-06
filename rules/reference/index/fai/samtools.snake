@@ -6,6 +6,8 @@ rule samtools__prepare_fai_index:
         '{genome}.fa'
     output:
         '{genome}.fa.fai'
+    conda:
+        config['snakelines_dir'] + '/enviroments/others_env.yaml'
     shell:
         '''
         samtools faidx {input}

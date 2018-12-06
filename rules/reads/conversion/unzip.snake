@@ -10,6 +10,8 @@ rule pigz__unzip_file:
         unzipped = temp('{file}.{type, fa|fasta|fastq}')
     threads:
         int(config['threads'])
+    conda:
+        config['snakelines_dir'] + '/enviroments/others_env.yaml'
     shell:
         """
         set +euo pipefail

@@ -11,6 +11,7 @@ def fastq_files(read_type):
     return expand('reads/%s/stats/{sample}_R1_fastqc.html' % read_type, sample=pipeline.samples) + \
            expand('reads/%s/stats/{sample}_R2_fastqc.html' % read_type, sample=pipeline.samples)
 
+# TODO change calling python script from shell to calling script from snakemake directly
 rule fastqc__html_summary_for_joined_reads:
     """
     Aggregate quality control results from all FastQC reports and generate summary HTML table with
@@ -22,6 +23,8 @@ rule fastqc__html_summary_for_joined_reads:
         'reads/{read_type}/stats-joined/summary.html'
     params:
         summary_script = srcdir("scripts/fastqc-summary.py")
+    conda:
+        config['snakelines_dir'] + '/enviroments/others_env.yaml'
     shell:
         """
         python {params.summary_script} \
@@ -29,7 +32,7 @@ rule fastqc__html_summary_for_joined_reads:
             {input}
         """
 
-
+# TODO change calling python script from shell to calling script from snakemake directly
 rule fastqc__html_summary_for_paired_reads:
     """
     Aggregate quality control results from all FastQC reports and generate summary HTML table with
@@ -41,6 +44,8 @@ rule fastqc__html_summary_for_paired_reads:
         'reads/{read_type}/stats/summary.html'
     params:
         summary_script = srcdir("scripts/fastqc-summary.py")
+    conda:
+        config['snakelines_dir'] + '/enviroments/others_env.yaml'
     shell:
         """
         python {params.summary_script} \
@@ -62,6 +67,8 @@ rule fastqc__quality_report:
     log:
         out = 'reads/{read_type}/stat{stats_type}/log/{fastq}.log',
         err = 'reads/{read_type}/stat{stats_type}/log/{fastq}.err',
+    conda:
+        config['snakelines_dir'] + '/enviroments/others_env.yaml'
     shell:
         """
         fastqc \

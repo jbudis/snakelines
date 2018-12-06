@@ -6,6 +6,8 @@ rule samtools__bam_index:
         '{path}/{sample}.bam'
     output:
         '{path}/{sample}.bam.bai'
+    conda:
+        config['snakelines_dir'] + '/enviroments/others_env.yaml'
     shell:
         """
         samtools index {input}

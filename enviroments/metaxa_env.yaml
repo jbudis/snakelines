@@ -1,0 +1,7 @@
+channels:
+- bioconda
+- agbiome
+- bonsai-team
+- g2554711
+dependencies:
+- metaxa=2.2

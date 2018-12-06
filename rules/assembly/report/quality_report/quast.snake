@@ -16,6 +16,8 @@ rule quast__quality_report_for_assembled_contigs:
         err     = 'assembly/{sample}/quality_report/log/quast.err'
     threads:
         int(config['threads'])
+    conda:
+        config['snakelines_dir'] + '/enviroments/quast_env.yaml'
     shell:
         '''
         quast \

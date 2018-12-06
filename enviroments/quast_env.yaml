@@ -1,0 +1,4 @@
+channels:
+- bioconda
+dependencies:
+- quast=4.4.0

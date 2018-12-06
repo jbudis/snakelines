@@ -17,6 +17,8 @@ rule fast_virome_explorer_estimate_virome_composition:
         err = 'fast_virome_explorer/{reference}/classification/{sample}/log/{sample}.err'
     params:
         outdir = 'fast_virome_explorer/{reference}/classification/{sample}'
+    conda:
+        config['snakelines_dir'] + '/enviroments/others_env.yaml'
     shell:
         '''
         fast_virome_explorer \
@@ -34,6 +36,8 @@ rule fast_virome_explorer_convert_to_krona:
         composition = 'fast_virome_explorer/{reference}/classification/{sample}/FastViromeExplorer-final-sorted-abundance.tsv'
     output:
         krona = 'fast_virome_explorer/{reference}/report/krona/individual/{sample}.krn'
+    conda:
+        config['snakelines_dir'] + '/enviroments/others_env.yaml'
     run:
         viruses = pd.read_csv(input.composition, sep='\t', index_col=0)
         with open(output.krona, 'w') as out:

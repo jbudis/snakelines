@@ -50,6 +50,8 @@ rule blast__find_homologues:
         blast_database  = 'reference/{reference}/blast_index/{reference}'
     threads:
         int(config['threads'])
+    conda:
+        config['snakelines_dir'] + '/enviroments/others_env.yaml'
     shell:
         '''
         set +e pipefail
@@ -80,6 +82,7 @@ rule blast__find_homologues:
         '''
 
 # TODO this works for NCBI databases only find a way to load taxonomy directly from blast indices
+# TODO absolute path
 rule blast__annotate_with_taxonomy:
     input:
         blast = '{indir}/blast/{name}.blast.tsv',
@@ -197,6 +200,8 @@ rule blast__prepare_reference_index_for_nucleotide:
         err = 'reference/{reference}/blast_index/log/{reference.err}'
     params:
         index_prefix = 'reference/{reference}/blast_index/{reference}'
+    conda:
+        config['snakelines_dir'] + '/enviroments/others_env.yaml'
     shell:
         '''
         makeblastdb \
