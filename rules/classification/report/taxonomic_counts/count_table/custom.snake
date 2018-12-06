@@ -18,10 +18,18 @@ def individual_krn_files(wildcards):
                     reference=wildcards.reference,
                     sample=pipeline.samples_for(wildcards.reference))
 
+# TODO: new rule for tsv -> xlsx format conversion
 rule custom__summarize_taxonomic_counts_into_tsv_table:
     '''
     Take taxonomic counts and proportions from several samples and merge them together into a single table.
     Also calculate number of reads per sample for each taxonomic unit.
+    :input krns: Taxonomy files for each analysed sample in standardised format suitable for Krona graph generation
+    :output summary_xlsx: Aggregated counts for each discovered taxonomy in Excel format
+    :output summary_tsv: Aggregated counts for each discovered taxonomy in tabular format
+    :output subtax_xlsx: Aggregated counts for each discovered taxonomy and its subtaxes in Excel format
+    :output subtax_tsv: Aggregated counts for each discovered taxonomy and its subtaxes in tabular format
+    :output subtax_xlsx: Normalised (counts for sample sum to 1) aggregated counts for each discovered taxonomy and its subtaxes in Excel format
+    :output subtax_tsv: Normalised (counts for sample sum to 1) aggregated counts for each discovered taxonomy and its subtaxes in tabular format
     '''
     input:
         krns  = individual_krn_files
@@ -150,6 +158,9 @@ rule custom__summarize_taxonomic_counts_into_tsv_table:
 rule custom__extract_taxonomic_level_from_taxonomic_table:
     '''
     Extract read counts for organisms at selected taxonomic level, such as genus, species.
+    :input subtax_tsv: Aggregated counts for each discovered taxonomy and its subtaxes in tabular format
+    :output tax_level_abs: Aggregated counts for single taxonomic level, e.g. species, order
+    :output tax_level_rel: Normalised (counts for a sample sum to 1) aggregated counts for single taxonomic level, e.g. species, order
     '''
     input:
         subtax_tsv    = '{analysis_dir}/{reference}/report/tsv/alltaxes.counts.tsv'

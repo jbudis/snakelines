@@ -1,8 +1,8 @@
 rule bandage__visualise_contig_overlaps:
     """
     Plot overlap graph of contigs to visually inspect relationships between contigs.
-    :input gfa: ?????
-    :output svg: ?????
+    :input gfa: Assembly graph in .gfa format
+    :output svg: Graphical visualisation of overlaps between contigs - graph representation
     """
     input:
         gfa = '{path}/{sample}.gfa'

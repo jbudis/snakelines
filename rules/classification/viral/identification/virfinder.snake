@@ -1,6 +1,9 @@
 rule virfinder__identify_viral_sequences:
     '''
     Method assigns each contig p-value that it originates from viral genome.
+    :input fasta: Genomics sequences to be analysed in fasta format
+    :output pvalues: Probabilities that genomic sequence originates from a virus
+    :params wrapper_script: Wrapper script to call Virfinder
     '''
     input:
         fasta   = '{indir}/{name}.fa'

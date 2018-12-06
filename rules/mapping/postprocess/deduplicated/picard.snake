@@ -1,9 +1,12 @@
 # TODO hardcoded tmp_dir, do we need it?
 rule picard__mark_duplicates:
-    """
+    '''
     This tool locates and tags duplicate reads in a BAM or SAM file, where duplicate reads are defined as
     originating from a single fragment of DNA.
-    """
+    :input bam: Mapped reads in bam format
+    :input bai: Index to mapped reads for enable fast read retrieval from desired genomic region
+    :output bam: Mapped reads with additional attribute that marks if read is PCR duplicate
+    '''
     input:
         bam  = '{{mapper}}/{{reference}}/{map_type}/{{sample}}.bam'.format(map_type=method_config['input_map_type']),
         bai  = '{{mapper}}/{{reference}}/{map_type}/{{sample}}.bam.bai'.format(map_type=method_config['input_map_type'])
@@ -31,4 +34,4 @@ rule picard__mark_duplicates:
         2> {log.err}
 
         rm -r $TEMP_DIR
-        """
+        '''

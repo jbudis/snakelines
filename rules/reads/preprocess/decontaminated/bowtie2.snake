@@ -1,11 +1,18 @@
 include: config['snakelines_dir'] + '/rules/mapping/mapper/indices/bowtie2_index.snake'
 
 rule bowtie2__filter_reads_from_reference:
-    """
+    '''
     Remove reads that do not map to the reference, and so may be caused by contamination in lab processing.
     Alternatively, using keep: False configuration removes all fragments that belongs to reference, and so is suitable
     to remove contamination caused by host with known genome, e.g. human fragments.
-    """
+    :input r1: Left side of sequenced fragments in gzipped fastq format
+    :input r2: Right side of sequenced fragments in gzipped fastq format
+    :input index_files: List of reference bowtie2 databases
+    :output r1: Left side of filtered fragments in gzipped fastq format
+    :output r2: Right side of filtered fragments in gzipped fastq format
+    :params indices: Prefixes of reference bowtie2 databases
+    :params keep_param: Determine if keep or remove sequences aligned to reference databases
+    '''
     input:
         r1 = 'reads/%s/{sample}_R1.fastq.gz' % method_config['input_read_type'],
         r2 = 'reads/%s/{sample}_R2.fastq.gz' % method_config['input_read_type'],
@@ -23,7 +30,7 @@ rule bowtie2__filter_reads_from_reference:
     conda:
         config['snakelines_dir'] + '/enviroments/others_env.yaml'
     shell:
-        """
+        '''
         TMP_DIR=reads/filtered/tmp
         R1_IN={input.r1}
         R2_IN={input.r2}
@@ -56,4 +63,4 @@ rule bowtie2__filter_reads_from_reference:
         mv $R2_OUT {output.r2}
 
         rm -rf $TMP_DIR
-        """
+        '''
