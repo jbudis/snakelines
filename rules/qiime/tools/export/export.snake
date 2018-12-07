@@ -1,0 +1,18 @@
+rule qiime__tools_export:
+    input:
+        qzv     = expand('reads/qiime/{name}.qzv',
+                          name=method_config['name'])
+    params:
+        export_dir = expand('reads/qiime/{name}',
+                          name=method_config['name'])
+    output:
+        html = expand('reads/qiime/{name}/index.html',
+                          name=method_config['name'])
+    threads:
+        int(config['threads'])
+    shell:
+        '''
+        qiime tools export \
+          --input-path {input.qzv} \
+          --output-path {params.export_dir}
+        '''

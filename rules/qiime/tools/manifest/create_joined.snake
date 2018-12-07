@@ -1,0 +1,17 @@
+rule qiime__create_joined_manifest:
+    input:
+        rm    = expand('reads/{name}/{sample}_RM.fastq.gz',
+                        name=method_config['name'],
+                        sample=pipeline.samples )
+    output:
+        manifest = expand('reads/qiime/{name}.manifest',
+                          name=method_config['name'])
+    params:
+        path = '$PWD/reads/%s/*_RM.fastq.gz' % method_config['name']
+    threads:
+        int(config['threads'])
+    shell:
+        '''
+        echo "sample-id,absolute-filepath,direction" >> {output.manifest}
+        ls {params.path} | sed -E "s/(.*)(\/)([^\/]*)(_RM.fastq.gz)/\\3,\\1\\2\\3\\4,forward/g" >> {output.manifest}
+        '''

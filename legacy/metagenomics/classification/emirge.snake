@@ -2,7 +2,7 @@ shell.executable('bash')
 
 import re
 
-include: config['snakelines_dir'] + '/rules/preprocess/conversion/unzip.snake'
+include: config['snakelines_dir'] + '/rules/reads/conversion/unzip.snake'
 include: config['snakelines_dir'] + '/rules/mapping/mappers/bowtie.snake'
 
 rule emirge_prepare_reference:

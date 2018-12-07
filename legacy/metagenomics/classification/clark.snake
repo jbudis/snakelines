@@ -1,4 +1,4 @@
-include: config['snakelines_dir'] + '/rules/preprocess/conversion/unzip.snake'
+include: config['snakelines_dir'] + '/rules/reads/conversion/unzip.snake'
 
 read_type = config['clark']['read_type']
 db_version = config['clark']['db_version']
