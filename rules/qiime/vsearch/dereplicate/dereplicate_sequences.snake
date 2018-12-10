@@ -1,0 +1,18 @@
+rule qiime__vsearch_dereplicate_sequences:
+    input:
+        qza       = expand('reads/qiime/{name}.qza',
+                            name=method_config['name'])
+    output:
+        table     = expand('reads/qiime/{name}-table.qza',
+                            name=method_config['name']),
+        rep_seqs  = expand('reads/qiime/{name}-rep-seqs.qza',
+                            name=method_config['name'])
+    threads:
+        int(config['threads'])
+    shell:
+        '''
+        qiime vsearch dereplicate-sequences \
+          --i-sequences {input.qza} \
+          --o-dereplicated-table {output.table} \
+          --o-dereplicated-sequences {output.rep_seqs}
+        '''

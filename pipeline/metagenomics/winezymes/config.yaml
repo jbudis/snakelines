@@ -45,3 +45,12 @@ qiime:
         export:
             method: export
             name: joined
+
+    vsearch:
+        dereplicate:
+            method: dereplicate_sequences
+            name: joined
+        cluster:
+            method: cluster_features_de_novo
+            name: joined
+            perc_identity: 99           # value range from 1 to 99
