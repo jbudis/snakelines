@@ -34,4 +34,4 @@ rule picard__mark_duplicates:
         2> {log.err}
 
         rm -r $TEMP_DIR
-        '''
+        """
