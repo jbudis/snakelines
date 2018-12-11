@@ -4,6 +4,8 @@ channels:
 - bonsai-team
 - g2554711
 - conda-forge
+- moustik
+- rsmulktis
 dependencies:
 - bandage=0.8.1
 - bedtools=2.26.0
@@ -34,8 +36,8 @@ dependencies:
 - sortmerna=2.1b
 - spades=3.10.1
 - trimmomatic=0.36
+- vardict=2017.04.18
 - vardict-java=1.5.1
-- vardict=2018.10.18
 - varscan=2.4.3
 - fast-virome-explorer=1.1.0
 - r-virfinder=1.1
