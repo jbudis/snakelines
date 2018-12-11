@@ -1,0 +1,4 @@
+channels:
+- bioconda
+dependencies:
+- soapdenovo2=2.40

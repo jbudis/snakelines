@@ -32,6 +32,8 @@ rule pear__join_read_pairs:
     log:
         out = 'reads/joined/log/{sample}.log',
         err = 'reads/joined/log/{sample}.err',
+    conda:
+        config['snakelines_dir'] + '/enviroments/others_env.yaml'
     shell:
         '''
         pear \
@@ -70,6 +72,8 @@ rule pear__concat_assembled_and_unassambled:
         rm = 'reads/joined/{sample}_RM.fastq.gz'
     output:
         rc = 'reads/joined/{sample}_RC.fastq.gz'
+    conda:
+        config['snakelines_dir'] + '/enviroments/others_env.yaml'
     shell:
         '''
         cat \

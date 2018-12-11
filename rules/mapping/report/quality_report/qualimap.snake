@@ -28,6 +28,8 @@ rule qualimap__mapping_quality_report_accross_reference:
     log:
         out    = '{bamdir}/stats-wgs/samples/{sample}/log/analysis.log',
         err    = '{bamdir}/stats-wgs/samples/{sample}/log/analysis.err',
+    conda:
+        config['snakelines_dir'] + '/enviroments/others_env.yaml'
     shell:
         """
         qualimap bamqc \
@@ -69,6 +71,8 @@ rule qualimap__mapping_quality_report_accross_panel:
     log:
         out    = '{mapper}/{reference}/{map_type}/stats-{panel}/samples/{sample}/log/analysis.log',
         err    = '{mapper}/{reference}/{map_type}/stats-{panel}/samples/{sample}/log/analysis.err',
+    conda:
+        config['snakelines_dir'] + '/enviroments/others_env.yaml'
     shell:
         """
         qualimap bamqc \
@@ -112,6 +116,8 @@ rule qualimap__summarize_quality_reports:
     log:
         out         = '{mapper}/{reference}/{map_type}/stats-{panel}/summary/log/analysis.log',
         err         = '{mapper}/{reference}/{map_type}/stats-{panel}/summary/log/analysis.err',
+    conda:
+        config['snakelines_dir'] + '/enviroments/others_env.yaml'
     shell:
         """
         # Prepare sample list file for the qualimap

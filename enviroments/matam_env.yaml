@@ -1,0 +1,4 @@
+channels:
+- bonsai-team
+dependencies:
+- matam=1.5.2

@@ -35,6 +35,8 @@ rule metaxa2__classify_reads:
         err          = 'classification/{reference}/samples/{sample}/log/metaxa2.err'
     threads:
         int(config['threads'])
+    conda:
+        config['snakelines_dir'] + '/enviroments/metaxa_env.yaml'
     shell:
         '''
         metaxa2 \
@@ -78,6 +80,8 @@ rule metaxa2__create_reference_index:
     log:
         out       = 'reference/{reference}/metaxa2_index/log/db.log',
         err       = 'reference/{reference}/metaxa2_index/log/db.err'
+    conda:
+        config['snakelines_dir'] + '/enviroments/metaxa_env.yaml'
     shell:
         '''
         metaxa2_dbb \
@@ -115,6 +119,8 @@ rule metaxa2__summarize_classification:
     log:
         out                  = 'classification/{reference}/samples/{sample}/log/metaxa2_ttt.log',
         err                  = 'classification/{reference}/samples/{sample}/log/metaxa2_ttt.err'
+    conda:
+        config['snakelines_dir'] + '/enviroments/metaxa_env.yaml'
     shell:
         '''
         TAXONOMY={input.taxonomy}
