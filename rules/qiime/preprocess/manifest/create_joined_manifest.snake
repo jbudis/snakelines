@@ -11,8 +11,6 @@ rule qiime__create_joined_manifest:
         manifest = 'reads/qiime/{name}.manifest'
     params:
         path = '$PWD/reads/{name}/*_RM.fastq.gz'
-    threads:
-        int(config['threads'])
     shell:
         '''
         echo "sample-id,absolute-filepath,direction" >> {output.manifest}

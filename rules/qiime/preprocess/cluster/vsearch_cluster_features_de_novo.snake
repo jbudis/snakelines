@@ -24,5 +24,6 @@ rule qiime__vsearch_cluster_features_de_novo:
           --i-sequences {input.rep_seqs} \
           --p-perc-identity 0.{params.similarity} \
           --o-clustered-table {output.table} \
-          --o-clustered-sequences {output.rep_seqs}
+          --o-clustered-sequences {output.rep_seqs} \
+          --p-threads {threads}
         '''

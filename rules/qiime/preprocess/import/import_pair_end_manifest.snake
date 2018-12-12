@@ -8,8 +8,6 @@ rule qiime__import_manifest:
         manifest    = 'reads/qiime/{name}.manifest'
     output:
         qza         = 'reads/qiime/{name}-imported.qza'
-    threads:
-        int(config['threads'])
     shell:
         '''
         qiime tools import --type 'SampleData[PairedEndSequencesWithQuality]' --input-path {input.manifest} --output-path {output.qza} --input-format PairedEndFastqManifestPhred33

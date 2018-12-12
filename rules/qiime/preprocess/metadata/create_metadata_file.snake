@@ -22,8 +22,6 @@ rule qiime__create_metadata_file:
     params:
         path = '$PWD/reads/{name}/*_RM.fastq.gz',
         sep = method_config['column_separator']
-    threads:
-        int(config['threads'])
     shell:
         '''
         max="ls {params.path} | sed -E \\\"s/(.*)(\/)([^\/]*)(_RM.fastq.gz)/\\3/g\\\" | awk -F '{params.sep}' '{{ print NF }}' | sort -n | tail -1"

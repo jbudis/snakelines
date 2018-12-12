@@ -11,8 +11,6 @@ rule qiime__import_manifest:
         qza         = 'reads/qiime/{name}-imported.qza'
     params:
         data_type = method_config['data_type']
-    threads:
-        int(config['threads'])
     shell:
         '''
         qiime tools import --type 'SampleData[{params.data_type}]' --input-path {input.manifest} --output-path {output.qza} --input-format SingleEndFastqManifestPhred33

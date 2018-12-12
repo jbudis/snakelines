@@ -10,8 +10,6 @@ rule qiime__tools_export:
         export_dir = 'reads/qiime/{visualization}'
     output:
         html = 'reads/qiime/{visualization}/index.html'
-    threads:
-        int(config['threads'])
     shell:
         '''
         qiime tools export \

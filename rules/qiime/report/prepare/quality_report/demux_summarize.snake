@@ -8,8 +8,6 @@ rule qiime__demux_summarize:
         qza     = 'reads/qiime/{name}-imported.qza'
     output:
         qzv     = 'reads/qiime/{name}-imported.qzv'
-    threads:
-        int(config['threads'])
     shell:
         '''
         qiime demux summarize \

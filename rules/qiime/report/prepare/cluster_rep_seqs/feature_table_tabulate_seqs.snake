@@ -8,8 +8,6 @@ rule qiime__feature_table_tabulate_seqs:
         rep_seqs  = 'reads/qiime/{name}-rep-seqs-dn-{perc_identity}.qza'
     output:
         qzv       = 'reads/qiime/{name}-rep-seqs-dn-{perc_identity}.qzv'
-    threads:
-        int(config['threads'])
     shell:
         '''
         qiime feature-table tabulate-seqs \

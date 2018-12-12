@@ -10,8 +10,6 @@ rule qiime__vsearch_dereplicate_sequences:
     output:
         table     = "reads/qiime/{name}-table.qza",
         rep_seqs  = "reads/qiime/{name}-rep-seqs.qza"
-    threads:
-        int(config['threads'])
     shell:
         '''
         qiime vsearch dereplicate-sequences \

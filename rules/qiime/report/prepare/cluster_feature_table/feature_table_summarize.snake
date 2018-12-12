@@ -10,8 +10,6 @@ rule qiime__feature_table_summarize:
         metadata  = 'reads/qiime/{name}-sample-metadata.tsv'
     output:
         qzv       = 'reads/qiime/{name}-table-dn-{perc_identity}.qzv'
-    threads:
-        int(config['threads'])
     shell:
         '''
         qiime feature-table summarize \
