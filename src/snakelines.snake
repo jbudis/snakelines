@@ -6,5 +6,3 @@ include: srcdir('output/copy_files.py')
 include: srcdir('output/send_email.py')
 
 include: srcdir('common.snake')
-
-print(config)
