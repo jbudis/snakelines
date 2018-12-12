@@ -16,10 +16,18 @@ rule finalise__winezymes:
     """
     input:
         rules.finalise__quality_report.output,
-        rules.qiime__cluster_features_de_novo.output,
+#        rules.qiime__cluster_features_de_novo.output,
+#        rules.qiime__create_metadata_file.output,
+#        rules.qiime__tools_export.output,
 
         reads   = expand('reads/{read_type}/{sample}_R{orientation}.fastq.gz',
                               read_type=read_types_to_keep, sample=pipeline.samples, orientation=[1,2]),
+
+        read_quality_report = 'reads/qiime/joined-imported/index.html',
+
+        otu_report = expand('reads/qiime/joined-{type}-dn-{similarity}/index.html',
+                            type=['rep-seqs', 'table'],
+                            similarity=config['qiime']['preprocess']['cluster']['similarity'])
 
 # Target rule would be executed locally, not on cluster
 localrules: finalise__winezymes

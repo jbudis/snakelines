@@ -1,0 +1,16 @@
+rule qiime__import_manifest:
+    """
+    Imports samples written down in metadata file, sequences MUST BE pair-end. Calls 'qiime tools import'
+    :input manifest: TSV manifest file in format 'sample-id,absolute-filepath,direction', e.g. reads/qiime/joined.manifest
+    :output qza: qiime artifact of type SampleData[PairedEndSequencesWithQuality], e.g. reads/qiime/joined-imported.qza
+    """
+    input:
+        manifest    = 'reads/qiime/{name}.manifest'
+    output:
+        qza         = 'reads/qiime/{name}-imported.qza'
+    threads:
+        int(config['threads'])
+    shell:
+        '''
+        qiime tools import --type 'SampleData[PairedEndSequencesWithQuality]' --input-path {input.manifest} --output-path {output.qza} --input-format PairedEndFastqManifestPhred33
+        '''

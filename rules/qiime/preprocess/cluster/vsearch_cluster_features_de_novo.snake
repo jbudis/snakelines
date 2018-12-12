@@ -1,0 +1,28 @@
+rule qiime__vsearch_cluster_features_de_novo:
+    """
+    Creates clusters of sequences with {similarity}% similarity, calls 'qiime vsearch cluster-features-de-novo'
+    :input table: qiime artifact of type FeatureTable[Frequency], e.g. reads/qiime/joined-table.qza
+    :input rep_seqs: qiime artifact of type FeatureData[Sequence], e.g. reads/qiime/joined-rep-seqs.qza
+    :output table: qiime artifact of type FeatureTable[Frequency] with similarity, e.g. reads/qiime/joined-table-dn-99.qza
+    :output rep_seqs: qiime artifact of type FeatureData[Sequence] with similarity, e.g. reads/qiime/joined-rep-seqs-dn-99.qza
+    :params similarity: *REQUIRED - similarity of sequences within cluster, values from 1 to 99 [%]
+    """
+    input:
+        table     = 'reads/qiime/{name}-table.qza',
+        rep_seqs  = 'reads/qiime/{name}-rep-seqs.qza'
+    output:
+        table     = 'reads/qiime/{name}-table-dn-{similarity}.qza',
+        rep_seqs  = 'reads/qiime/{name}-rep-seqs-dn-{similarity}.qza'
+    params:
+        similarity = '{similarity}'
+    threads:
+        int(config['threads'])
+    shell:
+        '''
+        qiime vsearch cluster-features-de-novo \
+          --i-table {input.table} \
+          --i-sequences {input.rep_seqs} \
+          --p-perc-identity 0.{params.similarity} \
+          --o-clustered-table {output.table} \
+          --o-clustered-sequences {output.rep_seqs}
+        '''

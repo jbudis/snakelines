@@ -1,0 +1,18 @@
+rule qiime__feature_table_tabulate_seqs:
+    """
+    Create qiime visualization of represented sequences, calls 'qiime feature-table tabulate-seqs'
+    :input rep_seqs: qiime artifact of type FeatureTable[Sequence] with similarity, e.g. reads/qiime/joined-rep-seqs-dn-99.qza
+    :output qzv: qiime visualization file, can be exported to HTML, e.g. reads/qiime/joined-rep-seqs-dn-99.qzv
+    """
+    input:
+        rep_seqs  = 'reads/qiime/{name}-rep-seqs-dn-{perc_identity}.qza'
+    output:
+        qzv       = 'reads/qiime/{name}-rep-seqs-dn-{perc_identity}.qzv'
+    threads:
+        int(config['threads'])
+    shell:
+        '''
+        qiime feature-table tabulate-seqs \
+          --i-data {input.rep_seqs} \
+          --o-visualization {output.qzv}
+        '''

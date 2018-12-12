@@ -28,29 +28,28 @@ reads:                              # Prepare reads and quality reports for down
                 - joined
 
 qiime:
-    tools:
+    preprocess:
         manifest:
-            method: create_joined
-            name: joined
+            method: create_joined_manifest
+        metadata:
+            method: create_metadata_file  # method distinguish columns for imported filenames, where each value is separated by column_separator
+            column_separator: '-'         # filename 17-dna-replicaA1 has 3 metadata columns, 17 dna replicaA1
         import:
             method: import_manifest
-            name: joined            # should equal to manifest.name
             data_type: JoinedSequencesWithQuality
-    demux:
-        summarize:
-            method: summarize
-            name: joined
+        dereplicate:
+            method: vsearch_dereplicate_sequences
+        cluster:
+            method: vsearch_cluster_features_de_novo
+            similarity: 99
 
-    tools:
+    report:
+        prepare:
+            quality_report:
+                method: demux_summarize
+            cluster_feature_table:
+                method: feature_table_summarize
+            cluster_rep_seqs:
+                method: feature_table_tabulate_seqs
         export:
             method: export
-            name: joined
-
-    vsearch:
-        dereplicate:
-            method: dereplicate_sequences
-            name: joined
-        cluster:
-            method: cluster_features_de_novo
-            name: joined
-            perc_identity: 99           # value range from 1 to 99

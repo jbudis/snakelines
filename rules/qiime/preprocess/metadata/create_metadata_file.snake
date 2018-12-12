@@ -1,0 +1,48 @@
+rule qiime__create_metadata_file:
+    """
+    Creates generic metadata file from samples filenames. Each metadata information is separated in filename by {sep}. Headers are generic.
+    E.g.:
+        filename: 2017-dna-replicaA_RM.fastq.gz
+        metadata:
+            sample-id   col1    col2    col3
+            #q2:types	categorical categorical	categorical
+            2017-dna-replicaA   2017    dna replicaA
+
+    Note: for several analysis, mainly for emporer plotting, it is better to create your own metadata file manually
+
+    :input rm: relative path to (preprocessed) joined fastQ samples, e.g. reads/joined/*_RM.fastq.gz
+    :output metadata: TSV metadata filepath, e.g. reads/qiime/joined-sample-metadata.tsv
+    :params sep: filename metadata separator, e.g. '-'
+    """
+    input:
+        rm    = expand('reads/{{name}}/{sample}_RM.fastq.gz',
+                        sample=pipeline.samples )
+    output:
+        metadata = 'reads/qiime/{name}-sample-metadata.tsv'
+    params:
+        path = '$PWD/reads/{name}/*_RM.fastq.gz',
+        sep = method_config['column_separator']
+    threads:
+        int(config['threads'])
+    shell:
+        '''
+        max="ls {params.path} | sed -E \\\"s/(.*)(\/)([^\/]*)(_RM.fastq.gz)/\\3/g\\\" | awk -F '{params.sep}' '{{ print NF }}' | sort -n | tail -1"
+        max=$(eval $max)
+        # print header
+          # print header first line
+        printf "sample-id\t" >> {output.metadata}
+        for ((i=1; i<=$max; i++))
+          do
+            printf "col%s\t" $i >> {output.metadata}
+          done
+          # print header second line
+        printf "\n#q2:types\t" >> {output.metadata}
+        for ((i=1; i<=$max; i++))
+          do
+            printf "categorical\t">> {output.metadata}
+          done
+        printf "\n" >> {output.metadata}
+
+        # print data
+        ls reads/joined/*_RM.fastq.gz | sed -E "s/(.*)(\/)([^\/]*)(_RM.fastq.gz)/\\3/g" | awk -F '{params.sep}' '{{for(i=0;i<=NF-1;++i)printf $i"\t";print $NF}}' >> {output.metadata}
+        '''
