@@ -36,3 +36,8 @@ classification:                     # Identify genomic source of sequenced reads
         transcripts:
             count_table:                # Summary table with number of reads per transcript
                 method: custom          # Supported values: custom
+            pca:
+                method: sklearn
+                formats:            # Output format of the resulting images
+                    - png
+                    - svg

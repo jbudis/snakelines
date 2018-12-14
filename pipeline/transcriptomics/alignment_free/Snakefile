@@ -9,6 +9,7 @@ include: srcdir('Snakefile.read_quality_report')
 include: srcdir('Snakefile.preprocess')
 
 table_formats = ['xlsx', 'tsv']
+pca_formats = extract_from_config(config, ['classification', 'report', 'transcripts', 'pca', 'formats'], ['png'])
 
 rule finalise__classify_transcripts:
     """
@@ -22,11 +23,17 @@ rule finalise__classify_transcripts:
         rules.finalise__preprocess_reads.output,
 
         abundances = expand('classification/{reference}/report/tsv/summary.{format}',
-                             reference=pipeline.references, format=table_formats)
+                             reference=pipeline.references, format=table_formats),
+
+        pcas = expand('classification/{reference}/report/comparison/pca.{format}',
+                             reference=pipeline.references, format=pca_formats)
 
     output:
         abundances = expand('{report_dir}/{reference}/tsv/summary.{format}',
-                             report_dir=config['report_dir'], reference=pipeline.references, format=table_formats)
+                             report_dir=config['report_dir'], reference=pipeline.references, format=pca_formats),
+
+        pcas = expand('{report_dir}/{reference}/comparison/pca.{format}',
+                       report_dir=config['report_dir'], reference=pipeline.references, format=pca_formats)
 
     run:
         copy_input_files_with_consistent_output_names(input, output)
