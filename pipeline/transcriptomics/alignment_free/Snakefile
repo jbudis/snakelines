@@ -8,6 +8,8 @@ include: config['snakelines_dir'] + '/src/snakelines.snake'
 include: srcdir('Snakefile.read_quality_report')
 include: srcdir('Snakefile.preprocess')
 
+table_formats = ['xlsx', 'tsv']
+
 rule finalise__classify_transcripts:
     """
     Pipeline classify preprocess reads against chosen reference sequences. According to their taxonomic labels,
@@ -19,12 +21,12 @@ rule finalise__classify_transcripts:
         rules.finalise__quality_report.output,
         rules.finalise__preprocess_reads.output,
 
-        abundances = expand('abundance/{reference}/report/tsv/summary.tsv',
-                             reference=pipeline.references)
+        abundances = expand('classification/{reference}/report/tsv/summary.{format}',
+                             reference=pipeline.references, format=table_formats)
 
     output:
-        abundance = expand('{report_dir}/{reference}/tsv/summary.tsv',
-                            report_dir=config['report_dir'], reference=pipeline.references)
+        abundances = expand('{report_dir}/{reference}/tsv/summary.{format}',
+                             report_dir=config['report_dir'], reference=pipeline.references, format=table_formats)
 
     run:
         copy_input_files_with_consistent_output_names(input, output)

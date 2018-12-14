@@ -26,3 +26,13 @@ reads:                              # Prepare reads and quality reports for down
 classification:                     # Identify genomic source of sequenced reads
     transcripts:                    # Find homologue sequences by comparing reads to reference sequences
         method: salmon              # Supported values: salmon
+        library:                    # According to notation in https://salmon.readthedocs.io/en/latest/library_type.html
+            orientation: inward     # Relative orientation of reads in DNA fragments - inward/outward/matching
+            strandedness: stranded  # Preserve sequencing DNA strand of fragment? - stranded/unstranded
+            direction: reverse      # Orientation of the first read in a fragment - forward/reverse
+        count_type: tpm             # Type of counts to report - mapped_reads/tpm (transcripts per kilobase million)
+
+    report:
+        transcripts:
+            count_table:                # Summary table with number of reads per transcript
+                method: custom          # Supported values: custom
