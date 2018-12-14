@@ -63,4 +63,6 @@ diff = cbind(diff, FC, up_down)
 colnames(diff)[ncol(diff)-1] = 'FCexp^-1'
 
 write.table(diff, file = output_diff, quote=FALSE, sep='\t', row.names=F)
-write.table(norm_counts, file = output_norm_counts, quote=FALSE, sep='\t', row.names=F)
+
+# TODO name the row index as "name"
+write.table(norm_counts, file = output_norm_counts, quote=FALSE, sep='\t', row.names=T)
