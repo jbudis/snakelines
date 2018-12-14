@@ -17,7 +17,7 @@ rule edger__identify_transcripts_with_changed_expression:
         table  = '{analysis_dir}/{reference}/report/comparison/differential_analysis.tsv'
     params:
         group_by = method_config['group_by'],
-        batch = method_config.get('batch', None)
+        batch = method_config.get('batch', '')
     shell:
         '''
         Rscript {input.edger} \
