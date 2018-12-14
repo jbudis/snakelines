@@ -9,9 +9,9 @@ def individual_krn_files(wildcards):
                     sample=pipeline.samples_for(wildcards.reference))
 
 
-rule custom__summarize_taxonomic_counts_into_tsv_table:
+rule custom__summarize_transcriptomic_counts_into_tsv_table:
     '''
-    Take taxonomic counts and proportions from several samples and merge them together into a single table.
+    Take transcriptomic counts from several samples and merge them together into a single table.
     :input krns: Count files for each analysed sample in standardised format suitable for Krona graph generation
     :output summary_xlsx: Aggregated counts for each transcript in Excel format
     :output summary_tsv: Aggregated counts for each transcript in tabular format
