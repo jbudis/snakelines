@@ -76,9 +76,9 @@ def copy_input_files_with_consisent_names_dict(input_dict, output_dict):
             input_item = input_dict[item_name]
 
             # Check if items are str of lists
-            assert type(input_item) is str or type(input_item) is list, 'Input item {} \
-                    is not str or list ({})'.format(input_item, type(input_item))
-            assert type(output_item) is str or type(output_item) is list, 'Output item {} \
+            assert type(input_item) in [str, list], 'Input item {} \
+                    is not str or list({})'.format(input_item, type(input_item))
+            assert type(output_item) in [str, list], 'Output item {} \
                     is not str or list ({})'.format(output_item, type(output_item))
 
             # Check if items with the same name have also same data type
@@ -86,7 +86,7 @@ def copy_input_files_with_consisent_names_dict(input_dict, output_dict):
                     for the rule have different data types {} and {}'.format(item_name, type(input_item), type(output_item))
 
             # Check if items with the same name have also same length
-            if type(input_item) is list:
+            if type(input_item) is list and type(output_item) is list:
                 assert len(input_item) == len(output_item), 'Output and input items with name {} \
                         for the rule have different lengths {} and {}'.format(item_name, len(input_item), len(output_item))
 

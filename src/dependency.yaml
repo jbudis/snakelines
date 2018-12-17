@@ -135,7 +135,7 @@ classification:
             barplot:
                 output:
                     barplots:
-                        from: expand('classification/{reference}/report/figures/{tax_level}.{type}.{format}', reference=pipeline.references, tax_level=tax_levels_barplot, type=['counts', 'ratios'], format=barplot_formats),
+                        from: expand('classification/{reference}/report/figures/{tax_level}.{type}.{format}', reference=pipeline.references, tax_level=tax_levels_barplot, type=['counts', 'ratios'], format=barplot_formats)
                         to: expand('{report_dir}/{reference}/figures/{tax_level}.{type}.{format}', report_dir=config['report_dir'], reference=pipeline.references, tax_level=tax_levels_barplot, type=['counts', 'ratios'], format=barplot_formats)
                 depends:
                     - classification/read_based
