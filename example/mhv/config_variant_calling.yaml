@@ -2,8 +2,13 @@ samples:                            # List of sample categories to be analysed
     - name: example.*               # Regex expression of sample names to be analysed (reads/original/example.*_R1.fastq.gz)
       reference: mhv                # Reference genome for reads in the category (reference/mhv/mhv.fa)
 
-report_dir: report/public/01-viral  # Generated reports and essential output files would be stored there
+report_dir: report/01-variant       # Generated reports and essential output files would be stored there
 threads: 16                         # Number of threads to use in analysis
+
+reference:
+    index:
+        dict:
+            method: picard
 
 reads:                              # Prepare reads and quality reports for downstream analysis
     preprocess:                     # Pre-process of reads, eliminate sequencing artifacts, contamination ...
@@ -21,7 +26,7 @@ reads:                              # Prepare reads and quality reports for down
             temporary: False        # If True, generated files would be removed after successful analysis
             references:             # List of reference genomes
                 - mhv
-            keep: True              # Keep reads mapped to references (True) of remove them as contamination (False)
+            keep: True              # Keep reads mapped to references (True) or remove them as contamination (False)
 
         deduplicated:               # Remove fragments with the same sequence (PCR duplicated)
             method: fastuniq        # Supported values: fastuniq
@@ -50,7 +55,7 @@ mapping:                            # Find the most similar genomic region to re
             temporary: True         # If True, generated files would be removed after successful analysis
         sorted:
             method: samtools
-            temporary: False
+            temporary: True
         deduplicated:               # Mark duplicated reads (PCR duplicated)
             method: picard          # Supported values: picard
 
@@ -59,3 +64,48 @@ mapping:                            # Find the most similar genomic region to re
             method: qualimap        # Supported values: qualimap
             map_types:              # List of post-process steps for quality reports
                 - deduplicated
+
+variant:                                    # Identify variation in reads given reference genome
+    caller:                                 # Method for variant identification
+        method: vardict                     # Supported values: vardict
+        hard_filter:                        # Variants that do not pass any of these filters would NOT be present in the VCF file
+            min_nonref_allele_freq: 0.05    # Minimal proportion of reads with alternative allele against all observations
+            min_alternate_count: 2          # Minimal number of reads with alternative allele
+            min_map_quality: 15             # Minimal average mapping quality of reads with alternative allele
+        soft_filter:                        # Failing these filters would be indicated in the FILTER field of the VCF file
+            min_map_quality: 20             # Minimal average mapping quality of reads with alternative allele
+            read_depth: 10                  # Minimal number of reads with alternative allele
+            min_nonref_allele_freq: 0.20    # Minimal proportion of reads with alternative allele against all observations
+            min_mean_base_quality: 20       # Minimal average base quality of bases that support alternative allele
+
+    report:
+        calling:
+            method: gatk
+
+        summary:
+            method: custom
+
+classification:                     # Identify genomic source of sequenced reads
+    read_based:                     # Find homologue sequences by comparing reads to reference sequences
+        method: metaxa2             # Supported values: metaxa2
+        confidence: 0.8             # Reliability cutoff for taxonomic classification
+
+    report:                         # Summary reports of classification results
+        taxonomic_counts:           # Number of reads mapped to each taxonomic unit
+            pieplot:                # Visualisation in pie plot form
+                method: krona       # Supported values: krona
+
+            count_table:            # Summary table with number of reads per taxonomic unit
+                method: custom      # Supported values: custom
+                tax_levels:         # List of taxonomic levels for which tables would be generated
+                    - class
+                    - genus
+
+            barplot:                # Visualisation in bar plot form
+                method: custom      # Supported values: custom
+                formats:            # Output format of the resulting images
+                    - png
+                    - svg
+                tax_levels:         # List of taxonomic levels for which plots would be generated
+                    - class
+                    - genus

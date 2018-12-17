@@ -27,19 +27,19 @@ class Pipeline:
         # Check if both R1 and R2 files for all samples exist
         for sample in samples:
             r1, r2 = 'reads/original/{}_R1.fastq.gz'.format(sample), 'reads/original/{}_R2.fastq.gz'.format(sample)
-            assert os.path.exists(r1), 'Read file {} does not exists'.format(r1)
-            assert os.path.exists(r2), 'Read file {} does not exists'.format(r2)
+            assert os.path.exists(r1), 'Read file {} does not exist'.format(r1)
+            assert os.path.exists(r2), 'Read file {} does not exist'.format(r2)
 
         # Check, if reference file exists
         if reference:
             fasta = 'reference/{reference}/{reference}.fa'.format(reference=reference)
-            assert os.path.exists(fasta), 'Reference fasta {} does not exists'.format(fasta)
+            assert os.path.exists(fasta), 'Reference fasta {} does not exist'.format(fasta)
 
         # Check, if panel bed file exists
         if panel:
             assert reference, 'Panel cannot be defined without reference'
             bed = 'references/{reference}/{reference}/annotation/{panel}/regions.bed'.format(reference=reference, panel=panel)
-            assert os.path.exists(bed), 'Panel bed file {} does not exists'.format(bed)
+            assert os.path.exists(bed), 'Panel bed file {} does not exist'.format(bed)
 
         # Extend lists
         self.samples.extend(samples)
@@ -77,3 +77,13 @@ class Pipeline:
         :param reference: name of the reference
         """
         return self.__reference_map[reference]
+
+    def __str__(self):
+        """
+        Returns the string representation of this class
+        :return: str - string representation
+        """
+        res = "Samples: " + ', '.join(self.samples) + '\n'
+        res += "References: " + ', '.join(self.references) + '\n'
+        res += "Panels: " + ', '.join(self.panels) + '\n'
+        return res
