@@ -26,14 +26,20 @@ rule finalise__classify_transcripts:
                              reference=pipeline.references, format=table_formats),
 
         pcas = expand('classification/{reference}/report/comparison/pca.{format}',
-                             reference=pipeline.references, format=pca_formats)
+                             reference=pipeline.references, format=pca_formats),
+
+        de_tables = expand('classification/{reference}/report/comparison/differential_analysis.tsv',
+                            reference=pipeline.references)
 
     output:
         abundances = expand('{report_dir}/{reference}/tsv/summary.{format}',
-                             report_dir=config['report_dir'], reference=pipeline.references, format=pca_formats),
+                             report_dir=config['report_dir'], reference=pipeline.references, format=de_formats),
 
         pcas = expand('{report_dir}/{reference}/comparison/pca.{format}',
-                       report_dir=config['report_dir'], reference=pipeline.references, format=pca_formats)
+                       report_dir=config['report_dir'], reference=pipeline.references, format=pca_formats),
+
+        de_tables = expand('{report_dir}/{reference}/comparison/differential_analysis.tsv',
+                            report_dir=config['report_dir'], reference=pipeline.references),
 
     run:
         copy_input_files_with_consistent_output_names(input, output)
