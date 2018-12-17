@@ -33,7 +33,7 @@ rule finalise__classify_transcripts:
 
     output:
         abundances = expand('{report_dir}/{reference}/tsv/summary.{format}',
-                             report_dir=config['report_dir'], reference=pipeline.references, format=de_formats),
+                             report_dir=config['report_dir'], reference=pipeline.references, format=table_formats),
 
         pcas = expand('{report_dir}/{reference}/comparison/pca.{format}',
                        report_dir=config['report_dir'], reference=pipeline.references, format=pca_formats),
