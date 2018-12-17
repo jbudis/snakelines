@@ -61,6 +61,8 @@ rule blast__find_homologues:
         blast_database  = 'reference/{reference}/blast_index/{reference}'
     threads:
         int(config['threads'])
+    conda:
+        config['snakelines_dir'] + '/enviroments/others_env.yaml'
     shell:
         '''
         set +e pipefail
@@ -90,7 +92,8 @@ rule blast__find_homologues:
         rm {params.header} {params.nohead}
         '''
 
-# TODO this works for NCBI databases only find a way to load taxonomy directly from blast indices, do we need this rule?
+# TODO this works for NCBI databases only find a way to load taxonomy directly from blast indices
+# TODO absolute path
 rule blast__annotate_with_taxonomy:
     '''
     Append additional column to the blast tabular output with the taxonomy of homology sequence
@@ -148,6 +151,8 @@ rule blast__prepare_reference_index_for_nucleotide:
         err = 'reference/{reference}/blast_index/log/{reference.err}'
     params:
         index_prefix = 'reference/{reference}/blast_index/{reference}'
+    conda:
+        config['snakelines_dir'] + '/enviroments/others_env.yaml'
     shell:
         '''
         makeblastdb \

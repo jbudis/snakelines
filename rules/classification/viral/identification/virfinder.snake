@@ -14,6 +14,8 @@ rule virfinder__identify_viral_sequences:
         err     = '{indir}/virfinder/log/{name}.err'
     params:
         wrapper_script = srcdir('virfinder/virfinder_wrapper.R')
+    conda:
+        config['snakelines_dir'] + '/enviroments/others_env.yaml'
     shell:
         '''
         Rscript {params.wrapper_script} \

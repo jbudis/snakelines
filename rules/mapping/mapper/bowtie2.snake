@@ -27,6 +27,8 @@ rule bowtie2__map_reads_to_reference:
         concordant = '--no-mixed --no-discordant --no-unal' if method_config.get('only_concordant', False) else ''
     threads:
         int(config['threads'])
+    conda:
+        config['snakelines_dir'] + '/enviroments/others_env.yaml'
     shell:
         '''
         bowtie2 \
