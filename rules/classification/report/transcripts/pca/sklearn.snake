@@ -14,7 +14,7 @@ rule sklearn__pca_comparison:
     :output pca: 2D plot of analysed count vectors
     '''
     input:
-        counts = '{analysis_dir}/{reference}/report/tsv/summary.tsv'
+        counts = '{analysis_dir}/{reference}/report/tsv/summary.normed.tsv'
     output:
         pca = '{analysis_dir}/{reference}/report/comparison/pca.{format, %s}' % '|'.join(SUPPORTED_IMAGE_FORMATS)
     run:
