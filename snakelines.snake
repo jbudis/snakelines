@@ -1,0 +1,46 @@
+# Load configuration file if not already loaded
+try:
+    config['samples']
+except (NameError, KeyError):
+    print('WARNING: "--configfile" not specified, using "config.yaml".')
+    from src.config.dependency_load import load_yaml
+    try:
+        cfg = load_yaml('config.yaml')
+        cfg.update(config)
+        config = cfg
+    except FileNotFoundError:
+        print('ERROR: "config.yaml" not found in the current dir.')
+
+    # configfile: srcdir('config.yaml') do not use configfile - it uses dict instead of OrderedDict.
+
+# Run startup scripts that automatically loads imports from src/ and load helper methods
+include: config['snakelines_dir'] + '/src/common.snake'
+
+# check dependencies and asses inputs and outputs
+from src.config.dependency_load import check_dependency
+inputs, outputs = check_dependency(config['snakelines_dir'] + '/src/dependency.yaml', config)
+
+def get_files(source):
+    additional_params = {'expand': expand, 'protected': protected, 'temp': temp, 'config': config,
+            'pipeline': pipeline, 'read_types_with_fastqc_report': read_types_with_fastqc_report,
+            'multisample_references': multisample_references, 'tax_levels_count_table': tax_levels_count_table,
+            'tax_levels_barplot': tax_levels_barplot, 'barplot_formats': barplot_formats}
+    return {k:eval(v, additional_params) for k,v in source.items()}
+
+#for k,v in inputs.items():
+#    print(k, ':', v)
+
+#print('\n')
+
+#for k,v in get_inputs(None).items():
+#    print(k, ':', v)
+
+rule pipeline:
+    input:
+        **get_files(inputs)
+
+onsuccess:
+    from src.output.copy_files import copy_input_files_with_consisent_names_dict
+    print("Copying and finalizing")
+    copied = copy_input_files_with_consisent_names_dict(get_files(inputs), get_files(outputs))
+    print("Copied {} files to report dir '{}'".format(copied, config['report_dir']))

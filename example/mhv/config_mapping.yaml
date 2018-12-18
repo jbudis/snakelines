@@ -2,17 +2,11 @@ samples:                            # List of sample categories to be analysed
     - name: example.*               # Regex expression of sample names to be analysed (reads/original/example.*_R1.fastq.gz)
       reference: mhv                # Reference genome for reads in the category (reference/mhv/mhv.fa)
 
-report_dir: report/01-variant       # Generated reports and essential output files would be stored there
+report_dir: report/public/01-viral  # Generated reports and essential output files would be stored there
 threads: 16                         # Number of threads to use in analysis
-
-reference:
-    index:
-        dict:
-            method: picard
 
 reads:                              # Prepare reads and quality reports for downstream analysis
     preprocess:                     # Pre-process of reads, eliminate sequencing artifacts, contamination ...
-
         trimmed:                    # Remove low quality parts of reads
             method: trimmomatic     # Supported values: trimmomatic
             temporary: False        # If True, generated files would be removed after successful analysis
@@ -43,15 +37,16 @@ reads:                              # Prepare reads and quality reports for down
 
 mapping:                            # Find the most similar genomic region to reads in reference (mapping process)
     mapper:                         # Method for mapping
-        method: bowtie2             # Supported values: bowtie2
-        params: --very-sensitive    # Additional parameters for the method
+        method: bwa
+        params: --very-sensitive    # Additional parameters for the bowtie2 method
+        bwa_params: -w 100          # Additional parameters for the bwa method (must be non-empty, therefore default value for param -w is set)
         only_concordant: False      # Keep only reads with consistently mapped reads from both paired-ends
 
     index:                          # Generate .bai index for mapped reads in .bam files
         method: samtools            # Supported values: samtools
 
     postprocess:                    # Successive steps to refine mapped reads
-        original:                   # Reads retrieved from mapping process
+        original:                  # Reads retrieved from mapping process
             temporary: True         # If True, generated files would be removed after successful analysis
         sorted:
             method: samtools
@@ -64,23 +59,3 @@ mapping:                            # Find the most similar genomic region to re
             method: qualimap        # Supported values: qualimap
             map_types:              # List of post-process steps for quality reports
                 - deduplicated
-
-variant:                                    # Identify variation in reads given reference genome
-    caller:                                 # Method for variant identification
-        method: vardict                     # Supported values: vardict
-        hard_filter:                        # Variants that do not pass any of these filters would NOT be present in the VCF file
-            min_nonref_allele_freq: 0.05    # Minimal proportion of reads with alternative allele against all observations
-            min_alternate_count: 2          # Minimal number of reads with alternative allele
-            min_map_quality: 15             # Minimal average mapping quality of reads with alternative allele
-        soft_filter:                        # Failing these filters would be indicated in the FILTER field of the VCF file
-            min_map_quality: 20             # Minimal average mapping quality of reads with alternative allele
-            read_depth: 10                  # Minimal number of reads with alternative allele
-            min_nonref_allele_freq: 0.20    # Minimal proportion of reads with alternative allele against all observations
-            min_mean_base_quality: 20       # Minimal average base quality of bases that support alternative allele
-
-    report:
-        calling:
-            method: gatk
-
-        summary:
-            method: custom

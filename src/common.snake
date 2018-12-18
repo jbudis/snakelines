@@ -1,3 +1,8 @@
+from pipeline.samples import Pipeline
+from config.impute_mapping_types import impute_mapping_types, impute_read_types
+from config.load_imports import import_files_in_config
+from config.values_retrieval import extract_from_config
+
 # TODO: This should work for other types, such as mapping as well
 def configured_temp(read_file):
     """
@@ -29,11 +34,33 @@ for sample_configuration in sample_configurations:
 assert not pipeline.is_empty(), 'No samples to analyse'
 
 # impute types:
-impute_mapping_types(pipeline, workflow, config)
-impute_read_types(pipeline, workflow, config)
+impute_mapping_types(pipeline, config)
+impute_read_types(pipeline, config)
 
 # load imports
 rules_dir = '{}/rules'.format(config['snakelines_dir'])
 for import_file, method_config in import_files_in_config(config, rules_dir):
     assert os.path.isfile(import_file), 'Configured snake file {} does not exist'.format(import_file)
+    print('Importing snakefile:', import_file)
     include: import_file
+
+# Find in configuration map post-process types for which should be report generated
+map_types_with_quality_report = extract_from_config(config, ['mapping', 'report', 'quality_report', 'map_types'], [])
+
+# References with at least 2 samples
+multisample_references = [reference for reference in pipeline.references if len(pipeline.samples_for(reference)) > 1]
+
+# Find in configuration read preprocess types that should be generated
+preprocess = extract_from_config(config, ['reads', 'preprocess'], {})
+read_types_to_keep = [read_type for read_type in preprocess.keys() if not preprocess[read_type].get('temporary', True)]
+
+# Find in configuration read preprocess types for which should be report generated
+read_types_with_fastqc_report = extract_from_config(config, ['reads', 'report', 'quality_report', 'read_types'], [])
+
+# Which taxonomic levels should be extracted in separate tables
+tax_levels_count_table = extract_from_config(config, ['classification', 'report', 'taxonomic_counts', 'count_table', 'tax_levels'], [])
+tax_levels_count_table.append('alltaxes')
+
+# Which taxonomic levels should be visualised in barplots, and in which image formats
+tax_levels_barplot = extract_from_config(config, ['classification', 'report', 'taxonomic_counts', 'barplot', 'tax_levels'], [])
+barplot_formats = extract_from_config(config, ['classification', 'report', 'taxonomic_counts', 'barplot', 'formats'], ['png'])

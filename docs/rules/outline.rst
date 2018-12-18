@@ -1,139 +1,183 @@
 Rules
 =====
-This document contains 30/62 documented/all rule(s) in 31 file(s):
-	- assembly (3/4 documented/all rule(s), 4 file(s))
-		- assembler (2/2 documented/all rule(s), 2 file(s))
-			.. toctree::
-				assembly/assembler/summary.rst
+- Assembly
 
-		- report (1/2 documented/all rule(s), 2 file(s))
-			- assembly_graph (1/1 documented/all rule(s), 1 file(s))
-				.. toctree::
-					assembly/report/assembly_graph/summary.rst
+  - Assembler
 
-			- quality_report (0/1 documented/all rule(s), 1 file(s))
-				.. toctree::
-					assembly/report/quality_report/summary.rst
+    .. toctree::
+      assembly/assembler/summary.rst
 
-	- classification (0/27 documented/all rule(s), 8 file(s))
-		- contig_based (0/6 documented/all rule(s), 1 file(s))
-			.. toctree::
-				classification/contig_based/summary.rst
+  - Report
 
-		- read_based (0/10 documented/all rule(s), 1 file(s))
-			.. toctree::
-				classification/read_based/summary.rst
+    - Assembly Graph
 
-		- report (0/23 documented/all rule(s), 4 file(s))
-			- summary (0/7 documented/all rule(s), 1 file(s))
-				.. toctree::
-					classification/report/summary/summary.rst
+      .. toctree::
+        assembly/report/assembly_graph/summary.rst
 
-			- taxonomic_counts (0/13 documented/all rule(s), 3 file(s))
-				- barplot (0/1 documented/all rule(s), 1 file(s))
-					.. toctree::
-						classification/report/taxonomic_counts/barplot/summary.rst
+    - Quality Report
 
-				- count_table (0/3 documented/all rule(s), 1 file(s))
-					.. toctree::
-						classification/report/taxonomic_counts/count_table/summary.rst
+      .. toctree::
+        assembly/report/quality_report/summary.rst
 
-				- pieplot (0/6 documented/all rule(s), 1 file(s))
-					.. toctree::
-						classification/report/taxonomic_counts/pieplot/summary.rst
+- Classification
 
-		- viral (0/26 documented/all rule(s), 2 file(s))
-			.. toctree::
-				classification/viral/summary.rst
+  - Contig Based
 
-			- identification (0/3 documented/all rule(s), 1 file(s))
-				.. toctree::
-					classification/viral/identification/summary.rst
+    .. toctree::
+      classification/contig_based/summary.rst
 
-	- mapping (8/35 documented/all rule(s), 6 file(s))
-		- index (1/1 documented/all rule(s), 1 file(s))
-			.. toctree::
-				mapping/index/summary.rst
+  - Read Based
 
-		- mapper (2/2 documented/all rule(s), 2 file(s))
-			.. toctree::
-				mapping/mapper/summary.rst
+    .. toctree::
+      classification/read_based/summary.rst
 
-			- indices (1/1 documented/all rule(s), 1 file(s))
-				.. toctree::
-					mapping/mapper/indices/summary.rst
+  - Report
 
-		- postprocess (2/2 documented/all rule(s), 2 file(s))
-			- deduplicated (1/1 documented/all rule(s), 1 file(s))
-				.. toctree::
-					mapping/postprocess/deduplicated/summary.rst
+    - Summary
 
-			- sorted (1/1 documented/all rule(s), 1 file(s))
-				.. toctree::
-					mapping/postprocess/sorted/summary.rst
+      .. toctree::
+        classification/report/summary/summary.rst
 
-		- report (3/3 documented/all rule(s), 1 file(s))
-			- quality_report (3/3 documented/all rule(s), 1 file(s))
-				.. toctree::
-					mapping/report/quality_report/summary.rst
+    - Taxonomic Counts
 
-	- reads (10/37 documented/all rule(s), 7 file(s))
-		- conversion (1/1 documented/all rule(s), 1 file(s))
-			.. toctree::
-				reads/conversion/summary.rst
+      - Barplot
 
-		- preprocess (6/6 documented/all rule(s), 5 file(s))
-			- decontaminated (1/1 documented/all rule(s), 1 file(s))
-				.. toctree::
-					reads/preprocess/decontaminated/summary.rst
+        .. toctree::
+          classification/report/taxonomic_counts/barplot/summary.rst
 
-			- deduplicated (1/1 documented/all rule(s), 1 file(s))
-				.. toctree::
-					reads/preprocess/deduplicated/summary.rst
+      - Count Table
 
-			- joined (2/2 documented/all rule(s), 1 file(s))
-				.. toctree::
-					reads/preprocess/joined/summary.rst
+        .. toctree::
+          classification/report/taxonomic_counts/count_table/summary.rst
 
-			- subsampled (1/1 documented/all rule(s), 1 file(s))
-				.. toctree::
-					reads/preprocess/subsampled/summary.rst
+      - Pieplot
 
-			- trimmed (1/1 documented/all rule(s), 1 file(s))
-				.. toctree::
-					reads/preprocess/trimmed/summary.rst
+        .. toctree::
+          classification/report/taxonomic_counts/pieplot/summary.rst
 
-		- report (3/3 documented/all rule(s), 1 file(s))
-			- quality_report (3/3 documented/all rule(s), 1 file(s))
-				.. toctree::
-					reads/report/quality_report/summary.rst
+  - Viral
 
-	- reference (0/31 documented/all rule(s), 3 file(s))
-		- download (0/2 documented/all rule(s), 1 file(s))
-			.. toctree::
-				reference/download/summary.rst
+    .. toctree::
+      classification/viral/summary.rst
 
-		- index (0/4 documented/all rule(s), 2 file(s))
-			- dict (0/1 documented/all rule(s), 1 file(s))
-				.. toctree::
-					reference/index/dict/summary.rst
+    - Identification
 
-			- fai (0/2 documented/all rule(s), 1 file(s))
-				.. toctree::
-					reference/index/fai/summary.rst
+      .. toctree::
+        classification/viral/identification/summary.rst
 
-	- variant (9/41 documented/all rule(s), 3 file(s))
-		- caller (4/5 documented/all rule(s), 1 file(s))
-			.. toctree::
-				variant/caller/summary.rst
+- Mapping
 
-		- report (5/6 documented/all rule(s), 2 file(s))
-			- calling (4/4 documented/all rule(s), 1 file(s))
-				.. toctree::
-					variant/report/calling/summary.rst
+  - Index
 
-			- summary (1/1 documented/all rule(s), 1 file(s))
-				.. toctree::
-					variant/report/summary/summary.rst
+    .. toctree::
+      mapping/index/summary.rst
+
+  - Mapper
+
+    .. toctree::
+      mapping/mapper/summary.rst
+
+    - Indices
+
+      .. toctree::
+        mapping/mapper/indices/summary.rst
+
+  - Postprocess
+
+    - Deduplicated
+
+      .. toctree::
+        mapping/postprocess/deduplicated/summary.rst
+
+    - Sorted
+
+      .. toctree::
+        mapping/postprocess/sorted/summary.rst
+
+  - Report
+
+    - Quality Report
+
+      .. toctree::
+        mapping/report/quality_report/summary.rst
+
+- Reads
+
+  - Conversion
+
+    .. toctree::
+      reads/conversion/summary.rst
+
+  - Preprocess
+
+    - Decontaminated
+
+      .. toctree::
+        reads/preprocess/decontaminated/summary.rst
+
+    - Deduplicated
+
+      .. toctree::
+        reads/preprocess/deduplicated/summary.rst
+
+    - Joined
+
+      .. toctree::
+        reads/preprocess/joined/summary.rst
+
+    - Subsampled
+
+      .. toctree::
+        reads/preprocess/subsampled/summary.rst
+
+    - Trimmed
+
+      .. toctree::
+        reads/preprocess/trimmed/summary.rst
+
+  - Report
+
+    - Quality Report
+
+      .. toctree::
+        reads/report/quality_report/summary.rst
+
+- Reference
+
+  - Download
+
+    .. toctree::
+      reference/download/summary.rst
+
+  - Index
+
+    - Dict
+
+      .. toctree::
+        reference/index/dict/summary.rst
+
+    - Fai
+
+      .. toctree::
+        reference/index/fai/summary.rst
+
+- Variant
+
+  - Caller
+
+    .. toctree::
+      variant/caller/summary.rst
+
+  - Report
+
+    - Calling
+
+      .. toctree::
+        variant/report/calling/summary.rst
+
+    - Summary
+
+      .. toctree::
+        variant/report/summary/summary.rst
 
 

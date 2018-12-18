@@ -1,26 +1,41 @@
-rule fastqc__html_summary_for_joined_reads
+Fastqc - Html Summary For Joined Reads
 ------------------------------------------
-located in: '<SnakeLines_dir>/rules/reads/report/quality_report/fastqc.snake'
 
 Aggregate quality control results from all FastQC reports and generate summary HTML table with
 PASS/WARN/FAIL icons
 
-Input(s):
+**Location**
 
-rule fastqc__html_summary_for_paired_reads
+- *Filepath:* <SnakeLines_dir>/rules/reads/report/quality_report/fastqc.snake
+- *Rule name:* fastqc__html_summary_for_joined_reads
+
+**Input(s):**
+
+
+Fastqc - Html Summary For Paired Reads
 ------------------------------------------
-located in: '<SnakeLines_dir>/rules/reads/report/quality_report/fastqc.snake'
 
 Aggregate quality control results from all FastQC reports and generate summary HTML table with
 PASS/WARN/FAIL icons
 
-Input(s):
+**Location**
 
-rule fastqc__quality_report
+- *Filepath:* <SnakeLines_dir>/rules/reads/report/quality_report/fastqc.snake
+- *Rule name:* fastqc__html_summary_for_paired_reads
+
+**Input(s):**
+
+
+Fastqc - Quality Report
 ---------------------------
-located in: '<SnakeLines_dir>/rules/reads/report/quality_report/fastqc.snake'
 
 Generate HTML report with plots assessing various quality control aspects of NGS reads
 
-Input(s):
+**Location**
+
+- *Filepath:* <SnakeLines_dir>/rules/reads/report/quality_report/fastqc.snake
+- *Rule name:* fastqc__quality_report
+
+**Input(s):**
+
 

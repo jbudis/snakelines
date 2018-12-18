@@ -32,5 +32,4 @@ Contents
    :caption: Documentation
    :maxdepth: 2
 
-   pipeline/outline
    rules/outline

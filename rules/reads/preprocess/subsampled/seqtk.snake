@@ -20,7 +20,7 @@ rule seqtk__subsample_reads:
     conda:
         config['snakelines_dir'] + '/enviroments/others_env.yaml'
     shell:
-        '''
+        """
         seqtk sample -s{params.seed} {input.r1} {params.n_reads} | gzip > {output.r1}
         seqtk sample -s{params.seed} {input.r2} {params.n_reads} | gzip > {output.r2}
-        '''
+        """
