@@ -1,7 +1,14 @@
 Samtools - Sort Mapped Reads
 --------------------------------
 
-Sort aligned reads according to mapped position on reference genome.
+samtools sort \
+    -o {output.bam} \
+    --threads {threads} \
+    --output-fmt BAM \
+    --reference {input.ref} \
+    {input.bam} \
+>  {log.out} \
+2> {log.err}
 
 **Location**
 

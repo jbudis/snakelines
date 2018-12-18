@@ -1,26 +1,6 @@
-Pear - Join Read Pairs
---------------------------
+Undocumented rules
+------------------
+WARNING: found  2 undocumented rules:
 
-Join paired reads into single end reads based on sequence overlap
-
-**Location**
-
-- *Filepath:* <SnakeLines_dir>/rules/reads/preprocess/joined/pear.snake
-- *Rule name:* pear__join_read_pairs
-
-**Input(s):**
-
-
-Pear - Concat Assembled And Unassambled
--------------------------------------------
-
-Unite joined reads, and reads that could not be joined into a single fastq file
-
-**Location**
-
-- *Filepath:* <SnakeLines_dir>/rules/reads/preprocess/joined/pear.snake
-- *Rule name:* pear__concat_assembled_and_unassambled
-
-**Input(s):**
-
-
+- rule pear__join_read_pairs is UNDOCUMENTED
+- rule pear__concat_assembled_and_unassambled is UNDOCUMENTED

@@ -1,7 +1,8 @@
 Seqtk - Subsample Reads
 ---------------------------
 
-Randomly select user-configured number of reads from fastq files.
+seqtk sample -s{params.seed} {input.r1} {params.n_reads} | gzip > {output.r1}
+seqtk sample -s{params.seed} {input.r2} {params.n_reads} | gzip > {output.r2}
 
 **Location**
 
@@ -10,16 +11,4 @@ Randomly select user-configured number of reads from fastq files.
 
 **Input(s):**
 
-- *r1:* filename with R1 reads
-- *r2:* filename with R2 reads
-
-**Output(s):**
-
-- *r1:* filename with subsampled R1 reads
-- *r2:* filename with subsampled R2 reads
-
-**Param(s):**
-
-- *seed:* int - seed of the random generator for subsampling
-- *n_reads:* int - number of reads to keep in subsampled set
 

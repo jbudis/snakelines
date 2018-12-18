@@ -37,7 +37,7 @@ reads:                              # Prepare reads and quality reports for down
 
 mapping:                            # Find the most similar genomic region to reads in reference (mapping process)
     mapper:                         # Method for mapping
-        method: bwa
+        method: bowtie2
         params: --very-sensitive    # Additional parameters for the bowtie2 method
         bwa_params: -w 100          # Additional parameters for the bwa method (must be non-empty, therefore default value for param -w is set)
         only_concordant: False      # Keep only reads with consistently mapped reads from both paired-ends

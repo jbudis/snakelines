@@ -1,13 +1,5 @@
-Samtools - Bam Index
-------------------------
+Undocumented rules
+------------------
+WARNING: found  1 undocumented rules:
 
-Generate .bai index to .bam files to quick recover reads from genomic location of interest.
-
-**Location**
-
-- *Filepath:* <SnakeLines_dir>/rules/mapping/index/samtools.snake
-- *Rule name:* samtools__bam_index
-
-**Input(s):**
-
-
+- rule samtools__bam_index is UNDOCUMENTED

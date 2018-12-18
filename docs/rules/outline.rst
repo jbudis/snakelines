@@ -144,11 +144,6 @@ Rules
 
 - Reference
 
-  - Download
-
-    .. toctree::
-      reference/download/summary.rst
-
   - Index
 
     - Dict

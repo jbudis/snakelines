@@ -1,8 +1,18 @@
 Picard - Mark Duplicates
 ----------------------------
 
-This tool locates and tags duplicate reads in a BAM or SAM file, where duplicate reads are defined as
-originating from a single fragment of DNA.
+TEMP_DIR=$(mktemp -d {params.tmp_dir}/XXXXXXXXXXX)
+
+picard MarkDuplicates \
+    I={input.bam} \
+    O={output.bam} \
+    M={log.stat} \
+    TMP_DIR=$TEMP_DIR \
+    VALIDATION_STRINGENCY=SILENT \
+>  {log.out} \
+2> {log.err}
+
+rm -r $TEMP_DIR
 
 **Location**
 

@@ -1,7 +1,12 @@
 Pigz - Unzip File
 ---------------------
 
-Decompress gzipped fastq or fasta file
+set +euo pipefail
+pigz \
+    --decompress \
+    --keep \
+    --processes {threads} \
+    {input.gzipped}
 
 **Location**
 

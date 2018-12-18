@@ -1,8 +1,15 @@
 Qualimap - Mapping Quality Report Accross Reference
 -------------------------------------------------------
 
-Generate summary statistics for mapped reads stored in BAM files. Statistics are calculated across
-whole reference genome.
+qualimap bamqc \
+    --java-mem-size=100G \
+    -bam {input.bam} \
+    --paint-chromosome-limits \
+    -outdir {params.outdir} \
+    -outformat PDF:HTML \
+    -nt {threads} \
+>  {log.out} \
+2> {log.err}
 
 **Location**
 
@@ -15,8 +22,15 @@ whole reference genome.
 Qualimap - Mapping Quality Report Accross Panel
 ---------------------------------------------------
 
-Generate summary statistics for mapped reads stored in BAM files. Statistics are calculated across
-genomic regions specified in the BED file.
+qualimap bamqc \
+    --java-mem-size=100G \
+    -bam {input.bam} \
+    --feature-file {input.bed} \
+    -outdir {params.outdir} \
+    -outformat PDF:HTML \
+    -nt {threads} \
+>  {log.out} \
+2> {log.err}
 
 **Location**
 
@@ -29,7 +43,23 @@ genomic regions specified in the BED file.
 Qualimap - Summarize Quality Reports
 ----------------------------------------
 
-Aggregate results from individual bamqc results to a single summary report
+# Prepare sample list file for the qualimap
+## Column1: Sample name
+## Column2: Path to precomputed bamqc report
+
+for REPORT in {input.reports}; do
+    REPORT_DIR=`dirname $REPORT`
+    SAMPLE=`basename $REPORT_DIR`
+    echo -e "$SAMPLE\t$REPORT_DIR" >> {params.sample_list}
+done
+
+# Run qualimap on samples specified in sample list
+qualimap multi-bamqc \
+    -d {params.sample_list} \
+    -outdir {params.out_dir} \
+    -outformat PDF:HTML \
+>  {log.out} \
+2> {log.err}
 
 **Location**
 

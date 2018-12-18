@@ -10,9 +10,9 @@ Plot overlap graph of contigs to visually inspect relationships between contigs.
 
 **Input(s):**
 
-- *gfa:* ?????
+- *gfa:* Assembly graph in .gfa format
 
 **Output(s):**
 
-- *svg:* ?????
+- *svg:* Graphical visualisation of overlaps between contigs - graph representation
 

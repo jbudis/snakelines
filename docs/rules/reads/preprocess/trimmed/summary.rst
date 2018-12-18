@@ -1,13 +1,5 @@
-Trimmomatic - Trim Reads
-----------------------------
+Undocumented rules
+------------------
+WARNING: found  1 undocumented rules:
 
-Remove low quality ends of reads and then filter reads that are too short.
-
-**Location**
-
-- *Filepath:* <SnakeLines_dir>/rules/reads/preprocess/trimmed/trimmomatic.snake
-- *Rule name:* trimmomatic__trim_reads
-
-**Input(s):**
-
-
+- rule trimmomatic__trim_reads is UNDOCUMENTED
