@@ -28,7 +28,7 @@ rule bwa__map_reads_to_reference:
     conda:
         config['snakelines_dir'] + '/enviroments/others_env.yaml'
     shell:
-        '''
+        """
         bwa mem \
             -t {threads} \
             {params.index} \
@@ -39,4 +39,4 @@ rule bwa__map_reads_to_reference:
         2> {log.err} \
         | samtools view -bS - \
         > {output.bam}
-        '''
+        """

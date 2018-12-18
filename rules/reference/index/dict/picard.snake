@@ -1,9 +1,9 @@
 rule picard__prepare_dict_index:
-    '''
+    """
     Index fasta file to quicker retrieve substring sequences
     :input reference: Genomic sequence file in fasta format to index
     :output dict: Index for the input reference genomic file
-    '''
+    """
     input:
         reference = 'reference/{reference}/{reference}.fa'
     output:
@@ -14,11 +14,11 @@ rule picard__prepare_dict_index:
     conda:
         config['snakelines_dir'] + '/enviroments/others_env.yaml'
     shell:
-        '''
+        """
         picard CreateSequenceDictionary \
             REFERENCE={input.reference} \
             OUTPUT={output.dict} \
             1>{log.out} \
             2>{log.err}
-        '''
+        """
     

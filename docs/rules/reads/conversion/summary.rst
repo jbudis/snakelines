@@ -1,12 +1,7 @@
 Pigz - Unzip File
 ---------------------
 
-set +euo pipefail
-pigz \
-    --decompress \
-    --keep \
-    --processes {threads} \
-    {input.gzipped}
+Decompress gzipped fastq or fasta file
 
 **Location**
 
@@ -15,4 +10,6 @@ pigz \
 
 **Input(s):**
 
+- *gzipped:* Zipped genomic file
+- *unzipped:* Unzipped genomic file
 

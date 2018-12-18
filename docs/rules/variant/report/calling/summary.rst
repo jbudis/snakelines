@@ -30,7 +30,6 @@ Create tabix intex on BGZF (bgzipped) VCF file.
 
 **Input(s):**
 
-
 Picard - Bed To Interval List
 ---------------------------------
 

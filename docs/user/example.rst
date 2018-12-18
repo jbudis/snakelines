@@ -9,7 +9,7 @@ Install required dependencies
 
 Follow installation guides for `Miniconda <https://conda.io/docs/user-guide/install/index.html>`_ and `Snakemake <https://snakemake.readthedocs.io/en/stable/getting_started/installation.html>`_.
 There is no need to install any other tools manually.
-All required bioinformatic tools are installed automatically by SnakeLines inside dedicated virtual environment to avoid dependency conflicts with already installed tools.
+All required bioinformatic tools are installed automatically by SnakeLines inside dedicated virtual environments to avoid dependency conflicts with already installed tools.
 
 Download SnakeLines scripts
 ---------------------------
@@ -35,4 +35,5 @@ Assuming, that sources are downloaded in /usr/local/snakelines, `variant_calling
 
    snakemake \
       --config snakelines_dir=/usr/local/snakelines \
-      --snakefile scripts/variant_calling/germline/Snakefile
+      --snakefile ../../snakelines.snake \
+      --configfile config_vairant_calling.yaml

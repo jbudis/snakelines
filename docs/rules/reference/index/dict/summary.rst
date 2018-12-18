@@ -1,5 +1,18 @@
-Undocumented rules
-------------------
-WARNING: found  1 undocumented rules:
+Picard - Prepare Dict Index
+-------------------------------
 
-- rule picard__prepare_dict_index is UNDOCUMENTED
+Index fasta file to quicker retrieve substring sequences
+
+**Location**
+
+- *Filepath:* <SnakeLines_dir>/rules/reference/index/dict/picard.snake
+- *Rule name:* picard__prepare_dict_index
+
+**Input(s):**
+
+- *reference:* Genomic sequence file in fasta format to index
+
+**Output(s):**
+
+- *dict:* Index for the input reference genomic file
+

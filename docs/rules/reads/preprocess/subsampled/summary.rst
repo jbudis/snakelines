@@ -1,8 +1,7 @@
 Seqtk - Subsample Reads
 ---------------------------
 
-seqtk sample -s{params.seed} {input.r1} {params.n_reads} | gzip > {output.r1}
-seqtk sample -s{params.seed} {input.r2} {params.n_reads} | gzip > {output.r2}
+Randomly select user-configured number of reads from fastq files
 
 **Location**
 
@@ -11,4 +10,11 @@ seqtk sample -s{params.seed} {input.r2} {params.n_reads} | gzip > {output.r2}
 
 **Input(s):**
 
+- *r1:* Left side of sequenced fragments in gzipped fastq format
+- *r2:* Right side of sequenced fragments in gzipped fastq format
+
+**Output(s):**
+
+- *r1:* Left side of subsampled fragments without overlap in gzipped fastq format
+- *r2:* Right side of subsampled fragments without overlap in gzipped fastq format
 

@@ -1,5 +1,5 @@
 rule seqtk__subsample_reads:
-    '''
+    """
     Randomly select user-configured number of reads from fastq files
     :input r1: Left side of sequenced fragments in gzipped fastq format
     :input r2: Right side of sequenced fragments in gzipped fastq format
@@ -7,7 +7,7 @@ rule seqtk__subsample_reads:
     :output r2: Right side of subsampled fragments without overlap in gzipped fastq format
     :params seed: Number for initiation of pseudo-randomized selection of reads. Runs with the same seed would pick the same reads.
     :params n_reads: Number of reads to select
-    '''
+    """
     input:
         r1 = 'reads/%s/{sample}_R1.fastq.gz' % method_config['input_read_type'],
         r2 = 'reads/%s/{sample}_R2.fastq.gz' % method_config['input_read_type']

@@ -4,11 +4,11 @@ import tempfile
 from collections import OrderedDict
 
 rule krona__single_sample_pieplot:
-    '''
+    """
     Generate interactive hierarchical multilevel pie-plot with taxonomic counts for a single sample.
     :input krn: Taxonomic counts of a single sample in format suitable for Krona graph generation
     :output krona: HTML interactive hierarchical visualization of taxonomic counts
-    '''
+    """
     input:
         krn   = '{path}/report/krona/individual/{sample}.krn'
     output:
@@ -19,20 +19,20 @@ rule krona__single_sample_pieplot:
     conda:
         config['snakelines_dir'] + '/enviroments/others_env.yaml'
     shell:
-        '''
+        """
         ktImportText \
             -o {output.krona} \
             {input.krns} \
         >  {log.out} \
         2> {log.err}
-        '''
+        """
 
 
 def individual_krn_files(wildcards):
-    '''
+    """
     Return list of krona files that should be generated for the reference defined in wildcards
     :param wildcards: wildcards that are automatically added in the input section of a rule
-    '''
+    """
     return expand('{analysis_dir}/{reference}/report/krona/individual/{sample}.krn',
                     analysis_dir=wildcards.analysis_dir,
                     reference=wildcards.reference,
@@ -40,11 +40,11 @@ def individual_krn_files(wildcards):
 
 
 rule krona__multi_sample_pieplot:
-    '''
+    """
     Generate interactive hierarchical multilevel pie-plot with taxonomic counts for multiple samples.
     :input krn: Taxonomic counts of multiple samples in format suitable for Krona graph generation
     :output krona: HTML interactive hierarchical visualization of taxonomic counts
-    '''
+    """
     input:
         krns  = individual_krn_files
     output:
@@ -55,10 +55,10 @@ rule krona__multi_sample_pieplot:
     conda:
         config['snakelines_dir'] + '/enviroments/others_env.yaml'
     shell:
-        '''
+        """
         ktImportText \
             -o {output.krona} \
             {input.krns} \
         >  {log.out} \
         2> {log.err}
-        '''
+        """

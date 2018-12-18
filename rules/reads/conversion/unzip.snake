@@ -1,11 +1,11 @@
 # TODO do we need pipefail?
 
 rule pigz__unzip_file:
-    '''
+    """
     Decompress gzipped fastq or fasta file
     :input gzipped: Zipped genomic file
     :input unzipped: Unzipped genomic file
-    '''
+    """
     input:
         gzipped  = '{file}.{type}.gz'
     output:

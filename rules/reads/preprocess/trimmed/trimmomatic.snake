@@ -1,5 +1,5 @@
 rule trimmomatic__trim_reads:
-    '''
+    """
     Remove low quality ends of reads and then filter reads that are too short.
     :input r1: Left side of sequenced fragments in gzipped fastq format
     :input r2: Right side of sequenced fragments in gzipped fastq format
@@ -12,7 +12,7 @@ rule trimmomatic__trim_reads:
     :params headcrop: Parameters of Trimmomatic for cutting of pre-selected number of bases from the 5` end of reads
     :params crop: Parameters of Trimmomatic for cutting of pre-selected number of bases from the 3` end of reads
     :params minlen: Parameters of Trimmomatic to remove reads that have lower length after trimming
-    '''
+    """
     input:
         r1 = 'reads/%s/{sample}_R1.fastq.gz' % method_config['input_read_type'],
         r2 = 'reads/%s/{sample}_R2.fastq.gz' % method_config['input_read_type']
@@ -39,7 +39,7 @@ rule trimmomatic__trim_reads:
     conda:
         config['snakelines_dir'] + '/enviroments/others_env.yaml'
     shell:
-        '''
+        """
         trimmomatic PE \
             -threads {threads} \
             -phred33 \
@@ -54,5 +54,5 @@ rule trimmomatic__trim_reads:
             {params.minlen} \
         >  {log.out} \
         2> {log.err}
-        '''
+        """
 

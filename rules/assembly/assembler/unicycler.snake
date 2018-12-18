@@ -28,7 +28,7 @@ rule unicycler__assemble_reads_into_contigs:
     conda:
         config['snakelines_dir'] + '/enviroments/unicycler_env.yaml'
     shell:
-        '''
+        """
         unicycler \
             -1 {input.r1} \
             -2 {input.r2} \
@@ -43,4 +43,4 @@ rule unicycler__assemble_reads_into_contigs:
         rm {params.contigs}
 
         mv {params.gfa} {output.gfa}
-        '''
+        """

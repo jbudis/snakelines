@@ -73,8 +73,7 @@ mapping:
                     from: expand('mapping/{reference}/{map_type}/stats-wgs/summary/report.pdf', reference=multisample_references, map_type=pipeline.postprocessed_map_type)
                     to: expand('{report_dir}/{reference}/summary/mapping_quality.pdf', report_dir=config['report_dir'], reference=multisample_references)
             depends:
-                - reads/preprocess
-                - reads/report/quality_report
+                - mapping/mapper
 
 variant:
     caller:

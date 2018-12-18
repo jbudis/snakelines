@@ -4,7 +4,7 @@ import pandas as pd
 read_type = config['fast_virome_explorer']['read_type']
 kmer_size = config['fast_virome_explorer']['kmer_size']
 
-rule fast_virome_explorer_estimate_virome_composition:
+rule fast_virome_explorer__estimate_virome_composition:
     input:
         r1 = 'reads/%s/{sample}_R1.fastq.gz' % read_type,
         r2 = 'reads/%s/{sample}_R2.fastq.gz' % read_type,
@@ -20,7 +20,7 @@ rule fast_virome_explorer_estimate_virome_composition:
     conda:
         config['snakelines_dir'] + '/enviroments/others_env.yaml'
     shell:
-        '''
+        """
         fast_virome_explorer \
             -1 {input.r1} \
             -2 {input.r2} \
@@ -29,9 +29,9 @@ rule fast_virome_explorer_estimate_virome_composition:
             -l {input.ref_lens} \
          > {log.out} \
         2> {log.err}
-        '''
+        """
 
-rule fast_virome_explorer_convert_to_krona:
+rule fast_virome_explorer__convert_to_krona:
     input:
         composition = 'fast_virome_explorer/{reference}/classification/{sample}/FastViromeExplorer-final-sorted-abundance.tsv'
     output:

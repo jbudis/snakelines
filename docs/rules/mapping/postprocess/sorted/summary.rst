@@ -1,14 +1,7 @@
 Samtools - Sort Mapped Reads
 --------------------------------
 
-samtools sort \
-    -o {output.bam} \
-    --threads {threads} \
-    --output-fmt BAM \
-    --reference {input.ref} \
-    {input.bam} \
->  {log.out} \
-2> {log.err}
+Sort aligned reads according to mapped position on reference genome.
 
 **Location**
 
@@ -17,4 +10,10 @@ samtools sort \
 
 **Input(s):**
 
+- *ref:* Reference genomic sequences in fasta format
+- *bam:* Unordered mapped reads in bam format
+
+**Output(s):**
+
+- *bam:* Ordered mapped reads according to their location on reference genome
 

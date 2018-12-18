@@ -10,7 +10,6 @@ Creates bed file with whole genomic regions in reference fasta file. Simple way 
 
 **Input(s):**
 
-
 Vardict - Prepare Bed File
 ------------------------------
 
@@ -22,7 +21,6 @@ Vardict throws error for bed files with more than 4 columns, rule therefore cut 
 - *Rule name:* vardict__prepare_bed_file
 
 **Input(s):**
-
 
 Vardict - Call Germline Variants
 ------------------------------------
@@ -36,7 +34,6 @@ Identify small variation (SNP and indels) from the mapped reads.
 
 **Input(s):**
 
-
 Vardict - Test Strand Bias
 ------------------------------
 
@@ -49,9 +46,15 @@ Perform statistical testing of strand bias.
 
 **Input(s):**
 
+Vardict - Tsb To Vcf
+------------------------
 
-Undocumented rules
-------------------
-WARNING: found  1 undocumented rules:
+Convert intermediate files of Vardict to VCF format
 
-- rule vardict__tsb_to_vcf is UNDOCUMENTED
+**Location**
+
+- *Filepath:* <SnakeLines_dir>/rules/variant/caller/vardict.snake
+- *Rule name:* vardict__tsb_to_vcf
+
+**Input(s):**
+

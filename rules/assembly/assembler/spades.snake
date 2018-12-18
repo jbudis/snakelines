@@ -36,7 +36,7 @@ rule spades__assemble_reads_into_contigs:
     conda:
         config['snakelines_dir'] + '/enviroments/others_env.yaml'
     shell:
-        '''
+        """
         spades.py \
             -1 {input.r1} \
             -2 {input.r2} \
@@ -49,4 +49,4 @@ rule spades__assemble_reads_into_contigs:
 
         mv {params.contigs} {output.contigs}
         mv {params.scaffolds} {output.scaffolds}
-        '''
+        """

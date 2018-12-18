@@ -100,7 +100,7 @@ def parse_snakemake_str(snakemake):
     end_keyword = '(?:(?=' + ')|(?='.join(keywords) + ')|\Z)'
 
     # define regexps for rules and docstrings and for rules only
-    rule_docs_regex = re.compile('.*?rule (?P<rulename>[\w]+):.*?"""(?P<docstring>.*?)""".*?' + end_keyword, re.DOTALL)
+    rule_docs_regex = re.compile('.*?rule (?P<rulename>[\w]+):.{0,50}"""(?P<docstring>.*?)""".*?' + end_keyword, re.DOTALL)
     rule_all_regex = re.compile('.*?rule (?P<rulename>[\w]+):.*?' + end_keyword, re.DOTALL)
 
     # return all rules with docstrings and all rules
@@ -194,9 +194,10 @@ def generate_rst(snakemake_file, docs_file, append=False):
 
                 # write all inputs/outputs/params
                 rst += param_begin_template.format(pname='Input(s)')
-                for param in docstr_dict['inputs']:
-                    rst += param_template.format(name=param['name'], doc=param['doc'])
-                rst += param_end_template.format()
+                if len(docstr_dict['inputs']) > 0:
+                    for param in docstr_dict['inputs']:
+                        rst += param_template.format(name=param['name'], doc=param['doc'])
+                    rst += param_end_template.format()
                 if len(docstr_dict['outputs']) > 0:
                     rst += param_begin_template.format(pname='Output(s)')
                     for param in docstr_dict['outputs']:
@@ -283,8 +284,8 @@ def crawl_snakedir(input_snakedir, docs_snakedir, depth):
     relative_rst_path = '/'.join(rst_path.split('/')[2:])
     for filename in files_filtered:
         rw, rwo_docs = generate_rst(input_snakedir + filename, rst_path, append=files_done > 0)
+        files_done += 1
         if rw > 0 or rwo_docs > 0:
-            files_done += 1
             rules_written += rw
             rules_wo_docs += rwo_docs
 

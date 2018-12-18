@@ -5,7 +5,7 @@ SnakeLines documentation is written in the `rst format <http://docutils.sourcefo
 Documentation pages are generated from
 
 * static .rst files located in the "docs/development/" and "docs/user/" directories
-* automatically generated .rst files according to docstrings of individual rules and pipelines (directories "docs/rules/" and "docs/pipeline/")
+* automatically generated .rst files according to docstrings of individual rules and pipelines (directory "docs/rules/")
 
 Document each new rule
 ----------------------
@@ -48,7 +48,7 @@ To regenerate all automatically generated .rst files, you should run the followi
 
    python src/documentation/documentation.py
 
-You may need to install `Sphinx tool <http://www.sphinx-doc.org/en/master/>`_ first.
+Then sphinx is used to generate the documentation from .rst files. You may need to install `Sphinx tool <http://www.sphinx-doc.org/en/master/>`_ first.
 
 .. code-block:: bash
 

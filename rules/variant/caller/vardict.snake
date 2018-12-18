@@ -91,18 +91,18 @@ rule vardict__test_strand_bias:
     conda:
         config['snakelines_dir'] + '/enviroments/others_env.yaml'
     shell:
-        '''
+        """
         cat {input.vdc} \
         | teststrandbias.R \
         >  {output.tsb} \
         2> {log.err}
-        '''
+        """
 
 # TODO hardcoded path
 rule vardict__tsb_to_vcf:
-    '''
+    """
     Convert intermediate files of Vardict to VCF format
-    '''
+    """
     input:
         tsb = 'variant/{reference}-{panel}/{state}/{sample}.tsb'
     output:
@@ -115,7 +115,7 @@ rule vardict__tsb_to_vcf:
     conda:
         config['snakelines_dir'] + '/enviroments/others_env.yaml'
     shell:
-        '''
+        """
         var2vcf_valid.pl \
             -S \
             -A \
@@ -126,4 +126,4 @@ rule vardict__tsb_to_vcf:
             -N {wildcards.sample} \
             {input} \
         > {output}
-        '''
+        """
