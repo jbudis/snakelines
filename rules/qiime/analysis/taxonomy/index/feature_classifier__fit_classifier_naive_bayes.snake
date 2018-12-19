@@ -1,0 +1,22 @@
+include: srcdir('import/reads/import_reference_reads.snake')
+include: srcdir('import/taxonomy/import_reference_taxonomy.snake')
+
+rule qiime__feature_classifier__fit_classifier_naive_bayes:
+    """
+    """
+    input:
+        ref_reads   = 'reference/qiime2_index/{reference}-ref-reads.qza',
+        ref_tax     = 'reference/qiime2_index/{reference}-ref-taxonomy.qza'
+    output:
+        classifier  = 'reference/qiime2_index/{reference}-classifier.qza'
+    params:
+        tmp_dir   = method_config['tmp_dir'] if method_config.get('tmp_dir', '') != '' else '/tmp'
+    threads:
+        int(config['threads'])
+    shell:
+        '''
+          export TMPDIR={params.tmp_dir}; qiime feature-classifier fit-classifier-naive-bayes \
+          --i-reference-reads {input.ref_reads} \
+          --i-reference-taxonomy {input.ref_tax} \
+          --o-classifier {output.classifier}
+        '''

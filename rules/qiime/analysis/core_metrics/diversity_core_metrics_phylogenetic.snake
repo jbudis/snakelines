@@ -1,0 +1,31 @@
+rule qiime__diversity_core_metrics_phylogenetic:
+    """
+    """
+    params:
+#        params_file_suffix = '-dn-{}'.format(method_config['similarity']) if method_config.get('similarity', '') != '' else '',
+        output_dir  = 'reads/qiime/{name}-core-metrics-results',
+        report_dir  = 'reads/qiime/{name}-imported'
+    input:
+        html        = 'reads/qiime/{name}-imported/index.html',
+#        rooted_tree = 'reads/qiime/{name}-unrooted-tree{params_file_suffix}.qza',
+#        table       = 'reads/qiime/{name}-table{params_file_suffix}.qza',
+        rooted_tree = expand('reads/qiime/{{name}}-rooted-tree{params_file_suffix}.qza', params_file_suffix = '-dn-{}'.format(method_config['similarity']) if method_config.get('similarity', '') != '' else ''),
+        table       = expand('reads/qiime/{{name}}-table{params_file_suffix}.qza', params_file_suffix = '-dn-{}'.format(method_config['similarity']) if method_config.get('similarity', '') != '' else ''),
+        metadata    = 'reads/qiime/{name}-sample-metadata.tsv'
+    output:
+        rarefield_table = 'reads/qiime/{name}-core-metrics-results/rarefied_table.qza'
+    threads:
+        int(config['threads'])
+    shell:
+        '''
+        rmdir {params.output_dir}
+        min="cat {params.report_dir}/overview.html | egrep 'Minimum' | sed -E 's/[^0-9]*([0-9]*)[^0-9]*/\\1/'"
+        min=$(eval $min)
+        qiime diversity core-metrics-phylogenetic \
+          --i-phylogeny {input.rooted_tree} \
+          --i-table {input.table} \
+          --p-sampling-depth $min \
+          --p-n-jobs {threads} \
+          --m-metadata-file {input.metadata} \
+          --output-dir {params.output_dir}
+        '''

@@ -1,0 +1,16 @@
+rule qiime__import_reference_reads:
+    """
+    :input :
+    :output :
+    """
+    input:
+        ref_reads   = 'reference/{reference}.fa'
+    output:
+        ref_reads   = 'reference/qiime2_index/{reference}-ref-reads.qza'
+    shell:
+        '''
+        qiime tools import \
+            --type 'FeatureData[Sequence]' \
+            --input-path {input.ref_reads} \
+            --output-path {output.ref_reads}
+        '''

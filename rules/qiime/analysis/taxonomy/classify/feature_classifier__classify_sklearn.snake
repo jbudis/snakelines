@@ -1,0 +1,20 @@
+rule qiime__feature_classifier__classify_sklearn:
+    """
+    """
+    input:
+        rep_seqs  = 'reads/qiime/{name}-rep-seqs{file_suffix}.qza',
+        classifier   = expand('reference/qiime2_index/{reference}-classifier.qza', reference=method_config['reference'])
+    output:
+        taxonomy  = 'reads/qiime/{name}-taxonomy{file_suffix}.qza' # TODO how about {reference} in output file?
+    params:
+        tmp_dir   = method_config['tmp_dir'] if method_config.get('tmp_dir', '') != '' else '/tmp'
+    threads:
+        int(config['threads'])
+    shell:
+        '''
+        export TMPDIR={params.tmp_dir}; qiime feature-classifier classify-sklearn \
+          --i-classifier {input.classifier} \
+          --i-reads {input.rep_seqs} \
+          --p-n-jobs {threads} \
+          --o-classification {output.taxonomy}
+        '''

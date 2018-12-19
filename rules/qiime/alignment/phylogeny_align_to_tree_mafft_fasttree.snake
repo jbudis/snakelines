@@ -1,0 +1,24 @@
+rule qiime__phylogeny_align_to_tree_mafft_fasttree:
+    """
+    """
+#    params:
+#        params_file_suffix = '-dn-{}'.format(method_config['similarity']) if method_config.get('similarity', '') != '' else ''
+    input:
+        rep_seqs  = 'reads/qiime/{name}-rep-seqs{file_suffix}.qza'
+    output:
+        alignment = 'reads/qiime/{name}-aligned-rep-seqs{file_suffix}.qza',
+        masked_alignment = 'reads/qiime/{name}-masked-aligned-rep-seqs{file_suffix}.qza',
+        unrooted_tree = 'reads/qiime/{name}-unrooted-tree{file_suffix}.qza',
+        rooted_tree = 'reads/qiime/{name}-rooted-tree{file_suffix}.qza'
+    threads:
+        int(config['threads'])
+    shell:
+        '''
+        qiime phylogeny align-to-tree-mafft-fasttree \
+          --i-sequences {input.rep_seqs} \
+          --o-alignment {output.alignment} \
+          --o-masked-alignment {output.masked_alignment} \
+          --o-tree {output.unrooted_tree} \
+          --o-rooted-tree {output.rooted_tree} \
+          --p-n-threads {threads}
+        '''

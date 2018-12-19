@@ -1,4 +1,4 @@
-rule qiime__import_manifest:
+rule qiime__import_pair_end_manifest:
     """
     Imports samples written down in metadata file, sequences MUST BE pair-end. Calls 'qiime tools import'
     :input manifest: TSV manifest file in format 'sample-id,absolute-filepath,direction', e.g. reads/qiime/joined.manifest

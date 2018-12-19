@@ -27,7 +27,10 @@ rule finalise__winezymes:
 
         otu_report = expand('reads/qiime/joined-{type}-dn-{similarity}/index.html',
                             type=['rep-seqs', 'table'],
-                            similarity=config['qiime']['preprocess']['cluster']['similarity'])
+                            similarity=config['qiime']['preprocess']['cluster']['similarity']),
+
+#        rarefield = 'reads/qiime/joined-core-metrics-results/rarefied_table.qza'
+        taxonomy   = 'reads/qiime/joined-taxonomy-dn-99.qza'
 
 # Target rule would be executed locally, not on cluster
 localrules: finalise__winezymes

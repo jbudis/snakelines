@@ -53,3 +53,20 @@ qiime:
                 method: feature_table_tabulate_seqs
         export:
             method: export
+
+    alignment:
+        method: phylogeny_align_to_tree_mafft_fasttree
+        #similarity: 99
+
+    analysis:
+        core_metrics:
+            method: diversity_core_metrics_phylogenetic
+            similarity: 99
+        taxonomy:
+            index:
+                method: feature_classifier__fit_classifier_naive_bayes
+                tmp_dir: /data/tmp
+            classify:
+                method: feature_classifier__classify_sklearn
+                reference: silva-16S-90
+                tmp_dir: /data/tmp

@@ -1,0 +1,17 @@
+rule qiime__import_reference_taxonomy:
+    """
+    :input :
+    :output :
+    """
+    input:
+        ref_tax = 'reference/{reference}.tax'
+    output:
+        ref_tax = 'reference/qiime2_index/{reference}-ref-taxonomy.qza'
+    shell:
+        '''
+        qiime tools import \
+        --type 'FeatureData[Taxonomy]' \
+        --input-format HeaderlessTSVTaxonomyFormat \
+        --input-path {input.ref_tax} \
+        --output-path {output.ref_tax}
+        '''
