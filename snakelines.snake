@@ -1,46 +1,41 @@
-# Load configuration file if not already loaded
-try:
-    config['samples']
-except (NameError, KeyError):
-    print('WARNING: "--configfile" not specified, using "config.yaml".')
-    from src.config.dependency_load import load_yaml
-    try:
-        cfg = load_yaml('config.yaml')
-        cfg.update(config)
-        config = cfg
-    except FileNotFoundError:
-        print('ERROR: "config.yaml" not found in the current dir.')
+import os
+import sys
+from src.config.dependency_load import load_config, check_dependency
+from src.output.copy_files import copy_input_files_with_consisent_names_dict
+from src.output.send_email import
 
-    # configfile: srcdir('config.yaml') do not use configfile - it uses dict instead of OrderedDict.
+# Load configuration file if not already loaded
+config = load_config(config)
+
+# get the snakelines_directory
+if 'snakelines_dir' not in config:
+    config['snakelines_dir'] = os.path.dirname(os.path.realpath(__file__))
 
 # Run startup scripts that automatically loads imports from src/ and load helper methods
 include: config['snakelines_dir'] + '/src/common.snake'
 
 # check dependencies and asses inputs and outputs
-from src.config.dependency_load import check_dependency
-inputs, outputs = check_dependency(config['snakelines_dir'] + '/src/dependency.yaml', config)
+outputs, copy_where = check_dependency(config['snakelines_dir'] + '/src/dependency.yaml', config)
 
-def get_files(source):
+# function to evaluate output directories from dependency.yaml
+def get_files(source_dict):
     additional_params = {'expand': expand, 'protected': protected, 'temp': temp, 'config': config,
             'pipeline': pipeline, 'read_types_with_fastqc_report': read_types_with_fastqc_report,
             'multisample_references': multisample_references, 'tax_levels_count_table': tax_levels_count_table,
             'tax_levels_barplot': tax_levels_barplot, 'barplot_formats': barplot_formats}
-    return {k:eval(v, additional_params) for k,v in source.items()}
+    return {k:eval(v, additional_params) for k,v in source_dict.items()}
 
-#for k,v in inputs.items():
-#    print(k, ':', v)
-
-#print('\n')
-
-#for k,v in get_inputs(None).items():
-#    print(k, ':', v)
-
+# "pipeline" rule that generates all of the required files
 rule pipeline:
     input:
-        **get_files(inputs)
+        **get_files(outputs)
 
+# on success copy the files to report directory and send email(s)
 onsuccess:
-    from src.output.copy_files import copy_input_files_with_consisent_names_dict
-    print("Copying and finalizing")
-    copied = copy_input_files_with_consisent_names_dict(get_files(inputs), get_files(outputs))
-    print("Copied {} files to report dir '{}'".format(copied, config['report_dir']))
+    print("Copying and finalizing", file=sys.stderr)
+    copied = copy_input_files_with_consisent_names_dict(get_files(outputs), get_files(copy_where))
+    print("Copied {} files to report dir '{}'".format(copied, config['report_dir']), file=sys.stderr))
+
+# on error send email(s)
+onerror:
+

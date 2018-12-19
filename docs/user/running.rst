@@ -104,7 +104,6 @@ For example, if SnakeLines sources has been downloaded to the /usr/local/snakeli
 .. code:: bash
 
    snakemake \
-      --config snakelines_dir=/usr/local/snakelines \
       --snakefile /usr/local/snakelines/snakelines.snake \
       --configfile config_vairant_calling.yaml
 

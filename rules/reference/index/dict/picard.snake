@@ -1,6 +1,6 @@
 rule picard__prepare_dict_index:
     """
-    Index fasta file to quicker retrieve substring sequences
+    Create sequence dictionary index from fasta file to quicker retrieve substring sequences
     :input reference: Genomic sequence file in fasta format to index
     :output dict: Index for the input reference genomic file
     """

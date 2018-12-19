@@ -17,6 +17,30 @@ def load_yaml(file_name):
     return dependency_dict
 
 
+def load_config(config):
+    """
+    Loads the YAML config "config.yaml" if not provided as --configfile.
+    :param config: OrderedDict - config dictionary so far
+    :return: OrderedDict - loaded config dictionary
+    """
+    # configfile: srcdir('config.yaml') - do not use it like this, since configfile uses dict instead of OrderedDict
+    # try if we have good config:
+    try:
+        config['samples']
+    except (NameError, KeyError):
+        print('WARNING: "--configfile" not specified, using "config.yaml".')
+        # load default config.yaml
+        try:
+            cfg = load_yaml('config.yaml')
+            cfg.update(config)
+            config = cfg
+        except FileNotFoundError:
+            print('ERROR: "config.yaml" not found in the current dir.')
+
+    # return loaded config
+    return config
+
+
 def add_temp(text, add_temp=True):
     """
     Add temporary 'temp(<text>)' flag to text.

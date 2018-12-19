@@ -34,6 +34,5 @@ Assuming, that sources are downloaded in /usr/local/snakelines, `variant_calling
    cd /usr/local/snakelines/example/mhv
 
    snakemake \
-      --config snakelines_dir=/usr/local/snakelines \
       --snakefile ../../snakelines.snake \
       --configfile config_vairant_calling.yaml

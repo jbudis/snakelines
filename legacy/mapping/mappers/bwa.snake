@@ -13,9 +13,9 @@ rule bwa_map_paired_reads:
     params:
         index = 'reference/{reference}/bwa_index/{reference}',
         tmpdir = 'bwa/{reference}/%s/tmp/' % config['mapping']['read_type'],
-        additional = config['mapping']['params'] if 'params' in config['mapping'] else '',
-        min_map_quality = config['mapping']['min_map_quality'] if 'min_map_quality' in config['mapping'] else 0,
-        skip_flags = config['mapping']['skip_flags'] if 'skip_flags' in config['mapping'] else 0,
+        additional = config['mapping'].get('params', ''),
+        min_map_quality = config['mapping'].get('min_map_quality', 0),
+        skip_flags = config['mapping'].get('skip_flags', 0),
     benchmark:
         'bwa/{reference}/%s/benchmark/{sample}.txt' % config['mapping']['read_type']
     threads:
@@ -59,9 +59,9 @@ rule bwa_map_single_reads:
     params:
         index = 'reference/{reference}/bwa_index/{reference}',
         tmpdir = 'bwa-se/{reference}/tmp/',
-        additional = config['mapping']['params'] if 'params' in config['mapping'] else '',
-        min_map_quality = config['mapping']['min_map_quality'] if 'min_map_quality' in config['mapping'] else 0,
-        skip_flags = config['mapping']['skip_flags'] if 'skip_flags' in config['mapping'] else 0,
+        additional = config['mapping'].get('params', ''),
+        min_map_quality = config['mapping'].get('min_map_quality', 0),
+        skip_flags = config['mapping'].get('skip_flags', 0),
     benchmark:
         'bwa-se/{reference}/benchmark/{sample}.txt'
     threads:

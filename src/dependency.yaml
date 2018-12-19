@@ -1,6 +1,4 @@
 reference:
-    download:
-        output: []
     index:
         dict:
             output:
@@ -62,7 +60,6 @@ mapping:
         deduplicated:
             output:
                 deduplicated: expand('mapping/{sr.reference}/deduplicated/{sr.sample}.bam', sr=pipeline.sample_references)
-
     report:
         quality_report:
             output:
@@ -102,7 +99,6 @@ variant:
                 - reads/report/quality_report
                 - mapping/mapper
 
-
 classification:
     read_based:
         output: []
@@ -120,16 +116,7 @@ classification:
             depends:
                 - reads/preprocess
                 - reads/report
-
     report:
-        summary:
-            output:
-                summary_html:
-                    from: expand('assembly/{sample}/annotation/contigs/summary.html', sample=pipeline.samples)
-                    to: expand('{report_dir}/{sample}/contig_annotations.html', sample=pipeline.samples, report_dir=config['report_dir'])
-            depends:
-                - classification/contig_based
-
         taxonomic_counts:
             barplot:
                 output:
@@ -152,12 +139,18 @@ classification:
                         to: expand('{report_dir}/{reference}/tsv/{tax_level}.{type}.tsv', report_dir=config['report_dir'], reference=pipeline.references, tax_level=tax_levels_count_table, type=['counts', 'ratios'])
                 depends:
                     - classification/read_based
+        summary:
+            output:
+                summary_html:
+                    from: expand('assembly/{sample}/annotation/contigs/summary.html', sample=pipeline.samples)
+                    to: expand('{report_dir}/{sample}/contig_annotations.html', sample=pipeline.samples, report_dir=config['report_dir'])
+            depends:
+                - classification/contig_based
 
 assembly:
     assembler:
         output:
             contigs: expand('assembly/{sample}/contigs.fa', sample=pipeline.samples)
-
         depends:
             - reads/preprocess
             - reads/report
@@ -167,7 +160,6 @@ assembly:
                 quality_reports:
                     from: expand('assembly/{sample}/quality_report/report.pdf', sample=pipeline.samples)
                     to: expand('{report_dir}/assembly/{sample}/report.pdf', report_dir=config['report_dir'], sample=pipeline.samples)
-
         assembly_graph:
             output:
                 overlap_graphs:
