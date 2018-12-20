@@ -1,0 +1,16 @@
+rule qiime__metadata__tabulate:
+    """
+    Create qiime visualization of taxonomy data, calls 'qiime metadata tabulate'
+    :input qza: qiime artifact of type FeatureData[Taxonomy], e.g. reads/qiime/joined-taxonomy-dn-99.qza
+    :output qzv: qiime visualization file, can be exported to HTML, e.g. reads/qiime/joined-taxonomy-dn-99.qzv
+    """
+    input:
+        qza     = 'reads/qiime/{name}-taxonomy{file_suffix}.qza'
+    output:
+        qzv     = 'reads/qiime/{name}-taxonomy{file_suffix}.qzv'
+    shell:
+        '''
+        qiime metadata tabulate \
+          --m-input-file {input.qza} \
+          --o-visualization {output.qzv}
+        '''

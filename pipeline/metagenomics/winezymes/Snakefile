@@ -30,7 +30,11 @@ rule finalise__winezymes:
                             similarity=config['qiime']['preprocess']['cluster']['similarity']),
 
 #        rarefield = 'reads/qiime/joined-core-metrics-results/rarefied_table.qza'
-        taxonomy   = 'reads/qiime/joined-taxonomy-dn-99.qza'
+        taxonomy   = 'reads/qiime/joined-taxonomy-dn-99.qza',
+
+        taxonomy_report = expand('reads/qiime/joined-{type}-dn-{similarity}/index.html',
+                                type=['taxonomy', 'taxa-barplots'],
+                                similarity=config['qiime']['analysis']['core_metrics']['similarity']),
 
 # Target rule would be executed locally, not on cluster
 localrules: finalise__winezymes

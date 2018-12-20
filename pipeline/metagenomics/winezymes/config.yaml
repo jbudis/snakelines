@@ -51,6 +51,12 @@ qiime:
                 method: feature_table_summarize
             cluster_rep_seqs:
                 method: feature_table_tabulate_seqs
+            taxonomy:
+                barplot:
+                    method: taxa__barplot
+                tabulate:
+                    method: metadata__tabulate
+
         export:
             method: export
 
