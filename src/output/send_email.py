@@ -126,6 +126,21 @@ def send_email_sendmail(receiver: Union[str, List[str]], message: str, subject: 
     return p.returncode
 
 
+def gather_lists(lists):
+    """
+    Gather all values from list of lists into a single list.
+    :param lists: list - list of lists
+    :return: list - single list
+    """
+    ret = []
+    for lst in lists:
+        if type(lst) is not list:
+            ret.append(lst)
+        else:
+            ret.extend(lst)
+    return ret
+
+
 def send_email(config: OrderedDict, generated_files: OrderedDict, report_files: OrderedDict, success: Optional[bool] = True):
     """
     Send mail either with sendmail or with gmail.
@@ -154,14 +169,16 @@ def send_email(config: OrderedDict, generated_files: OrderedDict, report_files: 
             # append generated files
             if config_part.get('list_files', False):
                 message += 'Files:\n'
-                for k,v in generated_files.items():
-                    message += '\t{:15s} = {}\n'.format(k, v)
+                files = gather_lists(generated_files.values())
+                for f in files:
+                    message += '\t{}\n'.format(f)
 
             # append copied files
             if config_part.get('list_copied', False):
                 message += 'Files copied in:\n'
-                for k, v in report_files.items():
-                    message += '\t{:15s} = {}\n'.format(k, v)
+                files = gather_lists(report_files.values())
+                for f in files:
+                    message += '\t{}\n'.format(f)
 
             # send gmail mail?
             if 'gmail' in config['email']['setup']:
@@ -170,7 +187,7 @@ def send_email(config: OrderedDict, generated_files: OrderedDict, report_files: 
                 host = config['email']['setup']['gmail'].get('host', 'smtp.gmail.com')
                 port = config['email']['setup']['gmail'].get('port', 587)
                 successful = send_email_smtp(config['email']['setup'].get('sendto', []), message, host=host, port=port, login_name=config['email']['setup']['gmail']['login_name'],
-                                login_pass=config['email']['setup']['gmail']['login_pass'], quiet=False)
+                                             login_pass=config['email']['setup']['gmail']['login_pass'], quiet=False)
             # send mail through Linux's sendmail
             else:
                 successful = send_email_sendmail(config['email']['setup'].get('sendto', []), message, quiet=False) == 0
