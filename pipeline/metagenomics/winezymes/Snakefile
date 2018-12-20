@@ -36,5 +36,12 @@ rule finalise__winezymes:
                                 type=['taxonomy', 'taxa-barplots'],
                                 similarity=config['qiime']['analysis']['core_metrics']['similarity']),
 
+#        alpha_group_significance = expand('reads/qiime/joined-core-metrics-results/{type}_group_significance.qzv',
+#                                          type=['evenness', 'faith_pd', 'observed_otus', 'shannon'])
+
+        alpha_group_significance_reports = expand('reads/qiime/joined-core-metrics-results/{type}_group_significance/index.html',
+                                                  type=['evenness', 'faith_pd', 'observed_otus', 'shannon'])
+
+
 # Target rule would be executed locally, not on cluster
 localrules: finalise__winezymes

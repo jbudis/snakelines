@@ -68,6 +68,9 @@ qiime:
         core_metrics:
             method: diversity_core_metrics_phylogenetic
             similarity: 99
+        diversity:
+            alpha:
+                method: diversity__alpha_group_significance
         taxonomy:
             index:
                 method: feature_classifier__fit_classifier_naive_bayes

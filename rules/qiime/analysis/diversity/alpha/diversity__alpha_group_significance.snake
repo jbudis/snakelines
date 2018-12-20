@@ -1,0 +1,15 @@
+rule qiime__diversity__alpha_group_significance:
+    """
+    """
+    input:
+        vector      = 'reads/qiime/{name}-core-metrics-results/{type}_vector.qza',
+        metadata    = 'reads/qiime/{name}-sample-metadata.tsv'
+    output:
+        qzv         = 'reads/qiime/{name}-core-metrics-results/{type}_group_significance.qzv'
+    shell:
+        '''
+        qiime diversity alpha-group-significance \
+          --i-alpha-diversity {input.vector} \
+          --m-metadata-file {input.metadata} \
+          --o-visualization {output.qzv}
+        '''
