@@ -1,0 +1,16 @@
+rule qiime__emperor__plot:
+    """
+    """
+    input:
+        pcoa_results    = 'reads/qiime/{name}-core-metrics-results/{type}_pcoa_results.qza',
+        metadata        = 'reads/qiime/{name}-sample-metadata.tsv'
+    output:
+        qzv             = 'reads/qiime/{name}-core-metrics-results/custom_axes/{type}_emperor_{column}.qzv'
+    shell:
+        '''
+        qiime emperor plot \
+          --i-pcoa {input.pcoa_results} \
+          --m-metadata-file {input.metadata} \
+          --p-custom-axes {wildcards.column} \
+          --o-visualization {output.qzv}
+        '''

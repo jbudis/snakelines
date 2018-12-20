@@ -13,7 +13,10 @@ rule qiime__diversity_core_metrics_phylogenetic:
         table       = expand('reads/qiime/{{name}}-table{params_file_suffix}.qza', params_file_suffix = '-dn-{}'.format(method_config['similarity']) if method_config.get('similarity', '') != '' else ''),
         metadata    = 'reads/qiime/{name}-sample-metadata.tsv'
     output:
-        rarefield_table = 'reads/qiime/{name}-core-metrics-results/rarefied_table.qza'
+        rarefield_table = 'reads/qiime/{name}-core-metrics-results/rarefied_table.qza',
+        vector          = expand('reads/qiime/{{name}}-core-metrics-results/{alpha_types}_vector.qza', alpha_types=method_config['alpha_types']),
+        distance_matrix = expand('reads/qiime/{{name}}-core-metrics-results/{beta_types}_distance_matrix.qza', beta_types=method_config['beta_types']),
+        emperor_plots   = expand('reads/qiime/{{name}}-core-metrics-results/{emperor_types}_emperor.qzv', emperor_types=method_config['emperor_types'])
     threads:
         int(config['threads'])
     shell:

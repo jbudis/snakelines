@@ -36,11 +36,30 @@ rule finalise__winezymes:
                                 type=['taxonomy', 'taxa-barplots'],
                                 similarity=config['qiime']['analysis']['core_metrics']['similarity']),
 
-#        alpha_group_significance = expand('reads/qiime/joined-core-metrics-results/{type}_group_significance.qzv',
-#                                          type=['evenness', 'faith_pd', 'observed_otus', 'shannon'])
+#        alpha_group_significance = expand('reads/qiime/joined-core-metrics-results/alpha/{type}_group_significance.qzv',
+#                                          type=['evenness', 'faith_pd', 'observed_otus', 'shannon']),
 
-        alpha_group_significance_reports = expand('reads/qiime/joined-core-metrics-results/{type}_group_significance/index.html',
-                                                  type=['evenness', 'faith_pd', 'observed_otus', 'shannon'])
+        alpha_group_significance_reports = expand('reads/qiime/joined-core-metrics-results/alpha/{type}_group_significance/index.html',
+                                                    type=config['qiime']['analysis']['core_metrics']['alpha_types']),
+#                                                  type=['evenness', 'faith_pd', 'observed_otus', 'shannon']),
+
+#        beta_group_significance = expand('reads/qiime/joined-core-metrics-results/beta/{type}_{column}_significance.qzv',
+#                                          type=['bray_curtis', 'jaccard', 'unweighted_unifrac', 'weighted_unifrac'],
+#                                                  column=['col1', 'col2', 'col3', 'col4', 'col5', 'col6']),
+
+        beta_group_significance_reports = expand('reads/qiime/joined-core-metrics-results/beta/{type}_{column}_significance/index.html',
+                                                  type=config['qiime']['analysis']['core_metrics']['beta_types'],
+#                                                  type=['bray_curtis', 'jaccard', 'unweighted_unifrac', 'weighted_unifrac'],
+                                                  column=['col3', 'col4']),
+
+        emperor_plot_reports = expand('reads/qiime/joined-core-metrics-results/{type}_emperor/index.html',
+                                                  type=config['qiime']['analysis']['core_metrics']['emperor_types']),
+
+#        # requires sample-metadata with numeric columns
+#        custom_axes_emperor_plot_reports = expand('reads/qiime/joined-core-metrics-results/custom_axes/{type}_emperor_{column}/index.html',
+#                                                  type=config['qiime']['analysis']['core_metrics']['emperor_types'],
+#                                                  column=['col3', 'col4'])
+
 
 
 # Target rule would be executed locally, not on cluster

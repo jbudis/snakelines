@@ -1,0 +1,17 @@
+rule qiime__diversity__beta_group_significance:
+    """
+    """
+    input:
+        distance_matrix = 'reads/qiime/{name}-core-metrics-results/{type}_distance_matrix.qza',
+        metadata        = 'reads/qiime/{name}-sample-metadata.tsv'
+    output:
+        qzv             = 'reads/qiime/{name}-core-metrics-results/beta/{type}_{column}_significance.qzv'
+    shell:
+        '''
+        qiime diversity beta-group-significance \
+          --i-distance-matrix {input.distance_matrix} \
+          --m-metadata-file {input.metadata} \
+          --m-metadata-column {wildcards.column} \
+          --o-visualization {output.qzv} \
+          --p-pairwise
+        '''

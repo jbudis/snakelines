@@ -68,9 +68,28 @@ qiime:
         core_metrics:
             method: diversity_core_metrics_phylogenetic
             similarity: 99
+            alpha_types:
+                - evenness
+                - faith_pd
+                - observed_otus
+                - shannon
+            beta_types:
+                - bray_curtis
+                - jaccard
+                - unweighted_unifrac
+                - weighted_unifrac
+            emperor_types:
+                - bray_curtis
+                - jaccard
+                - unweighted_unifrac
+                - weighted_unifrac
         diversity:
             alpha:
                 method: diversity__alpha_group_significance
+            beta:
+                method: diversity__beta_group_significance
+#            custom_axes:                   # requires sample-metadata with numeric columns
+#                method: emperor__plot
         taxonomy:
             index:
                 method: feature_classifier__fit_classifier_naive_bayes
