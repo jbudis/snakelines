@@ -28,14 +28,14 @@ def load_config(config):
     try:
         config['samples']
     except (NameError, KeyError):
-        print('WARNING: "--configfile" not specified, using "config.yaml".')
+        print('WARNING: "--configfile" not specified, using "config.yaml".', file=sys.stderr)
         # load default config.yaml
         try:
             cfg = load_yaml('config.yaml')
             cfg.update(config)
             config = cfg
         except FileNotFoundError:
-            print('ERROR: "config.yaml" not found in the current dir.')
+            print('ERROR: "config.yaml" not found in the current dir.', file=sys.stderr)
 
     # return loaded config
     return config

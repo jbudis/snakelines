@@ -1,8 +1,9 @@
+import sys
+import tempfile
 from pipeline.samples import Pipeline
 from config.impute_mapping_types import impute_mapping_types, impute_read_types
 from config.load_imports import import_files_in_config
 from config.values_retrieval import extract_from_config
-import tempfile
 
 # TODO: This should work for other types, such as mapping as well
 def configured_temp(read_file):
@@ -46,7 +47,7 @@ if not 'tmp_dir' in config:
 rules_dir = '{}/rules'.format(config['snakelines_dir'])
 for import_file, method_config in import_files_in_config(config, rules_dir):
     assert os.path.isfile(import_file), 'Configured snake file {} does not exist'.format(import_file)
-    print('Importing snakefile:', import_file)
+    print('Importing snakefile:', import_file, file=sys.stderr)
     include: import_file
 
 # Find in configuration map post-process types for which should be report generated

@@ -236,7 +236,7 @@ def generate_rst(snakemake_file, docs_file, append=False):
     except Exception as e:
 
         # write what is wrong
-        print(repr(e))
+        print(repr(e), file=sys.stderr)
 
         # set defaults
         written_rules = 0

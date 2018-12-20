@@ -1,7 +1,7 @@
 Picard - Prepare Dict Index
 -------------------------------
 
-Index fasta file to quicker retrieve substring sequences
+Create sequence dictionary index from fasta file to quicker retrieve substring sequences
 
 **Location**
 

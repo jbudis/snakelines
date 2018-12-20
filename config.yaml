@@ -16,10 +16,11 @@ email:                              # Setup email client (will not send emails i
             login_pass: "hesielko"                          # gmail password for this address
     onsuccess:                      # Setup emails to send if the analysis succeed
         send: True                  # Send only if true
-        list_files: False           # Include list of all generated files?
+        list_files: False           # Include list of all generated files
+        list_copied: False          # Include list of all copied files
     onerror:                        # Setup emails to send if the analysis failed
         send: True                  # Send only if true
-        list_files: True            # Include list of all generated files?
+        list_files: True            # Include list of files that should have been generated
 
 reference:                          # Reference processing - indexing, ...
     index:                          # Index fasta file to quicker retrieve substring sequences

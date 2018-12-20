@@ -2,14 +2,14 @@ import os
 import sys
 from src.config.dependency_load import load_config, check_dependency
 from src.output.copy_files import copy_input_files_with_consisent_names_dict
-from src.output.send_email import
+from src.output.send_email import send_email
 
 # Load configuration file if not already loaded
 config = load_config(config)
 
 # get the snakelines_directory
 if 'snakelines_dir' not in config:
-    config['snakelines_dir'] = os.path.dirname(os.path.realpath(__file__))
+    config['snakelines_dir'] = os.path.dirname(os.path.realpath(workflow.snakefile))
 
 # Run startup scripts that automatically loads imports from src/ and load helper methods
 include: config['snakelines_dir'] + '/src/common.snake'
@@ -34,8 +34,9 @@ rule pipeline:
 onsuccess:
     print("Copying and finalizing", file=sys.stderr)
     copied = copy_input_files_with_consisent_names_dict(get_files(outputs), get_files(copy_where))
-    print("Copied {} files to report dir '{}'".format(copied, config['report_dir']), file=sys.stderr))
+    print("Copied {} files to report dir '{}'".format(copied, config['report_dir']), file=sys.stderr)
+    send_email(config, get_files(outputs), get_files(copy_where), True)
 
 # on error send email(s)
 onerror:
-
+    send_email(config, get_files(outputs), get_files(copy_where), False)
