@@ -17,7 +17,7 @@ Minimal software requirements are:
 * Miniconda (tested on 4.5.11)
 
 Python3 module dependencies
-------------
+---------------------------
 
 Snakelines requires several Python3 modules to be installed prior to Snakelines. All of these modules can be installed via Conda package manager or via Pip3 with the exception of Tkinter that can be obtained via e.g. apt-get.
 
