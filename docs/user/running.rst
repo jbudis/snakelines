@@ -105,6 +105,6 @@ For example, if SnakeLines sources has been downloaded to the /usr/local/snakeli
 
    snakemake \
       --snakefile /usr/local/snakelines/snakelines.snake \
-      --configfile config_vairant_calling.yaml
+      --configfile config_variant_calling.yaml
 
 Snakemake is very flexible in workflow execution, see `detailed documentation <https://snakemake.readthedocs.io/en/stable/executable.html#all-options>`_ and `useful bash aliases for SnakeLines <./aliases.html>`_.

@@ -35,4 +35,4 @@ Assuming, that sources are downloaded in /usr/local/snakelines, `variant_calling
 
    snakemake \
       --snakefile ../../snakelines.snake \
-      --configfile config_vairant_calling.yaml
+      --configfile config_variant_calling.yaml
