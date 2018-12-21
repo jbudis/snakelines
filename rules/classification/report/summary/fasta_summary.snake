@@ -214,6 +214,7 @@ rule fasta_summary__summarize_annotations:
     params:
         contig_dir = '{indir}/annotation/sequences',
         max_query_seqs = method_config.get('max_query_seqs', None),
+        seqs_per_page = method_config['html'].get('seqs_per_page', 100),
         sort_by = method_config['html'].get('sort_by', ''),
         sort_how = method_config['html'].get('sort_how', 'asc'),
         fasta_dir = 'sequences',
@@ -274,4 +275,6 @@ rule fasta_summary__summarize_annotations:
             sort_index = list(html_attrs.columns).index(params.sort_by)
             out.write(TEMPLATE.format(attrs=html_table,
                                       seq_fasta='%s/all_contigs.fa' % params.fasta_dir,
-                                      sort_index=sort_index, sort_how=params.sort_how))
+                                      sort_index=sort_index,x
+                                      sort_how=params.sort_how,
+                                      seqs_per_page=params.seqs_per_page))
