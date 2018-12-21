@@ -72,7 +72,7 @@ Planned improvements
 
 
 Included pipelines
----------
+------------------
 
 .. toctree::
    :maxdepth: 2
