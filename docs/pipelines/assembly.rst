@@ -61,7 +61,7 @@ Planned improvements
 * Aggregate quast results of individual samples into summary report
 
 
-Also uses
+Included pipelines
 ---------
 
 .. toctree::

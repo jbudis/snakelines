@@ -80,7 +80,7 @@ Planned improvements
 * Add mapped based approach with resulting coverage tracks
 
 
-Also uses
+Included pipelines
 ---------
 
 .. toctree::

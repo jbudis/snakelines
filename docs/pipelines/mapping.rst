@@ -69,7 +69,7 @@ Planned improvements
 * Realignment postprocess step to refine alignment in indel regions
 
 
-Also uses
+Included pipelines
 ---------
 
 .. toctree::

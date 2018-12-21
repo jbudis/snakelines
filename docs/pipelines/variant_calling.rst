@@ -71,7 +71,7 @@ Planned improvements
 * Interpretation of variants
 
 
-Also uses
+Included pipelines
 ---------
 
 .. toctree::

@@ -69,7 +69,7 @@ Planned improvements
 * Aggregate quality statistics of multiple samples and processing steps with the `MultiQC <https://multiqc.info/>`_
 
 
-Also uses
+Included pipelines
 ---------
 
 .. toctree::
