@@ -27,6 +27,12 @@ Contents
    development/replace_methods
    development/documentation
 
+.. toctree::
+   :caption: Pipelines
+   :maxdepth: 2
+
+   pipelines/quality_report
+
 
 .. toctree::
    :caption: Documentation
