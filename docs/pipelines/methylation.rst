@@ -1,5 +1,5 @@
-Analyse methylation profiles
-============================
+Analyse methylation profiles (in development)
+=============================================
 
 Identify genomic regions with and without methylation.
 The pipeline expects reads with the bisulfide conversion.
@@ -49,10 +49,7 @@ How to run example:
       --snakefile ../../snakelines.snake \
       --configfile config_methylation.yaml
 
-Example configuration:
-
-.. literalinclude:: ../../example/mhv/config_methylation.yaml
-   :language: yaml
+Example configuration not ready yet.
 
 Planned improvements
 --------------------

@@ -78,7 +78,7 @@ Sequences of the ITS gene (store them as reference/unite/unite.fa) may be downlo
 
 Example configuration:
 
-.. literalinclude:: ../../example/tatry/config_metagenomics.yaml
+.. literalinclude:: ../../example/tatry/config_metagenomic.yaml
    :language: yaml
 
 Planned improvements

@@ -48,10 +48,7 @@ How to run example:
       --snakefile ../../snakelines.snake \
       --configfile config_viral_identification.yaml
 
-Example configuration:
-
-.. literalinclude:: ../../example/mhv/config_viral_identification.yaml
-   :language: yaml
+Example configuration not ready yet.
 
 Planned improvements
 --------------------

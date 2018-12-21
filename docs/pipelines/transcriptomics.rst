@@ -1,5 +1,5 @@
-Analyse gene expression
-=======================
+Analyse gene expression (in development)
+========================================
 
 Determine level of expression of individual transcripts from sequenced RNA.
 Compare expressions between samples from two conditions to identify transcripts with changed expression.
@@ -68,10 +68,7 @@ How to run example:
       --snakefile ../../snakelines.snake \
       --configfile config_transcriptomics.yaml
 
-Example configuration:
-
-.. literalinclude:: ../../example/mhv/config_transcriptomics.yaml
-   :language: yaml
+Example configuration not ready yet.
 
 Planned improvements
 --------------------
