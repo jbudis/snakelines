@@ -96,5 +96,5 @@ qiime:
                 tmp_dir: /data/tmp
             classify:
                 method: feature_classifier__classify_sklearn
-                reference: silva-16S-90
+                reference: silva-16S-90-filtered
                 tmp_dir: /data/tmp
