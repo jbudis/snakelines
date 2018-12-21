@@ -38,6 +38,7 @@ Contents
    pipelines/viral_identification
    pipelines/methylation
    pipelines/transcriptomics
+   pipelines/metagenomics
 
 .. toctree::
    :caption: Documentation
