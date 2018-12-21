@@ -35,10 +35,10 @@ Contents
    pipelines/mapping
    pipelines/assembly
    pipelines/variant_calling
-   pipelines/viral_identification
    pipelines/methylation
    pipelines/transcriptomics
    pipelines/metagenomics
+   pipelines/viral_identification
 
 .. toctree::
    :caption: Documentation
