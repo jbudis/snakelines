@@ -71,6 +71,10 @@ mapping:
                     to: expand('{report_dir}/{reference}/summary/mapping_quality.pdf', report_dir=config['report_dir'], reference=multisample_references)
             depends:
                 - mapping/mapper
+        methylation:
+                output: []
+                depends:
+                - mapping/mapper
 
 variant:
     caller:

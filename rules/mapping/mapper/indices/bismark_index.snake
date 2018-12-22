@@ -18,6 +18,8 @@ rule bismark__prepare_index:
         err = 'reference/{reference}/log/bismark.err',
     threads:
         int(config['threads'])
+    conda:
+        config['snakelines_dir'] + '/enviroments/others_env.yaml'
     shell:
         '''
         bismark_genome_preparation \

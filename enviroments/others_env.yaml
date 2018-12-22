@@ -9,6 +9,7 @@ channels:
 dependencies:
 - bandage=0.8.1
 - bedtools=2.26.0
+- bismark=0.20.0
 - blast=2.7.1
 - bowtie=1.1.2
 - bowtie2=2.3.4.3
