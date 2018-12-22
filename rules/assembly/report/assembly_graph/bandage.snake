@@ -11,8 +11,8 @@ rule bandage__visualise_contig_overlaps:
     conda:
         config['snakelines_dir'] + '/enviroments/others_env.yaml'
     shell:
-        '''
+        """
         Bandage image \
             {input.gfa} \
             {output.svg}
-        '''
+        """

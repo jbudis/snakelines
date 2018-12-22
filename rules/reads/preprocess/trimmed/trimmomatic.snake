@@ -1,5 +1,5 @@
 rule trimmomatic__trim_reads:
-    '''
+    """
     Remove low quality ends of reads and then filter reads that are too short.
     :input r1: Left side of sequenced fragments in gzipped fastq format
     :input r2: Right side of sequenced fragments in gzipped fastq format
@@ -12,7 +12,7 @@ rule trimmomatic__trim_reads:
     :params headcrop: Parameters of Trimmomatic for cutting of pre-selected number of bases from the 5` end of reads
     :params crop: Parameters of Trimmomatic for cutting of pre-selected number of bases from the 3` end of reads
     :params minlen: Parameters of Trimmomatic to remove reads that have lower length after trimming
-    '''
+    """
     input:
         r1 = 'reads/%s/{sample}_R1.fastq.gz' % method_config['input_read_type'],
         r2 = 'reads/%s/{sample}_R2.fastq.gz' % method_config['input_read_type']
@@ -22,15 +22,11 @@ rule trimmomatic__trim_reads:
     params:
         r1 = 'reads/trimmed/{sample}_R1.fastq',
         r2 = 'reads/trimmed/{sample}_R2.fastq',
-        adapter = 'ILLUMINACLIP:%s:%s:%s:%s' % (method_config['adapter']['fasta'],
-                                                method_config['adapter']['seed_mismatches'],
-                                                method_config['adapter']['palindrom_threshold'],
-                                                method_config['adapter']['clip_threshold']) \
-                   if 'adapter' in method_config else '',
-        quality = 'SLIDINGWINDOW:5:%s' % method_config['quality'] if 'quality' in method_config else '',
-        headcrop = 'HEADCROP:%s' % method_config['headcrop'] if 'headcrop' in method_config else '',
-        crop = 'CROP:%s' % method_config['crop'] if 'crop' in method_config else '',
-        minlen = 'MINLEN:%s' % method_config['minlen'] if 'minlen' in method_config else ''
+        additional = method_config.get('additional_params', ''),
+        quality = 'SLIDINGWINDOW:5:%s' % method_config.get('quality', ''),
+        headcrop = 'HEADCROP:%s' % method_config.get('headcrop', ''),
+        crop = 'CROP:%s' % method_config.get('crop', ''),
+        minlen = 'MINLEN:%s' % method_config.get('minlen', '')
     threads:
         int(config['threads'])
     log:
@@ -39,7 +35,7 @@ rule trimmomatic__trim_reads:
     conda:
         config['snakelines_dir'] + '/enviroments/others_env.yaml'
     shell:
-        '''
+        """
         trimmomatic PE \
             -threads {threads} \
             -phred33 \
@@ -47,12 +43,12 @@ rule trimmomatic__trim_reads:
             {input.r2} \
             {output.r1} /dev/null \
             {output.r2} /dev/null \
-            {params.adapter} \
+            {params.additional} \
             {params.crop} \
             {params.headcrop} \
             {params.quality} \
             {params.minlen} \
         >  {log.out} \
         2> {log.err}
-        '''
+        """
 

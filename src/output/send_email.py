@@ -1,6 +1,8 @@
+import sys
 import smtplib, socket
 import datetime
 import subprocess
+from collections import OrderedDict
 from typing import Optional, Union, List
 from email.mime.text import MIMEText
 
@@ -73,10 +75,10 @@ def send_email_smtp(receiver: Union[str, List[str]], message: str, host: str, po
     # catch errors and finalize
     except socket.error as e:
         if not quiet:
-            print("Could not connect to {host}:{port:d} - is it listening / up? ({error})".format(host=host, port=port, error=repr(e)))
+            print("Could not connect to {host}:{port:d} - is it listening / up? ({error})".format(host=host, port=port, error=repr(e)), file=sys.stderr)
     except Exception as e:
         if not quiet:
-            print("Unknown error ({error})".format(error=repr(e)))
+            print("Unknown error ({error})".format(error=repr(e)), file=sys.stderr)
     finally:
         if server is not None:
             server.quit()
@@ -118,12 +120,80 @@ def send_email_sendmail(receiver: Union[str, List[str]], message: str, subject: 
 
     # check if successful
     if p.returncode != 0 and not quiet:
-        print("Sending of email failed with error (returncode={error}, stderr={stderr}, stdout={stdout}):\n".format(error=p.returncode, stderr=stderr_str, stdout=stdout_str))
+        print("Sending of email failed with error (returncode={error}, stderr={stderr}, stdout={stdout}):\n".format(error=p.returncode, stderr=stderr_str, stdout=stdout_str), file=sys.stderr)
 
     # return returncode
     return p.returncode
 
 
+def gather_lists(lists):
+    """
+    Gather all values from list of lists into a single list.
+    :param lists: list - list of lists
+    :return: list - single list
+    """
+    ret = []
+    for lst in lists:
+        if type(lst) is not list:
+            ret.append(lst)
+        else:
+            ret.extend(lst)
+    return ret
+
+
+def send_email(config: OrderedDict, generated_files: OrderedDict, report_files: OrderedDict, success: Optional[bool] = True):
+    """
+    Send mail either with sendmail or with gmail.
+    :param config: OrderedDict - config dictionary
+    :param generated_files: OrderedDict - generated files (or files for generation in case of success == False)
+    :param report_files: OrderedDict - copied files
+    :param success: bool - this happens onsuccess (False -> onerror)
+    :return: None
+    """
+    # define
+    successful = False
+
+    # require mails to be set up
+    if 'email' in config and 'setup' in config['email']:
+
+        # construct the message template
+        message_template = "SnakeLines execution into report directory \n\t{report}\nfinished {success}.\n"
+        config_part = config['email']['onsuccess'] if success else config['email']['onerror']
+        success_string = 'successfully' if success else 'UNSUCCESSFULLY'
+
+        if config_part['send']:
+
+            # generate message
+            message = message_template.format(report=config.get('report_dir', 'None'), success=success_string)
+
+            # append generated files
+            if config_part.get('list_files', False):
+                message += 'Files:\n'
+                files = gather_lists(generated_files.values())
+                for f in files:
+                    message += '\t{}\n'.format(f)
+
+            # append copied files
+            if config_part.get('list_copied', False):
+                message += 'Files copied in:\n'
+                files = gather_lists(report_files.values())
+                for f in files:
+                    message += '\t{}\n'.format(f)
+
+            # send gmail mail?
+            if 'gmail' in config['email']['setup']:
+                assert 'login_name' in config['email']['setup']['gmail']
+                assert 'login_pass' in config['email']['setup']['gmail']
+                host = config['email']['setup']['gmail'].get('host', 'smtp.gmail.com')
+                port = config['email']['setup']['gmail'].get('port', 587)
+                successful = send_email_smtp(config['email']['setup'].get('sendto', []), message, host=host, port=port, login_name=config['email']['setup']['gmail']['login_name'],
+                                             login_pass=config['email']['setup']['gmail']['login_pass'], quiet=False)
+            # send mail through Linux's sendmail
+            else:
+                successful = send_email_sendmail(config['email']['setup'].get('sendto', []), message, quiet=False) == 0
+
+    # return True if sent
+    return successful
+
 # send_email_smtp('mkmarcelgg@gmail.com', 'test', host='smtp.gmail.com', port=587, login_name="snakelines.mailclient@gmail.com", login_pass="hesielko", quiet = False)
 # send_email_sendmail('mkmarcelgg@gmail.com', 'test', quiet = False)
-

@@ -1,26 +1,64 @@
-rule qualimap__mapping_quality_report_accross_reference
+Qualimap - Mapping Quality Report Accross Reference
 -------------------------------------------------------
-located in: '<SnakeLines_dir>/rules/mapping/report/quality_report/qualimap.snake'
 
 Generate summary statistics for mapped reads stored in BAM files. Statistics are calculated across
 whole reference genome.
 
-Input(s):
+**Location**
 
-rule qualimap__mapping_quality_report_accross_panel
+- *Filepath:* <SnakeLines_dir>/rules/mapping/report/quality_report/qualimap.snake
+- *Rule name:* qualimap__mapping_quality_report_accross_reference
+
+**Input(s):**
+
+- *bam:* Mapped reads in bam format
+- *bai:* Index to mapped reads for enable fast read retrieval from desired genomic region
+
+**Output(s):**
+
+- *html:* Quality report of mapped reads in HTML format
+- *pdf:* Quality report of mapped reads in PDF format
+- *text:* Quality report of mapped reads in format suitable for automated processing
+
+Qualimap - Mapping Quality Report Accross Panel
 ---------------------------------------------------
-located in: '<SnakeLines_dir>/rules/mapping/report/quality_report/qualimap.snake'
 
 Generate summary statistics for mapped reads stored in BAM files. Statistics are calculated across
 genomic regions specified in the BED file.
 
-Input(s):
+**Location**
 
-rule qualimap__summarize_quality_reports
+- *Filepath:* <SnakeLines_dir>/rules/mapping/report/quality_report/qualimap.snake
+- *Rule name:* qualimap__mapping_quality_report_accross_panel
+
+**Input(s):**
+
+- *bam:* Mapped reads in bam format
+- *bai:* Index to mapped reads for enable fast read retrieval from desired genomic region
+- *bed:* Genomic regions of interest in bed format
+
+**Output(s):**
+
+- *html:* Quality report of mapped reads in HTML format
+- *pdf:* Quality report of mapped reads in PDF format
+- *text:* Quality report of mapped reads in format suitable for automated processing
+
+Qualimap - Summarize Quality Reports
 ----------------------------------------
-located in: '<SnakeLines_dir>/rules/mapping/report/quality_report/qualimap.snake'
 
 Aggregate results from individual bamqc results to a single summary report
 
-Input(s):
+**Location**
+
+- *Filepath:* <SnakeLines_dir>/rules/mapping/report/quality_report/qualimap.snake
+- *Rule name:* qualimap__summarize_quality_reports
+
+**Input(s):**
+
+- *reports:* List of pdf qualimap reports to aggregate
+
+**Output(s):**
+
+- *html:* Aggregated quality report of mapped reads in HTML format
+- *pdf:* Aggregated quality report of mapped reads in PDF format
 

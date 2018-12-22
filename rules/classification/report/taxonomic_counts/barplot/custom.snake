@@ -14,11 +14,12 @@ tax_ranks = ['kingdom', 'phylum', 'class', 'order', 'family',
              'genus', 'species', 'subspecies', 'subsubspecies', 'variety', 'form']
 
 rule custom__visualise_taxonomic_counts_as_barplot:
-    '''
+    """
     Generate barplot with proportions of reads per taxonomic unit. Several taxonomic levels,
     such as genus, species... may be generated.
-    :input tax_level:
-    '''
+    :input tax_level: tax_levels
+    :output barplot: barplots
+    """
     input:
         tax_level = '{analysis_dir}/{gene}/report/tsv/{tax_level}.{count_type}.tsv'
     output:

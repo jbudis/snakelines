@@ -30,7 +30,7 @@ rule bowtie2__map_reads_to_reference:
     conda:
         config['snakelines_dir'] + '/enviroments/others_env.yaml'
     shell:
-        '''
+        """
         bowtie2 \
             -x {params.index} \
             -1 {input.r1} \
@@ -41,4 +41,4 @@ rule bowtie2__map_reads_to_reference:
         2> {log.err} \
         | samtools view -bS - \
         > {output.bam}
-        '''
+        """

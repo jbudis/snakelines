@@ -1,8 +1,19 @@
-rule samtools__sort_mapped_reads
+Samtools - Sort Mapped Reads
 --------------------------------
-located in: '<SnakeLines_dir>/rules/mapping/postprocess/sorted/samtools.snake'
 
 Sort aligned reads according to mapped position on reference genome.
 
-Input(s):
+**Location**
+
+- *Filepath:* <SnakeLines_dir>/rules/mapping/postprocess/sorted/samtools.snake
+- *Rule name:* samtools__sort_mapped_reads
+
+**Input(s):**
+
+- *ref:* Reference genomic sequences in fasta format
+- *bam:* Unordered mapped reads in bam format
+
+**Output(s):**
+
+- *bam:* Ordered mapped reads according to their location on reference genome
 
