@@ -1,0 +1,234 @@
+chromosome_3	PomBase	gene	17	2504	.	+	.	ID=gene:SPCC553.09c;Name=spb70;biotype=protein_coding;description=DNA polymerase alpha B-subunit [Source:PomBase%3BAcc:SPCC553.09c];gene_id=SPCC553.09c;logic_name=pombase;version=1
+chromosome_3	PomBase	gene	2520	6030	.	+	.	ID=gene:SPCC553.08c;Name=ria1;biotype=protein_coding;description=GTPase Ria1 (predicted) [Source:PomBase%3BAcc:SPCC553.08c];gene_id=SPCC553.08c;logic_name=pombase;version=1
+chromosome_3	PomBase	ncRNA_gene	2792	6100	.	-	.	ID=gene:SPNCRNA.1126;Name=SPCC553.08c-antisense-1;biotype=ncRNA;description=antisense RNA (predicted) [Source:PomBase%3BAcc:SPNCRNA.1126];gene_id=SPNCRNA.1126;logic_name=pombase;version=1
+chromosome_3	PomBase	gene	6173	8047	.	+	.	ID=gene:SPCC553.07c;Name=kpa1;biotype=protein_coding;description=DinB translesion DNA repair polymerase%2C pol kappa [Source:PomBase%3BAcc:SPCC553.07c];gene_id=SPCC553.07c;logic_name=pombase;version=1
+chromosome_3	PomBase	ncRNA_gene	7275	8095	.	-	.	ID=gene:SPNCRNA.1127;Name=kpa1-antisense-1;biotype=ncRNA;description=antisense RNA (predicted)%2C possible alternative UTR [Source:PomBase%3BAcc:SPNCRNA.1127];gene_id=SPNCRNA.1127;logic_name=pombase;version=1
+chromosome_3	PomBase	gene	8029	9431	.	-	.	ID=gene:SPCC553.06;Name=swp1;biotype=protein_coding;description=oligosaccharyltransferase delta subunit Swp1 (predicted) [Source:PomBase%3BAcc:SPCC553.06];gene_id=SPCC553.06;logic_name=pombase;version=1
+chromosome_3	PomBase	gene	9400	11312	.	-	.	ID=gene:SPCC553.05c;Name=wtf6;biotype=protein_coding;description=wtf element Wtf6 [Source:PomBase%3BAcc:SPCC553.05c];gene_id=SPCC553.05c;logic_name=pombase;version=1
+chromosome_3	PomBase	ncRNA_gene	11936	12750	.	+	.	ID=gene:SPNCRNA.1128;Name=SPNCRNA.1128;biotype=ncRNA;description=intergenic RNA (predicted) [Source:PomBase%3BAcc:SPNCRNA.1128];gene_id=SPNCRNA.1128;logic_name=pombase;version=1
+chromosome_3	PomBase	gene	12814	15180	.	-	.	ID=gene:SPCC553.04;Name=cyp9;biotype=protein_coding;description=WD repeat containing cyclophilin family peptidyl-prolyl cis-trans isomerase Cyp9 (predicted) [Source:PomBase%3BAcc:SPCC553.04];gene_id=SPCC553.04;logic_name=pombase;version=1
+chromosome_3	PomBase	gene	15114	18277	.	-	.	ID=gene:SPCC553.03;Name=pex1;biotype=protein_coding;description=AAA family ATPase Pex1 (predicted) [Source:PomBase%3BAcc:SPCC553.03];gene_id=SPCC553.03;logic_name=pombase;version=1
+chromosome_3	PomBase	gene	18418	21600	.	-	.	ID=gene:SPCC553.02;Name=qns1;biotype=protein_coding;description=glutamine-dependent NAD(+) synthetase Qns1 (predicted) [Source:PomBase%3BAcc:SPCC553.02];gene_id=SPCC553.02;logic_name=pombase;version=1
+chromosome_3	PomBase	ncRNA_gene	21797	22945	.	+	.	ID=gene:SPNCRNA.1129;Name=SPNCRNA.1129;biotype=ncRNA;description=intergenic RNA (predicted) [Source:PomBase%3BAcc:SPNCRNA.1129];gene_id=SPNCRNA.1129;logic_name=pombase;version=1
+chromosome_3	PomBase	gene	22958	25695	.	+	.	ID=gene:SPCC553.01c;Name=dbl2;biotype=protein_coding;description=meiotic chromosome segregation protein Dbl2 [Source:PomBase%3BAcc:SPCC553.01c];gene_id=SPCC553.01c;logic_name=pombase;version=1
+chromosome_3	PomBase	gene	25835	27026	.	+	.	ID=gene:SPCC736.02;Name=SPCC736.02;biotype=protein_coding;description=Schizosaccharomyces specific protein [Source:PomBase%3BAcc:SPCC736.02];gene_id=SPCC736.02;logic_name=pombase;version=1
+chromosome_3	PomBase	gene	26877	28661	.	-	.	ID=gene:SPCC736.03c;Name=msf1;biotype=protein_coding;description=mitochondrial phenylalanyl-tRNA synthetase Msf1 (predicted) [Source:PomBase%3BAcc:SPCC736.03c];gene_id=SPCC736.03c;logic_name=pombase;version=1
+chromosome_3	PomBase	gene	28627	31584	.	-	.	ID=gene:SPCC736.04c;Name=gma12;biotype=protein_coding;description=alpha-1%2C2-galactosyltransferase Gma12 [Source:PomBase%3BAcc:SPCC736.04c];gene_id=SPCC736.04c;logic_name=pombase;version=1
+chromosome_3	PomBase	ncRNA_gene	32010	32676	.	-	.	ID=gene:SPNCRNA.1130;Name=SPNCRNA.1130;biotype=ncRNA;description=intergenic RNA (predicted) [Source:PomBase%3BAcc:SPNCRNA.1130];gene_id=SPNCRNA.1130;logic_name=pombase;version=1
+chromosome_3	PomBase	gene	33194	35203	.	+	.	ID=gene:SPCC736.05;Name=wtf7;biotype=protein_coding;description=wtf element Wtf7 [Source:PomBase%3BAcc:SPCC736.05];gene_id=SPCC736.05;logic_name=pombase;version=1
+chromosome_3	PomBase	ncRNA_gene	35230	35511	.	+	.	ID=gene:SPNCRNA.462;Name=SPNCRNA.462;biotype=ncRNA;description=non-coding RNA (predicted) [Source:PomBase%3BAcc:SPNCRNA.462];gene_id=SPNCRNA.462;logic_name=pombase;version=1
+chromosome_3	PomBase	gene	35306	39567	.	+	.	ID=gene:SPCC736.06;Name=dar2;biotype=protein_coding;description=mitochondrial aspartate-tRNA ligase Dar2 (predicted) [Source:PomBase%3BAcc:SPCC736.06];gene_id=SPCC736.06;logic_name=pombase;version=1
+chromosome_3	PomBase	gene	37631	40176	.	-	.	ID=gene:SPCC736.07c;Name=uri1;biotype=protein_coding;description=unconventional prefoldin chaperone involved protein complex assembly Uri1 (predicted) [Source:PomBase%3BAcc:SPCC736.07c];gene_id=SPCC736.07c;logic_name=pombase;version=1
+chromosome_3	PomBase	gene	40124	43532	.	+	.	ID=gene:SPCC736.08;Name=cbf11;biotype=protein_coding;description=CBF1/Su(H)/LAG-1 family transcription factor Cbf11 [Source:PomBase%3BAcc:SPCC736.08];gene_id=SPCC736.08;logic_name=pombase;version=1
+chromosome_3	PomBase	gene	42370	43457	.	-	.	ID=gene:SPCC736.09c;Name=tfx1;biotype=protein_coding;description=TRAX [Source:PomBase%3BAcc:SPCC736.09c];gene_id=SPCC736.09c;logic_name=pombase;version=1
+chromosome_3	PomBase	tRNA_gene	44028	44100	.	-	.	ID=gene:SPCTRNAPHE.04;Name=SPCTRNAPHE.04;biotype=tRNA;description=tRNA Phenylalanine [Source:PomBase%3BAcc:SPCTRNAPHE.04];gene_id=SPCTRNAPHE.04;logic_name=pombase;version=1
+chromosome_3	PomBase	gene	44280	45451	.	-	.	ID=gene:SPCC736.10c;Name=mrps8;biotype=protein_coding;description=mitochondrial ribosomal protein subunit S8 (predicted) [Source:PomBase%3BAcc:SPCC736.10c];gene_id=SPCC736.10c;logic_name=pombase;version=1
+chromosome_3	PomBase	ncRNA_gene	44808	45346	.	+	.	ID=gene:SPNCRNA.1131;Name=mrps8-antisense-1;biotype=ncRNA;description=antisense RNA (predicted) [Source:PomBase%3BAcc:SPNCRNA.1131];gene_id=SPNCRNA.1131;logic_name=pombase;version=1
+chromosome_3	PomBase	ncRNA_gene	45601	45705	.	+	.	ID=gene:SPNCRNA.463;Name=SPNCRNA.463;biotype=ncRNA;description=non-coding RNA (predicted) [Source:PomBase%3BAcc:SPNCRNA.463];gene_id=SPNCRNA.463;logic_name=pombase;version=1
+chromosome_3	PomBase	ncRNA_gene	46303	46424	.	+	.	ID=gene:SPNCRNA.464;Name=SPNCRNA.464;biotype=ncRNA;description=non-coding RNA (predicted) [Source:PomBase%3BAcc:SPNCRNA.464];gene_id=SPNCRNA.464;logic_name=pombase;version=1
+chromosome_3	PomBase	gene	46903	49870	.	+	.	ID=gene:SPCC736.11;Name=ago1;biotype=protein_coding;description=argonaute [Source:PomBase%3BAcc:SPCC736.11];gene_id=SPCC736.11;logic_name=pombase;version=1
+chromosome_3	PomBase	gene	49888	52950	.	-	.	ID=gene:SPCC736.12c;Name=mmi1;biotype=protein_coding;description=YTH family RNA binding protein Mmi1 [Source:PomBase%3BAcc:SPCC736.12c];gene_id=SPCC736.12c;logic_name=pombase;version=1
+chromosome_3	PomBase	gene	53448	54896	.	-	.	ID=gene:SPCC736.13;Name=SPCC736.13;biotype=protein_coding;description=short chain dehydrogenase (predicted) [Source:PomBase%3BAcc:SPCC736.13];gene_id=SPCC736.13;logic_name=pombase;version=1
+chromosome_3	PomBase	gene	54951	59042	.	+	.	ID=gene:SPCC736.14;Name=dis1;biotype=protein_coding;description=TOG/XMAP14 microtubule-associated protein Dis1 [Source:PomBase%3BAcc:SPCC736.14];gene_id=SPCC736.14;logic_name=pombase;version=1
+chromosome_3	PomBase	ncRNA_gene	55760	59545	.	-	.	ID=gene:SPNCRNA.1132;Name=dis1-antisense-1;biotype=ncRNA;description=antisense RNA (predicted) [Source:PomBase%3BAcc:SPNCRNA.1132];gene_id=SPNCRNA.1132;logic_name=pombase;version=1
+chromosome_3	PomBase	ncRNA_gene	55879	59251	.	-	.	ID=gene:SPNCRNA.578;Name=dis1-antisense-2;biotype=ncRNA;description=antisense RNA (predicted) [Source:PomBase%3BAcc:SPNCRNA.578];gene_id=SPNCRNA.578;logic_name=pombase;version=1
+chromosome_3	PomBase	transcript	17	2504	.	+	.	ID=transcript:SPCC553.09c.1;Name=spb70;Parent=gene:SPCC553.09c;biotype=protein_coding;transcript_id=SPCC553.09c.1;version=1
+chromosome_3	PomBase	transcript	2520	6030	.	+	.	ID=transcript:SPCC553.08c.1;Name=ria1;Parent=gene:SPCC553.08c;biotype=protein_coding;transcript_id=SPCC553.08c.1;version=1
+chromosome_3	PomBase	transcript	2792	6100	.	-	.	ID=transcript:SPNCRNA.1126.1;Name=SPCC553.08c-antisense-1;Parent=gene:SPNCRNA.1126;biotype=ncRNA;transcript_id=SPNCRNA.1126.1;version=1
+chromosome_3	PomBase	transcript	6173	8047	.	+	.	ID=transcript:SPCC553.07c.1;Name=kpa1;Parent=gene:SPCC553.07c;biotype=protein_coding;transcript_id=SPCC553.07c.1;version=1
+chromosome_3	PomBase	transcript	7275	8095	.	-	.	ID=transcript:SPNCRNA.1127.1;Name=kpa1-antisense-1;Parent=gene:SPNCRNA.1127;biotype=ncRNA;transcript_id=SPNCRNA.1127.1;version=1
+chromosome_3	PomBase	transcript	8029	9431	.	-	.	ID=transcript:SPCC553.06.1;Name=swp1;Parent=gene:SPCC553.06;biotype=protein_coding;transcript_id=SPCC553.06.1;version=1
+chromosome_3	PomBase	transcript	9400	11312	.	-	.	ID=transcript:SPCC553.05c.1;Name=wtf6;Parent=gene:SPCC553.05c;biotype=protein_coding;transcript_id=SPCC553.05c.1;version=1
+chromosome_3	PomBase	transcript	11936	12750	.	+	.	ID=transcript:SPNCRNA.1128.1;Name=SPNCRNA.1128.1;Parent=gene:SPNCRNA.1128;biotype=ncRNA;transcript_id=SPNCRNA.1128.1;version=1
+chromosome_3	PomBase	transcript	12814	15180	.	-	.	ID=transcript:SPCC553.04.1;Name=cyp9;Parent=gene:SPCC553.04;biotype=protein_coding;transcript_id=SPCC553.04.1;version=1
+chromosome_3	PomBase	transcript	15114	18277	.	-	.	ID=transcript:SPCC553.03.1;Name=pex1;Parent=gene:SPCC553.03;biotype=protein_coding;transcript_id=SPCC553.03.1;version=1
+chromosome_3	PomBase	transcript	18418	21600	.	-	.	ID=transcript:SPCC553.02.1;Name=qns1;Parent=gene:SPCC553.02;biotype=protein_coding;transcript_id=SPCC553.02.1;version=1
+chromosome_3	PomBase	transcript	21797	22945	.	+	.	ID=transcript:SPNCRNA.1129.1;Name=SPNCRNA.1129.1;Parent=gene:SPNCRNA.1129;biotype=ncRNA;transcript_id=SPNCRNA.1129.1;version=1
+chromosome_3	PomBase	transcript	22958	25695	.	+	.	ID=transcript:SPCC553.01c.1;Name=dbl2;Parent=gene:SPCC553.01c;biotype=protein_coding;transcript_id=SPCC553.01c.1;version=1
+chromosome_3	PomBase	transcript	25835	27026	.	+	.	ID=transcript:SPCC736.02.1;Name=SPCC736.02.1;Parent=gene:SPCC736.02;biotype=protein_coding;transcript_id=SPCC736.02.1;version=1
+chromosome_3	PomBase	transcript	26877	28661	.	-	.	ID=transcript:SPCC736.03c.1;Name=msf1;Parent=gene:SPCC736.03c;biotype=protein_coding;transcript_id=SPCC736.03c.1;version=1
+chromosome_3	PomBase	transcript	28627	31584	.	-	.	ID=transcript:SPCC736.04c.1;Name=gma12;Parent=gene:SPCC736.04c;biotype=protein_coding;transcript_id=SPCC736.04c.1;version=1
+chromosome_3	PomBase	transcript	32010	32676	.	-	.	ID=transcript:SPNCRNA.1130.1;Name=SPNCRNA.1130.1;Parent=gene:SPNCRNA.1130;biotype=ncRNA;transcript_id=SPNCRNA.1130.1;version=1
+chromosome_3	PomBase	transcript	33194	35203	.	+	.	ID=transcript:SPCC736.05.1;Name=wtf7;Parent=gene:SPCC736.05;biotype=protein_coding;transcript_id=SPCC736.05.1;version=1
+chromosome_3	PomBase	transcript	35230	35511	.	+	.	ID=transcript:SPNCRNA.462.1;Name=SPNCRNA.462.1;Parent=gene:SPNCRNA.462;biotype=ncRNA;transcript_id=SPNCRNA.462.1;version=1
+chromosome_3	PomBase	transcript	35306	39567	.	+	.	ID=transcript:SPCC736.06.1;Name=dar2;Parent=gene:SPCC736.06;biotype=protein_coding;transcript_id=SPCC736.06.1;version=1
+chromosome_3	PomBase	transcript	37631	40176	.	-	.	ID=transcript:SPCC736.07c.1;Name=uri1;Parent=gene:SPCC736.07c;biotype=protein_coding;transcript_id=SPCC736.07c.1;version=1
+chromosome_3	PomBase	transcript	40124	43532	.	+	.	ID=transcript:SPCC736.08.1;Name=cbf11;Parent=gene:SPCC736.08;biotype=protein_coding;transcript_id=SPCC736.08.1;version=1
+chromosome_3	PomBase	transcript	42370	43457	.	-	.	ID=transcript:SPCC736.09c.1;Name=tfx1;Parent=gene:SPCC736.09c;biotype=protein_coding;transcript_id=SPCC736.09c.1;version=1
+chromosome_3	PomBase	transcript	44028	44100	.	-	.	ID=transcript:SPCTRNAPHE.04.1;Name=SPCTRNAPHE.04.1;Parent=gene:SPCTRNAPHE.04;biotype=tRNA;transcript_id=SPCTRNAPHE.04.1;version=1
+chromosome_3	PomBase	transcript	44280	45451	.	-	.	ID=transcript:SPCC736.10c.1;Name=mrps8;Parent=gene:SPCC736.10c;biotype=protein_coding;transcript_id=SPCC736.10c.1;version=1
+chromosome_3	PomBase	transcript	44808	45346	.	+	.	ID=transcript:SPNCRNA.1131.1;Name=mrps8-antisense-1;Parent=gene:SPNCRNA.1131;biotype=ncRNA;transcript_id=SPNCRNA.1131.1;version=1
+chromosome_3	PomBase	transcript	45601	45705	.	+	.	ID=transcript:SPNCRNA.463.1;Name=SPNCRNA.463.1;Parent=gene:SPNCRNA.463;biotype=ncRNA;transcript_id=SPNCRNA.463.1;version=1
+chromosome_3	PomBase	transcript	46303	46424	.	+	.	ID=transcript:SPNCRNA.464.1;Name=SPNCRNA.464.1;Parent=gene:SPNCRNA.464;biotype=ncRNA;transcript_id=SPNCRNA.464.1;version=1
+chromosome_3	PomBase	transcript	46903	49870	.	+	.	ID=transcript:SPCC736.11.1;Name=ago1;Parent=gene:SPCC736.11;biotype=protein_coding;transcript_id=SPCC736.11.1;version=1
+chromosome_3	PomBase	transcript	49888	52950	.	-	.	ID=transcript:SPCC736.12c.1;Name=mmi1;Parent=gene:SPCC736.12c;biotype=protein_coding;transcript_id=SPCC736.12c.1;version=1
+chromosome_3	PomBase	transcript	53448	54896	.	-	.	ID=transcript:SPCC736.13.1;Name=SPCC736.13.1;Parent=gene:SPCC736.13;biotype=protein_coding;transcript_id=SPCC736.13.1;version=1
+chromosome_3	PomBase	transcript	54951	59042	.	+	.	ID=transcript:SPCC736.14.1;Name=dis1;Parent=gene:SPCC736.14;biotype=protein_coding;transcript_id=SPCC736.14.1;version=1
+chromosome_3	PomBase	transcript	55760	59545	.	-	.	ID=transcript:SPNCRNA.1132.1;Name=dis1-antisense-1;Parent=gene:SPNCRNA.1132;biotype=ncRNA;transcript_id=SPNCRNA.1132.1;version=1
+chromosome_3	PomBase	transcript	55879	59251	.	-	.	ID=transcript:SPNCRNA.578.1;Name=dis1-antisense-2;Parent=gene:SPNCRNA.578;biotype=ncRNA;transcript_id=SPNCRNA.578.1;version=1
+chromosome_3	ensembl	exon	17	705	.	+	.	Name=SPCC553.09c.1:exon:1;Parent=transcript:SPCC553.09c.1;constitutive=1;ensembl_end_phase=2;ensembl_phase=0;exon_id=SPCC553.09c.1:exon:1;rank=1;version=1
+chromosome_3	ensembl	exon	747	1725	.	+	.	Name=SPCC553.09c.1:exon:2;Parent=transcript:SPCC553.09c.1;constitutive=1;ensembl_end_phase=0;ensembl_phase=2;exon_id=SPCC553.09c.1:exon:2;rank=2;version=1
+chromosome_3	ensembl	exon	1768	2076	.	+	.	Name=SPCC553.09c.1:exon:3;Parent=transcript:SPCC553.09c.1;constitutive=1;ensembl_end_phase=0;ensembl_phase=0;exon_id=SPCC553.09c.1:exon:3;rank=3;version=1
+chromosome_3	ensembl	exon	2116	2504	.	+	.	Name=SPCC553.09c.1:exon:4;Parent=transcript:SPCC553.09c.1;constitutive=1;ensembl_end_phase=0;ensembl_phase=0;exon_id=SPCC553.09c.1:exon:4;rank=4;version=1
+chromosome_3	ensembl	exon	2520	2807	.	+	.	Name=SPCC553.08c.1:exon:1;Parent=transcript:SPCC553.08c.1;constitutive=1;ensembl_end_phase=0;ensembl_phase=0;exon_id=SPCC553.08c.1:exon:1;rank=1;version=1
+chromosome_3	ensembl	exon	2863	5015	.	+	.	Name=SPCC553.08c.1:exon:2;Parent=transcript:SPCC553.08c.1;constitutive=1;ensembl_end_phase=2;ensembl_phase=0;exon_id=SPCC553.08c.1:exon:2;rank=2;version=1
+chromosome_3	ensembl	exon	5061	6030	.	+	.	Name=SPCC553.08c.1:exon:3;Parent=transcript:SPCC553.08c.1;constitutive=1;ensembl_end_phase=2;ensembl_phase=2;exon_id=SPCC553.08c.1:exon:3;rank=3;version=1
+chromosome_3	ensembl	exon	2792	6100	.	-	.	Name=SPNCRNA.1126.1:exon:1;Parent=transcript:SPNCRNA.1126.1;constitutive=1;ensembl_end_phase=0;ensembl_phase=0;exon_id=SPNCRNA.1126.1:exon:1;rank=1;version=1
+chromosome_3	ensembl	exon	6173	6736	.	+	.	Name=SPCC553.07c.1:exon:1;Parent=transcript:SPCC553.07c.1;constitutive=1;ensembl_end_phase=1;ensembl_phase=0;exon_id=SPCC553.07c.1:exon:1;rank=1;version=1
+chromosome_3	ensembl	exon	6776	7215	.	+	.	Name=SPCC553.07c.1:exon:2;Parent=transcript:SPCC553.07c.1;constitutive=1;ensembl_end_phase=0;ensembl_phase=1;exon_id=SPCC553.07c.1:exon:2;rank=2;version=1
+chromosome_3	ensembl	exon	7262	7774	.	+	.	Name=SPCC553.07c.1:exon:3;Parent=transcript:SPCC553.07c.1;constitutive=1;ensembl_end_phase=0;ensembl_phase=0;exon_id=SPCC553.07c.1:exon:3;rank=3;version=1
+chromosome_3	ensembl	exon	7821	8047	.	+	.	Name=SPCC553.07c.1:exon:4;Parent=transcript:SPCC553.07c.1;constitutive=1;ensembl_end_phase=0;ensembl_phase=0;exon_id=SPCC553.07c.1:exon:4;rank=4;version=1
+chromosome_3	ensembl	exon	7275	8095	.	-	.	Name=SPNCRNA.1127.1:exon:1;Parent=transcript:SPNCRNA.1127.1;constitutive=1;ensembl_end_phase=2;ensembl_phase=0;exon_id=SPNCRNA.1127.1:exon:1;rank=1;version=1
+chromosome_3	ensembl	exon	9157	9431	.	-	.	Name=SPCC553.06.1:exon:1;Parent=transcript:SPCC553.06.1;constitutive=1;ensembl_end_phase=2;ensembl_phase=0;exon_id=SPCC553.06.1:exon:1;rank=1;version=1
+chromosome_3	ensembl	exon	8868	9066	.	-	.	Name=SPCC553.06.1:exon:2;Parent=transcript:SPCC553.06.1;constitutive=1;ensembl_end_phase=0;ensembl_phase=2;exon_id=SPCC553.06.1:exon:2;rank=2;version=1
+chromosome_3	ensembl	exon	8029	8767	.	-	.	Name=SPCC553.06.1:exon:3;Parent=transcript:SPCC553.06.1;constitutive=1;ensembl_end_phase=0;ensembl_phase=0;exon_id=SPCC553.06.1:exon:3;rank=3;version=1
+chromosome_3	ensembl	exon	10919	11312	.	-	.	Name=SPCC553.05c.1:exon:1;Parent=transcript:SPCC553.05c.1;constitutive=1;ensembl_end_phase=1;ensembl_phase=0;exon_id=SPCC553.05c.1:exon:1;rank=1;version=1
+chromosome_3	ensembl	exon	10505	10750	.	-	.	Name=SPCC553.05c.1:exon:2;Parent=transcript:SPCC553.05c.1;constitutive=1;ensembl_end_phase=1;ensembl_phase=1;exon_id=SPCC553.05c.1:exon:2;rank=2;version=1
+chromosome_3	ensembl	exon	10149	10455	.	-	.	Name=SPCC553.05c.1:exon:3;Parent=transcript:SPCC553.05c.1;constitutive=1;ensembl_end_phase=1;ensembl_phase=1;exon_id=SPCC553.05c.1:exon:3;rank=3;version=1
+chromosome_3	ensembl	exon	10066	10107	.	-	.	Name=SPCC553.05c.1:three_prime_UTR:2;Parent=transcript:SPCC553.05c.1;constitutive=1;ensembl_end_phase=0;ensembl_phase=0;exon_id=SPCC553.05c.1:three_prime_UTR:2;rank=4;version=1
+chromosome_3	ensembl	exon	9400	10016	.	-	.	Name=SPCC553.05c.1:three_prime_UTR:3;Parent=transcript:SPCC553.05c.1;constitutive=1;ensembl_end_phase=2;ensembl_phase=0;exon_id=SPCC553.05c.1:three_prime_UTR:3;rank=5;version=1
+chromosome_3	ensembl	exon	11936	12750	.	+	.	Name=SPNCRNA.1128.1:exon:1;Parent=transcript:SPNCRNA.1128.1;constitutive=1;ensembl_end_phase=2;ensembl_phase=0;exon_id=SPNCRNA.1128.1:exon:1;rank=1;version=1
+chromosome_3	ensembl	exon	14958	15180	.	-	.	Name=SPCC553.04.1:exon:1;Parent=transcript:SPCC553.04.1;constitutive=1;ensembl_end_phase=1;ensembl_phase=0;exon_id=SPCC553.04.1:exon:1;rank=1;version=1
+chromosome_3	ensembl	exon	12814	14902	.	-	.	Name=SPCC553.04.1:exon:2;Parent=transcript:SPCC553.04.1;constitutive=1;ensembl_end_phase=1;ensembl_phase=1;exon_id=SPCC553.04.1:exon:2;rank=2;version=1
+chromosome_3	ensembl	exon	17780	18277	.	-	.	Name=SPCC553.03.1:exon:1;Parent=transcript:SPCC553.03.1;constitutive=1;ensembl_end_phase=0;ensembl_phase=0;exon_id=SPCC553.03.1:exon:1;rank=1;version=1
+chromosome_3	ensembl	exon	15114	17734	.	-	.	Name=SPCC553.03.1:exon:2;Parent=transcript:SPCC553.03.1;constitutive=1;ensembl_end_phase=0;ensembl_phase=0;exon_id=SPCC553.03.1:exon:2;rank=2;version=1
+chromosome_3	ensembl	exon	21253	21600	.	-	.	Name=SPCC553.02.1:exon:1;Parent=transcript:SPCC553.02.1;constitutive=1;ensembl_end_phase=2;ensembl_phase=0;exon_id=SPCC553.02.1:exon:1;rank=1;version=1
+chromosome_3	ensembl	exon	21092	21208	.	-	.	Name=SPCC553.02.1:exon:2;Parent=transcript:SPCC553.02.1;constitutive=1;ensembl_end_phase=2;ensembl_phase=2;exon_id=SPCC553.02.1:exon:2;rank=2;version=1
+chromosome_3	ensembl	exon	19882	20891	.	-	.	Name=SPCC553.02.1:exon:3;Parent=transcript:SPCC553.02.1;constitutive=1;ensembl_end_phase=1;ensembl_phase=2;exon_id=SPCC553.02.1:exon:3;rank=3;version=1
+chromosome_3	ensembl	exon	19424	19835	.	-	.	Name=SPCC553.02.1:exon:4;Parent=transcript:SPCC553.02.1;constitutive=1;ensembl_end_phase=2;ensembl_phase=1;exon_id=SPCC553.02.1:exon:4;rank=4;version=1
+chromosome_3	ensembl	exon	19047	19374	.	-	.	Name=SPCC553.02.1:exon:5;Parent=transcript:SPCC553.02.1;constitutive=1;ensembl_end_phase=0;ensembl_phase=2;exon_id=SPCC553.02.1:exon:5;rank=5;version=1
+chromosome_3	ensembl	exon	18418	18994	.	-	.	Name=SPCC553.02.1:exon:6;Parent=transcript:SPCC553.02.1;constitutive=1;ensembl_end_phase=0;ensembl_phase=0;exon_id=SPCC553.02.1:exon:6;rank=6;version=1
+chromosome_3	ensembl	exon	21797	22945	.	+	.	Name=SPNCRNA.1129.1:exon:1;Parent=transcript:SPNCRNA.1129.1;constitutive=1;ensembl_end_phase=0;ensembl_phase=0;exon_id=SPNCRNA.1129.1:exon:1;rank=1;version=1
+chromosome_3	ensembl	exon	22958	25695	.	+	.	Name=SPCC553.01c.1:exon:1;Parent=transcript:SPCC553.01c.1;constitutive=1;ensembl_end_phase=2;ensembl_phase=0;exon_id=SPCC553.01c.1:exon:1;rank=1;version=1
+chromosome_3	ensembl	exon	25835	27026	.	+	.	Name=SPCC736.02.1:exon:1;Parent=transcript:SPCC736.02.1;constitutive=1;ensembl_end_phase=0;ensembl_phase=0;exon_id=SPCC736.02.1:exon:1;rank=1;version=1
+chromosome_3	ensembl	exon	26877	28661	.	-	.	Name=SPCC736.03c.1:exon:1;Parent=transcript:SPCC736.03c.1;constitutive=1;ensembl_end_phase=2;ensembl_phase=0;exon_id=SPCC736.03c.1:exon:1;rank=1;version=1
+chromosome_3	ensembl	exon	28627	31584	.	-	.	Name=SPCC736.04c.1:exon:1;Parent=transcript:SPCC736.04c.1;constitutive=1;ensembl_end_phase=1;ensembl_phase=0;exon_id=SPCC736.04c.1:exon:1;rank=1;version=1
+chromosome_3	ensembl	exon	32010	32676	.	-	.	Name=SPNCRNA.1130.1:exon:1;Parent=transcript:SPNCRNA.1130.1;constitutive=1;ensembl_end_phase=1;ensembl_phase=0;exon_id=SPNCRNA.1130.1:exon:1;rank=1;version=1
+chromosome_3	ensembl	exon	33194	33555	.	+	.	Name=SPCC736.05.1:exon:1;Parent=transcript:SPCC736.05.1;constitutive=1;ensembl_end_phase=1;ensembl_phase=0;exon_id=SPCC736.05.1:exon:1;rank=1;version=1
+chromosome_3	ensembl	exon	33764	34135	.	+	.	Name=SPCC736.05.1:exon:2;Parent=transcript:SPCC736.05.1;constitutive=1;ensembl_end_phase=1;ensembl_phase=1;exon_id=SPCC736.05.1:exon:2;rank=2;version=1
+chromosome_3	ensembl	exon	34187	35203	.	+	.	Name=SPCC736.05.1:exon:3;Parent=transcript:SPCC736.05.1;constitutive=1;ensembl_end_phase=1;ensembl_phase=1;exon_id=SPCC736.05.1:exon:3;rank=3;version=1
+chromosome_3	ensembl	exon	35230	35511	.	+	.	Name=SPNCRNA.462.1:exon:1;Parent=transcript:SPNCRNA.462.1;constitutive=1;ensembl_end_phase=0;ensembl_phase=0;exon_id=SPNCRNA.462.1:exon:1;rank=1;version=1
+chromosome_3	ensembl	exon	35306	39567	.	+	.	Name=SPCC736.06.1:exon:1;Parent=transcript:SPCC736.06.1;constitutive=1;ensembl_end_phase=1;ensembl_phase=0;exon_id=SPCC736.06.1:exon:1;rank=1;version=1
+chromosome_3	ensembl	exon	39747	40176	.	-	.	Name=SPCC736.07c.1:exon:1;Parent=transcript:SPCC736.07c.1;constitutive=1;ensembl_end_phase=1;ensembl_phase=0;exon_id=SPCC736.07c.1:exon:1;rank=1;version=1
+chromosome_3	ensembl	exon	37631	39672	.	-	.	Name=SPCC736.07c.1:exon:2;Parent=transcript:SPCC736.07c.1;constitutive=1;ensembl_end_phase=1;ensembl_phase=1;exon_id=SPCC736.07c.1:exon:2;rank=2;version=1
+chromosome_3	ensembl	exon	40124	40423	.	+	.	Name=SPCC736.08.1:exon:1;Parent=transcript:SPCC736.08.1;constitutive=1;ensembl_end_phase=1;ensembl_phase=0;exon_id=SPCC736.08.1:exon:1;rank=1;version=1
+chromosome_3	ensembl	exon	40502	43532	.	+	.	Name=SPCC736.08.1:exon:2;Parent=transcript:SPCC736.08.1;constitutive=1;ensembl_end_phase=1;ensembl_phase=1;exon_id=SPCC736.08.1:exon:2;rank=2;version=1
+chromosome_3	ensembl	exon	42370	43457	.	-	.	Name=SPCC736.09c.1:exon:1;Parent=transcript:SPCC736.09c.1;constitutive=1;ensembl_end_phase=2;ensembl_phase=0;exon_id=SPCC736.09c.1:exon:1;rank=1;version=1
+chromosome_3	ensembl	exon	44028	44100	.	-	.	Name=SPCTRNAPHE.04.1:exon:1;Parent=transcript:SPCTRNAPHE.04.1;constitutive=1;ensembl_end_phase=1;ensembl_phase=0;exon_id=SPCTRNAPHE.04.1:exon:1;rank=1;version=1
+chromosome_3	ensembl	exon	44280	45451	.	-	.	Name=SPCC736.10c.1:exon:1;Parent=transcript:SPCC736.10c.1;constitutive=1;ensembl_end_phase=2;ensembl_phase=0;exon_id=SPCC736.10c.1:exon:1;rank=1;version=1
+chromosome_3	ensembl	exon	44808	45346	.	+	.	Name=SPNCRNA.1131.1:exon:1;Parent=transcript:SPNCRNA.1131.1;constitutive=1;ensembl_end_phase=2;ensembl_phase=0;exon_id=SPNCRNA.1131.1:exon:1;rank=1;version=1
+chromosome_3	ensembl	exon	45601	45705	.	+	.	Name=SPNCRNA.463.1:exon:1;Parent=transcript:SPNCRNA.463.1;constitutive=1;ensembl_end_phase=0;ensembl_phase=0;exon_id=SPNCRNA.463.1:exon:1;rank=1;version=1
+chromosome_3	ensembl	exon	46303	46424	.	+	.	Name=SPNCRNA.464.1:exon:1;Parent=transcript:SPNCRNA.464.1;constitutive=1;ensembl_end_phase=2;ensembl_phase=0;exon_id=SPNCRNA.464.1:exon:1;rank=1;version=1
+chromosome_3	ensembl	exon	46903	47065	.	+	.	Name=SPCC736.11.1:exon:1;Parent=transcript:SPCC736.11.1;constitutive=1;ensembl_end_phase=0;ensembl_phase=0;exon_id=SPCC736.11.1:exon:1;rank=1;version=1
+chromosome_3	ensembl	exon	47437	49870	.	+	.	Name=SPCC736.11.1:exon:2;Parent=transcript:SPCC736.11.1;constitutive=1;ensembl_end_phase=0;ensembl_phase=0;exon_id=SPCC736.11.1:exon:2;rank=2;version=1
+chromosome_3	ensembl	exon	52283	52950	.	-	.	Name=SPCC736.12c.1:exon:1;Parent=transcript:SPCC736.12c.1;constitutive=1;ensembl_end_phase=1;ensembl_phase=0;exon_id=SPCC736.12c.1:exon:1;rank=1;version=1
+chromosome_3	ensembl	exon	51195	52154	.	-	.	Name=SPCC736.12c.1:exon:2;Parent=transcript:SPCC736.12c.1;constitutive=1;ensembl_end_phase=1;ensembl_phase=1;exon_id=SPCC736.12c.1:exon:2;rank=2;version=1
+chromosome_3	ensembl	exon	51032	51147	.	-	.	Name=SPCC736.12c.1:exon:3;Parent=transcript:SPCC736.12c.1;constitutive=1;ensembl_end_phase=0;ensembl_phase=1;exon_id=SPCC736.12c.1:exon:3;rank=3;version=1
+chromosome_3	ensembl	exon	50830	50978	.	-	.	Name=SPCC736.12c.1:exon:4;Parent=transcript:SPCC736.12c.1;constitutive=1;ensembl_end_phase=2;ensembl_phase=0;exon_id=SPCC736.12c.1:exon:4;rank=4;version=1
+chromosome_3	ensembl	exon	49888	50785	.	-	.	Name=SPCC736.12c.1:exon:5;Parent=transcript:SPCC736.12c.1;constitutive=1;ensembl_end_phase=2;ensembl_phase=2;exon_id=SPCC736.12c.1:exon:5;rank=5;version=1
+chromosome_3	ensembl	exon	53448	54896	.	-	.	Name=SPCC736.13.1:exon:1;Parent=transcript:SPCC736.13.1;constitutive=1;ensembl_end_phase=1;ensembl_phase=0;exon_id=SPCC736.13.1:exon:1;rank=1;version=1
+chromosome_3	ensembl	exon	54951	55884	.	+	.	Name=SPCC736.14.1:exon:1;Parent=transcript:SPCC736.14.1;constitutive=1;ensembl_end_phase=0;ensembl_phase=0;exon_id=SPCC736.14.1:exon:1;rank=1;version=1
+chromosome_3	ensembl	exon	56152	59042	.	+	.	Name=SPCC736.14.1:exon:2;Parent=transcript:SPCC736.14.1;constitutive=1;ensembl_end_phase=0;ensembl_phase=0;exon_id=SPCC736.14.1:exon:2;rank=2;version=1
+chromosome_3	ensembl	exon	55760	59545	.	-	.	Name=SPNCRNA.1132.1:exon:1;Parent=transcript:SPNCRNA.1132.1;constitutive=1;ensembl_end_phase=0;ensembl_phase=0;exon_id=SPNCRNA.1132.1:exon:1;rank=1;version=1
+chromosome_3	ensembl	exon	55879	59251	.	-	.	Name=SPNCRNA.578.1:exon:1;Parent=transcript:SPNCRNA.578.1;constitutive=1;ensembl_end_phase=1;ensembl_phase=0;exon_id=SPNCRNA.578.1:exon:1;rank=1;version=1
+chromosome_3	ensembl	CDS	440	705	.	+	0	ID=CDS:SPCC553.09c.1:pep;Parent=transcript:SPCC553.09c.1;protein_id=SPCC553.09c.1:pep
+chromosome_3	ensembl	CDS	747	1725	.	+	1	ID=CDS:SPCC553.09c.1:pep;Parent=transcript:SPCC553.09c.1;protein_id=SPCC553.09c.1:pep
+chromosome_3	ensembl	CDS	1768	2076	.	+	0	ID=CDS:SPCC553.09c.1:pep;Parent=transcript:SPCC553.09c.1;protein_id=SPCC553.09c.1:pep
+chromosome_3	ensembl	CDS	2116	2286	.	+	0	ID=CDS:SPCC553.09c.1:pep;Parent=transcript:SPCC553.09c.1;protein_id=SPCC553.09c.1:pep
+chromosome_3	ensembl	CDS	2712	2807	.	+	0	ID=CDS:SPCC553.08c.1:pep;Parent=transcript:SPCC553.08c.1;protein_id=SPCC553.08c.1:pep
+chromosome_3	ensembl	CDS	2863	5015	.	+	0	ID=CDS:SPCC553.08c.1:pep;Parent=transcript:SPCC553.08c.1;protein_id=SPCC553.08c.1:pep
+chromosome_3	ensembl	CDS	5061	5814	.	+	1	ID=CDS:SPCC553.08c.1:pep;Parent=transcript:SPCC553.08c.1;protein_id=SPCC553.08c.1:pep
+chromosome_3	ensembl	CDS	6244	6736	.	+	0	ID=CDS:SPCC553.07c.1:pep;Parent=transcript:SPCC553.07c.1;protein_id=SPCC553.07c.1:pep
+chromosome_3	ensembl	CDS	6776	7215	.	+	2	ID=CDS:SPCC553.07c.1:pep;Parent=transcript:SPCC553.07c.1;protein_id=SPCC553.07c.1:pep
+chromosome_3	ensembl	CDS	7262	7774	.	+	0	ID=CDS:SPCC553.07c.1:pep;Parent=transcript:SPCC553.07c.1;protein_id=SPCC553.07c.1:pep
+chromosome_3	ensembl	CDS	7821	8018	.	+	0	ID=CDS:SPCC553.07c.1:pep;Parent=transcript:SPCC553.07c.1;protein_id=SPCC553.07c.1:pep
+chromosome_3	ensembl	CDS	9157	9287	.	-	0	ID=CDS:SPCC553.06.1:pep;Parent=transcript:SPCC553.06.1;protein_id=SPCC553.06.1:pep
+chromosome_3	ensembl	CDS	8868	9066	.	-	1	ID=CDS:SPCC553.06.1:pep;Parent=transcript:SPCC553.06.1;protein_id=SPCC553.06.1:pep
+chromosome_3	ensembl	CDS	8282	8767	.	-	0	ID=CDS:SPCC553.06.1:pep;Parent=transcript:SPCC553.06.1;protein_id=SPCC553.06.1:pep
+chromosome_3	ensembl	CDS	10919	10994	.	-	0	ID=CDS:SPCC553.05c.1:pep;Parent=transcript:SPCC553.05c.1;protein_id=SPCC553.05c.1:pep
+chromosome_3	ensembl	CDS	10505	10750	.	-	2	ID=CDS:SPCC553.05c.1:pep;Parent=transcript:SPCC553.05c.1;protein_id=SPCC553.05c.1:pep
+chromosome_3	ensembl	CDS	10154	10455	.	-	2	ID=CDS:SPCC553.05c.1:pep;Parent=transcript:SPCC553.05c.1;protein_id=SPCC553.05c.1:pep
+chromosome_3	ensembl	CDS	14958	15027	.	-	0	ID=CDS:SPCC553.04.1:pep;Parent=transcript:SPCC553.04.1;protein_id=SPCC553.04.1:pep
+chromosome_3	ensembl	CDS	13140	14902	.	-	2	ID=CDS:SPCC553.04.1:pep;Parent=transcript:SPCC553.04.1;protein_id=SPCC553.04.1:pep
+chromosome_3	ensembl	CDS	17780	18010	.	-	0	ID=CDS:SPCC553.03.1:pep;Parent=transcript:SPCC553.03.1;protein_id=SPCC553.03.1:pep
+chromosome_3	ensembl	CDS	15152	17734	.	-	0	ID=CDS:SPCC553.03.1:pep;Parent=transcript:SPCC553.03.1;protein_id=SPCC553.03.1:pep
+chromosome_3	ensembl	CDS	21253	21281	.	-	0	ID=CDS:SPCC553.02.1:pep;Parent=transcript:SPCC553.02.1;protein_id=SPCC553.02.1:pep
+chromosome_3	ensembl	CDS	21092	21208	.	-	1	ID=CDS:SPCC553.02.1:pep;Parent=transcript:SPCC553.02.1;protein_id=SPCC553.02.1:pep
+chromosome_3	ensembl	CDS	19882	20891	.	-	1	ID=CDS:SPCC553.02.1:pep;Parent=transcript:SPCC553.02.1;protein_id=SPCC553.02.1:pep
+chromosome_3	ensembl	CDS	19424	19835	.	-	2	ID=CDS:SPCC553.02.1:pep;Parent=transcript:SPCC553.02.1;protein_id=SPCC553.02.1:pep
+chromosome_3	ensembl	CDS	19047	19374	.	-	1	ID=CDS:SPCC553.02.1:pep;Parent=transcript:SPCC553.02.1;protein_id=SPCC553.02.1:pep
+chromosome_3	ensembl	CDS	18788	18994	.	-	0	ID=CDS:SPCC553.02.1:pep;Parent=transcript:SPCC553.02.1;protein_id=SPCC553.02.1:pep
+chromosome_3	ensembl	CDS	23339	25486	.	+	0	ID=CDS:SPCC553.01c.1:pep;Parent=transcript:SPCC553.01c.1;protein_id=SPCC553.01c.1:pep
+chromosome_3	ensembl	CDS	25983	26843	.	+	0	ID=CDS:SPCC736.02.1:pep;Parent=transcript:SPCC736.02.1;protein_id=SPCC736.02.1:pep
+chromosome_3	ensembl	CDS	27164	28453	.	-	0	ID=CDS:SPCC736.03c.1:pep;Parent=transcript:SPCC736.03c.1;protein_id=SPCC736.03c.1:pep
+chromosome_3	ensembl	CDS	29525	30652	.	-	0	ID=CDS:SPCC736.04c.1:pep;Parent=transcript:SPCC736.04c.1;protein_id=SPCC736.04c.1:pep
+chromosome_3	ensembl	CDS	33408	33555	.	+	0	ID=CDS:SPCC736.05.1:pep;Parent=transcript:SPCC736.05.1;protein_id=SPCC736.05.1:pep
+chromosome_3	ensembl	CDS	33764	34135	.	+	2	ID=CDS:SPCC736.05.1:pep;Parent=transcript:SPCC736.05.1;protein_id=SPCC736.05.1:pep
+chromosome_3	ensembl	CDS	34187	34323	.	+	2	ID=CDS:SPCC736.05.1:pep;Parent=transcript:SPCC736.05.1;protein_id=SPCC736.05.1:pep
+chromosome_3	ensembl	CDS	35832	37667	.	+	0	ID=CDS:SPCC736.06.1:pep;Parent=transcript:SPCC736.06.1;protein_id=SPCC736.06.1:pep
+chromosome_3	ensembl	CDS	39747	39894	.	-	0	ID=CDS:SPCC736.07c.1:pep;Parent=transcript:SPCC736.07c.1;protein_id=SPCC736.07c.1:pep
+chromosome_3	ensembl	CDS	37721	39672	.	-	2	ID=CDS:SPCC736.07c.1:pep;Parent=transcript:SPCC736.07c.1;protein_id=SPCC736.07c.1:pep
+chromosome_3	ensembl	CDS	40342	40423	.	+	0	ID=CDS:SPCC736.08.1:pep;Parent=transcript:SPCC736.08.1;protein_id=SPCC736.08.1:pep
+chromosome_3	ensembl	CDS	40502	42261	.	+	2	ID=CDS:SPCC736.08.1:pep;Parent=transcript:SPCC736.08.1;protein_id=SPCC736.08.1:pep
+chromosome_3	ensembl	CDS	42549	43244	.	-	0	ID=CDS:SPCC736.09c.1:pep;Parent=transcript:SPCC736.09c.1;protein_id=SPCC736.09c.1:pep
+chromosome_3	ensembl	CDS	44825	45283	.	-	0	ID=CDS:SPCC736.10c.1:pep;Parent=transcript:SPCC736.10c.1;protein_id=SPCC736.10c.1:pep
+chromosome_3	ensembl	CDS	46937	47065	.	+	0	ID=CDS:SPCC736.11.1:pep;Parent=transcript:SPCC736.11.1;protein_id=SPCC736.11.1:pep
+chromosome_3	ensembl	CDS	47437	49812	.	+	0	ID=CDS:SPCC736.11.1:pep;Parent=transcript:SPCC736.11.1;protein_id=SPCC736.11.1:pep
+chromosome_3	ensembl	CDS	52283	52367	.	-	0	ID=CDS:SPCC736.12c.1:pep;Parent=transcript:SPCC736.12c.1;protein_id=SPCC736.12c.1:pep
+chromosome_3	ensembl	CDS	51195	52154	.	-	2	ID=CDS:SPCC736.12c.1:pep;Parent=transcript:SPCC736.12c.1;protein_id=SPCC736.12c.1:pep
+chromosome_3	ensembl	CDS	51032	51147	.	-	2	ID=CDS:SPCC736.12c.1:pep;Parent=transcript:SPCC736.12c.1;protein_id=SPCC736.12c.1:pep
+chromosome_3	ensembl	CDS	50830	50978	.	-	0	ID=CDS:SPCC736.12c.1:pep;Parent=transcript:SPCC736.12c.1;protein_id=SPCC736.12c.1:pep
+chromosome_3	ensembl	CDS	50629	50785	.	-	1	ID=CDS:SPCC736.12c.1:pep;Parent=transcript:SPCC736.12c.1;protein_id=SPCC736.12c.1:pep
+chromosome_3	ensembl	CDS	53569	54588	.	-	0	ID=CDS:SPCC736.13.1:pep;Parent=transcript:SPCC736.13.1;protein_id=SPCC736.13.1:pep
+chromosome_3	ensembl	CDS	55834	55884	.	+	0	ID=CDS:SPCC736.14.1:pep;Parent=transcript:SPCC736.14.1;protein_id=SPCC736.14.1:pep
+chromosome_3	ensembl	CDS	56152	58749	.	+	0	ID=CDS:SPCC736.14.1:pep;Parent=transcript:SPCC736.14.1;protein_id=SPCC736.14.1:pep
+chromosome_3	ensembl	five_prime_UTR	17	439	.	+	.	Parent=transcript:SPCC553.09c.1
+chromosome_3	ensembl	three_prime_UTR	2287	2504	.	+	.	Parent=transcript:SPCC553.09c.1
+chromosome_3	ensembl	five_prime_UTR	2520	2711	.	+	.	Parent=transcript:SPCC553.08c.1
+chromosome_3	ensembl	three_prime_UTR	5815	6030	.	+	.	Parent=transcript:SPCC553.08c.1
+chromosome_3	ensembl	five_prime_UTR	6173	6243	.	+	.	Parent=transcript:SPCC553.07c.1
+chromosome_3	ensembl	three_prime_UTR	8019	8047	.	+	.	Parent=transcript:SPCC553.07c.1
+chromosome_3	ensembl	five_prime_UTR	9288	9431	.	-	.	Parent=transcript:SPCC553.06.1
+chromosome_3	ensembl	three_prime_UTR	8029	8281	.	-	.	Parent=transcript:SPCC553.06.1
+chromosome_3	ensembl	five_prime_UTR	10995	11312	.	-	.	Parent=transcript:SPCC553.05c.1
+chromosome_3	ensembl	three_prime_UTR	10149	10153	.	-	.	Parent=transcript:SPCC553.05c.1
+chromosome_3	ensembl	three_prime_UTR	10066	10107	.	-	.	Parent=transcript:SPCC553.05c.1
+chromosome_3	ensembl	three_prime_UTR	9400	10016	.	-	.	Parent=transcript:SPCC553.05c.1
+chromosome_3	ensembl	five_prime_UTR	15028	15180	.	-	.	Parent=transcript:SPCC553.04.1
+chromosome_3	ensembl	three_prime_UTR	12814	13139	.	-	.	Parent=transcript:SPCC553.04.1
+chromosome_3	ensembl	five_prime_UTR	18011	18277	.	-	.	Parent=transcript:SPCC553.03.1
+chromosome_3	ensembl	three_prime_UTR	15114	15151	.	-	.	Parent=transcript:SPCC553.03.1
+chromosome_3	ensembl	five_prime_UTR	21282	21600	.	-	.	Parent=transcript:SPCC553.02.1
+chromosome_3	ensembl	three_prime_UTR	18418	18787	.	-	.	Parent=transcript:SPCC553.02.1
+chromosome_3	ensembl	five_prime_UTR	22958	23338	.	+	.	Parent=transcript:SPCC553.01c.1
+chromosome_3	ensembl	three_prime_UTR	25487	25695	.	+	.	Parent=transcript:SPCC553.01c.1
+chromosome_3	ensembl	five_prime_UTR	25835	25982	.	+	.	Parent=transcript:SPCC736.02.1
+chromosome_3	ensembl	three_prime_UTR	26844	27026	.	+	.	Parent=transcript:SPCC736.02.1
+chromosome_3	ensembl	five_prime_UTR	28454	28661	.	-	.	Parent=transcript:SPCC736.03c.1
+chromosome_3	ensembl	three_prime_UTR	26877	27163	.	-	.	Parent=transcript:SPCC736.03c.1
+chromosome_3	ensembl	five_prime_UTR	30653	31584	.	-	.	Parent=transcript:SPCC736.04c.1
+chromosome_3	ensembl	three_prime_UTR	28627	29524	.	-	.	Parent=transcript:SPCC736.04c.1
+chromosome_3	ensembl	five_prime_UTR	33194	33407	.	+	.	Parent=transcript:SPCC736.05.1
+chromosome_3	ensembl	three_prime_UTR	34324	35203	.	+	.	Parent=transcript:SPCC736.05.1
+chromosome_3	ensembl	five_prime_UTR	35306	35831	.	+	.	Parent=transcript:SPCC736.06.1
+chromosome_3	ensembl	three_prime_UTR	37668	39567	.	+	.	Parent=transcript:SPCC736.06.1
+chromosome_3	ensembl	five_prime_UTR	39895	40176	.	-	.	Parent=transcript:SPCC736.07c.1
+chromosome_3	ensembl	three_prime_UTR	37631	37720	.	-	.	Parent=transcript:SPCC736.07c.1
+chromosome_3	ensembl	five_prime_UTR	40124	40341	.	+	.	Parent=transcript:SPCC736.08.1
+chromosome_3	ensembl	three_prime_UTR	42262	43532	.	+	.	Parent=transcript:SPCC736.08.1
+chromosome_3	ensembl	five_prime_UTR	43245	43457	.	-	.	Parent=transcript:SPCC736.09c.1
+chromosome_3	ensembl	three_prime_UTR	42370	42548	.	-	.	Parent=transcript:SPCC736.09c.1
+chromosome_3	ensembl	five_prime_UTR	45284	45451	.	-	.	Parent=transcript:SPCC736.10c.1
+chromosome_3	ensembl	three_prime_UTR	44280	44824	.	-	.	Parent=transcript:SPCC736.10c.1
+chromosome_3	ensembl	five_prime_UTR	46903	46936	.	+	.	Parent=transcript:SPCC736.11.1
+chromosome_3	ensembl	three_prime_UTR	49813	49870	.	+	.	Parent=transcript:SPCC736.11.1
+chromosome_3	ensembl	five_prime_UTR	52368	52950	.	-	.	Parent=transcript:SPCC736.12c.1
+chromosome_3	ensembl	three_prime_UTR	49888	50628	.	-	.	Parent=transcript:SPCC736.12c.1
+chromosome_3	ensembl	five_prime_UTR	54589	54896	.	-	.	Parent=transcript:SPCC736.13.1
+chromosome_3	ensembl	three_prime_UTR	53448	53568	.	-	.	Parent=transcript:SPCC736.13.1
+chromosome_3	ensembl	five_prime_UTR	54951	55833	.	+	.	Parent=transcript:SPCC736.14.1
+chromosome_3	ensembl	three_prime_UTR	58750	59042	.	+	.	Parent=transcript:SPCC736.14.1
+chromosome_3	.	biological_region	2076	2115	1	+	.	external_name=SPCC553.09c.1:intron:1;logic_name=intron
+chromosome_3	.	biological_region	6736	6775	1	+	.	external_name=SPCC553.07c.1:intron:1;logic_name=intron
+chromosome_3	.	biological_region	7215	7261	1	+	.	external_name=SPCC553.07c.1:intron:2;logic_name=intron
+chromosome_3	.	biological_region	7774	7820	1	+	.	external_name=SPCC553.07c.1:intron:3;logic_name=intron

@@ -1,0 +1,19 @@
+import pandas as pd
+
+rule custom__filter_significantly_expressed_transcripts:
+    '''
+    Select transcripts with significant change in expression according to user specified filters.
+    :input table: TSV table with statistical evaluation of change in expression
+    :output table: TSV table with transcripts with significant change in expression
+    '''
+    input:
+        table           = '{analysis_dir}/{reference}/report/comparison/differential_analysis.tsv'
+    output:
+        table           = '{analysis_dir}/{reference}/report/comparison/significant.tsv'
+    params:
+        max_fdr         = method_config.get('max_fdr', 0.05),
+        min_fold_change = method_config.get('min_fold_change', 1)
+    run:
+        all = pd.read_csv(input.table, sep='\t')
+        des = all[(all.FDR <= params.max_fdr) & (all['FCexp^-1'] >= params.min_fold_change)]
+        des.to_csv(output.table, sep='\t', index=None)
