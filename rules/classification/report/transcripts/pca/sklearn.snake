@@ -1,6 +1,8 @@
 import pandas as pd
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
+import matplotlib
+matplotlib.use('Agg') # This allows matplotlib to work in complete non-interactive mode via Agg renderer. It has to be set before pyplot import.
 import matplotlib.pyplot as plt
 
 # TODO duplicated from taxonomic_counts/barplot/custom.snake
