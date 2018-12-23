@@ -1,5 +1,5 @@
-Analyse gene expression (in development)
-========================================
+Analyse gene expression
+=======================
 
 Determine level of expression of individual transcripts from sequenced RNA.
 Compare expressions between samples from two conditions to identify transcripts with changed expression.

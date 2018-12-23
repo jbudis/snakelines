@@ -107,6 +107,17 @@ variant:
                 - mapping/mapper
 
 classification:
+    transcripts:
+        output: []
+        depends:
+            - reads/preprocess
+            - reads/report
+    differential_analysis:
+        output: []
+        filter_significant:
+            output: []
+            depends:
+                - reads/preprocess
     read_based:
         output: []
         depends:
@@ -153,6 +164,13 @@ classification:
                     to: expand('{report_dir}/{sample}/contig_annotations.html', sample=pipeline.samples, report_dir=config['report_dir'])
             depends:
                 - classification/contig_based
+        transcripts:
+            count_table:
+                output: []
+            pca:
+                output: []
+            depends:
+                - classification/pombe/samples
 
 assembly:
     assembler:

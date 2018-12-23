@@ -1,0 +1,9 @@
+channels:
+- bioconda
+- conda-forge
+dependencies:
+- bioconductor-edger=3.12.1
+- bioconductor-limma=3.26.9
+- libgfortran=3.0.0
+- r-locfit=1.5_9.1
+- r-statmod=1.4.30

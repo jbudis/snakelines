@@ -1,0 +1,46 @@
+import pandas as pd
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
+import matplotlib
+matplotlib.use('Agg') # This allows matplotlib to work in complete non-interactive mode via Agg renderer. It has to be set before pyplot import.
+import matplotlib.pyplot as plt
+
+# TODO duplicated from taxonomic_counts/barplot/custom.snake
+SUPPORTED_IMAGE_FORMATS = ['png', 'svg', 'pdf', 'tif', 'tiff', 'eps']
+
+# FIXME counts normalised by sample read count should be used
+rule sklearn__pca_comparison:
+    '''
+    Visualise relationship between analysed samples as two-dimensional graphical plot (PCA reduction)
+    :input counts: Aggregated counts for each transcript and sample in tabular format
+    :output pca: 2D plot of analysed count vectors
+    '''
+    input:
+        counts = '{analysis_dir}/{reference}/report/tsv/summary.normed.tsv'
+    output:
+        pca = '{analysis_dir}/{reference}/report/comparison/pca.{format, %s}' % '|'.join(SUPPORTED_IMAGE_FORMATS)
+    run:
+        count_table = pd.read_csv(input.counts, sep='\t', index_col=0)
+        counts = count_table.values.transpose()
+
+        scaler = StandardScaler()
+        scaled = scaler.fit_transform(counts)
+
+        pca = PCA(n_components=2)
+        reduced = pca.fit_transform(scaled).transpose()
+
+        plt.ioff()
+
+        fig, ax = plt.subplots()
+        ax.scatter(reduced[0], reduced[1])
+
+        for i, (sid, x, y) in enumerate(zip(count_table.columns, reduced[0], reduced[1])):
+            ax.annotate(sid, (x, y))
+
+        plt.xlabel('PCA1 ({:.2f}%)'.format(100*pca.explained_variance_ratio_[0]))
+        plt.ylabel('PCA2 ({:.2f}%)'.format(100*pca.explained_variance_ratio_[1]))
+        plt.tight_layout()
+        plt.savefig(output.pca)
+        plt.ion()
+
+
