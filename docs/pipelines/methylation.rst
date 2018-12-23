@@ -47,11 +47,11 @@ How to run example:
 
    snakemake \
       --snakefile ../../snakelines.snake \
-      --configfile config_methylation.yaml
+      --configfile config_methylseq.yaml
 
 Example configuration:
 
-.. literalinclude:: ../../example/mhv/config_methylation.yaml
+.. literalinclude:: ../../example/mhv/config_methylseq.yaml
    :language: yaml
 
 Planned improvements
