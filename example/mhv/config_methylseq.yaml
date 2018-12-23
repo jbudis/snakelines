@@ -42,13 +42,11 @@ mapping:                            # Find the most similar genomic region to re
         sorted:
             method: samtools
             temporary: False
-        deduplicated:               # Mark duplicated reads (PCR duplicated)
-            method: picard          # Supported values: picard
 
     report:                         # Summary reports of mapping process and results
         quality_report:             # HTML summary with quality of mappings
             method: qualimap        # Supported values: qualimap
             map_types:              # List of post-process steps for quality reports
-                - deduplicated
+                - sorted
         methylation:
             method: bismark
