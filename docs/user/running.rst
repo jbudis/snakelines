@@ -35,7 +35,23 @@ List of required Python3 modules:
 * scikit-learn=0.18
 * tk=3.6.7-1
 
+Snakelines will be later shipped as a Conda package in Anaconda repository.
 
+Conda channel dependencies
+--------------------------
+
+In order for Snakelines Conda virtual enviroments to work, user has to add several Anaconda repository channels to Anaconda using these commands:
+
+.. code:: bash
+
+   conda config --add channels bioconda
+   conda config --add channels g2554711
+   conda config --add channels g2554711/label/bioconda
+   conda config --add channels conda-forge
+   conda config --add channels agbiome
+   conda config --add channels rsmulktis
+   conda config --add channels moustik
+   
 Installation
 ---------------
 
