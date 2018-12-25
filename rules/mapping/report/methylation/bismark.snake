@@ -28,6 +28,8 @@ rule bismark__methylation_extractor:
     log:
         out                  = 'mapping/{reference}/original/bismark/log/{sample}.methylation_extractor.log',
         err                  = 'mapping/{reference}/original/bismark/log/{sample}.methylation_extractor.err'
+    conda:
+        config['snakelines_dir'] + '/enviroments/others_env.yaml'
     shell:
         '''
         bismark_methylation_extractor \
