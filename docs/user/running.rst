@@ -52,6 +52,8 @@ In order for Snakelines Conda virtual enviroments to work, user has to add sever
    conda config --add channels rsmulktis
    conda config --add channels moustik
    
+``--use-conda`` option in ``Snakemake`` command will enable use of predefined virtual enviroments in Snakelines.
+   
 Installation
 ---------------
 
