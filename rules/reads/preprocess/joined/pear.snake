@@ -1,7 +1,9 @@
 include: config['snakelines_dir'] + '/rules/reads/conversion/unzip.snake'
 
+# TODO also create fastq reports for RM files
+# TODO method_config['read_type'] should be renamed to method_config['input_read_type']
 rule pear__join_read_pairs:
-    '''
+    """
     Join paired reads into single end reads based on sequence overlap
     :input r1: Left side of sequenced fragments in fastq format
     :input r2: Right side of sequenced fragments in fastq format
@@ -13,7 +15,7 @@ rule pear__join_read_pairs:
     :params tmp_rm: Temporary generated file, would be immediately renamed to the standardised name
     :params tmp_rd: Temporary generated file, would be immediately removed
     :params outpref: Prefix of generated output files
-    '''
+    """
     input:
         r1 = 'reads/%s/{sample}_R1.fastq' % method_config['read_type'],
         r2 = 'reads/%s/{sample}_R2.fastq' % method_config['read_type']
@@ -32,8 +34,10 @@ rule pear__join_read_pairs:
     log:
         out = 'reads/joined/log/{sample}.log',
         err = 'reads/joined/log/{sample}.err',
+    conda:
+        config['snakelines_dir'] + '/enviroments/others_env.yaml'
     shell:
-        '''
+        """
         pear \
             --forward-fastq {input.r1} \
             --reverse-fastq {input.r2} \
@@ -53,28 +57,30 @@ rule pear__join_read_pairs:
         mv {params.tmp_rm}.gz {output.rm}
 
         rm {params.tmp_rd}
-        '''
+        """
 
 # TODO this is not good way how to deal with pair reads without overlap. Concatenate only rm with r1?
 rule pear__concat_assembled_and_unassambled:
-    '''
+    """
     Unite joined reads, and reads that could not be joined into a single fastq file
     :input r1: Left side of fragments without overlap in fastq format
     :input r2: Right side of fragments without overlap in fastq format
     :input rm: Paired reads with overlap joined into merged sequences in fastq format
     :output rc: Concatenated file, first goes joined reads and then reads without overlap
-    '''
+    """
     input:
         r1 = 'reads/joined/{sample}_R1.fastq.gz',
         r2 = 'reads/joined/{sample}_R2.fastq.gz',
         rm = 'reads/joined/{sample}_RM.fastq.gz'
     output:
         rc = 'reads/joined/{sample}_RC.fastq.gz'
+    conda:
+        config['snakelines_dir'] + '/enviroments/others_env.yaml'
     shell:
-        '''
+        """
         cat \
             {input.rm} \
             {input.r1} \
             {input.r2} \
         > {output.rc} \
-        '''
+        """

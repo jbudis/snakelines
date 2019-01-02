@@ -21,12 +21,14 @@ rule bowtie2__prepare_index:
         err = '{fadir}/log/{sequence}.err',
     threads:
         int(config['threads'])
+    conda:
+        config['snakelines_dir'] + '/enviroments/others_env.yaml'
     shell:
-        '''
+        """
         bowtie2-build \
             --threads {threads} \
             {input} \
             {params.index} \
         >  {log.out} \
         2> {log.err}
-        '''
+        """

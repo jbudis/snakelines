@@ -33,9 +33,11 @@ rule spades__assemble_reads_into_contigs:
     log:
         out = 'assembly/{sample}/log/spades.log',
         err = 'assembly/{sample}/log/spades.err'
+    conda:
+        config['snakelines_dir'] + '/enviroments/others_env.yaml'
     shell:
-        '''
-        spades \
+        """
+        spades.py \
             -1 {input.r1} \
             -2 {input.r2} \
             -o {params.outdir} \
@@ -47,4 +49,4 @@ rule spades__assemble_reads_into_contigs:
 
         mv {params.contigs} {output.contigs}
         mv {params.scaffolds} {output.scaffolds}
-        '''
+        """

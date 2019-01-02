@@ -16,6 +16,8 @@ rule ncbi_gene_postfilter:
     params:
         min_tax_level = config['ncbi']['postfilter']['min_tax_level'] if 'min_tax_level' in config['ncbi']['postfilter'] else 0,
         trim_environmental = ('trim_environmental' in config['ncbi']['postfilter']) and config['ncbi']['postfilter']['trim_environmental']
+    conda:
+        config['snakelines_dir'] + '/enviroments/others_env.yaml'
     run:
         def trim_environmental(tax):
             tax = tax.strip()
@@ -52,6 +54,8 @@ rule ncbi_gene_database_download:
         tmp_fa = 'downloaded/tmp/{gene}.fa',
         tmp_tax = 'downloaded/tmp/{gene}.tax',
         tmp_dir = 'downloaded/tmp'
+    conda:
+        config['snakelines_dir'] + '/enviroments/others_env.yaml'
     run:
         def safe_get_qualifier(feature, key, default_value='NO_DATA'):
             try:

@@ -17,7 +17,6 @@ Contents
    user/configuration
    user/aliases
 
-
 .. toctree::
    :caption: Developer notes
    :maxdepth: 2
@@ -27,10 +26,22 @@ Contents
    development/replace_methods
    development/documentation
 
+.. toctree::
+   :caption: Pipelines
+   :maxdepth: 2
+
+   pipelines/quality_report
+   pipelines/preprocess
+   pipelines/mapping
+   pipelines/assembly
+   pipelines/variant_calling
+   pipelines/methylation
+   pipelines/transcriptomics
+   pipelines/metagenomics
+   pipelines/viral_identification
 
 .. toctree::
    :caption: Documentation
    :maxdepth: 2
 
-   pipeline/outline
    rules/outline

@@ -16,7 +16,44 @@ Minimal software requirements are:
 * `SnakeMake <https://snakemake.readthedocs.io/en/stable/>`_ (tested on 5.2.2)
 * Miniconda (tested on 4.5.11)
 
+Python3 module dependencies
+---------------------------
 
+Snakelines requires several Python3 modules to be installed prior to Snakelines. All of these modules can be installed via Conda package manager or via Pip3 with the exception of Tkinter that can be obtained via e.g. apt-get.
+
+Note that Snakelines requires specific versions of these modules.
+List of required Python3 modules:
+
+* oyaml=0.7
+* pandas=0.19.2
+* biopython=1.72
+* seaborn=0.9.0
+* bs4=0.0.1
+* weasyprint=0.3
+* pysam=0.15.1
+* openpyxl=2.5.12
+* scikit-learn=0.18
+* tk=3.6.7-1
+
+Snakelines will be later shipped as a Conda package in Anaconda repository.
+
+Conda channel dependencies
+--------------------------
+
+In order for Snakelines Conda virtual enviroments to work, user has to add several Anaconda repository channels to Anaconda using these commands:
+
+.. code:: bash
+
+   conda config --add channels bioconda
+   conda config --add channels g2554711
+   conda config --add channels g2554711/label/bioconda
+   conda config --add channels conda-forge
+   conda config --add channels agbiome
+   conda config --add channels rsmulktis
+   conda config --add channels moustik
+   
+``--use-conda`` option in ``Snakemake`` command will enable use of predefined virtual enviroments in Snakelines.
+   
 Installation
 ---------------
 
@@ -32,7 +69,7 @@ You may download them directly or clone them using git.
    # Or clone using git
    git clone https://github.com/jbudis/snakelines
 
-Compiling is not required, scripts are ready for using after download.
+Compiling is not required, scripts are ready for use right after download.
 
 Directory structure of input files
 ----------------------------------
@@ -59,7 +96,7 @@ Example minimal input file configuration for a reference (hg38), targeted panel 
            |-- annotation/sureselect6
                    |-- regions.bed
 
-Bioinformatic tools typically requires preprocess reference sequences to condensed files called indices.
+Bioinformatic tools typically require preprocessed reference sequences to condensed files called indices.
 All required reference indices and auxiliary files are generated, when necessary, during pipeline execution.
 
 Reference directories with frequently used references may be linked to the project directory, to avoid redundant copies and repeated creation of sequence indices.
@@ -76,12 +113,11 @@ Make sure, that the name of the link is the same as the name of the fasta file (
 Running scripts
 ---------------
 
-All bioinformatics pipelines are stored at the pipeline/ directory in the SnakeLines installation.
-Pipelines typically contains a master file (Snakefile), several sub-workflows (Snakefile.<sub-workflow>) and a configuration file (config.yaml).
-We recommend copy of a directory with selected pipeline to the project directory.
+All SnakeLines pipelines are defined only by their configuration file in human-readable yaml format.
+We recommend to copy the configuration file into the project directory.
 This way, configuration for the pipeline is project specific, and therefore would not be shared between different projects.
 
-Example project structure with pipeline definition copied from the <snakelines_dir>/pipeline/variant_calling/germline>
+Example project structure with configuration file copied from the <snakelines_dir>/example/mhv/
 ::
 
    |-- reads/original
@@ -93,14 +129,9 @@ Example project structure with pipeline definition copied from the <snakelines_d
            |-- hg38.fa
            |-- annotation/sureselect6
                    |-- regions.bed
-   |-- scripts/variant_calling/germline
-           |-- config.yaml
-           |-- Snakefile
-           |-- Snakefile.mapping
-           |-- Snakefile.preprocess
-           |-- Snakefile.read_quality_report
+   |-- config_variant_calling.yaml
 
-Edit config.yaml file according to your preference.
+Edit config_variant_calling.yaml file according to your preference.
 Each configured attribute is explained by a comment in the file.
 
 Now you may run SnakeLines pipeline using Snakemake.
@@ -110,7 +141,7 @@ For example, if SnakeLines sources has been downloaded to the /usr/local/snakeli
 .. code:: bash
 
    snakemake \
-      --config snakelines_dir=/usr/local/snakelines \
-      --snakefile scripts/variant_calling/germline/Snakefile
+      --snakefile /usr/local/snakelines/snakelines.snake \
+      --configfile config_variant_calling.yaml
 
 Snakemake is very flexible in workflow execution, see `detailed documentation <https://snakemake.readthedocs.io/en/stable/executable.html#all-options>`_ and `useful bash aliases for SnakeLines <./aliases.html>`_.

@@ -18,12 +18,14 @@ rule bwa__prepare_index:
     log:
         out = '{fadir}/bwa_index/log/{sequence}.log',
         err = '{fadir}/bwa_index/log/{sequence}.err',
+    conda:
+        config['snakelines_dir'] + '/enviroments/others_env.yaml'
     shell:
-        '''
+        """
         bwa index \
             -p {params.index} \
             -a bwtsw \
             {input} \
         >  {log.out} \
         2> {log.err}
-        '''
+        """

@@ -9,6 +9,8 @@ rule vardict__create_wgs_bed_file:
         fai = 'reference/{reference}/{reference}.fa.fai'
     output:
         bed = 'reference/{reference}/annotation/wgs/regions.bed'
+    conda:
+        config['snakelines_dir'] + '/enviroments/others_env.yaml'
     shell:
           """
         awk \
@@ -27,6 +29,8 @@ rule vardict__prepare_bed_file:
         bed = 'reference/{reference}/annotation/{panel}/regions.bed',
     output:
         bed = 'reference/{reference}/annotation/{panel}/regions.vardict.bed',
+    conda:
+        config['snakelines_dir'] + '/enviroments/others_env.yaml'
     shell:
         """
         cut -f 1-4 {input.bed} > {output.bed}
@@ -53,9 +57,11 @@ rule vardict__call_germline_variants:
         min_map_quality        = method_config.get('hard_filter', {}).get('min_map_quality', 15)
     threads:
         int(config['threads'])
+    conda:
+        config['snakelines_dir'] + '/enviroments/others_env.yaml'
     shell:
         """
-        vardictjava \
+        vardict-java \
             -G {input.reffasta} \
             -b {input.bam} \
             -f {params.min_nonref_allele_freq} \
@@ -82,21 +88,21 @@ rule vardict__test_strand_bias:
         tsb = temp('variant/{reference}-{panel}/{state}/{sample}.tsb')
     log:
         err = 'variant/{reference}-{panel}/{state}/log/{sample}.test_strand_bias.err'
+    conda:
+        config['snakelines_dir'] + '/enviroments/others_env.yaml'
     shell:
-        '''
-        BIAS_SCRIPT=/usr/local/tools/vardict-1.5.1/VarDict/teststrandbias.R
-
+        """
         cat {input.vdc} \
-        | $BIAS_SCRIPT \
+        | teststrandbias.R \
         >  {output.tsb} \
         2> {log.err}
-        '''
+        """
 
 # TODO hardcoded path
 rule vardict__tsb_to_vcf:
-    '''
+    """
     Convert intermediate files of Vardict to VCF format
-    '''
+    """
     input:
         tsb = 'variant/{reference}-{panel}/{state}/{sample}.tsb'
     output:
@@ -106,9 +112,11 @@ rule vardict__tsb_to_vcf:
         min_map_quality        = method_config.get('soft_filter', {}).get('min_map_quality', 20),
         read_depth             = method_config.get('soft_filter', {}).get('read_depth', 10),
         min_nonref_allele_freq = method_config.get('soft_filter', {}).get('min_nonref_allele_freq', 0.2)
+    conda:
+        config['snakelines_dir'] + '/enviroments/others_env.yaml'
     shell:
-        '''
-        /usr/local/tools/vardict-1.5.1/VarDict/var2vcf_valid.pl \
+        """
+        var2vcf_valid.pl \
             -S \
             -A \
             -q {params.min_mean_base_quality} \
@@ -118,4 +126,4 @@ rule vardict__tsb_to_vcf:
             -N {wildcards.sample} \
             {input} \
         > {output}
-        '''
+        """

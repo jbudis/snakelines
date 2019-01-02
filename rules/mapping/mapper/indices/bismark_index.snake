@@ -1,0 +1,29 @@
+rule bismark__prepare_index:
+    """
+    Generate mapping index that is utilized by Bismark algorithm to map bisulfide treated reads to a reference genome
+    :input fa: fasta reference genome
+    :output ct_index: CT reference index (created by rule bismark__prepare_index)
+    :output ga_index: GA reference index (created by rule bismark__prepare_index)
+    :param fadir: root directory of the reference sequence
+    """
+    input:
+        fa = 'reference/{reference}/{reference}.fa'
+    output:
+        ct_index = 'reference/{reference}/Bisulfite_Genome/CT_conversion/BS_CT.1.bt2',
+        ga_index = 'reference/{reference}/Bisulfite_Genome/GA_conversion/BS_GA.1.bt2',
+    params:
+        fadir = 'reference/{reference}'
+    log:
+        out = 'reference/{reference}/log/bismark.log',
+        err = 'reference/{reference}/log/bismark.err',
+    threads:
+        int(config['threads'])
+    conda:
+        config['snakelines_dir'] + '/enviroments/others_env.yaml'
+    shell:
+        '''
+        bismark_genome_preparation \
+            {params.fadir} \
+         > {log.out} \
+        2> {log.err}
+        '''

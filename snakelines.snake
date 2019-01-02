@@ -1,0 +1,42 @@
+import os
+import sys
+from src.config.dependency_load import load_config, check_dependency
+from src.output.copy_files import copy_input_files_with_consisent_names_dict
+from src.output.send_email import send_email
+
+# Load configuration file if not already loaded
+config = load_config(config)
+
+# get the snakelines_directory
+if 'snakelines_dir' not in config:
+    config['snakelines_dir'] = os.path.dirname(os.path.realpath(workflow.snakefile))
+
+# Run startup scripts that automatically loads imports from src/ and load helper methods
+include: config['snakelines_dir'] + '/src/common.snake'
+
+# check dependencies and asses inputs and outputs
+outputs, copy_where = check_dependency(config['snakelines_dir'] + '/src/dependency.yaml', config)
+
+# function to evaluate output directories from dependency.yaml
+def get_files(source_dict):
+    additional_params = {'expand': expand, 'protected': protected, 'temp': temp, 'config': config,
+            'pipeline': pipeline, 'read_types_with_fastqc_report': read_types_with_fastqc_report,
+            'multisample_references': multisample_references, 'tax_levels_count_table': tax_levels_count_table,
+            'tax_levels_barplot': tax_levels_barplot, 'barplot_formats': barplot_formats}
+    return {k:eval(v, additional_params) for k,v in source_dict.items()}
+
+# "pipeline" rule that generates all of the required files
+rule pipeline:
+    input:
+        **get_files(outputs)
+
+# on success copy the files to report directory and send email(s)
+onsuccess:
+    print("Copying and finalizing", file=sys.stderr)
+    copied = copy_input_files_with_consisent_names_dict(get_files(outputs), get_files(copy_where))
+    print("Copied {} files to report dir '{}'".format(copied, config['report_dir']), file=sys.stderr)
+    send_email(config, get_files(outputs), get_files(copy_where), True)
+
+# on error send email(s)
+onerror:
+    send_email(config, get_files(outputs), get_files(copy_where), False)

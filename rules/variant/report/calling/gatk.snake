@@ -15,15 +15,17 @@ rule gatk__fix_vcf_header:
     log:
         out = 'variant/{reference}-wgs/original/log/{sample}.out',
         err = 'variant/{reference}-wgs/original/log/{sample}.err',
+    conda:
+        config['snakelines_dir'] + '/enviroments/others_env.yaml'
     shell:
-        '''
-        gatk4 SelectVariants \
+        """
+        gatk SelectVariants \
             -V {input.vcf} \
             -R {input.fasta} \
             -O {output.vcf} \
             1>{log.out} \
             2>{log.err}
-        '''
+        """
 
 rule tabix__index_vcf:
     """
@@ -38,10 +40,12 @@ rule tabix__index_vcf:
     log:
         out = '{path}/log/{filename}_tabix.out',
         err = '{path}/log/{filename}_tabix.err'
+    conda:
+        config['snakelines_dir'] + '/enviroments/others_env.yaml'
     shell:
-        '''
+        """
         tabix -p vcf {input} 1>{log.out} 2>{log.err}
-        '''
+        """
 
 rule picard__bed_to_interval_list:
     """
@@ -58,8 +62,10 @@ rule picard__bed_to_interval_list:
     log:
         out = 'variant/{reference}-wgs/original/interval_list/log/{sample}.out',
         err = 'variant/{reference}-wgs/original/interval_list/log/{sample}.err'
+    conda:
+        config['snakelines_dir'] + '/enviroments/others_env.yaml'
     shell:
-        '''
+        """
         picard BedToIntervalList \
             INPUT={input.bed} \
             SEQUENCE_DICTIONARY={input.seq_dict} \
@@ -68,7 +74,7 @@ rule picard__bed_to_interval_list:
             UNIQUE=true \
             1> {log.out} \
             2> {log.err}
-        '''
+        """
 
 rule gatk__collect_variant_calling_metrics:
     """
@@ -93,9 +99,11 @@ rule gatk__collect_variant_calling_metrics:
     log:
         out = 'variant/{reference}-{panel}/original/calling_metrics/log/{sample}.out',
         err = 'variant/{reference}-{panel}/original/calling_metrics/log/{sample}.err'
+    conda:
+        config['snakelines_dir'] + '/enviroments/others_env.yaml'
     shell:
-        '''
-        gatk4 CollectVariantCallingMetrics \
+        """
+        gatk CollectVariantCallingMetrics \
             --INPUT {input.vcf} \
             --DBSNP {input.dbsnp} \
             --OUTPUT variant/{wildcards.reference}-{wildcards.panel}/original/calling_metrics/{wildcards.sample} \
@@ -103,4 +111,4 @@ rule gatk__collect_variant_calling_metrics:
             --TARGET_INTERVALS {input.intervals} \
             1> {log.out} \
             2> {log.err}
-        '''
+        """

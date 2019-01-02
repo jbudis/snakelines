@@ -14,11 +14,12 @@ tax_ranks = ['kingdom', 'phylum', 'class', 'order', 'family',
              'genus', 'species', 'subspecies', 'subsubspecies', 'variety', 'form']
 
 rule custom__visualise_taxonomic_counts_as_barplot:
-    '''
+    """
     Generate barplot with proportions of reads per taxonomic unit. Several taxonomic levels,
     such as genus, species... may be generated.
-    :input tax_level:
-    '''
+    :input tax_level: tax_levels
+    :output barplot: barplots
+    """
     input:
         tax_level = '{analysis_dir}/{gene}/report/tsv/{tax_level}.{count_type}.tsv'
     output:
@@ -51,7 +52,7 @@ rule custom__visualise_taxonomic_counts_as_barplot:
         plot_counts = tops.iloc[::-1].append(rest_sum, ignore_index=True)[[wildcards.tax_level] + sids].set_index(wildcards.tax_level)
 
         # Plot the most abundant and "Other" taxons
-        sns.set(context='paper', font_scale=2, palette=sns.color_palette("hls", MAX_TAXONS+1))
+        sns.set(context='paper', font_scale=2, palette=sns.color_palette("hls", MAX_TAXONS+1), color_codes=False)
         sns.set_style('whitegrid')
         plot_counts.T.plot(kind='bar', stacked=True, legend=False, figsize=(18, 12))
         plt.legend(loc='upper center', bbox_to_anchor=(0.5,1.14), ncol=5)

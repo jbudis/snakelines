@@ -1,14 +1,16 @@
 rule samtools__bam_index:
-    '''
+    """
     Generate .bai index to .bam files to quick recover reads from genomic location of interest.
     :input bam: Mapped reads in bam format
     :output bai: Index to mapped reads for enable fast read retrieval from desired genomic region
-    '''
+    """
     input:
         bam = '{path}/{sample}.bam'
     output:
-        bai = '{path}/{sample}.bam.bai'
+        '{path}/{sample}.bam.bai'
+    conda:
+        config['snakelines_dir'] + '/enviroments/others_env.yaml'
     shell:
-        '''
+        """
         samtools index {input.bam}
-        '''
+        """

@@ -1,16 +1,13 @@
-Configuration of pipeline
-=========================
+Configuration of a pipeline
+===========================
 
-Supported pipelines are stored at the pipeline/ directory of SnakeLines scripts.
-Pipelines typically contains a master file (Snakefile), several sub-workflows (Snakefile.<sub-workflow>) and a configuration file (config.yaml).
-The master file and sub-workflows define, what files would be generated.
-Rules, that define, how they would be generated are stored in the rules/ directory.
-These rules may be easily configured adjusting the config.yaml configuration of the pipeline.
-
+Snakelines pipeline is defined solely by a configuration file.
 Configurations typically consists of several steps.
 At first, define set of samples and reference genomes to analyse.
 Next, define where to store summary reports of the analysis.
 Finally, adjust parameters of rules in the pipeline.
+Therefore, this configuration file defines the whole analysis pipeline.
+
 See `example <#example-configuration>`_ at the end of this chapter.
 
 

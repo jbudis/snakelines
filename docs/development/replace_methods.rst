@@ -16,7 +16,7 @@ For example, you may use spades or unicycler for assembly by changing value unde
 
 You may use tool that is not yet implemented, or custom solution.
 In that case, you need to create new rule in the /rules/assembly/assembler/<your_assembler>.snake.
-Rule should contain the same set of inputs and outputs as the spades assembler (/rules/assembly/assembler/spades.snake).
+Rule should contain the same set of outputs as the other assemblers as is defined in the dependency file (/src/dependency.yaml).
 Than you can easily switch analysis to your solution changing configuration file:
 
 .. code-block:: yaml
