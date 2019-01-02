@@ -1,6 +1,9 @@
 rule qiime__vsearch_cluster_features_de_novo:
     """
-    Creates clusters of sequences with {similarity}% similarity, calls 'qiime vsearch cluster-features-de-novo'
+    Creates clusters of sequences (OTUs) with {similarity}% similarity
+
+    Calls 'qiime vsearch cluster-features-de-novo'.
+
     :input table: qiime artifact of type FeatureTable[Frequency], e.g. reads/qiime/joined-table.qza
     :input rep_seqs: qiime artifact of type FeatureData[Sequence], e.g. reads/qiime/joined-rep-seqs.qza
     :output table: qiime artifact of type FeatureTable[Frequency] with similarity, e.g. reads/qiime/joined-table-dn-99.qza

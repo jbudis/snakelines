@@ -3,6 +3,18 @@ include: srcdir('import/taxonomy/import_reference_taxonomy.snake')
 
 rule qiime__feature_classifier__fit_classifier_naive_bayes:
     """
+    Trains Naive Bayes classifier.
+
+    WARNING: Very time consuming operation, and moreover it cannot be parallerized in several threads.
+
+    Calls: 'qiime feature-classifier fit-classifier-naive-bayes'.
+
+    :input ref_reads: reference reads (fasta imported into qza)
+    :input ref_tax: reference taxonomy (taxonomy imported into qza)
+    :output classifier: pre-trained classifier
+    :params tmp_dir: path to temporary directory, because job requires temporary a lot of free disk space, default /tmp might not be enough and path to mounted storage might be used instead
+
+    note: see more at https://docs.qiime2.org/2018.8/tutorials/feature-classifier/
     """
     input:
         ref_reads   = 'reference/qiime2_index/{reference}-ref-reads.qza',
@@ -11,8 +23,6 @@ rule qiime__feature_classifier__fit_classifier_naive_bayes:
         classifier  = 'reference/qiime2_index/{reference}-classifier.qza'
     params:
         tmp_dir   = method_config['tmp_dir'] if method_config.get('tmp_dir', '') != '' else '/tmp'
-    threads:
-        int(config['threads'])
     shell:
         '''
           export TMPDIR={params.tmp_dir}; qiime feature-classifier fit-classifier-naive-bayes \

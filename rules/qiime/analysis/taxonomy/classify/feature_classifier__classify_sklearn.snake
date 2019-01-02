@@ -1,5 +1,15 @@
 rule qiime__feature_classifier__classify_sklearn:
     """
+    Classifies taxonomy.
+
+    Explores the taxonomic composition of the samples and relates that to sample metadata, using a pre-trained classifier.
+
+    Calls 'qiime feature-classifier classify-sklearn'.
+
+    :input rep_seqs: representative sequences, qiime artifact of type FeatureData[Sequence], e.g. reads/qiime/joined-rep-seqs-dn-99.qza
+    :input classifier: path to pre-trained classifier. e.g. reference/qiime2_index/silva-16S-classifier.qza
+    :output taxonomy: taxonomy of OTUs in samples, qiime artifact of type FeatureData[Taxonomy]
+    :params tmp_dir: path to temporary directory, because job requires temporary a lot of free disk space, default /tmp might not be enough and path to mounted storage might be used instead
     """
     input:
         rep_seqs  = 'reads/qiime/{name}-rep-seqs{file_suffix}.qza',

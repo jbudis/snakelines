@@ -1,7 +1,8 @@
 rule qiime__import_reference_reads:
     """
-    :input :
-    :output :
+    Imports fasta reference file.
+    :input ref_reads: fasta reference file, e.g. reference/silva-16S.fa
+    :output ref_reads: indexed fasta file, qiime artifact of type FeatureData[Sequence], e.g. reference/qiime2_index/silva-16S-ref-reads.qza
     """
     input:
         ref_reads   = 'reference/{reference}.fa'

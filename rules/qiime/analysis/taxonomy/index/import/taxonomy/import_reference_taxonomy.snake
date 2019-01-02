@@ -1,7 +1,9 @@
 rule qiime__import_reference_taxonomy:
     """
-    :input :
-    :output :
+    Imports taxonomy file.
+
+    :input ref_tax: taxonomy file, e.g. reference/silva-16S.tax
+    :output ref_tax: qiime artifact of type FeatureData[Taxonomy], e.g. reference/qiime2_index/silva-16S-ref-taxonomy.qza
     """
     input:
         ref_tax = 'reference/{reference}.tax'
