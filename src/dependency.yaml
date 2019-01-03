@@ -244,6 +244,25 @@ qiime:
     report:
         export:
             output:
-                html        : 'reads/qiime/{visualization}/index.html'
+                html        : expand('reads/qiime/{visualization}/index.html', visualization=qiime_result_visualizations)
+
         prepare:
+            cluster_feature_table:
+                output:
+                    qzv     : expand('reads/qiime/{name}-table-dn-{perc_identity}.qzv', name=qiime_read_type, perc_identity=config['qiime']['preprocess']['cluster']['similarity'])
+            cluster_rep_seqs:
+                output:
+                    qzv     : expand('reads/qiime/{name}-rep-seqs-dn-{perc_identity}.qzv', name=qiime_read_type, perc_identity=config['qiime']['preprocess']['cluster']['similarity'])
+            quality_report:
+                output:
+                    qzv     : expand('reads/qiime/{name}-imported.qzv', name=qiime_read_type)
+            taxonomy:
+                barplot:
+                    output:
+                        qzv : expand('reads/qiime/{name}-taxa-barplots{file_suffix}.qzv', name=qiime_read_type, file_suffix=qiime_file_suffix)
+                tabulate:
+                    output:
+                        qzv : expand('reads/qiime/{name}-taxonomy{file_suffix}.qzv', name=qiime_read_type, file_suffix=qiime_file_suffix)
+
+
 
