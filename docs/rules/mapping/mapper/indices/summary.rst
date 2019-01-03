@@ -59,7 +59,7 @@ Generate mapping index that is utilized by BWA algorithm to map reads to a refer
 
 **Output(s):**
 
-- *indecis:* 5 files with indeces. e.g '{fadir}/bwa_index/{sequence}.[amb,ann,bwt,pac,sa]'
+- *indecis:* 5 files with indices. e.g '{fadir}/bwa_index/{sequence}.[amb,ann,bwt,pac,sa]'
 
 **Param(s):**
 

@@ -133,6 +133,124 @@ Rules
       .. toctree::
         mapping/report/quality_report/summary.rst
 
+- Qiime
+
+  - Alignment
+
+    .. toctree::
+      qiime/alignment/summary.rst
+
+  - Analysis
+
+    - Core Metrics
+
+      .. toctree::
+        qiime/analysis/core_metrics/summary.rst
+
+    - Diversity
+
+      - Alpha
+
+        .. toctree::
+          qiime/analysis/diversity/alpha/summary.rst
+
+      - Beta
+
+        .. toctree::
+          qiime/analysis/diversity/beta/summary.rst
+
+      - Custom Axes
+
+        .. toctree::
+          qiime/analysis/diversity/custom_axes/summary.rst
+
+    - Taxonomy
+
+      - Classify
+
+        .. toctree::
+          qiime/analysis/taxonomy/classify/summary.rst
+
+      - Index
+
+        .. toctree::
+          qiime/analysis/taxonomy/index/summary.rst
+
+        - Import
+
+          - Reads
+
+            .. toctree::
+              qiime/analysis/taxonomy/index/import/reads/summary.rst
+
+          - Taxonomy
+
+            .. toctree::
+              qiime/analysis/taxonomy/index/import/taxonomy/summary.rst
+
+  - Preprocess
+
+    - Cluster
+
+      .. toctree::
+        qiime/preprocess/cluster/summary.rst
+
+    - Dereplicate
+
+      .. toctree::
+        qiime/preprocess/dereplicate/summary.rst
+
+    - Import
+
+      .. toctree::
+        qiime/preprocess/import/summary.rst
+
+    - Manifest
+
+      .. toctree::
+        qiime/preprocess/manifest/summary.rst
+
+    - Metadata
+
+      .. toctree::
+        qiime/preprocess/metadata/summary.rst
+
+  - Report
+
+    - Export
+
+      .. toctree::
+        qiime/report/export/summary.rst
+
+    - Prepare
+
+      - Cluster Feature Table
+
+        .. toctree::
+          qiime/report/prepare/cluster_feature_table/summary.rst
+
+      - Cluster Rep Seqs
+
+        .. toctree::
+          qiime/report/prepare/cluster_rep_seqs/summary.rst
+
+      - Quality Report
+
+        .. toctree::
+          qiime/report/prepare/quality_report/summary.rst
+
+      - Taxonomy
+
+        - Barplot
+
+          .. toctree::
+            qiime/report/prepare/taxonomy/barplot/summary.rst
+
+        - Tabulate
+
+          .. toctree::
+            qiime/report/prepare/taxonomy/tabulate/summary.rst
+
 - Reads
 
   - Conversion
