@@ -190,3 +190,60 @@ assembly:
                 overlap_graphs:
                     from: expand('assembly/{sample}/assembly_graph.svg', sample=pipeline.samples)
                     to: expand('{report_dir}/assembly/{sample}/contigs.svg', report_dir=config['report_dir'], sample=pipeline.samples)
+
+qiime:
+    aligment:
+        output:
+            alignment: expand('reads/qiime/{name}-aligned-rep-seqs{file_suffix}.qza', name=qiime_read_type, file_suffix=qiime_file_suffix)
+            masked_alignment: expand('reads/qiime/{name}-masked-aligned-rep-seqs{file_suffix}.qza', name=qiime_read_type, file_suffix=qiime_file_suffix)
+            unrooted_tree: expand('reads/qiime/{name}-unrooted-tree{file_suffix}.qza', name=qiime_read_type, file_suffix=qiime_file_suffix)
+            rooted_tree: expand('reads/qiime/{name}-rooted-tree{file_suffix}.qza', name=qiime_read_type, file_suffix=qiime_file_suffix)
+    analysis:
+        core_metrics:
+            output:
+                rarefield_table : expand('reads/qiime/{name}-core-metrics-results/rarefied_table.qza', name=qiime_read_type)
+                vector          : expand('reads/qiime/{name}-core-metrics-results/{alpha_types}_vector.qza', name=qiime_read_type, alpha_types=qiime_alpha_types)
+                distance_matrix : expand('reads/qiime/{name}-core-metrics-results/{beta_types}_distance_matrix.qza', name=qiime_read_type, beta_types=qiime_beta_types)
+                emperor_plots   : expand('reads/qiime/{name}-core-metrics-results/{emperor_types}_emperor.qzv', name=qiime_read_type, emperor_types=qiime_emperor_types)
+        diversity:
+            alpha:
+                output:
+                    qzv         : expand('reads/qiime/{name}-core-metrics-results/alpha/{type}_group_significance.qzv', name=qiime_read_type, type=qiime_alpha_types)
+            beta:
+                output:
+                    qzv         : expand('reads/qiime/{name}-core-metrics-results/beta/{type}_{column}_significance.qzv', name=qiime_read_type, type=qiime_beta_types, colum=config['qiime_beta_significance_columns'])
+            custom_axes:
+                output:
+                    qzv         : expand('reads/qiime/{name}-core-metrics-results/custom_axes/{type}_emperor_{column}.qzv', name=qiime_read_type, type=qiime_beta_types, colum=config['qiime_beta_significance_columns'])
+        taxonomy:
+            classify:
+                output:
+                    taxonomy    : expand('reads/qiime/{name}-taxonomy{file_suffix}.qza', name=qiime_read_type, file_suffix=qiime_file_suffix)
+            index:
+                output:
+                    classifier  : expand('reference/qiime2_index/{reference}-classifier.qza', reference=qiime_reference)
+
+    preprocess:
+        cluster:
+            output:
+                table       : expand('reads/qiime/{name}-table-dn-{similarity}.qza', name=qiime_read_type, similarity=config['qiime']['preprocess']['cluster']['similarity'])
+                rep_seqs    : expand('reads/qiime/{name}-rep-seqs-dn-{similarity}.qza', name=qiime_read_type, similarity=config['qiime']['preprocess']['cluster']['similarity'])
+        dereplicate:
+            output:
+                table       : expand('reads/qiime/{name}-table.qza', name=qiime_read_type)
+                rep_seqs    : expand('reads/qiime/{name}-rep-seqs.qza', name=qiime_read_type)
+        import:
+            output:
+                qza         : expand('reads/qiime/{name}-imported.qza', name=qiime_read_type)
+        manifest:
+            output:
+                manifest    : expand('reads/qiime/{name}.manifest', name=qiime_read_type)
+        metadata:
+            output:
+                metadata    : expand('reads/qiime/{name}-sample-metadata.tsv', name=qiime_read_type)
+    report:
+        export:
+            output:
+                html        : 'reads/qiime/{visualization}/index.html'
+        prepare:
+

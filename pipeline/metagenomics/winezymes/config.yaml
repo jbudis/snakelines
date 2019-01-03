@@ -27,6 +27,11 @@ reads:                              # Prepare reads and quality reports for down
                 - trimmed
                 - joined
 
+qiime_read_type: joined
+qiime_beta_significance_columns:
+    - col3
+    - col4
+
 qiime:
     preprocess:
         manifest:
@@ -68,11 +73,6 @@ qiime:
         core_metrics:
             method: diversity_core_metrics_phylogenetic
             similarity: 99
-            alpha_types:
-                - evenness
-                - faith_pd
-                - observed_otus
-                - shannon
             beta_types:
                 - bray_curtis
                 - jaccard
@@ -86,6 +86,11 @@ qiime:
         diversity:
             alpha:
                 method: diversity__alpha_group_significance
+                alpha_types:
+                    - evenness
+                    - faith_pd
+                    - observed_otus
+                    - shannon
             beta:
                 method: diversity__beta_group_significance
 #            custom_axes:                   # requires sample-metadata with numeric columns

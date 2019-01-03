@@ -50,7 +50,7 @@ rule finalise__winezymes:
         beta_group_significance_reports = expand('reads/qiime/joined-core-metrics-results/beta/{type}_{column}_significance/index.html',
                                                   type=config['qiime']['analysis']['core_metrics']['beta_types'],
 #                                                  type=['bray_curtis', 'jaccard', 'unweighted_unifrac', 'weighted_unifrac'],
-                                                  column=['col3', 'col4']),
+                                                  column=config['qiime_beta_significance_columns']),
 
         emperor_plot_reports = expand('reads/qiime/joined-core-metrics-results/{type}_emperor/index.html',
                                                   type=config['qiime']['analysis']['core_metrics']['emperor_types']),
