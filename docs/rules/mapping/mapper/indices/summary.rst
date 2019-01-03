@@ -1,3 +1,26 @@
+Bismark - Prepare Index
+---------------------------
+
+Generate mapping index that is utilized by Bismark algorithm to map bisulfide treated reads to a reference genome
+
+**Location**
+
+- *Filepath:* <SnakeLines_dir>/rules/mapping/mapper/indices/bismark_index.snake
+- *Rule name:* bismark__prepare_index
+
+**Input(s):**
+
+- *fa:* fasta reference genome
+
+**Output(s):**
+
+- *ct_index:* CT reference index (created by rule bismark__prepare_index)
+- *ga_index:* GA reference index (created by rule bismark__prepare_index)
+
+**Param(s):**
+
+- *fadir:* root directory of the reference sequence
+
 Bowtie2 - Prepare Index
 ---------------------------
 

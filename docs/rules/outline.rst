@@ -26,6 +26,16 @@ Rules
     .. toctree::
       classification/contig_based/summary.rst
 
+  - Differential Analysis
+
+    .. toctree::
+      classification/differential_analysis/summary.rst
+
+    - Filter Significant
+
+      .. toctree::
+        classification/differential_analysis/filter_significant/summary.rst
+
   - Read Based
 
     .. toctree::
@@ -54,6 +64,23 @@ Rules
 
         .. toctree::
           classification/report/taxonomic_counts/pieplot/summary.rst
+
+    - Transcripts
+
+      - Count Table
+
+        .. toctree::
+          classification/report/transcripts/count_table/summary.rst
+
+      - Pca
+
+        .. toctree::
+          classification/report/transcripts/pca/summary.rst
+
+  - Transcripts
+
+    .. toctree::
+      classification/transcripts/summary.rst
 
   - Viral
 
@@ -95,6 +122,11 @@ Rules
         mapping/postprocess/sorted/summary.rst
 
   - Report
+
+    - Methylation
+
+      .. toctree::
+        mapping/report/methylation/summary.rst
 
     - Quality Report
 
