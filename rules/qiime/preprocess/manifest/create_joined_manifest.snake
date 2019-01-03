@@ -6,7 +6,7 @@ rule qiime__create_joined_manifest:
     """
     input:
         rm    = expand('reads/{{name}}/{sample}_RM.fastq.gz',
-                        sample=pipeline.samples )
+                        sample=pipeline.samples)
     output:
         manifest = 'reads/qiime/{name}.manifest'
     params:

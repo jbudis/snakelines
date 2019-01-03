@@ -19,10 +19,19 @@ outputs, copy_where = check_dependency(config['snakelines_dir'] + '/src/dependen
 
 # function to evaluate output directories from dependency.yaml
 def get_files(source_dict):
+    #TODO refactor
     additional_params = {'expand': expand, 'protected': protected, 'temp': temp, 'config': config,
             'pipeline': pipeline, 'read_types_with_fastqc_report': read_types_with_fastqc_report,
             'multisample_references': multisample_references, 'tax_levels_count_table': tax_levels_count_table,
-            'tax_levels_barplot': tax_levels_barplot, 'barplot_formats': barplot_formats}
+            'tax_levels_barplot': tax_levels_barplot, 'barplot_formats': barplot_formats,
+            'qiime_read_type': qiime_read_type,
+            'qiime_reference': qiime_reference,
+            'similarity': similarity,
+            'qiime_file_suffix': qiime_file_suffix,
+            'qiime_alpha_types': qiime_alpha_types,
+            'qiime_beta_types': qiime_beta_types,
+            'qiime_emperor_types': qiime_emperor_types,
+            'qiime_result_visualizations': qiime_result_visualizations }
     return {k:eval(v, additional_params) for k,v in source_dict.items()}
 
 # "pipeline" rule that generates all of the required files

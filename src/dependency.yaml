@@ -25,7 +25,7 @@ reads:
                 reads: expand('reads/deduplicated/{sample}_R{orientation}.fastq.gz', sample=pipeline.samples, orientation=[1,2])
         joined:
             output:
-                reads: expand('reads/joined/{sample}_R{orientation}.fastq.gz', sample=pipeline.samples, orientation=[1,2])
+                reads: expand('reads/joined/{sample}_R{orientation}.fastq.gz', sample=pipeline.samples, orientation=[1,2,'M'])
         subsampled:
             output:
                 reads: expand('reads/subsampled/{sample}_R{orientation}.fastq.gz', sample=pipeline.samples, orientation=[1,2])
@@ -192,7 +192,7 @@ assembly:
                     to: expand('{report_dir}/assembly/{sample}/contigs.svg', report_dir=config['report_dir'], sample=pipeline.samples)
 
 qiime:
-    aligment:
+    alignment:
         output:
             alignment: expand('reads/qiime/{name}-aligned-rep-seqs{file_suffix}.qza', name=qiime_read_type, file_suffix=qiime_file_suffix)
             masked_alignment: expand('reads/qiime/{name}-masked-aligned-rep-seqs{file_suffix}.qza', name=qiime_read_type, file_suffix=qiime_file_suffix)
@@ -211,10 +211,10 @@ qiime:
                     qzv         : expand('reads/qiime/{name}-core-metrics-results/alpha/{type}_group_significance.qzv', name=qiime_read_type, type=qiime_alpha_types)
             beta:
                 output:
-                    qzv         : expand('reads/qiime/{name}-core-metrics-results/beta/{type}_{column}_significance.qzv', name=qiime_read_type, type=qiime_beta_types, colum=config['qiime_beta_significance_columns'])
+                    qzv         : expand('reads/qiime/{name}-core-metrics-results/beta/{type}_{column}_significance.qzv', name=qiime_read_type, type=qiime_beta_types, column=config['qiime_beta_significance_columns'])
             custom_axes:
                 output:
-                    qzv         : expand('reads/qiime/{name}-core-metrics-results/custom_axes/{type}_emperor_{column}.qzv', name=qiime_read_type, type=qiime_beta_types, colum=config['qiime_beta_significance_columns'])
+                    qzv         : expand('reads/qiime/{name}-core-metrics-results/custom_axes/{type}_emperor_{column}.qzv', name=qiime_read_type, type=qiime_beta_types, column=config['qiime_beta_significance_columns'])
         taxonomy:
             classify:
                 output:

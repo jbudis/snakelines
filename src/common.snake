@@ -83,32 +83,42 @@ qiime_emperor_types = extract_from_config(config, ['qiime', 'analysis', 'core_me
 
 qiime_result_visualizations = [
     # read quality report
-    '%s-imported'.format(qiime_read_type),
+    '{}-imported'.format(qiime_read_type)]
 
-    # OTU reports
-    expand('reads/qiime/{name}-{type}-dn-{similarity}/index.html',
+qiime_result_visualizations.extend(
+  expand('{name}-{type}-dn-{similarity}',
+    name=qiime_read_type,
+    type=['rep-seqs', 'table'],
+    similarity=config['qiime']['preprocess']['cluster']['similarity']))
+
+# OTU reports
+qiime_result_visualizations.extend(
+    expand('{name}-{type}-dn-{similarity}',
             name=qiime_read_type,
             type=['rep-seqs', 'table'],
-            similarity=config['qiime']['preprocess']['cluster']['similarity']),
+            similarity=config['qiime']['preprocess']['cluster']['similarity']))
 
-    # taxonomy reports
-    expand('reads/qiime/{name}-{type}-dn-{similarity}/index.html',
+# taxonomy reports
+qiime_result_visualizations.extend(
+    expand('{name}-{type}-dn-{similarity}',
             name=qiime_read_type,
             type=['taxonomy', 'taxa-barplots'],
-            similarity=config['qiime']['analysis']['core_metrics']['similarity']),
+            similarity=config['qiime']['analysis']['core_metrics']['similarity']))
 
-    # alpha group significance reports
-    expand('reads/qiime/{name}-core-metrics-results/alpha/{type}_group_significance/index.html',
+# alpha group significance reports
+qiime_result_visualizations.extend(
+    expand('{name}-core-metrics-results/alpha/{type}_group_significance',
             name=qiime_read_type,
-            type=['bray_curtis', 'jaccard', 'unweighted_unifrac', 'weighted_unifrac']),
+            type=['evenness', 'faith_pd', 'observed_otus', 'shannon']))
 
-    # beta group significance
-    expand('reads/qiime/{name}-core-metrics-results/beta/{type}_{column}_significance/index.html',
+# beta group significance
+qiime_result_visualizations.extend(
+    expand('{name}-core-metrics-results/beta/{type}_{column}_significance',
             name=qiime_read_type,
             type=['bray_curtis', 'jaccard', 'unweighted_unifrac', 'weighted_unifrac'],
-            column=config['qiime_beta_significance_columns']),
+            column=config['qiime_beta_significance_columns']))
 
-    # emperor plot reports
-    expand('reads/qiime/joined-core-metrics-results/{type}_emperor/index.html',
-            type=config['qiime']['analysis']['core_metrics']['emperor_types'])
-]
+# emperor plot reports
+qiime_result_visualizations.extend(
+    expand('joined-core-metrics-results/{type}_emperor',
+            type=config['qiime']['analysis']['core_metrics']['emperor_types']))
