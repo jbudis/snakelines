@@ -39,12 +39,12 @@ qiime:
         metadata:
             method: create_metadata_file  # method distinguish columns for imported filenames, where each value is separated by column_separator
             column_separator: '-'         # filename 17-dna-replicaA1 has 3 metadata columns, 17 dna replicaA1
-        import:
+        imported:
             method: import_manifest
             data_type: JoinedSequencesWithQuality
-        dereplicate:
+        dereplicated:
             method: vsearch_dereplicate_sequences
-        cluster:
+        clustered:
             method: vsearch_cluster_features_de_novo
             similarity: 99
 

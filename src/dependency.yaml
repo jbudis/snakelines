@@ -224,15 +224,15 @@ qiime:
                     classifier  : expand('reference/{reference}/qiime2_index/{reference}-classifier.qza', reference=qiime_reference)
 
     preprocess:
-        cluster:
+        clustered:
             output:
-                table       : expand('reads/qiime/{name}-table-dn-{similarity}.qza', name=qiime_read_type, similarity=config['qiime']['preprocess']['cluster']['similarity'])
-                rep_seqs    : expand('reads/qiime/{name}-rep-seqs-dn-{similarity}.qza', name=qiime_read_type, similarity=config['qiime']['preprocess']['cluster']['similarity'])
-        dereplicate:
+                table       : expand('reads/qiime/{name}-table-dn-{similarity}.qza', name=qiime_read_type, similarity=config['qiime']['preprocess']['clustered']['similarity'])
+                rep_seqs    : expand('reads/qiime/{name}-rep-seqs-dn-{similarity}.qza', name=qiime_read_type, similarity=config['qiime']['preprocess']['clustered']['similarity'])
+        dereplicated:
             output:
                 table       : expand('reads/qiime/{name}-table.qza', name=qiime_read_type)
                 rep_seqs    : expand('reads/qiime/{name}-rep-seqs.qza', name=qiime_read_type)
-        import:
+        imported:
             output:
                 qza         : expand('reads/qiime/{name}-imported.qza', name=qiime_read_type)
         manifest:
@@ -249,7 +249,7 @@ qiime:
                 out_report          : expand('reads/qiime/{name}-{type}-dn-{similarity}/index.html',
                                                 name=qiime_read_type,
                                                 type=['rep-seqs', 'table'],
-                                                similarity=config['qiime']['preprocess']['cluster']['similarity'])
+                                                similarity=config['qiime']['preprocess']['clustered']['similarity'])
 
                 taxonomy_report     : expand('reads/qiime/{name}-{type}-dn-{similarity}/index.html',
                                                 name=qiime_read_type,
@@ -272,10 +272,10 @@ qiime:
         prepare:
             cluster_feature_table:
                 output:
-                    qzv     : expand('reads/qiime/{name}-table-dn-{perc_identity}.qzv', name=qiime_read_type, perc_identity=config['qiime']['preprocess']['cluster']['similarity'])
+                    qzv     : expand('reads/qiime/{name}-table-dn-{perc_identity}.qzv', name=qiime_read_type, perc_identity=config['qiime']['preprocess']['clustered']['similarity'])
             cluster_rep_seqs:
                 output:
-                    qzv     : expand('reads/qiime/{name}-rep-seqs-dn-{perc_identity}.qzv', name=qiime_read_type, perc_identity=config['qiime']['preprocess']['cluster']['similarity'])
+                    qzv     : expand('reads/qiime/{name}-rep-seqs-dn-{perc_identity}.qzv', name=qiime_read_type, perc_identity=config['qiime']['preprocess']['clustered']['similarity'])
             quality_report:
                 output:
                     qzv     : expand('reads/qiime/{name}-imported.qzv', name=qiime_read_type)
