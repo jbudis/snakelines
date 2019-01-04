@@ -2,12 +2,12 @@ rule qiime__feature_table_summarize:
     """
     Create qiime visualization of clustered feature table, calls 'qiime feature-table summarize'
     :input table: qiime artifact of type FeatureTable[Frequency] with similarity, e.g. reads/qiime/joined-table-dn-99.qza
-    :input metadata: TSV metadata filepath, e.g. reads/qiime/joined-sample-metadata.tsv
+    :input metadata: TSV metadata filepath, e.g. description/joined-sample-metadata.tsv
     :output qzv: qiime visualization file, can be exported to HTML, e.g. reads/qiime/joined-table-dn-99.qzv
     """
     input:
         table     = 'reads/qiime/{name}-table-dn-{perc_identity}.qza',
-        metadata  = 'reads/qiime/{name}-sample-metadata.tsv'
+        metadata  = 'description/{name}-sample-metadata.tsv'
     output:
         qzv       = 'reads/qiime/{name}-table-dn-{perc_identity}.qzv'
     shell:

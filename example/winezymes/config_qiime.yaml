@@ -29,16 +29,16 @@ reads:                              # Prepare reads and quality reports for down
 
 qiime_read_type: joined
 qiime_beta_significance_columns:
-    - col3
-    - col4
+    - aditivum
+    - material
 
 qiime:
     preprocess:
         manifest:
             method: create_joined_manifest
-        metadata:
-            method: create_metadata_file  # method distinguish columns for imported filenames, where each value is separated by column_separator
-            column_separator: '-'         # filename 17-dna-replicaA1 has 3 metadata columns, 17 dna replicaA1
+#        metadata:
+#            method: create_metadata_file  # method distinguish columns for imported filenames, where each value is separated by column_separator
+#            column_separator: '-'         # filename 17-dna-replicaA1 has 3 metadata columns, 17 dna replicaA1
         imported:
             method: import_manifest
             data_type: JoinedSequencesWithQuality

@@ -1,0 +1,25 @@
+sample-id	year	year-str	wine	aditivum	material	type	must	must-str	replicas	bio-rep	
+#q2:types	numeric	categorical	categorical	categorical	categorical	categorical	numeric	categorical	categorical	categorical	
+17-rb-ctrl-dna-16s-m1c-repA1	2017	2017	rb	ctrl	dna	16s	1	m1c	repA1	A	
+17-rb-ctrl-dna-16s-m2c-repA1	2017	2017	rb	ctrl	dna	16s	2	m2c	repA1	A	
+17-rb-ctrl-dna-16s-m3c-repA1	2017	2017	rb	ctrl	dna	16s	3	m3c	repA1	A	
+17-rb-ctrl-dna-16s-m4c-repA1	2017	2017	rb	ctrl	dna	16s	4	m4c	repA1	A	
+17-rb-ctrl-dna-16s-m5c-repA1	2017	2017	rb	ctrl	dna	16s	5	m5c	repA1	A	
+17-rb-ctrl-rna-16s-m1c-repA1	2017	2017	rb	ctrl	rna	16s	1	m1c	repA1	A	
+17-rb-ctrl-rna-16s-m2c-repA1	2017	2017	rb	ctrl	rna	16s	2	m2c	repA1	A	
+17-rb-ctrl-rna-16s-m3c-repA1	2017	2017	rb	ctrl	rna	16s	3	m3c	repA1	A	
+17-rb-ctrl-rna-16s-m4c-repA1	2017	2017	rb	ctrl	rna	16s	4	m4c	repA1	A	
+17-rb-ctrl-rna-16s-m5c-repA1	2017	2017	rb	ctrl	rna	16s	5	m5c	repA1	A	
+17-rb-noth-dna-16s-m1x-repA1	2017	2017	rb	noth	dna	16s	1	m1x	repA1	A	
+17-rb-noth-dna-16s-m1x-repA2	2017	2017	rb	noth	dna	16s	1	m1x	repA2	A	
+17-rb-noth-dna-16s-m1x-repA3	2017	2017	rb	noth	dna	16s	1	m1x	repA3	A	
+17-rb-noth-dna-16s-m2x-repA1	2017	2017	rb	noth	dna	16s	2	m2x	repA1	A	
+17-rb-noth-dna-16s-m2x-repA2	2017	2017	rb	noth	dna	16s	2	m2x	repA2	A	
+17-rb-noth-dna-16s-m2x-repA3	2017	2017	rb	noth	dna	16s	2	m2x	repA3	A	
+17-rb-noth-dna-16s-m3x-repA1	2017	2017	rb	noth	dna	16s	3	m3x	repA1	A	
+17-rb-noth-dna-16s-m4x-repA1	2017	2017	rb	noth	dna	16s	4	m4x	repA1	A	
+17-rb-noth-dna-16s-m5x-repA1	2017	2017	rb	noth	dna	16s	5	m5x	repA1	A	
+17-rb-noth-rna-16s-m1x-repA1	2017	2017	rb	noth	rna	16s	1	m1x	repA1	A	
+17-rb-noth-rna-16s-m2x-repA1	2017	2017	rb	noth	rna	16s	2	m2x	repA1	A	
+17-rb-noth-rna-16s-m3x-repA1	2017	2017	rb	noth	rna	16s	3	m3x	repA1	A	
+											

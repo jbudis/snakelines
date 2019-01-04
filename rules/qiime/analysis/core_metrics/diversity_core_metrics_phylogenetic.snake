@@ -26,7 +26,7 @@ rule qiime__diversity_core_metrics_phylogenetic:
     :input html: html export of imported.qza file, e.g. reads/qiime/joined-imported/index.html
     :input rooted_tree: rooted tree, qiime artifact of type Phylogeny[Rooted], e.g. reads/qiime/joined-rooted-tree-dn-99.qza
     :input table: qiime artifact of type FeatureTable[Frequency], e.g. reads/qiime/joined-table.qza
-    :input metadata: samples' metadata filepath in TSV format (tab-separated value), e.g. reads/qiime/joined-sample-metadata.tsv
+    :input metadata: samples' metadata filepath in TSV format (tab-separated value), e.g. description/joined-sample-metadata.tsv
 
     :output rarefield_table: qiime artifact of type FeatureTable[Frequency], e.g. reads/qiime/joined-core-metrics-results/rarefied_table.qza
     :output vector: sample data for alpha diversity, qiime artifact of type SampleData[AlphaDiversity], e.g. reads/qiime/joined-core-metrics-results/shannon_vector.qza
@@ -43,7 +43,7 @@ rule qiime__diversity_core_metrics_phylogenetic:
         html        = 'reads/qiime/{name}-imported/index.html',
         rooted_tree = expand('reads/qiime/{{name}}-rooted-tree{params_file_suffix}.qza', params_file_suffix = '-dn-{}'.format(method_config['similarity']) if method_config.get('similarity', '') != '' else ''),
         table       = expand('reads/qiime/{{name}}-table{params_file_suffix}.qza', params_file_suffix = '-dn-{}'.format(method_config['similarity']) if method_config.get('similarity', '') != '' else ''),
-        metadata    = 'reads/qiime/{name}-sample-metadata.tsv'
+        metadata    = 'description/{name}-sample-metadata.tsv'
     output:
         rarefield_table = 'reads/qiime/{name}-core-metrics-results/rarefied_table.qza',
         vector          = expand('reads/qiime/{{name}}-core-metrics-results/{alpha_types}_vector.qza', alpha_types=['evenness', 'faith_pd', 'observed_otus', 'shannon']),

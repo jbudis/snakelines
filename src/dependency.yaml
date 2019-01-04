@@ -240,7 +240,7 @@ qiime:
                 manifest    : expand('reads/qiime/{name}.manifest', name=qiime_read_type)
         metadata:
             output:
-                metadata    : expand('reads/qiime/{name}-sample-metadata.tsv', name=qiime_read_type)
+                metadata    : expand('description/{name}-sample-metadata.tsv', name=qiime_read_type)
     report:
         export:
             output:

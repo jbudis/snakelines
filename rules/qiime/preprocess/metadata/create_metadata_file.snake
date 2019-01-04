@@ -11,14 +11,14 @@ rule qiime__create_metadata_file:
     Note: for several analysis, mainly for emporer plotting, it is better to create your own metadata file manually
 
     :input rm: relative path to (preprocessed) joined fastQ samples, e.g. reads/joined/*_RM.fastq.gz
-    :output metadata: samples' metadata filepath in TSV format (tab-separated value), e.g. reads/qiime/joined-sample-metadata.tsv
+    :output metadata: samples' metadata filepath in TSV format (tab-separated value), e.g. description/joined-sample-metadata.tsv
     :params sep: filename metadata separator, e.g. '-'
     """
     input:
         rm    = expand('reads/{{name}}/{sample}_RM.fastq.gz',
                         sample=pipeline.samples )
     output:
-        metadata = 'reads/qiime/{name}-sample-metadata.tsv'
+        metadata = 'description/{name}-sample-metadata.tsv'
     params:
         path = '$PWD/reads/{name}/*_RM.fastq.gz',
         sep = method_config['column_separator']
