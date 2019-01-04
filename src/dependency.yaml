@@ -221,7 +221,7 @@ qiime:
                     taxonomy    : expand('reads/qiime/{name}-taxonomy{file_suffix}.qza', name=qiime_read_type, file_suffix=qiime_file_suffix)
             index:
                 output:
-                    classifier  : expand('reference/qiime2_index/{reference}-classifier.qza', reference=qiime_reference)
+                    classifier  : expand('reference/{reference}/qiime2_index/{reference}-classifier.qza', reference=qiime_reference)
 
     preprocess:
         cluster:
@@ -244,7 +244,30 @@ qiime:
     report:
         export:
             output:
-                html        : expand('reads/qiime/{visualization}/index.html', visualization=qiime_result_visualizations)
+                read_quality_report : expand('reads/qiime/{name}-imported/index.html', name=qiime_read_type)
+
+                out_report          : expand('reads/qiime/{name}-{type}-dn-{similarity}/index.html',
+                                                name=qiime_read_type,
+                                                type=['rep-seqs', 'table'],
+                                                similarity=config['qiime']['preprocess']['cluster']['similarity'])
+
+                taxonomy_report     : expand('reads/qiime/{name}-{type}-dn-{similarity}/index.html',
+                                                name=qiime_read_type,
+                                                type=['taxonomy', 'taxa-barplots'],
+                                                similarity=config['qiime']['analysis']['core_metrics']['similarity'])
+
+                alpha_group_significance_reports: expand('reads/qiime/{name}-core-metrics-results/alpha/{type}_group_significance/index.html',
+                                                name=qiime_read_type,
+                                                type=['evenness', 'faith_pd', 'observed_otus', 'shannon'])
+
+                beta_group_significance_reports: expand('reads/qiime/{name}-core-metrics-results/beta/{type}_{column}_significance/index.html',
+                                                name=qiime_read_type,
+                                                type=['bray_curtis', 'jaccard', 'unweighted_unifrac', 'weighted_unifrac'],
+                                                column=config['qiime_beta_significance_columns'])
+
+                emperor_plot_reports: expand('reads/qiime/{name}-core-metrics-results/{type}_emperor/index.html',
+                                                name=qiime_read_type,
+                                                type=['bray_curtis', 'jaccard', 'unweighted_unifrac', 'weighted_unifrac'])
 
         prepare:
             cluster_feature_table:

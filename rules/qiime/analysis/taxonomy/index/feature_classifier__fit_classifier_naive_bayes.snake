@@ -17,10 +17,10 @@ rule qiime__feature_classifier__fit_classifier_naive_bayes:
     note: see more at https://docs.qiime2.org/2018.8/tutorials/feature-classifier/
     """
     input:
-        ref_reads   = 'reference/qiime2_index/{reference}-ref-reads.qza',
-        ref_tax     = 'reference/qiime2_index/{reference}-ref-taxonomy.qza'
+        ref_reads   = 'reference/{reference}/qiime2_index/{reference}-ref-reads.qza',
+        ref_tax     = 'reference/{reference}/qiime2_index/{reference}-ref-taxonomy.qza'
     output:
-        classifier  = 'reference/qiime2_index/{reference}-classifier.qza'
+        classifier  = 'reference/{reference}/qiime2_index/{reference}-classifier.qza'
     params:
         tmp_dir   = method_config['tmp_dir'] if method_config.get('tmp_dir', '') != '' else '/tmp'
     shell:

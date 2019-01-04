@@ -46,9 +46,9 @@ rule qiime__diversity_core_metrics_phylogenetic:
         metadata    = 'reads/qiime/{name}-sample-metadata.tsv'
     output:
         rarefield_table = 'reads/qiime/{name}-core-metrics-results/rarefied_table.qza',
-        vector          = expand('reads/qiime/{{name}}-core-metrics-results/{alpha_types}_vector.qza', alpha_types=method_config['alpha_types']),
-        distance_matrix = expand('reads/qiime/{{name}}-core-metrics-results/{beta_types}_distance_matrix.qza', beta_types=method_config['beta_types']),
-        emperor_plots   = expand('reads/qiime/{{name}}-core-metrics-results/{emperor_types}_emperor.qzv', emperor_types=method_config['emperor_types'])
+        vector          = expand('reads/qiime/{{name}}-core-metrics-results/{alpha_types}_vector.qza', alpha_types=['evenness', 'faith_pd', 'observed_otus', 'shannon']),
+        distance_matrix = expand('reads/qiime/{{name}}-core-metrics-results/{beta_types}_distance_matrix.qza', beta_types=['bray_curtis', 'jaccard', 'unweighted_unifrac', 'weighted_unifrac']),
+        emperor_plots   = expand('reads/qiime/{{name}}-core-metrics-results/{emperor_types}_emperor.qzv', emperor_types=['bray_curtis', 'jaccard', 'unweighted_unifrac', 'weighted_unifrac'])
     threads:
         int(config['threads'])
     shell:

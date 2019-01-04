@@ -30,8 +30,7 @@ def get_files(source_dict):
             'qiime_file_suffix': qiime_file_suffix,
             'qiime_alpha_types': qiime_alpha_types,
             'qiime_beta_types': qiime_beta_types,
-            'qiime_emperor_types': qiime_emperor_types,
-            'qiime_result_visualizations': qiime_result_visualizations }
+            'qiime_emperor_types': qiime_emperor_types}
     return {k:eval(v, additional_params) for k,v in source_dict.items()}
 
 # "pipeline" rule that generates all of the required files
