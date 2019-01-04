@@ -190,20 +190,20 @@ Rules
 
   - Preprocess
 
-    - Cluster
+    - Clustered
 
       .. toctree::
-        qiime/preprocess/cluster/summary.rst
+        qiime/preprocess/clustered/summary.rst
 
-    - Dereplicate
-
-      .. toctree::
-        qiime/preprocess/dereplicate/summary.rst
-
-    - Import
+    - Dereplicated
 
       .. toctree::
-        qiime/preprocess/import/summary.rst
+        qiime/preprocess/dereplicated/summary.rst
+
+    - Imported
+
+      .. toctree::
+        qiime/preprocess/imported/summary.rst
 
     - Manifest
 
