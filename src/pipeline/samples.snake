@@ -30,11 +30,6 @@ class Pipeline:
             assert os.path.exists(r1), 'Read file {} does not exists'.format(r1)
             assert os.path.exists(r2), 'Read file {} does not exists'.format(r2)
 
-        # Check, if reference file exists
-        if reference:
-            fasta = 'reference/{reference}/{reference}.fa'.format(reference=reference)
-            assert os.path.exists(fasta), 'Reference fasta {} does not exists'.format(fasta)
-
         # Check, if panel bed file exists
         if panel:
             assert reference, 'Panel cannot be defined without reference'

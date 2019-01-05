@@ -5,7 +5,7 @@ def extract_from_config(items, default_value):
     return default value specified as the parameter.
 
     :param items: list str: series of keys to hierarchically find item in the configuration file
-    :param default_value: value to return if the series of keys are not present in the configuration
+    :param default_value: value to return if the series of keys are not present in the n
     '''
     subconfig = config
     for item in items:

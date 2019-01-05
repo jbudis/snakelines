@@ -3,6 +3,7 @@ import pandas as pd
 import tempfile
 from collections import OrderedDict
 
+
 rule krona__single_sample_pieplot:
     '''
     Generate interactive hierarchical multilevel pie-plot with taxonomic counts for a single sample.
@@ -33,14 +34,19 @@ def individual_krn_files(wildcards):
                     analysis_dir=wildcards.analysis_dir,
                     reference=wildcards.reference,
                     sample=pipeline.samples_for(wildcards.reference))
+#    return expand('{analysis_dir}/{reference}/report/krona/individual/{sample}.krn',
+#                    analysis_dir=config['classification']['viral']['identification']['method'],
+#                    reference=config['classification']['viral']['identification']['reference'],
+#                    sample=pipeline.samples_for(config['classification']['viral']['identification']['reference']))
 
+#            krona = '{analysis_dir}/{reference}/report/krona/individual/{sample}.html'
 
 rule krona__multi_sample_pieplot:
     '''
     Generate interactive hierarchical multilevel pie-plot with taxonomic counts for multiple samples.
     '''
     input:
-        krns  = individual_krn_files
+        krns =  individual_krn_files
     output:
         krona = '{analysis_dir}/{reference}/report/krona/taxonomic_counts.html'
     log:
@@ -57,33 +63,33 @@ rule krona__multi_sample_pieplot:
 
 
 # TODO do we need this rule?
-rule krona_report_from_otus:
-    input:
-        tax = '{path}/{sample}.tax',
-        counts = '{path}/{sample}.counts.tsv'
-    output:
-        html = '{path}/{sample}.krona.html'
-    run:
-        with open(input.tax) as tax_file:
-            taxes = dict(line.split('\t') for line in tax_file)
-
-        counts = pd.read_csv(input.counts, sep='\t', index_col=0)
-        sids, otus = counts.index, counts.columns
-
-        # Store krona input taxonomies in temporary files, one file for each sample
-        krn_files = OrderedDict()
-        for sid, sid_counts in counts.iterrows():
-            _, krn_name = tempfile.mkstemp()
-            with open(krn_name, 'w') as krn:
-                krn_files[sid] = krn_name
-                for otu in otus:
-                    otu_count = sid_counts[otu]
-                    if otu_count == 0:
-                        continue
-                    krn.write('{count}\t{tax}\n'.format(count=otu_count, tax=taxes[otu].replace(';', '\t')))
-
-        krns = ' '.join(['{},{}'.format(krn,sid) for sid, krn in krn_files.items()])
-        command = 'ktImportText -o {output} {input}'.format(output=output.html, input=krns)
-        os.system(command)
-        for krn in krn_files.values():
-            os.remove(krn)
+#rule krona_report_from_otus:
+#    input:
+#        tax = '{path}/{sample}.tax',
+#        counts = '{path}/{sample}.counts.tsv'
+#    output:
+#        html = '{path}/{sample}.krona.html'
+#    run:
+#        with open(input.tax) as tax_file:
+#            taxes = dict(line.split('\t') for line in tax_file)
+#
+#        counts = pd.read_csv(input.counts, sep='\t', index_col=0)
+#        sids, otus = counts.index, counts.columns
+#
+#        # Store krona input taxonomies in temporary files, one file for each sample
+#        krn_files = OrderedDict()
+#        for sid, sid_counts in counts.iterrows():
+#            _, krn_name = tempfile.mkstemp()
+#            with open(krn_name, 'w') as krn:
+#                krn_files[sid] = krn_name
+#                for otu in otus:
+#                    otu_count = sid_counts[otu]
+#                    if otu_count == 0:
+#                        continue
+#                    krn.write('{count}\t{tax}\n'.format(count=otu_count, tax=taxes[otu].replace(';', '\t')))
+#
+#        krns = ' '.join(['{},{}'.format(krn,sid) for sid, krn in krn_files.items()])
+#        command = 'ktImportText -o {output} {input}'.format(output=output.html, input=krns)
+#        os.system(command)
+#        for krn in krn_files.values():
+#            os.remove(krn)

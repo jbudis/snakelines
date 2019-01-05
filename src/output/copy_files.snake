@@ -9,7 +9,8 @@ def copy_input_files_with_consistent_output_names(input, output):
     :param input: input files of the rule
     :param output: output files of the rule
     '''
-
+    print(type(output))
+    print('=================', output.__dict__)
     # Iterate through all defined outputs in the rule
     for item_name in output.__dict__:
 
