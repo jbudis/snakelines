@@ -275,6 +275,6 @@ rule fasta_summary__summarize_annotations:
             sort_index = list(html_attrs.columns).index(params.sort_by)
             out.write(TEMPLATE.format(attrs=html_table,
                                       seq_fasta='%s/all_contigs.fa' % params.fasta_dir,
-                                      sort_index=sort_index,x
+                                      sort_index=sort_index,
                                       sort_how=params.sort_how,
                                       seqs_per_page=params.seqs_per_page))
