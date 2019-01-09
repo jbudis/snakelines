@@ -4,11 +4,10 @@ reference:
             output:
                 index: protected(expand('reference/{sr.reference}/{sr.reference}.dict', sr=pipeline.sample_references))
         fai:
-            output: []
+            output:
+                index: protected(expand('reference/{sr.reference}/{sr.reference}.fai', sr=pipeline.sample_references))
 
 reads:
-    conversion:
-        output: []
 
     preprocess:
         original:
