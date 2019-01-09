@@ -107,17 +107,6 @@ variant:
                 - mapping/mapper
 
 classification:
-    transcripts:
-        output: []
-        depends:
-            - reads/preprocess
-            - reads/report
-    differential_analysis:
-        output: []
-        filter_significant:
-            output: []
-            depends:
-                - reads/preprocess
     read_based:
         output: []
         depends:
@@ -134,6 +123,18 @@ classification:
             depends:
                 - reads/preprocess
                 - reads/report
+    transcripts:
+        output:
+            classification: expand('classification/{reference}/report/krona/individual/{sample}.krn', reference=pipeline.references, sample=pipeline.samples)
+        depends:
+            - reads/preprocess
+            - reads/report
+    differential_analysis:
+        output:
+            analysis: expand(['classification/{reference}/report/tsv/summary.normed.tsv', 'classification/{reference}/report/comparison/differential_analysis.tsv'], reference=pipeline.references)
+        filter_significant:
+            output:
+                analysis: expand('classification/{reference}/report/comparison/significant.tsv', reference=pipeline.references)
     report:
         taxonomic_counts:
             barplot:
@@ -169,12 +170,17 @@ classification:
                 - classification/contig_based
         transcripts:
             count_table:
-                output: []
+                output:
+                    tsv_table:
+                        from: expand(['classification/{reference}/report/tsv/summary.xlsx','classification/{reference}/report/tsv/summary.tsv'], reference=pipeline.references)
+                        to: expand(['{report_dir}/{reference}/tsv/summary.xlsx','{report_dir}/{reference}/tsv/summary.tsv'], report_dir=config['report_dir'], reference=pipeline.references)
             pca:
-                output: []
+                output:
+                    images:
+                        from: expand(['classification/{reference}/report/comparison/pca.svg','classification/{reference}/report/comparison/pca.png'], reference=pipeline.references)
+                        to: expand(['{report_dir}/{reference}/comparison/pca.svg','{report_dir}/{reference}/comparison/pca.png'], report_dir=config['report_dir'], reference=pipeline.references)
             depends:
-                - classification/pombe/samples
-
+                - classification/samples
 assembly:
     assembler:
         output:
