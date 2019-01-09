@@ -114,16 +114,16 @@ Assuming you have input file in the SnakeLines compatible project structure, you
    cd /data/projects/example
 
    # First try dryrun, check if pipeline is correct
-   dsnake -s scripts/snake/process.snake process
+   dsnake --configfile config_variant_calling.yaml
 
    # Optionally visualise pipeline - but only on rules with small number of samples
-   vsnake -s scripts/snake/process.snake test_process
+   vsnake --configfile config_variant_calling.yaml
 
    # Run test analysis with one, small sample
-   snake -s scripts/snake/process.snake test_process
+   snake --configfile config_variant_calling.yaml
 
    # Distribute tasks for all samples on cluster
    ## For multi-threaded analysis
-   qsnake -s scripts/snake/process.snake process
+   qsnake --configfile config_variant_calling.yaml
    ## For single-threaded analysis
-   fsnake -s scripts/snake/process.snake process
+   fsnake --configfile config_variant_calling.yaml
