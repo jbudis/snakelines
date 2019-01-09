@@ -142,7 +142,7 @@ rule fasta_summary__virfinder:
         pvalues.columns = ['VirFinder pvalue']
         pvalues.to_csv(output.tsv, sep='\t')
 
-
+# TODO documentation
 rule fasta_summary__copy_contigs:
     """
     Separate sequences into individual fasta files and calculate basic statistics for each sequence.
@@ -154,21 +154,18 @@ rule fasta_summary__copy_contigs:
     input:
         fasta     = '{indir}/{name}.fa'
     output:
-        fasta     = '{indir}/annotation/{name}/sequences/all_contigs.fa',
+        fasta_dir = directory('{indir}/annotation/{name}/sequences/'),
         seqinfo   = '{indir}/annotation/{name}/attributes/seqinfo.fa'
     params:
-        indiv_dir = '{indir}/annotation/{name}/sequences'
+        fasta     = '{indir}/annotation/{name}/sequences/all_contigs.fa',
     run:
-        if not os.path.exists(params.indiv_dir):
-            os.makedirs(params.indiv_dir)
-
-        shutil.copyfile(input.fasta, output.fasta)
+        shutil.copyfile(input.fasta, params.fasta)
 
         seqids, info_list = [], []
         for i, seq in enumerate(SeqIO.parse(input.fasta, 'fasta')):
 
             # Store each sequence in the fasta to the separate file
-            with open('%s/%s.fa' % (params.indiv_dir, seq.id), 'w') as out:
+            with open('%s/%s.fa' % (output.fasta_dir, seq.id), 'w') as out:
                 SeqIO.write(seq, out, 'fasta')
 
             seqids.append(seq.id)
@@ -199,7 +196,7 @@ rule fasta_summary__summarize_annotations:
     input:
         # Required files to generate blast summary
         template = srcdir('templates/abundances.html'),
-        fasta           = '{indir}/annotation/{name}/sequences/all_contigs.fa',
+        fasta_dir       = '{indir}/annotation/{name}/sequences/',
         attrs_seqinfo   = '{indir}/annotation/{name}/attributes/seqinfo.fa',
 
         # Optional columns of the table
@@ -209,10 +206,10 @@ rule fasta_summary__summarize_annotations:
         attrs_virfinder     = '{indir}/annotation/{name}/attributes/virfinder.tsv'     if include_virfinder else [],
 
     output:
-        html = '{indir}/annotation/{name}/summary.html',
-        tsv  = '{indir}/annotation/{name}/summary.html.tsv'
+        html  = '{indir}/annotation/{name}/summary.html',
+        tsv   = '{indir}/annotation/{name}/summary.html.tsv'
     params:
-        contig_dir = '{indir}/annotation/sequences',
+        fasta = 'sequences/all_contigs.fa',
         max_query_seqs = method_config.get('max_query_seqs', None),
         seqs_per_page = method_config['html'].get('seqs_per_page', 100),
         sort_by = method_config['html'].get('sort_by', ''),
@@ -274,7 +271,7 @@ rule fasta_summary__summarize_annotations:
 
             sort_index = list(html_attrs.columns).index(params.sort_by)
             out.write(TEMPLATE.format(attrs=html_table,
-                                      seq_fasta='%s/all_contigs.fa' % params.fasta_dir,
+                                      seq_fasta=params.fasta,
                                       sort_index=sort_index,
                                       sort_how=params.sort_how,
                                       seqs_per_page=params.seqs_per_page))
