@@ -15,13 +15,6 @@ reads:                              # Prepare reads and quality reports for down
             headcrop: 20            # Number of bases to remove from the start of read
             minlen: 35              # Minimal length of trimmed read. Shorter reads would be removed.
 
-        decontaminated:             # Eliminate fragments from known artificial source, e.g. contamination by human
-            method: bowtie2         # Supported values: bowtie2
-            temporary: False        # If True, generated files would be removed after successful analysis
-            references:             # List of reference genomes
-                - mhv
-            keep: True              # Keep reads mapped to references (True) of remove them as contamination (False)
-
         deduplicated:               # Remove fragments with the same sequence (PCR duplicated)
             method: fastuniq        # Supported values: fastuniq
             temporary: False        # If True, generated files would be removed after successful analysis
