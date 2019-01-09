@@ -23,13 +23,12 @@ Add aliases for using pipelines locally
 
 .. code-block:: bash
 
-   # Basic
    THREADS_LOCAL=4     # Number of used threads, when running pipelines locally
    SNAKELINES_DIR=/data/snakelines/$USER   # Path to snakelines source files
 
-   alias basesnake='snakemake -d `pwd` --jobname {rulename}.{jobid} --reason --printshellcmds --config snakelines_dir=$SNAKELINES_DIR'
-   alias snake='basesnake threads=$THREADS_LOCAL --cores $THREADS_LOCAL'
-   alias dsnake='basesnake threads=$THREADS_LOCAL --dryrun'
+   alias basesnake='snakemake -d `pwd` --jobname {rulename}.{jobid} --reason --printshellcmds --snakefile $SNAKELINES_DIR/snakelines.snake'
+   alias snake='basesnake --config threads=$THREADS_LOCAL --cores $THREADS_LOCAL'
+   alias dsnake='basesnake --config threads=$THREADS_LOCAL --dryrun'
 
    function vsnake {
       dsnake $@ --rulegraph | dot | display
@@ -45,18 +44,21 @@ You may also run scripts on computational cluster
    SGE_NODES=10     # Number of computational nodes in the cluster
    SGE_CORES=160    # Total number of cpus on all nodes in the cluster
    SGE_PARAMS="qsub -cwd -o log/ -e log/ -p $PRIORITY -r yes" # Additional parameters for the SGE scheduler
+   SGE_QUEUE_MAIN=main.q
+   SGE_CLUSTER_PARAMS="qsub -cwd -o log/ -e log/ -p $SGE_PRIORITY -r yes"
 
    function clustersnake {
-      NOW=`date "+%y-%m-%d_%H-%M-%S"`
-      LOGDIR=log/$NOW
-      mkdir -p $LOGDIR
-      rm -f log/last
-      ln -f -s $NOW log/last
-      basesnake threads=$1 --cluster "$CLUSTER_PARAMS -l thr=$1 -o $LOGDIR -e $LOGDIR" --jobs $2 ${@:3}
+       NOW=`date "+%y-%m-%d_%H-%M-%S"`
+       LOGDIR=log/$NOW
+       mkdir -p $LOGDIR
+       rm -f log/last
+       ln -f -s $NOW log/last
+       basesnake --config threads=$1 --cluster "$SGE_CLUSTER_PARAMS -q $3 -l thr=$1 -o $LOGDIR -e $LOGDIR" --jobs $2 ${@:4}
    }
 
-   alias qsnake='clustersnake $SGE_THREADS $SGE_NODES'
-   alias fsnake='clustersnake 1 $SGE_CORES'
+   alias qsnake='clustersnake 16 10 $SGE_QUEUE_MAIN'
+   alias fsnake='clustersnake 1 160 $SGE_QUEUE_MAIN'
+
 
 Next time, you will log into system, aliases would be ready.
 When you do not want to re-login, you may reload aliases
