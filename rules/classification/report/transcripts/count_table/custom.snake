@@ -1,8 +1,8 @@
 def individual_krn_files(wildcards):
-    '''
+    """
     Return list of krona files that should be generated for the reference defined in wildcards
     :param wildcards: wildcards that are automatically added in the input section of a rule
-    '''
+    """
     return expand('{analysis_dir}/{reference}/report/krona/individual/{sample}.krn',
                     analysis_dir=wildcards.analysis_dir,
                     reference=wildcards.reference,
@@ -10,12 +10,12 @@ def individual_krn_files(wildcards):
 
 
 rule custom__summarize_transcriptomic_counts_into_tsv_table:
-    '''
+    """
     Take transcriptomic counts from several samples and merge them together into a single table.
     :input krns: Count files for each analysed sample in standardised format suitable for Krona graph generation
     :output summary_xlsx: Aggregated counts for each transcript in Excel format
     :output summary_tsv: Aggregated counts for each transcript in tabular format
-    '''
+    """
     input:
         krns  = individual_krn_files
     output:
