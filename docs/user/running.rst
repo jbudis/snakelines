@@ -149,15 +149,15 @@ Snakemake is very flexible in workflow execution, see `detailed documentation <h
 Multi-threading
 ---------------
 
-SnakeLines executes tools that support parallelization on multiple cores, using standard `Snakemake features <https://snakemake.readthedocs.io/en/stable/snakefiles/rules.html#threads>`_
-The number of threads for each task may be specified in the snakemake call as:
+SnakeLines executes tools that support parallelization on multiple cores, using standard `Snakemake features <https://snakemake.readthedocs.io/en/stable/snakefiles/rules.html#threads>`_.
+The number of threads for each task may be specified in a Snakemake call as:
 
 .. code:: bash
 
    snakemake \
       --snakefile /usr/local/snakelines/snakelines.snake \
       --configfile config_variant_calling.yaml \
-	  --config threads=8
+      --config threads=8
 
 Alternately, user may specify the number of threads directly in a configuration file:
 
