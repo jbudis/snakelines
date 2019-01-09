@@ -162,6 +162,9 @@ classification:
                 summary_html:
                     from: expand('assembly/{sample}/annotation/contigs/summary.html', sample=pipeline.samples)
                     to: expand('{report_dir}/{sample}/contig_annotations.html', sample=pipeline.samples, report_dir=config['report_dir'])
+                contigs:
+                    from: expand('assembly/{sample}/annotation/contigs/sequences/', sample=pipeline.samples)
+                    to: expand('{report_dir}/{sample}/sequences/', sample=pipeline.samples, report_dir=config['report_dir'])
             depends:
                 - classification/contig_based
         transcripts:
