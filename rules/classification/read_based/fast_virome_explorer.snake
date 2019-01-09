@@ -40,6 +40,8 @@ rule fast_virome_explorer__estimate_virome_composition:
         err = 'fast_virome_explorer/{reference}/classification/{sample}/log/{sample}.err'                                           # error report from fast virome explorer tool
     params:
         outdir = 'fast_virome_explorer/{reference}/classification/{sample}'                                                         # ouput directory, necessary for fast virome explorer
+    conda:
+        config['snakelines_dir'] + '/enviroments/others_env.yaml'
     shell:
         '''
         fast_virome_explorer \
