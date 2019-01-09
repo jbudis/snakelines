@@ -16,7 +16,44 @@ Minimal software requirements are:
 * `SnakeMake <https://snakemake.readthedocs.io/en/stable/>`_ (tested on 5.2.2)
 * Miniconda (tested on 4.5.11)
 
+Python3 module dependencies
+---------------------------
 
+Snakelines requires several Python3 modules to be installed prior to Snakelines. All of these modules can be installed via Conda package manager or via Pip3 with the exception of Tkinter that can be obtained via e.g. apt-get.
+
+Note that Snakelines requires specific versions of these modules.
+List of required Python3 modules:
+
+* oyaml=0.7
+* pandas=0.19.2
+* biopython=1.72
+* seaborn=0.9.0
+* bs4=0.0.1
+* weasyprint=0.3
+* pysam=0.15.1
+* openpyxl=2.5.12
+* scikit-learn=0.18
+* tk=3.6.7-1
+
+Snakelines will be later shipped as a Conda package in Anaconda repository.
+
+Conda channel dependencies
+--------------------------
+
+In order for Snakelines Conda virtual enviroments to work, user has to add several Anaconda repository channels to Anaconda using these commands:
+
+.. code:: bash
+
+   conda config --add channels bioconda
+   conda config --add channels g2554711
+   conda config --add channels g2554711/label/bioconda
+   conda config --add channels conda-forge
+   conda config --add channels agbiome
+   conda config --add channels rsmulktis
+   conda config --add channels moustik
+   
+``--use-conda`` option in ``Snakemake`` command will enable use of predefined virtual enviroments in Snakelines.
+   
 Installation
 ---------------
 
@@ -105,6 +142,6 @@ For example, if SnakeLines sources has been downloaded to the /usr/local/snakeli
 
    snakemake \
       --snakefile /usr/local/snakelines/snakelines.snake \
-      --configfile config_vairant_calling.yaml
+      --configfile config_variant_calling.yaml
 
 Snakemake is very flexible in workflow execution, see `detailed documentation <https://snakemake.readthedocs.io/en/stable/executable.html#all-options>`_ and `useful bash aliases for SnakeLines <./aliases.html>`_.

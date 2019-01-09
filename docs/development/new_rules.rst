@@ -1,27 +1,26 @@
 Developing new rules
 ====================
 
-All rules are stored at the `/rules` directory.
+All rules are stored in the `rules` directory.
 They should contain only logic, how to generate output files.
 Here we present conventions and best practices for developing new rules for SnakeLines.
 
-Location of rules
------------------
+Rules folder structure
+----------------------
 
-Rules are imported automatically, based on configuration.
-See example at the `configuration page <../user/configuration.html#adjust-rules-parameters>`_.
-Therefore you want to place your source code to subdirectories, that are predictable and understandable by both user and developer.
+Rules are imported automatically, based on the `configuration <../user/configuration.html#adjust-rules-parameters>`_.
+Therefore we recommend to place your source code into semantic folder structure, which is predictable and understandable by both user and developer.
 For example it is easier to understand what `seqtk` tool does, if you put it into
 ::
 
-    /rules/reads/preprocess/subsampled/seqtk.snake
+    rules/reads/preprocess/subsampled/seqtk.snake
 
-than
+rather than
 ::
 
-    /rules/tools/seqtk.snake
+    rules/tools/seqtk.snake
 
-The first one would be defined in the configuration as
+The former path would be defined in the configuration as
 
 .. code-block:: yaml
 
@@ -31,27 +30,30 @@ The first one would be defined in the configuration as
                method: seqtk           # Supported values: seqtk
                n_reads: 10             # Number of reads to select
 
-Dependency and output of rules
-------------------------------
 
-SnakeLines internally require information about the required output of each rule,
+Output and dependencies
+-----------------------
+
+SnakeLines internally requires information about the required output of each rule,
 whether the outputs of the rule should be copied into the report directory, and (optionally) dependency of each rule.
-This information is written in `<snakelines_dir>/src/dependency.yaml` file in human readable yaml format.
-This way, every output of every rule is on one place.
+This information is written in `src/dependency.yaml` file in human readable yaml format.
+This way, every output of every rule is in one place.
 
-The structure of this file directly copies the structure from configuration file.
+The structure of this file directly copies the structure from the configuration file.
 However, it is independent on the exact methods (for example `bowtie2` and `bwa` tools for mapping should produce files with the same names) and on the methods' parameters.
 
 A small example part of the dependency file:
 
 .. code-block:: yaml
 
+    reads:
+        conversion:
+            output: []
+
     mapping:
         mapper:
             output:
                 alignments: expand('mapping/{sr.reference}/original/{sr.sample}.bam', sr=pipeline.sample_references)
-            depends:
-                - reads/preprocess
 
         report:
             quality_report:
@@ -66,11 +68,14 @@ A small example part of the dependency file:
                     - mapping/mapper
 
 
-In this example, `mapping/mapper` pipeline generates alignements as BAM files for each sample from an internal object (this object stores all samples from confguration).
-This mapper pipeline depends on read preprocessing (`reads/preprocess` pipeline). Furthermore, there is `mapping/report/quality_report` pipeline defined that generates two types of .pdf reports (`quality_report` and `summary_report`), which are copied into the report directory (defined by from: and to: directives). This pipeline depends on the previous (`mapping/mapper`) pipeline.
+In this example, `reads/conversion` pipeline generates no reportable output (it just unzips the reads if necessary) - this step will be omitted if other rules do not need its outputs.
+Therefore, provide empty output (`output: []`) only for intermediate rules or not at all.
+Secondly, `mapping/mapper` pipeline generates alignments as BAM files for each sample from an internal object (this object stores all samples defined in `configuration <../user/configuration.html#define-set-of-samples>`_).
+Lastly, there is `mapping/report/quality_report` pipeline defined that generates two types of .pdf reports (`quality_report` and `summary_report`), which are copied into the report directory (defined by from: and to: directives).
+This pipeline depends on the previous (`mapping/mapper`) pipeline - if the mapping/mapper pipeline is not defined, SnakeLines generates a warning, but tries to proceed (although it will likely fail, since this pipeline requires .bam files - outputs of `mapping/mapper` pipeline).
 
-If you create a new directory for rules inside 'rules/' directory, you are required to add the corresponding values into `dependency.yaml`.
-For example, when we created new rules in file 'qualimap.snake' located in a new directory 'report/quality_report', we added the 'mapping/report' block into the `dependency.yaml` file.
+If you create a directory for a new rule file (a subdirectory somewhere in the `rules` directory), you need to add the corresponding configuration into `src/dependency.yaml`.
+For example, when we created new rules in file 'rules/mapping/report/quality_report/qualimap.snake', we added the 'mapping/report/quality_report' configuration block into the `src/dependency.yaml` file.
 
 
 Naming of rules
@@ -135,8 +140,8 @@ For example:
 When using bash script, be sure you use full parameter names, where applicable.
 For example, --output-fmt is more informative than -O.
 
-Method config
--------------
+Method configuration
+--------------------
 
 Configuration for a rule in config.yaml would be accessible from the rule source code in the form of `method_config` dictionary.
 For example,

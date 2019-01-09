@@ -71,6 +71,13 @@ mapping:
                     to: expand('{report_dir}/{reference}/summary/mapping_quality.pdf', report_dir=config['report_dir'], reference=multisample_references)
             depends:
                 - mapping/mapper
+        methylation:
+            output:
+                methylation_reports:
+                    from: expand('mapping/{sr.reference}/{map_type}/bismark/{sr.sample}.html', sr=pipeline.sample_references, map_type='original')
+                    to: expand('{report_dir}/{sr.reference}/samples/{sr.sample}/methylation.html', report_dir=config['report_dir'], sr=pipeline.sample_references)
+            depends:
+                - mapping/mapper
 
 variant:
     caller:
@@ -100,6 +107,17 @@ variant:
                 - mapping/mapper
 
 classification:
+    transcripts:
+        output: []
+        depends:
+            - reads/preprocess
+            - reads/report
+    differential_analysis:
+        output: []
+        filter_significant:
+            output: []
+            depends:
+                - reads/preprocess
     read_based:
         output: []
         depends:
@@ -146,6 +164,13 @@ classification:
                     to: expand('{report_dir}/{sample}/contig_annotations.html', sample=pipeline.samples, report_dir=config['report_dir'])
             depends:
                 - classification/contig_based
+        transcripts:
+            count_table:
+                output: []
+            pca:
+                output: []
+            depends:
+                - classification/pombe/samples
 
 assembly:
     assembler:

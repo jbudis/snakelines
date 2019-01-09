@@ -30,14 +30,12 @@ Ready-to-use pipelines
 ~~~~~~~~~~~~~~~~~~~~~~
 
 SnakeLines contains wide set of computational pipelines that are ready to use immediately after downloading SnakeLines sources.
-In addition to standard secondary analysis, such as mapping and assembly, SnakeMake facilitate:
+In addition to standard secondary analysis, such as mapping and 	assembly, SnakeMake facilitate:
 
 * identification of variation in mapped reads
-* identification of viruses in reads or assembled contigs
-* classify assembled contigs
 * metagenomics analysis
-* transcriptomics (in preparation)
-* chromatin-seq (in preparation)
+* transcriptomics
+* methylation profiles
 
 
 Reporting

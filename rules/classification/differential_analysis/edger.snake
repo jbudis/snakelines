@@ -1,0 +1,32 @@
+rule edger__identify_transcripts_with_changed_expression:
+    '''
+    Compare counts of selected groups of samples and find features with significant change across the groups
+    :input counts: Aggregated counts for each transcript and sample in tabular format
+    :input metadata: File with samples attributes - use for separating samples into compared groups
+    :output norm_counts: TSV table with normalised number of reads (by sample read depth)
+    :output table: TSV table with statistical evaluation of change of expression
+    :param group_by: attribute (in the metadata file header) that would split samples into two categories
+    :param batch: attribute (in the metadata file header) that would split samples categories with similar batch bias effect (e.g. samples from same sequencing run)
+    '''
+    input:
+        counts = '{analysis_dir}/{reference}/report/tsv/summary.tsv',
+        metadata = 'description/sample-metadata.tsv',
+        edger = srcdir('scripts/edger.R')
+    output:
+        norm_counts = '{analysis_dir}/{reference}/report/tsv/summary.normed.tsv',
+        table  = '{analysis_dir}/{reference}/report/comparison/differential_analysis.tsv'
+    params:
+        group_by = method_config['group_by'],
+        batch = method_config.get('batch', '')
+    conda:
+        config['snakelines_dir'] + '/enviroments/edger_env.yaml'
+    shell:
+        '''
+        Rscript {input.edger} \
+            {input.counts} \
+            {input.metadata} \
+            {output.norm_counts} \
+            {output.table} \
+            {params.group_by} \
+            {params.batch}
+        '''
