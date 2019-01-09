@@ -1,0 +1,79 @@
+samples:                            # List of sample categories to be analysed
+    - name: example.*               # Regex expression of sample names to be analysed (reads/original/example.*_R1.fastq.gz)
+
+report_dir: report/public/01-viral         # Generated reports and essential output files would be stored there
+threads: 16                         # Number of threads to use in analysis
+
+reads:                              # Prepare reads and quality reports for downstream analysis
+    preprocess:                     # Pre-process of reads, eliminate sequencing artifacts, contamination ...
+
+        trimmed:                    # Remove low quality parts of reads
+            method: trimmomatic     # Supported values: trimmomatic
+            temporary: False        # If True, generated files would be removed after successful analysis
+            crop: 500               # Maximal number of bases in read to keep. Longer reads would be truncated.
+            quality: 20             # Minimal average quality of read bases to keep (inside sliding window of length 5)
+            headcrop: 20            # Number of bases to remove from the start of read
+            minlen: 35              # Minimal length of trimmed read. Shorter reads would be removed.
+
+        decontaminated:             # Eliminate fragments from known artificial source, e.g. contamination by human
+            method: bowtie2         # Supported values: bowtie2
+            temporary: False        # If True, generated files would be removed after successful analysis
+            references:             # List of reference genomes
+                - mhv
+            keep: True              # Keep reads mapped to references (True) of remove them as contamination (False)
+
+        deduplicated:               # Remove fragments with the same sequence (PCR duplicated)
+            method: fastuniq        # Supported values: fastuniq
+            temporary: False        # If True, generated files would be removed after successful analysis
+
+    report:                         # Summary reports of read characteristics to assess their quality
+        quality_report:             # HTML summary report of read quality
+            method: fastqc          # Supported values: fastqc
+            read_types:             # List of preprocess steps for quality reports (supported values: original, trimmed, decontaminated, deduplicated)
+                - original
+                - trimmed
+                - decontaminated
+                - deduplicated
+
+classification:                               # Identify genomic source of sequenced reads
+    contig_based:                             # Find homologue sequences based on assembled contigs
+        method: blast                         # Supported values: blast
+        reference:                            # List of reference genomes to search for homology
+            mhv:                              # Name of reference genome (reference/mhv/mhv.fa)
+                query_type: nucleotide        # Nucleotide or protein, according to sequence type in input .fa files
+                target_type: nucleotide       # Nucleotide or protein, according to sequence type in blast database
+                max_target_seqs: 10           # Number of best hit reference sequences from blast database for each input sequence
+
+    viral:                                    # Customized methods for identification of viruses
+        identification:                       # Identification of contigs with similarity to viral genomes
+            method: fast_virome_explorer      # Supported values: fast_virome_explorer
+
+    fast_virome_explorer:                     # Tool for viral identification from the reads
+        reference: refseq                     # Reference genome or database, important to create kallisto index for used reference
+        read_type: deduplicated               # Type of reads use as input for fast_virome explorer
+        kmer_size: 31                         # Size of analyzed k-mers (lower size = higher senzitivity and lower senzitivity of method and vice-versa)
+        count_type: tpm                       # Supported metrics:read_count, tpm (transkripts per milion)
+
+    report:                                   # Summary reports of classification results
+        summary:                              # Aggregated HTML table with summarized attributes of contigs and homology
+            method: fasta_summary             # Supported values: fasta_summary
+            max_query_seqs: 20000             # Maximal number of contigs to report (ordered by their length)
+            max_target_seqs: 5                # Maximal number of homologues from reference genomes to report
+            min_query_coverage: 0.01          # Show only hits that have at least this proportion of contig mapped to reference
+            include:                          # Optional attributes of contigs to report
+                - virfinder                   # Probability that contig is from virus
+#                - coverage                   # Number of aligned reads per contig
+                - blast                       # Homologues identified by Blast against specified reference databases
+
+            html:                             # Attributes applicable only for the HTML report, would NOT be used in the TSV table
+                seqs_per_page: 100            # Number of table rows (sequences) per page
+                sort_by: 'Sequence'           # Rows would be sorted according to values in this column
+                sort_how: 'asc'               # Values would be sorted in desc(ending) or asc(ending) order
+                columns:                      # Show only these attributes, in this order
+                    - Sequence                # Names of contigs with link to fasta files with its sequence
+                    - Length                  # Number of bases
+                    - Compress ratio          # Complexity of contig sequence, may be used to filter repetitive sequences
+                    - Coverage                # Average number of reads covering each base of contig
+                    - VirFinder pvalue        # Probability that contig is from viral genome
+                    - Homologue link          # Reference sequences with homology
+                    - Mapped reads            # Number of mapped reads to contigs

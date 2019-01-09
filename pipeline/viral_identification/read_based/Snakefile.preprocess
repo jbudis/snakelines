@@ -1,0 +1,28 @@
+# Load configuration file
+configfile: srcdir('config.yaml')
+
+# Run startup scripts that automatically loads imports from src/ and load helper methods
+include: config['snakelines_dir'] + '/src/snakelines.snake'
+
+# Import sub-workflows
+include: srcdir('Snakefile.read_quality_report')
+
+# Find in configuration read preprocess types that should be generated
+preprocess = extract_from_config(config, ['reads', 'preprocess'], {})
+read_types_to_keep = [read_type for read_type in preprocess.keys() if not preprocess[read_type].get('temporary', True)]
+
+rule finalise__preprocess_reads:
+    """
+    Pipeline filter and revise fastq files from the reads/original directory. All preprocess steps, such as trimming,
+    deduplication and filtering of contamination reads are defined in the configuration file, part 'preprocess'.
+    Preprocess steps are executed gradually, i.e. output reads of one step are input to the following step.
+    """
+    input:
+        rules.finalise__quality_report.output,
+
+        # Fastq files of all preprocess types that are not configured as temporary
+        reads   = expand('reads/{read_type}/{sample}_R{orientation}.fastq.gz',
+                              read_type=read_types_to_keep, sample=pipeline.samples, orientation=[1,2]),
+
+# Target rule would be executed locally, not on cluster
+localrules: finalise__preprocess_reads
