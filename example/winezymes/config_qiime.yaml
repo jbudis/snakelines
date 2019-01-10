@@ -1,7 +1,7 @@
 samples:                            # List of sample categories to be analysed
     - name: .*16s.*                 # Regex expression of sample names to be analysed (reads/original/.*16s.*_R1.fastq.gz)
 
-report_dir: report/public/01-taxonomy    # Generated reports and essential output files would be stored there
+report_dir: report/public/01-qiime    # Generated reports and essential output files would be stored there
 threads: 16                         # Number of threads to use in analysis
 
 reads:                              # Prepare reads and quality reports for downstream analysis
@@ -31,6 +31,8 @@ qiime_read_type: joined
 qiime_beta_significance_columns:
     - aditivum
     - material
+qiime_custom_axes_columns:
+    - must
 
 qiime:
     preprocess:

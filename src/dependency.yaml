@@ -205,6 +205,7 @@ qiime:
                 vector          : expand('reads/qiime/{name}-core-metrics-results/{alpha_types}_vector.qza', name=qiime_read_type, alpha_types=qiime_alpha_types)
                 distance_matrix : expand('reads/qiime/{name}-core-metrics-results/{beta_types}_distance_matrix.qza', name=qiime_read_type, beta_types=qiime_beta_types)
                 emperor_plots   : expand('reads/qiime/{name}-core-metrics-results/{emperor_types}_emperor.qzv', name=qiime_read_type, emperor_types=qiime_emperor_types)
+                pcoa_results    : expand('reads/qiime/{name}-core-metrics-results/{beta_types}_pcoa_results.qza', name=qiime_read_type, beta_types=qiime_beta_types)
         diversity:
             alpha:
                 output:
@@ -214,7 +215,7 @@ qiime:
                     qzv         : expand('reads/qiime/{name}-core-metrics-results/beta/{type}_{column}_significance.qzv', name=qiime_read_type, type=qiime_beta_types, column=config['qiime_beta_significance_columns'])
             custom_axes:
                 output:
-                    qzv         : expand('reads/qiime/{name}-core-metrics-results/custom_axes/{type}_emperor_{column}.qzv', name=qiime_read_type, type=qiime_beta_types, column=config['qiime_beta_significance_columns'])
+                    qzv         : expand('reads/qiime/{name}-core-metrics-results/custom_axes/{type}_emperor_{column}.qzv', name=qiime_read_type, type=qiime_beta_types, column=config['qiime_custom_axes_columns'])
         taxonomy:
             classify:
                 output:
@@ -242,50 +243,90 @@ qiime:
             output:
                 metadata    : expand('description/{name}-sample-metadata.tsv', name=qiime_read_type)
     report:
+        prepare:
+            cluster_feature_table:
+                output:
+                    qzv: expand('reads/qiime/{name}-table-dn-{perc_identity}.qzv', name=qiime_read_type, perc_identity=config['qiime']['preprocess']['clustered']['similarity'])
+            cluster_rep_seqs:
+                output:
+                    qzv: expand('reads/qiime/{name}-rep-seqs-dn-{perc_identity}.qzv', name=qiime_read_type, perc_identity=config['qiime']['preprocess']['clustered']['similarity'])
+            quality_report:
+                output:
+                    qzv: expand('reads/qiime/{name}-imported.qzv', name=qiime_read_type)
+            taxonomy:
+                barplot:
+                    output:
+                        qzv: expand('reads/qiime/{name}-taxa-barplots{file_suffix}.qzv', name=qiime_read_type, file_suffix=qiime_file_suffix)
+                tabulate:
+                    output:
+                        qzv: expand('reads/qiime/{name}-taxonomy{file_suffix}.qzv', name=qiime_read_type, file_suffix=qiime_file_suffix)
+
         export:
             output:
-                read_quality_report : expand('reads/qiime/{name}-imported/index.html', name=qiime_read_type)
+                read_quality_report :
+                    from:   expand('reads/qiime/{name}-imported/index.html', name=qiime_read_type)
+                    to:     expand('{report}/01_read_quality_report/index.html, report=config['report_dir'])
 
-                out_report          : expand('reads/qiime/{name}-{type}-dn-{similarity}/index.html',
+                out_report          :
+                    from:   expand('reads/qiime/{name}-{type}-dn-{similarity}/index.html',
+                                                name=qiime_read_type,
+                                                type=['rep-seqs', 'table'],
+                                                similarity=config['qiime']['preprocess']['clustered']['similarity'])
+                    to:     expand('{report}/02_out_report/{name}-{type}-dn-{similarity}/index.html',
+                                                report=config['report_dir'],
                                                 name=qiime_read_type,
                                                 type=['rep-seqs', 'table'],
                                                 similarity=config['qiime']['preprocess']['clustered']['similarity'])
 
-                taxonomy_report     : expand('reads/qiime/{name}-{type}-dn-{similarity}/index.html',
+                taxonomy_report     :
+                    from:   expand('reads/qiime/{name}-{type}-dn-{similarity}/index.html',
+                                                name=qiime_read_type,
+                                                type=['taxonomy', 'taxa-barplots'],
+                                                similarity=config['qiime']['analysis']['core_metrics']['similarity'])
+                    to:     expand('{report}/03_taxonomy_report/{name}-{type}-dn-{similarity}/index.html',
+                                                report=config['report_dir'],
                                                 name=qiime_read_type,
                                                 type=['taxonomy', 'taxa-barplots'],
                                                 similarity=config['qiime']['analysis']['core_metrics']['similarity'])
 
-                alpha_group_significance_reports: expand('reads/qiime/{name}-core-metrics-results/alpha/{type}_group_significance/index.html',
+                alpha_group_significance_reports:
+                    from:   expand('reads/qiime/{name}-core-metrics-results/alpha/{type}_group_significance/index.html',
+                                                name=qiime_read_type,
+                                                type=['evenness', 'faith_pd', 'observed_otus', 'shannon'])
+                    to:     expand('{report}/04_alpha_group_significance_reports/{name}-core-metrics-results/alpha/{type}_group_significance/index.html',
+                                                report=config['report_dir'],
                                                 name=qiime_read_type,
                                                 type=['evenness', 'faith_pd', 'observed_otus', 'shannon'])
 
-                beta_group_significance_reports: expand('reads/qiime/{name}-core-metrics-results/beta/{type}_{column}_significance/index.html',
+                beta_group_significance_reports:
+                    from:   expand('reads/qiime/{name}-core-metrics-results/beta/{type}_{column}_significance/index.html',
+                                                name=qiime_read_type,
+                                                type=['bray_curtis', 'jaccard', 'unweighted_unifrac', 'weighted_unifrac'],
+                                                column=config['qiime_beta_significance_columns'])
+                    to:     expand('{report}/05_beta_group_significance_reports/{name}-core-metrics-results/beta/{type}_{column}_significance/index.html',
+                                                report=config['report_dir'],
                                                 name=qiime_read_type,
                                                 type=['bray_curtis', 'jaccard', 'unweighted_unifrac', 'weighted_unifrac'],
                                                 column=config['qiime_beta_significance_columns'])
 
-                emperor_plot_reports: expand('reads/qiime/{name}-core-metrics-results/{type}_emperor/index.html',
+                emperor_plot_reports:
+                    from:   expand('reads/qiime/{name}-core-metrics-results/{type}_emperor/index.html',
+                                                name=qiime_read_type,
+                                                type=['bray_curtis', 'jaccard', 'unweighted_unifrac', 'weighted_unifrac'])
+                    to:     expand('{report}/06_emperor_plot_reports/{name}-core-metrics-results/{type}_emperor/index.html',
+                                                report=config['report_dir'],
                                                 name=qiime_read_type,
                                                 type=['bray_curtis', 'jaccard', 'unweighted_unifrac', 'weighted_unifrac'])
 
-        prepare:
-            cluster_feature_table:
-                output:
-                    qzv     : expand('reads/qiime/{name}-table-dn-{perc_identity}.qzv', name=qiime_read_type, perc_identity=config['qiime']['preprocess']['clustered']['similarity'])
-            cluster_rep_seqs:
-                output:
-                    qzv     : expand('reads/qiime/{name}-rep-seqs-dn-{perc_identity}.qzv', name=qiime_read_type, perc_identity=config['qiime']['preprocess']['clustered']['similarity'])
-            quality_report:
-                output:
-                    qzv     : expand('reads/qiime/{name}-imported.qzv', name=qiime_read_type)
-            taxonomy:
-                barplot:
-                    output:
-                        qzv : expand('reads/qiime/{name}-taxa-barplots{file_suffix}.qzv', name=qiime_read_type, file_suffix=qiime_file_suffix)
-                tabulate:
-                    output:
-                        qzv : expand('reads/qiime/{name}-taxonomy{file_suffix}.qzv', name=qiime_read_type, file_suffix=qiime_file_suffix)
+                custom_axes_reports:
+                    from:   expand('reads/qiime/{name}-core-metrics-results/custom_axes/{type}_emperor_{column}/index.html',
+                                                name=qiime_read_type,
+                                                type=qiime_beta_types,
+                                                column=config['qiime_custom_axes_columns'])
+                    to:     expand('{report}/07_custom_axes_reports/{type}_emperor_{column}/index.html',
+                                                report=config['report_dir'],
+                                                type=qiime_beta_types,
+                                                column=config['qiime_custom_axes_columns'])
 
 
 
