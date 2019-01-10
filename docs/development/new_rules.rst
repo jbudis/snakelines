@@ -46,10 +46,6 @@ A small example part of the dependency file:
 
 .. code-block:: yaml
 
-    reads:
-        conversion:
-            output: []
-
     mapping:
         mapper:
             output:
@@ -68,11 +64,8 @@ A small example part of the dependency file:
                     - mapping/mapper
 
 
-In this example, `reads/conversion` pipeline generates no reportable output (it just unzips the reads if necessary) - this step will be omitted if other rules do not need its outputs.
-Therefore, provide empty output (`output: []`) only for intermediate rules or not at all.
-Secondly, `mapping/mapper` pipeline generates alignments as BAM files for each sample from an internal object (this object stores all samples defined in `configuration <../user/configuration.html#define-set-of-samples>`_).
-Lastly, there is `mapping/report/quality_report` pipeline defined that generates two types of .pdf reports (`quality_report` and `summary_report`), which are copied into the report directory (defined by from: and to: directives).
-This pipeline depends on the previous (`mapping/mapper`) pipeline - if the mapping/mapper pipeline is not defined, SnakeLines generates a warning, but tries to proceed (although it will likely fail, since this pipeline requires .bam files - outputs of `mapping/mapper` pipeline).
+In this example, `mapping/mapper` pipeline generates alignments as BAM files for each sample from an internal object (this object stores all samples defined in `configuration <../user/configuration.html#define-set-of-samples>`_). Finally, there is `mapping/report/quality_report` pipeline defined that generates two types of .pdf reports (`quality_report` and `summary_report`), which are copied into the report directory (the data is generated to path defined in `from:` directive and if everything went correctly, it is copied to the path defined in `to:`).
+This pipeline depends on the previous (`mapping/mapper`) pipeline - if the mapping/mapper pipeline is not defined, SnakeLines generates a warning, but tries to proceed (although it will likely fail, since this pipeline requires .bam files - outputs of `mapping/mapper` pipeline). Although it is allowed to define empty output of a pipeline (i.e. `output: []`), we would like to discourage such practise. If there is a rule that is used as a preliminary computation (whose output would never be needed in the end), this rule should be included directly in the snake file with a pipeline, that generates desired output (or use the snakemake `include:` directive if you need it on more locations - see how the `reads/conversion/unzip` rule is done).
 
 If you create a directory for a new rule file (a subdirectory somewhere in the `rules` directory), you need to add the corresponding configuration into `src/dependency.yaml`.
 For example, when we created new rules in file 'rules/mapping/report/quality_report/qualimap.snake', we added the 'mapping/report/quality_report' configuration block into the `src/dependency.yaml` file.
@@ -136,6 +129,7 @@ For example:
             {input.bam} \
         >  {log.out} \
         2> {log.err}
+        """
 
 When using bash script, be sure you use full parameter names, where applicable.
 For example, --output-fmt is more informative than -O.

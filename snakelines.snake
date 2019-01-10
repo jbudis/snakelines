@@ -7,6 +7,9 @@ from src.output.send_email import send_email
 # Load configuration file if not already loaded
 config = load_config(config)
 
+if 'threads' not in config:
+    config['threads'] = 1
+
 # get the snakelines_directory
 if 'snakelines_dir' not in config:
     config['snakelines_dir'] = os.path.dirname(os.path.realpath(workflow.snakefile))

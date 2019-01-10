@@ -1,11 +1,11 @@
 import pandas as pd
 
 rule custom__filter_significantly_expressed_transcripts:
-    '''
+    """
     Select transcripts with significant change in expression according to user specified filters.
     :input table: TSV table with statistical evaluation of change in expression
     :output table: TSV table with transcripts with significant change in expression
-    '''
+    """
     input:
         table           = '{analysis_dir}/{reference}/report/comparison/differential_analysis.tsv'
     output:

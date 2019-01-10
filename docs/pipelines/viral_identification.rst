@@ -1,5 +1,5 @@
-Identify viruses (in development)
-=================================
+Identify viruses
+================
 
 Identify reads of viral origin in metagenomic samples.
 
@@ -32,7 +32,7 @@ Required inputs
 Generated outputs
 -----------------
 
-* Hierarchical interactive pie plot (Krone) for visual assessment of viral composition in the sample
+* Hierarchical interactive pie plot (Krona) for visual assessment of viral composition in the sample
 
 
 Example
@@ -48,7 +48,10 @@ How to run example:
       --snakefile ../../snakelines.snake \
       --configfile config_viral_identification.yaml
 
-Example configuration not ready yet.
+Example configuration:
+
+.. literalinclude:: ../../example/mhv/config_viral_identification.yaml
+   :language: yaml
 
 Planned improvements
 --------------------

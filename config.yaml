@@ -30,8 +30,6 @@ reference:                          # Reference processing - indexing, ...
             method: samtools        # Supported values: samtools
 
 reads:                              # Prepare reads and quality reports for downstream analysis
-    conversion:                     # Conversion of reads (unzipping, ...)
-        method: unzip               # Supported values: unzip
     preprocess:                     # Pre-process of reads, eliminate sequencing artifacts, contamination ...
         original:                   # Original reads without preprocessing
             temporary: False        # If True, files would be removed after successful analysis
