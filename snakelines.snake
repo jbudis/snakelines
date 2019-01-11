@@ -23,7 +23,14 @@ def get_files(source_dict):
             'pipeline': pipeline, 'read_types_with_fastqc_report': read_types_with_fastqc_report,
             'multisample_references': multisample_references, 'tax_levels_count_table': tax_levels_count_table,
             'tax_levels_barplot': tax_levels_barplot, 'barplot_formats': barplot_formats}
-    return {k:eval(v, additional_params) for k,v in source_dict.items()}
+    files_dict = {}
+    for k,v in source_dict.items():
+        try:
+            files_dict[k] = eval(v, additional_params)
+        except NameError:
+            files_dict[k] = v
+
+    return files_dict
 
 # "pipeline" rule that generates all of the required files
 rule pipeline:
