@@ -145,3 +145,40 @@ For example, if SnakeLines sources has been downloaded to the /usr/local/snakeli
       --configfile config_variant_calling.yaml
 
 Snakemake is very flexible in workflow execution, see `detailed documentation <https://snakemake.readthedocs.io/en/stable/executable.html#all-options>`_ and `useful bash aliases for SnakeLines <./aliases.html>`_.
+
+Multi-threading
+---------------
+
+SnakeLines executes tools that support parallelization on multiple cores, using standard `Snakemake features <https://snakemake.readthedocs.io/en/stable/snakefiles/rules.html#threads>`_.
+The number of threads for each task may be specified in a Snakemake call as:
+
+.. code:: bash
+
+   snakemake \
+      --snakefile /usr/local/snakelines/snakelines.snake \
+      --configfile config_variant_calling.yaml \
+      --config threads=8
+
+Alternately, user may specify the number of threads directly in a configuration file:
+
+.. code:: yaml
+
+   threads: 16                         # Number of threads to use in analysis
+   samples:                            # List of sample categories to be analysed
+       - name: example.*               # Regex expression of sample names to be analysed (reads/original/example.*_R1.fastq.gz)
+         reference: mhv                # Reference genome for reads in the category (reference/mhv/mhv.fa)
+
+   report_dir: report/public/01-assembly   # Generated reports and essential output files would be stored there
+
+   reads:                              # Prepare reads and quality reports for downstream analysis
+       preprocess:                     # Pre-process of reads, eliminate sequencing artifacts, contamination ...
+
+           trimmed:                    # Remove low quality parts of reads
+               method: trimmomatic     # Supported values: trimmomatic
+               temporary: False        # If True, generated files would be removed after successful analysis
+               crop: 500               # Maximal number of bases in read to keep. Longer reads would be truncated.
+               quality: 20             # Minimal average quality of read bases to keep (inside sliding window of length 5)
+               headcrop: 20            # Number of bases to remove from the start of read
+               minlen: 35              # Minimal length of trimmed read. Shorter reads would be removed.
+
+SnakeLines uses 1 core by default, if the number of threads is not specified.

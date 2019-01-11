@@ -130,10 +130,14 @@ classification:
             - reads/report
     differential_analysis:
         output:
-            analysis: expand(['classification/{reference}/report/tsv/summary.normed.tsv', 'classification/{reference}/report/comparison/differential_analysis.tsv'], reference=pipeline.references)
+            analysis:
+                from: expand('classification/{reference}/report/comparison/differential_analysis.tsv', reference=pipeline.references)
+                to: expand('{report_dir}/{reference}/comparison/differential_analysis.tsv', report_dir=config['report_dir'], reference=pipeline.references)
         filter_significant:
             output:
-                analysis: expand('classification/{reference}/report/comparison/significant.tsv', reference=pipeline.references)
+                analysis:
+                    from: expand('classification/{reference}/report/comparison/significant.tsv', reference=pipeline.references)
+                    to: expand('{report_dir}/{reference}/comparison/significant.tsv', report_dir=config['report_dir'], reference=pipeline.references)
     report:
         taxonomic_counts:
             barplot:
