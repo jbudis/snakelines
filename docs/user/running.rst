@@ -96,20 +96,6 @@ Example minimal input file configuration for a reference (hg38), targeted panel 
            |-- annotation/sureselect6
                    |-- regions.bed
 
-Bioinformatic tools typically require preprocessed reference sequences to condensed files called indices.
-All required reference indices and auxiliary files are generated, when necessary, during pipeline execution.
-
-Reference directories with frequently used references may be linked to the project directory, to avoid redundant copies and repeated creation of sequence indices.
-For example, if you have fasta file for human genome in separate directory (/data/genome/human/hg38-ucsc/hg38.fa), you may link it to example project (/data/projects/example) using
-
-.. code:: bash
-
-   ln --symbolic \
-      /data/genome/human/hg38-ucsc \
-      /data/projects/example/reference/hg38
-
-Make sure, that the name of the link is the same as the name of the fasta file (without .fa suffix).
-
 Running scripts
 ---------------
 
@@ -145,6 +131,60 @@ For example, if SnakeLines sources has been downloaded to the /usr/local/snakeli
       --configfile config_variant_calling.yaml
 
 Snakemake is very flexible in workflow execution, see `detailed documentation <https://snakemake.readthedocs.io/en/stable/executable.html#all-options>`_ and `useful bash aliases for SnakeLines <./aliases.html>`_.
+
+
+Reference files
+---------------
+
+Bioinformatic tools typically require preprocessed reference sequences to condensed files called indices.
+All required reference indices and auxiliary files are generated, when necessary, during pipeline execution.
+
+Reference directories with frequently used references may be linked to the project directory, to avoid redundant copies and repeated creation of sequence indices.
+For example, if you have fasta file for human genome in separate directory (/data/genome/human/hg38-ucsc/hg38.fa), you may link it to example project (/data/projects/example) using
+
+.. code:: bash
+
+   ln --symbolic \
+      /data/genome/human/hg38-ucsc \
+      /data/projects/example/reference/hg38
+
+Make sure, that the name of the link is the same as the name of the fasta file (without .fa suffix).
+
+Use reference indices without fasta
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Sometimes, it makes sense to keep only indices, without the primary fasta file.
+For example, huge genomic databases provided by NCBI are already packed into Blast indices.
+Downloading original fasta files and generating indices is a huge burden to memory and computational capacity of a cluster.
+
+In such scenarios, you may use just downloaded indices, without the primary fasta file.
+Keep in mind, that such reference could be used only for one tool, as Blast in this example.
+Assuming, you downloaded Blast indices are stored at
+::
+
+   |-- /data/genome/metagenome/blast/nt/
+           |-- nt.00.nhd
+           |-- nt.00.nhi
+           |-- nt.00.nhr
+           |-- nt.01.nhd
+           |-- nt.01.nhi
+           |-- nt.01.nhr
+           |-- ...
+           |-- nt.60.nhd
+           |-- nt.60.nhi
+           |-- nt.60.nhr
+           |-- nt.nal
+           |-- taxdb.btd
+           |-- taxdb.bti
+
+
+You may link index directly to the project using
+
+.. code:: bash
+
+   ln --symbolic \
+      /data/genome/metagenome/blast/nt/ \
+      /data/projects/example/reference/nt/blast_index
 
 Multi-threading
 ---------------
