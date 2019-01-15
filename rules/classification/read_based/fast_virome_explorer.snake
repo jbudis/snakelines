@@ -33,13 +33,16 @@ rule fast_virome_explorer__estimate_virome_composition:
         index = 'reference/{reference}/kallisto_index/{reference}-kallisto-index-k%s.idx' % kmer_size,
         ref_lens = 'reference/{reference}/kallisto_index/{reference}.lens.txt'
     output:
-        composition = 'fast_virome_explorer/{reference}/classification/{sample}/FastViromeExplorer-final-sorted-abundance.tsv',
-        abundance =  'fast_virome_explorer/{reference}/classification/{sample}/abundance.tsv',
+        composition = 'classification/{reference}/{sample}/FastViromeExplorer-final-sorted-abundance.tsv',
+        abundance =  'classification/{reference}/{sample}/abundance.tsv',
+#        abundance_h5 = 'classification/{reference}/{sample}/abundance.h5',
+#        run_info = 'classification/{reference}/{sample}/run_info.json',
+#        sam_file = 'classification/{reference}/{sample}/FastViromeExplorer-reads-mapped-sorted.sam'
     log:
-        out = 'fast_virome_explorer/{reference}/classification/{sample}/log/{sample}.log',                                          # log report from fast virome explorer tool
-        err = 'fast_virome_explorer/{reference}/classification/{sample}/log/{sample}.err'                                           # error report from fast virome explorer tool
+        out = 'classification/{reference}/{sample}/log/{sample}.log',                                          # log report from fast virome explorer tool
+        err = 'classification/{reference}/{sample}/log/{sample}.err'                                           # error report from fast virome explorer tool
     params:
-        outdir = 'fast_virome_explorer/{reference}/classification/{sample}'                                                         # ouput directory, necessary for fast virome explorer
+        outdir = 'classification/{reference}/{sample}'                                                         # ouput directory, necessary for fast virome explorer
     conda:
         config['snakelines_dir'] + '/enviroments/others_env.yaml'
     shell:
@@ -61,11 +64,11 @@ rule custom__fill_na_values_with_virusnames:
     :output checked_composition: new TSV table but that NA values replace with virus names from first column
     """
     input:
-        composition = 'fast_virome_explorer/{reference}/classification/{sample}/FastViromeExplorer-final-sorted-abundance.tsv'
+        composition = 'classification/{reference}/{sample}/FastViromeExplorer-final-sorted-abundance.tsv'
     params:
         py_script = '%s' % fillna_with_virusname                                                                                    # calling custom python script
     output:
-        checked_composition = 'fast_virome_explorer/{reference}/classification/{sample}/FastViromeExplorer-final-sorted-abundance-checked.tsv'
+        checked_composition = 'classification/{reference}/{sample}/FastViromeExplorer-final-sorted-abundance-checked.tsv'
     shell:
         'python {params.py_script} {input.composition}'
 
@@ -74,17 +77,17 @@ rule custom__convert_to_tpm_metric:
     Python script (have to be set in config => count_type: tpm), create new TSV table with metric turned into tpm (transcripts per milion).
     :input checked_composition: checked TSV table in previous rule, containing information about number of reads assigned to taxonomic units (most common species)
     :input abundance: TSV table containing NCBI ID of all found taxonomic units with assigned read counts and transkripts per milion, output from rule fast_virome_explorer__estimate_virome_composition
-    :input checked_tpm_composition: new TSV table but that count metric is changed from read count to tpm
+    :output checked_tpm_composition: new TSV table but that count metric is changed from read count to tpm
     """
     input:
-        checked_composition = 'fast_virome_explorer/{reference}/classification/{sample}/FastViromeExplorer-final-sorted-abundance-checked.tsv',
-        abundance = 'fast_virome_explorer/{reference}/classification/{sample}/abundance.tsv'
+        checked_composition = 'classification/{reference}/{sample}/FastViromeExplorer-final-sorted-abundance-checked.tsv',
+        abundance = 'classification/{reference}/{sample}/abundance.tsv'
     params:
         py_script = '%s' % create_tpm_for_krona                                                                                     # calling custom python script
     output:
-        checked_tpm_composition =  'fast_virome_explorer/{reference}/classification/{sample}/FastViromeExplorer-final-sorted-abundance-checked_tpm.tsv'
+        checked_tpm_composition =  'classification/{reference}/{sample}/FastViromeExplorer-final-sorted-abundance-checked_tpm.tsv'
     shell:
-       'python {params.py_script} {input.i1}'
+       'python {params.py_script} {input.checked_composition}'
 
 rule custom__convert_to_krona:
     """
@@ -93,9 +96,9 @@ rule custom__convert_to_krona:
     :output krona:  new krona file
     """
     input:
-        composition = 'fast_virome_explorer/{reference}/classification/{sample}/FastViromeExplorer-final-sorted-abundance-checked%s.tsv' % count_type
+        composition = 'classification/{reference}/{sample}/FastViromeExplorer-final-sorted-abundance-checked%s.tsv' % count_type
     output:
-        krona = 'fast_virome_explorer/{reference}/report/krona/individual/{sample}.krn'
+        krona = 'classification/{reference}/report/krona/individual/{sample}.krn'
     run:
         viruses = pd.read_csv(input.composition, sep='\t', index_col=0)
         with open(output.krona, 'w') as out:
