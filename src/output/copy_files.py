@@ -48,7 +48,7 @@ def copy(src, dest):
     :param src: str - source file or directory
     :param dest: str - destination file or directory
     :return: None
-    :raise IOError: if cannot copy, e.g. the directory structure does not exists
+    :raise IOError, PermissionError: if cannot copy, e.g. the directory structure does not exists
     """
     if os.path.isdir(src):
         if os.path.exists(dest):
