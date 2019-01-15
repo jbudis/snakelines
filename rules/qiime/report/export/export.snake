@@ -3,16 +3,16 @@ rule qiime__tools_export:
     Exports any qiime visualization (qzv) to HTML.
     :input qzv: qiime visualization
     :output html: index.html of exported visualization
+    :output export_dir: directory of exported visualization
     """
     input:
         qzv     = 'reads/qiime/{visualization}.qzv'
-    params:
-        export_dir = 'reads/qiime/{visualization}'
     output:
-        html = 'reads/qiime/{visualization}/index.html'
+        html = 'reads/qiime/{visualization}/index.html',
+        export_dir = 'reads/qiime/{visualization}/'
     shell:
         '''
         qiime tools export \
           --input-path {input.qzv} \
-          --output-path {params.export_dir}
+          --output-path {output.export_dir}
         '''

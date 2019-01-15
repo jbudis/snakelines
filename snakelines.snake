@@ -32,7 +32,8 @@ def get_files(source_dict):
             'qiime_file_suffix': qiime_file_suffix,
             'qiime_alpha_types': qiime_alpha_types,
             'qiime_beta_types': qiime_beta_types,
-            'qiime_emperor_types': qiime_emperor_types}
+            'qiime_emperor_types': qiime_emperor_types,
+            'directory': directory}
     files_dict = {}
     for k,v in source_dict.items():
         try:
