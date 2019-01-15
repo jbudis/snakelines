@@ -127,3 +127,46 @@ Assuming you have input file in the SnakeLines compatible project structure, you
    qsnake --configfile config_variant_calling.yaml
    ## For single-threaded analysis
    fsnake --configfile config_variant_calling.yaml
+
+Changing SGE queue
+------------------
+
+SGE engine supports organising computational nodes into groups, called queues.
+You may specify, which queue you want to use in the `clustersnake` command.
+Alternately, you may prepare your own aliases for each cluster queue.
+
+For example, assume computational cluster with 8 computational nodes organised in groups:
+
+* main.q - nodes 1, 2, 3, 4, 5, 6, 7, 8
+* pat.q - nodes 1, 2, 3, 4
+* mat.q - nodes 5, 6, 7, 8
+
+Aliases for SnakeLines calls may be specified as:
+
+.. code-block:: bash
+
+   SGE_QUEUE_MAIN=main.q
+   alias qsnake='clustersnake 16 10 $SGE_QUEUE_MAIN'
+   alias fsnake='clustersnake 1 160 $SGE_QUEUE_MAIN'
+
+   # Cluster specific
+   SGE_QUEUE_MAT='mat.q'
+   SGE_QUEUE_PAT='pat.q'
+
+   alias qsnake.pat='clustersnake 16 4 $SGE_QUEUE_PAT'
+   alias fsnake.pat='clustersnake 1 64 $SGE_QUEUE_PAT'
+   alias qsnake.mat='clustersnake 16 4 $SGE_QUEUE_MAT'
+   alias fsnake.mat='clustersnake 1 64 $SGE_QUEUE_MAT'
+
+Call of aliases would generate:
+
+.. code-block:: bash
+
+   # Distribute tasks on all cluster nodes - 1-8
+   qsnake --configfile config_variant_calling.yaml
+
+   # Distribute tasks on 4 cluster nodes - 1-4
+   qsnake.pat --configfile config_variant_calling.yaml
+
+   # Distribute tasks on 4 cluster nodes - 5-8
+   qsnake.mat --configfile config_variant_calling.yaml
