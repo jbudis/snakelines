@@ -11,7 +11,7 @@ For example, you may use spades or unicycler for assembly by changing value unde
        assembler:                      # Method for joining reads
            method: spades              # Supported values: spades, unicycler
            mode: standard              # Supported values: standard, meta, plasmid, rna, iontorrent
-           careful: True               # Tries to reduce number of mismatches and short indels, longer runtime
+           careful: True               # Can not be combined with the meta mode. Tries to reduce number of mismatches and short indels, longer runtime
 
 
 You may use tool that is not yet implemented, or custom solution.

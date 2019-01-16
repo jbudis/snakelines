@@ -40,7 +40,7 @@ assembly:                           # Join reads into longer sequences (contigs)
     assembler:                      # Method for joining reads
         method: spades              # Supported values: spades, unicycler
         mode: standard              # Supported values: standard, meta, plasmid, rna, iontorrent
-        careful: True               # Tries to reduce number of mismatches and short indels, longer runtime
+        careful: True               # Can not be combined with the meta mode. Reduce number of mismatches and short indels, longer runtime
 
     report:                         # Summary reports for assembly process and results
         quality_report:             # Quality of assembled contigs
