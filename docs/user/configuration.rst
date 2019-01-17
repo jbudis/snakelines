@@ -105,7 +105,7 @@ This snipped would at first trim reads, then decontaminate them, and finally ded
                temporary: False        # If True, generated files would be removed after successful analysis
                references:             # List of reference genomes
                    - mhv
-               keep: True              # Keep reads mapped to references (True) of remove them as contamination (False)
+               keep: True              # Keep reads mapped to references (True) or remove them as contamination (False)
 
            deduplicated:               # Remove fragments with the same sequence (PCR duplicated)
                method: fastuniq        # Supported values: fastuniq
