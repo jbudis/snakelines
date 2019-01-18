@@ -1,34 +1,48 @@
 import pandas as pd
 
-read_type  = config['rdp']['read_type']
+# TODO Input read sequences may be deduplicated at first to speed up analysis - https://github.com/rdpstaff/classifier
 
-rule rdp_classification:
+RDP_REFERENCES = '16srrna|fungallsu|fungalits_unite|fungalits_warcup'
+RDP_DEFAULT_CONFIDENCE = 0.8
+
+rule rdp__classify_reads:
+	"""
+	Find closest homologue sequence for each sequenced fragment
+    :input reads: Joined sequenced fragments in fasta format
+    :output readtax: Individual taxonomy for each analysed fragment
+    :output taxonomy: Summary taxonomies of classified sequenced fragments
+    :params confidence: Minimal confidence threshold for taxonomy to be reported
+    :params database: Name of pre-built RDP database
+	"""
     input:
-        'reads/%s/{sample}_RM.fastq.gz' % read_type
+        reads    = 'reads/%s/{sample}_RM.fa' % pipeline.preprocessed_read_type,
     output:
-        readtax = 'rdp/{gene,ssu|lsu|its_unite|its_warcup}/classification/{sample}/readtax.tsv',
-        taxonomy = 'rdp/{gene,ssu|lsu|its_unite|its_warcup}/classification/{sample}/taxonomy.tsv'
+        readtax  = 'rdp/{reference,%s}/classification/{sample}/readtax.tsv'  % RDP_REFERENCES,
+        taxonomy = 'rdp/{reference,%s}/classification/{sample}/taxonomy.tsv' % RDP_REFERENCES
     params:
-        confidence = config['rdp']['confidence']
+        confidence = method_config.get('confidence', RDP_DEFAULT_CONFIDENCE),
+        database = method_config['database']
     shell:
         '''
-        declare -A GENES=( [ssu]=16srrna [lsu]=fungallsu [its_unite]=fungalits_unite [its_warcup]=fungalits_warcup)
-        GENE=${{GENES[{wildcards.gene}]}}
-
         rdpclassifier classify \
             --format fixrank \
-            --gene $GENE \
+            --gene {params.database} \
             --conf {params.confidence} \
             --hier_outfile {output.taxonomy} \
             --outputFile {output.readtax} \
-            {input}
+            {input.reads}
         '''
 
-rule prepare_for_krona:
+rule rdp__prepare_for_krona:
+    """
+    Convert RDP classification files into standardised format suitable for generation of Krona reports
+    :input classification: Summarized classification from RDP classifier
+    :output krona: Tabular format suitable for Krona report generation
+    """
     input:
-        taxonomy = 'rdp/{gene}/classification/{sample}/taxonomy.tsv'
+        readtax  = 'rdp/{reference}/classification/{sample}/readtax.tsv',
     output:
-        krona = 'rdp/{gene}/report/krona/individual/{sample}.krn'
+        krona    = 'rdp/{reference}/report/krona/individual/{sample}.krn'
     run:
         TAX_RANKS = ['domain', 'phylum', 'class', 'subclass', 'order', 'suborder', 'family', 'genus']
 
