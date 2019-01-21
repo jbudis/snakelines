@@ -95,8 +95,8 @@ qiime:
                 method: diversity__alpha_group_significance
             beta:
                 method: diversity__beta_group_significance
-#            custom_axes:                   # requires sample-metadata with numeric columns
-#                method: emperor__plot
+            custom_axes:                   # requires sample-metadata with numeric columns
+                method: emperor__plot
         taxonomy:
             index:
                 method: feature_classifier__fit_classifier_naive_bayes
