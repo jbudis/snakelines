@@ -9,7 +9,7 @@ rule qiime__tools_export:
         qzv     = 'reads/qiime/{visualization}.qzv'
     output:
         html = 'reads/qiime/{visualization}/index.html',
-        export_dir = 'reads/qiime/{visualization}/'
+        export_dir = directory('reads/qiime/{visualization}/')
     shell:
         '''
         qiime tools export \

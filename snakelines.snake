@@ -3,6 +3,7 @@ import sys
 from src.config.dependency_load import load_config, check_dependency
 from src.output.copy_files import copy_input_files_with_consisent_names_dict
 from src.output.send_email import send_email
+from collections import OrderedDict
 
 # Load configuration file if not already loaded
 config = load_config(config)
@@ -32,9 +33,9 @@ def get_files(source_dict):
             'qiime_file_suffix': qiime_file_suffix,
             'qiime_alpha_types': qiime_alpha_types,
             'qiime_beta_types': qiime_beta_types,
-            'qiime_emperor_types': qiime_emperor_types,
-            'directory': directory}
-    files_dict = {}
+            'qiime_emperor_types': qiime_emperor_types}
+
+    files_dict = OrderedDict()
     for k,v in source_dict.items():
         try:
             files_dict[k] = eval(v, additional_params)
