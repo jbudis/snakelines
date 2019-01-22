@@ -30,8 +30,6 @@ reference:                          # Reference processing - indexing, ...
             method: samtools        # Supported values: samtools
 
 reads:                              # Prepare reads and quality reports for downstream analysis
-    conversion:                     # Conversion of reads (unzipping, ...)
-        method: unzip               # Supported values: unzip
     preprocess:                     # Pre-process of reads, eliminate sequencing artifacts, contamination ...
         original:                   # Original reads without preprocessing
             temporary: False        # If True, files would be removed after successful analysis
@@ -164,7 +162,7 @@ assembly:                           # Join reads into longer sequences (contigs)
     assembler:                      # Method for joining reads
         method: spades              # Supported values: spades, unicycler
         mode: standard              # Supported values: standard, meta, plasmid, rna, iontorrent
-        careful: True               # Tries to reduce number of mismatches and short indels, longer runtime
+        careful: True               # Can not be combined with the meta mode. Tries to reduce number of mismatches and short indels, longer runtime
     report:                         # Summary reports for assembly process and results
         quality_report:             # Quality of assembled contigs
             method: quast           # Supported values: quast

@@ -6,9 +6,9 @@ def qualimap_files(wildcards):
                    sample=pipeline.samples)
 
 rule qualimap__extract_mapped_read_counts:
-    '''
+    """
     Extract number of mapped reads from qualimap results and stored them into summary table.
-    '''
+    """
     input:
         qualimap_files
     output:

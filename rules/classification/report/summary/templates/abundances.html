@@ -13,7 +13,7 @@
   <script type="text/javascript">
     $(document).ready(function() {{
         $('#data').DataTable( {{
-            "pageLength": 100,
+            "pageLength": {seqs_per_page},
             "order": [[{sort_index}, "{sort_how}"]]
         }} );
     }});

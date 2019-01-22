@@ -10,11 +10,11 @@ SUPPORTED_IMAGE_FORMATS = ['png', 'svg', 'pdf', 'tif', 'tiff', 'eps']
 
 # FIXME counts normalised by sample read count should be used
 rule sklearn__pca_comparison:
-    '''
+    """
     Visualise relationship between analysed samples as two-dimensional graphical plot (PCA reduction)
     :input counts: Aggregated counts for each transcript and sample in tabular format
     :output pca: 2D plot of analysed count vectors
-    '''
+    """
     input:
         counts = '{analysis_dir}/{reference}/report/tsv/summary.normed.tsv'
     output:

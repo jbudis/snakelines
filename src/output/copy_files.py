@@ -42,23 +42,39 @@ def copy_input_files_with_consistent_output_names(input_files, output_files):
             shutil.copy(in_item, out_item)
 
 
+def copy(src, dest):
+    """
+    Copy a file or directory
+    :param src: str - source file or directory
+    :param dest: str - destination file or directory
+    :return: None
+    :raise IOError, PermissionError: if cannot copy, e.g. the directory structure does not exists
+    """
+    if os.path.isdir(src):
+        if os.path.exists(dest):
+            shutil.rmtree(dest)
+        shutil.copytree(src, dest)
+    else:
+        shutil.copy(src, dest)
+
+
 def copy_with_makedirs(src, dest):
     """
-    Copy a file and create directory structure if necessary.
-    :param src: str - source file
-    :param dest: str - destination file
+    Copy a file or directory and create directory structure if necessary.
+    :param src: str - source file or directory
+    :param dest: str - destination file or directory
     :return: None
     :raise IOError: if cannot copy
     """
     try:
-        shutil.copy(src, dest)
+        copy(src, dest)
     except IOError as e:
         # ENOENT(2): file does not exist, raised also on missing dest parent dir
         if e.errno != errno.ENOENT:
             raise
         # try creating parent directories
         os.makedirs(os.path.dirname(dest))
-        shutil.copy(src, dest)
+        copy(src, dest)
 
 
 def copy_input_files_with_consisent_names_dict(input_dict, output_dict):

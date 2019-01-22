@@ -4,11 +4,10 @@ reference:
             output:
                 index: protected(expand('reference/{sr.reference}/{sr.reference}.dict', sr=pipeline.sample_references))
         fai:
-            output: []
+            output:
+                index: protected(expand('reference/{sr.reference}/{sr.reference}.fai', sr=pipeline.sample_references))
 
 reads:
-    conversion:
-        output: []
 
     preprocess:
         original:
@@ -131,10 +130,14 @@ classification:
             - reads/report
     differential_analysis:
         output:
-            analysis: expand(['classification/{reference}/report/tsv/summary.normed.tsv', 'classification/{reference}/report/comparison/differential_analysis.tsv'], reference=pipeline.references)
+            analysis:
+                from: expand('classification/{reference}/report/comparison/differential_analysis.tsv', reference=pipeline.references)
+                to: expand('{report_dir}/{reference}/comparison/differential_analysis.tsv', report_dir=config['report_dir'], reference=pipeline.references)
         filter_significant:
             output:
-                analysis: expand('classification/{reference}/report/comparison/significant.tsv', reference=pipeline.references)
+                analysis:
+                    from: expand('classification/{reference}/report/comparison/significant.tsv', reference=pipeline.references)
+                    to: expand('{report_dir}/{reference}/comparison/significant.tsv', report_dir=config['report_dir'], reference=pipeline.references)
     report:
         taxonomic_counts:
             barplot:
@@ -163,6 +166,9 @@ classification:
                 summary_html:
                     from: expand('assembly/{sample}/annotation/contigs/summary.html', sample=pipeline.samples)
                     to: expand('{report_dir}/{sample}/contig_annotations.html', sample=pipeline.samples, report_dir=config['report_dir'])
+                contigs:
+                    from: expand('assembly/{sample}/annotation/contigs/sequences/', sample=pipeline.samples)
+                    to: expand('{report_dir}/{sample}/sequences/', sample=pipeline.samples, report_dir=config['report_dir'])
             depends:
                 - classification/contig_based
         transcripts:
