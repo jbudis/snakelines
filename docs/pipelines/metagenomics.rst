@@ -77,7 +77,7 @@ Sequences of the ITS gene (store them as reference/unite/unite.fa) may be downlo
 
 .. code-block:: bash
 
-   cd /usr/local/snakelines/example/mhv
+   cd /usr/local/snakelines/example/tatry
 
    snakemake \
       --snakefile ../../snakelines.snake \
@@ -98,7 +98,7 @@ RDP classifier has already prebuilt databases that may be used, specifically 16s
 
 .. code-block:: bash
 
-   cd /usr/local/snakelines/example/mhv
+   cd /usr/local/snakelines/example/tatry
 
    snakemake \
       --snakefile ../../snakelines.snake \
