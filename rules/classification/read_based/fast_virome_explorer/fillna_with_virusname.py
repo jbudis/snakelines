@@ -51,9 +51,6 @@ def fillna_with_virusname(input_file):
     else:
         load_krona_table.to_csv(output_file, index = False, sep = '\t')
         
-    print(load_krona_table)
-
-
 
 #creating of intial variables
 
@@ -62,9 +59,6 @@ working_dir, working_file = create_working_accessories(input_file)[0], create_wo
 output_file = list()
 output_file += ['.'.join(input_file.split('.')[:-1]), '-checked.', input_file.split('.')[-1]]                           #divide string into substring, dividing character is '.' and then take all substring except last from list and merge them together with string '-chcecked' and last substring from list
 output_file = ''.join(output_file)
-
-print(output_file)
-
 
 #calling main function of script
 

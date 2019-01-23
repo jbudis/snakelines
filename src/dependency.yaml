@@ -107,7 +107,8 @@ variant:
 
 classification:
     read_based:
-        output: []
+        output:
+            classification: expand('classification/{reference}/report/krona/individual/{sample}.krn', reference=pipeline.references, sample=pipeline.samples)
         depends:
             - reads/preprocess
             - reads/report

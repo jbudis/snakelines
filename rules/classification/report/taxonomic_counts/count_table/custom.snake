@@ -8,7 +8,6 @@ import matplotlib.pyplot as plt
 tax_ranks = ['kingdom', 'phylum', 'class', 'order', 'family',
              'genus', 'species', 'subspecies', 'subsubspecies', 'variety', 'form']
 
-
 def individual_krn_files(wildcards):
     """
     Return list of krona files that should be generated for the reference defined in wildcards

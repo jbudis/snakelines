@@ -1,6 +1,6 @@
 samples:                             # List of sample categories to be analysed
     - name: .*                       # Regex expression of sample names to be analysed (reads/original/example.*_R1.fastq.gz)
-      reference: phagebook              # Reference genome or database, important to create kallisto index for used reference
+      reference: mhv_classification  # Reference genome or database, important to create kallisto index for used reference
 
 report_dir: report/public/01-viral   # Generated reports and essential output files would be stored there
 threads: 16                          # Number of threads to use in analysis
@@ -34,7 +34,6 @@ reads:                               # Prepare reads and quality reports for dow
                 - deduplicated
 
 classification:
-
     read_based:                      # viral identification from the reads
         method: fast_virome_explorer # Tool for viral identification from the read, supported values: fast_virome_explorer
         read_type: deduplicated      # Type of reads use as input for fast_virome explorer
@@ -47,13 +46,11 @@ classification:
         taxonomic_counts:            # Number of reads mapped to each taxonomic unit
             pieplot:                 # Visualisation in pie plot form
                 method: krona        # Supported values: krona
-
             count_table:             # Summary table with number of reads per taxonomic unit
                 method: custom       # Supported values: custom
                 tax_levels:          # List of taxonomic levels for which tables would be generated
                 - class
                 - genus
-
             barplot:                 # Visualisation in bar plot form
                 method: custom       # Supported values: custom
                 formats:             # Output format of the resulting images (supported values: png, svg)

@@ -90,7 +90,6 @@ def create_tpm_table(input_file, dictionary, abundance_file, krona_table):
         load_krona_table['VirusName'] = load_krona_table['#VirusIdentifier']
         load_krona_table['kingdom;phylum;class;order;family;genus;species'] = load_krona_table['#VirusIdentifier']
 
-    print(load_krona_table)
 
     load_krona_table.to_csv(krona_table, na_rep = 'NaN',  sep = '\t', index = False)
 
@@ -104,10 +103,6 @@ dictionary = dict()
 abundance_file = '{}/abundance.tsv'.format(working_dir)
 krona_table = '{}/FastViromeExplorer-final-sorted-abundance-checked_tpm.tsv'.format(working_dir)
 
-print('work dir: ', working_dir)
-print('work file: ', input_file)
-print('abundance file: ', abundance_file)
-print('tpm table: ', krona_table)
 
 #calling main function of script
 
