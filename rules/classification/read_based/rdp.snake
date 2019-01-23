@@ -6,27 +6,26 @@ RDP_REFERENCES = '16srrna|fungallsu|fungalits_unite|fungalits_warcup'
 RDP_DEFAULT_CONFIDENCE = 0.8
 
 rule rdp__classify_reads:
-	"""
-	Find closest homologue sequence for each sequenced fragment
+    """
+    Find closest homologue sequence for each sequenced fragment
     :input reads: Joined sequenced fragments in fasta format
     :output readtax: Individual taxonomy for each analysed fragment
     :output taxonomy: Summary taxonomies of classified sequenced fragments
     :params confidence: Minimal confidence threshold for taxonomy to be reported
     :params database: Name of pre-built RDP database
-	"""
+    """
     input:
-        reads    = 'reads/%s/{sample}_RM.fa' % pipeline.preprocessed_read_type,
+        reads    = 'reads/%s/{sample}_RC.fastq.gz' % pipeline.preprocessed_read_type,
     output:
-        readtax  = 'rdp/{reference,%s}/classification/{sample}/readtax.tsv'  % RDP_REFERENCES,
-        taxonomy = 'rdp/{reference,%s}/classification/{sample}/taxonomy.tsv' % RDP_REFERENCES
+        readtax  = 'classification/{reference,%s}/samples/{sample}/readtax.tsv'  % RDP_REFERENCES,
+        taxonomy = 'classification/{reference,%s}/samples/{sample}/taxonomy.tsv' % RDP_REFERENCES
     params:
-        confidence = method_config.get('confidence', RDP_DEFAULT_CONFIDENCE),
-        database = method_config['database']
+        confidence = method_config.get('confidence', RDP_DEFAULT_CONFIDENCE)
     shell:
         '''
         rdpclassifier classify \
             --format fixrank \
-            --gene {params.database} \
+            --gene {wildcards.reference} \
             --conf {params.confidence} \
             --hier_outfile {output.taxonomy} \
             --outputFile {output.readtax} \
@@ -40,9 +39,9 @@ rule rdp__prepare_for_krona:
     :output krona: Tabular format suitable for Krona report generation
     """
     input:
-        readtax  = 'rdp/{reference}/classification/{sample}/readtax.tsv',
+        taxonomy  = 'classification/{reference}/samples/{sample}/taxonomy.tsv'
     output:
-        krona    = 'rdp/{reference}/report/krona/individual/{sample}.krn'
+        krona    = 'classification/{reference}/report/krona/individual/{sample}.krn'
     run:
         TAX_RANKS = ['domain', 'phylum', 'class', 'subclass', 'order', 'suborder', 'family', 'genus']
 
