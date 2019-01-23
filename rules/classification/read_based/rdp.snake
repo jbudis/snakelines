@@ -56,10 +56,11 @@ rule rdp__prepare_for_krona:
             items = code.split(';')[:-1]
             items = [item.strip().strip('"') for item in items]
             item_dict = {rank: taxname for rank, taxname in zip(items[1::2], items[0::2])}
+            max_rank = max([TAX_RANKS.index(rank) if rank in TAX_RANKS else -1 for rank in item_dict])
 
             tax = ''
-            for rank in TAX_RANKS:
-                rank_tax = item_dict.get(rank, '')
+            for rank in TAX_RANKS[:max_rank+1]:
+                rank_tax = item_dict.get(rank, 'Unknown')
                 tax = '%s;%s' % (tax, rank_tax)
             tax = tax.strip(';')
             return tax
