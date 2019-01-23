@@ -31,7 +31,7 @@ rule bowtie2__filter_reads_from_reference:
         config['snakelines_dir'] + '/enviroments/others_env.yaml'
     shell:
         """
-        TMP_DIR=reads/filtered/tmp
+        TMP_DIR=reads/decontaminated/tmp
         R1_IN={input.r1}
         R2_IN={input.r2}
 
