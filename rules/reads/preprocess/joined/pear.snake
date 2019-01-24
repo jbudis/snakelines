@@ -3,6 +3,8 @@ include: config['snakelines_dir'] + '/rules/reads/conversion/unzip.snake'
 import gzip
 from Bio import SeqIO
 from Bio.SeqRecord import SeqRecord
+from Bio.Seq import Seq
+from Bio.Alphabet import IUPAC
 
 # TODO also create fastq reports for RM files
 # TODO also create fastq reports for RM files
@@ -99,6 +101,6 @@ rule pear__concat_joined_with_single:
 												    read2.letter_annotations['phred_quality']}
                     joined_description = '{} {}|{}'.format(read1.id, read1.description.split(' ')[1], read2.description.split(' ')[1])
                     joined = SeqRecord(id=read1.id, description=joined_description,
-                                       seq=joined_seq, letter_annotations=joined_qual)
+                                       seq=Seq(joined_seq, IUPAC.IUPACAmbiguousDNA()), letter_annotations=joined_qual)
 
                     SeqIO.write(joined, out, 'fastq')
