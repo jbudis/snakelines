@@ -304,11 +304,11 @@ qiime:
                 alpha_group_significance_reports:
                     from:   expand('reads/qiime/{name}-core-metrics-results/alpha/{type}_group_significance/',
                                                 name=qiime_read_type,
-                                                type=['evenness', 'faith_pd', 'observed_otus', 'shannon'])
+                                                type=config['qiime']['analysis']['core_metrics']['alpha_types'])
                     to:     expand('{report}/04_alpha_group_significance_reports/{name}-core-metrics-results/alpha/{type}_group_significance/',
                                                 report=config['report_dir'],
                                                 name=qiime_read_type,
-                                                type=['evenness', 'faith_pd', 'observed_otus', 'shannon'])
+                                                type=config['qiime']['analysis']['core_metrics']['alpha_types'])
 
                 beta_group_significance_reports:
                     from:   expand('reads/qiime/{name}-core-metrics-results/beta/{type}_{column}_significance/',
