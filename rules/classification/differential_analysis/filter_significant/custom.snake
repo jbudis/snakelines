@@ -4,16 +4,39 @@ rule custom__filter_significantly_expressed_transcripts:
     """
     Select transcripts with significant change in expression according to user specified filters.
     :input table: TSV table with statistical evaluation of change in expression
+    :input design: TSV table describing separation of samples into groups for differential expression
     :output table: TSV table with transcripts with significant change in expression
+    :param max_fdr: Maximal value of fold discovery change for transcript to be reported
+    :param min_fold_change: Minimal value of fold change for transcript to be reported
+    :param reproducible_expression: At least one read must be mapped to transcript in all samples from over-expressed group to be reported
     """
     input:
-        table           = '{analysis_dir}/{reference}/report/comparison/differential_analysis.tsv'
+        table  = '{analysis_dir}/{reference}/report/comparison/differential_analysis.tsv',
+        design = '{analysis_dir}/{reference}/report/comparison/design.tsv',
     output:
-        table           = '{analysis_dir}/{reference}/report/comparison/significant.tsv'
+        table  = '{analysis_dir}/{reference}/report/comparison/significant.tsv'
     params:
-        max_fdr         = method_config.get('max_fdr', 0.05),
-        min_fold_change = method_config.get('min_fold_change', 1)
+        max_fdr                 = method_config.get('max_fdr', 0.05),
+        min_fold_change         = method_config.get('min_fold_change', 1),
+        reproducible_expression = method_config.get('reproducible_expression', False)
+
     run:
+
+        def is_reproducible(transcript, group1_ids, group2_ids):
+            over_expressed_ids = group1_ids if transcript.FC < 1 else group2_ids
+            for sid in over_expressed_ids:
+                if transcript[sid] == 0:
+                    return False
+            return True
+
         all = pd.read_csv(input.table, sep='\t')
         des = all[(all.FDR <= params.max_fdr) & (all['FCexp^-1'] >= params.min_fold_change)]
+
+        if params.reproducible_expression:
+            design = pd.DataFrame.from_csv(input.design, sep='\t', index_col=0)
+            group1_ids = design[design.groups == 1].index
+            group2_ids = design[design.groups == 2].index
+            des['reproducible'] = des.apply(lambda transcript: is_reproducible(transcript, group1_ids, group2_ids), axis=1)
+            des = des[des.reproducible]
+
         des.to_csv(output.table, sep='\t', index=None)
