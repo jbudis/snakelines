@@ -5,6 +5,7 @@ rule edger__identify_transcripts_with_changed_expression:
     :input metadata: File with samples attributes - use for separating samples into compared groups
     :output norm_counts: TSV table with normalised number of reads (by sample read depth)
     :output table: TSV table with statistical evaluation of change of expression
+    :output design: TSV table describing separation of samples into groups for differential expression
     :param group_by: attribute (in the metadata file header) that would split samples into two categories
     :param batch: attribute (in the metadata file header) that would split samples categories with similar batch bias effect (e.g. samples from same sequencing run)
     """
@@ -14,7 +15,8 @@ rule edger__identify_transcripts_with_changed_expression:
         edger = srcdir('scripts/edger.R')
     output:
         norm_counts = '{analysis_dir}/{reference}/report/tsv/summary.normed.tsv',
-        table  = '{analysis_dir}/{reference}/report/comparison/differential_analysis.tsv'
+        table  = '{analysis_dir}/{reference}/report/comparison/differential_analysis.tsv',
+        design = '{analysis_dir}/{reference}/report/comparison/design.tsv',
     params:
         group_by = method_config['group_by'],
         batch = method_config.get('batch', '')
@@ -27,6 +29,7 @@ rule edger__identify_transcripts_with_changed_expression:
             {input.metadata} \
             {output.norm_counts} \
             {output.table} \
+            {output.design} \
             {params.group_by} \
             {params.batch}
         '''

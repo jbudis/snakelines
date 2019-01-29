@@ -8,9 +8,10 @@ count_file = args[1]
 metadata_file = args[2]
 output_norm_counts = args[3]
 output_diff = args[4]
-group_by_attribute = args[5]
-if (length(args) == 6) {
-    batch_attribute = args[6]
+output_design = args[5]
+group_by_attribute = args[6]
+if (length(args) == 7) {
+    batch_attribute = args[7]
 }
 
 counts <- read.delim(count_file, row.names=1, header = T, sep = '\t', check.names = FALSE)
@@ -30,6 +31,8 @@ if (exists("batch_attribute")) {
 } else {
     design <- model.matrix(~groups)
 }
+
+print(typeof(design['litters']))
 
 dge <- DGEList(counts=counts, group=groups)
 dge <- calcNormFactors(dge)
@@ -63,6 +66,7 @@ diff = cbind(diff, FC, up_down)
 colnames(diff)[ncol(diff)-1] = 'FCexp^-1'
 
 write.table(diff, file = output_diff, quote=FALSE, sep='\t', row.names=F)
+write.table(cbind(sampleid = colnames(counts), design[, c('litters', 'groups')]), file = output_design, quote=FALSE, sep='\t', row.names=F)
 
 # TODO name the row index as "name"
-write.table(norm_counts, file = output_norm_counts, quote=FALSE, sep='\t', row.names=T)
+write.table(norm_counts, file = output_norm_counts, quote=FALSE, sep='\t', row.names=F)
