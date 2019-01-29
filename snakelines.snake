@@ -2,7 +2,9 @@ import os
 import sys
 from src.config.dependency_load import load_config, check_dependency
 from src.output.copy_files import copy_input_files_with_consisent_names_dict
+from src.output.copy_files import copy_config
 from src.output.send_email import send_email
+
 
 # Load configuration file if not already loaded
 config = load_config(config)
@@ -45,6 +47,7 @@ onsuccess:
     print("Copying and finalizing", file=sys.stderr)
     copied = copy_input_files_with_consisent_names_dict(get_files(outputs), get_files(copy_where))
     print("Copied {} files to report dir '{}'".format(copied, config['report_dir']), file=sys.stderr)
+    copy_config(config, workflow)
     send_email(config, get_files(outputs), get_files(copy_where), True)
 
 # on error send email(s)

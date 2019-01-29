@@ -42,6 +42,20 @@ def copy_input_files_with_consistent_output_names(input_files, output_files):
             shutil.copy(in_item, out_item)
 
 
+def copy_config(config, workflow):
+    """
+    Copy configuration file (snakemake --configfile argument) to the report directory
+    :param config: str - global snakemake variable
+    :param workflow: str - global snakemake variable
+    :return: None
+    """
+    report_dir = config.get('report_dir', None)
+    config_file = workflow.overwrite_configfile
+    if report_dir and config_file:
+        report_file = '{}/{}'.format(report_dir, os.path.basename(config_file))
+        copy_with_makedirs(config_file, report_file)
+
+
 def copy(src, dest):
     """
     Copy a file or directory
