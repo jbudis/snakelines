@@ -21,9 +21,11 @@ rule rdp__classify_reads:
         taxonomy = 'classification/{reference,%s}/samples/{sample}/taxonomy.tsv' % RDP_REFERENCES
     params:
         confidence = method_config.get('confidence', RDP_DEFAULT_CONFIDENCE)
+    conda:
+        config['snakelines_dir'] + '/enviroments/rdptools_env.yaml'
     shell:
         '''
-        rdpclassifier classify \
+        rdp_classifier classify \
             --format fixrank \
             --gene {wildcards.reference} \
             --conf {params.confidence} \

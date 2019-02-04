@@ -83,8 +83,6 @@ rule pear__concat_joined_with_single:
         rc = 'reads/joined/{sample}_RC.fastq.gz'
     params:
     	n_ambiguous_bases = int(method_config['n_ambiguous_bases'])
-    conda:
-        config['snakelines_dir'] + '/enviroments/others_env.yaml'
     run:
         with gzip.open(output.rc, 'wt') as out:
 
