@@ -24,7 +24,7 @@ reads:
                 reads: expand('reads/deduplicated/{sample}_R{orientation}.fastq.gz', sample=pipeline.samples, orientation=[1,2])
         joined:
             output:
-                reads: expand('reads/joined/{sample}_R{orientation}.fastq.gz', sample=pipeline.samples, orientation=[1,2])
+                reads: expand('reads/joined/{sample}_R{orientation}.fastq.gz', sample=pipeline.samples, orientation=[1,2,'M','C'])
         subsampled:
             output:
                 reads: expand('reads/subsampled/{sample}_R{orientation}.fastq.gz', sample=pipeline.samples, orientation=[1,2])
@@ -107,7 +107,8 @@ variant:
 
 classification:
     read_based:
-        output: []
+        output:
+            kronas: expand('classification/{sr.reference}/report/krona/individual/{sr.sample}.krn', sr=pipeline.sample_references)
         depends:
             - reads/preprocess
             - reads/report

@@ -186,6 +186,15 @@ You may link index directly to the project using
       /data/genome/metagenome/blast/nt/ \
       /data/projects/example/reference/nt/blast_index
 
+Such databases should be labelled with ``prebuilt: True`` value in the configuration, to avoid validation messages for missing fasta file:
+
+.. code:: bash
+
+   samples:                           # List of sample categories to be analysed
+      - name: .*-16S                  # Regex expression of sample names to be analysed (reads/original/.*-16S_R1.fastq.gz)
+        reference: 16srrna            # RDP classifier Supported values: 16srrna, fungallsu, fungalits_unite, fungalits_warcup
+        prebuilt: True                # Reference sequence reference/{reference}/{reference}.fa does not exist, but all required indices are already prepared
+
 Multi-threading
 ---------------
 

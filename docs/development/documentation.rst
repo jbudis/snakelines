@@ -38,7 +38,6 @@ The generated documentation corresponding to this example is in:
 .. toctree::
    rule_example.rst
 
-
 Build documentation locally
 ---------------------------
 
@@ -68,6 +67,23 @@ You may review them using your favorite browser, for example
 
    firefox _build/html/index.html
 
+
+Generate rules documentation automatically
+------------------------------------------
+
+You may set your development environment to rebuild documentation for all rules before commit.
+When properly set up, you do not have to think about rebuild after addition or removal of docstrings.
+This however affects only rules, other types of documentation, such as static pages, pipelines have to be modified manually.
+
+To set up automatic generation of rules documentation, add lines to the .git/hooks/pre-commit file:
+
+.. code-block:: bash
+
+   #!/bin/sh
+   python src/documentation/documentation.py
+
+
+Be sure, that you have execute rights on the documentation.py file (chmod +x .git/hooks/pre-commit).
 
 Publish documentation
 ---------------------

@@ -19,15 +19,16 @@ Join paired reads into single end reads based on sequence overlap
 - *r2:* Right side of fragments without overlap in fastq format
 - *rm:* Paired reads with overlap joined into merged sequences in fastq format
 
-Pear - Concat Assembled And Unassambled
--------------------------------------------
+Pear - Concat Joined With Single
+------------------------------------
 
-Unite joined reads, and reads that could not be joined into a single fastq file
+Unite joined reads, and reads that could not be joined into a single fastq file.
+Sequence between reads without overlap would be filled with N symbol.
 
 **Location**
 
 - *Filepath:* <SnakeLines_dir>/rules/reads/preprocess/joined/pear.snake
-- *Rule name:* pear__concat_assembled_and_unassambled
+- *Rule name:* pear__concat_joined_with_single
 
 **Input(s):**
 
@@ -37,5 +38,5 @@ Unite joined reads, and reads that could not be joined into a single fastq file
 
 **Output(s):**
 
-- *rc:* Concatenated file, first goes joined reads and then reads without overlap
+- *rc:* Concatenated file, first goes joined reads and then reads without overlap with N symbols between reads
 
