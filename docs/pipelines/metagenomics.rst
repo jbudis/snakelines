@@ -20,8 +20,6 @@ Required inputs
   * each sample is represented by two gzipped fastq files
   * standard output files of paired-end sequencing
 
-* Reference genomes of target genes in fasta format
-
 * .tax file with taxonomic description of each organism in reference fasta
 
   * TSV format
@@ -45,6 +43,12 @@ Required inputs
            |-- <sample_1>_R2.fastq.gz
            |-- <sample_2>_R1.fastq.gz
            |-- <sample_2>_R2.fastq.gz
+
+
+In case, you are using Metaxa2 classifier, you also need reference genomes of target genes in fasta format.
+
+::
+
    |-- reference/<reference>
            |-- <reference>.fa
            |-- <reference>.tax
@@ -62,6 +66,9 @@ Generated outputs
 Example
 -------
 
+Metaxa2 classifier
+~~~~~~~~~~~~~~~~~~
+
 How to run example:
 
 You need to provide reference sequences for this example to run.
@@ -70,7 +77,7 @@ Sequences of the ITS gene (store them as reference/unite/unite.fa) may be downlo
 
 .. code-block:: bash
 
-   cd /usr/local/snakelines/example/mhv
+   cd /usr/local/snakelines/example/tatry
 
    snakemake \
       --snakefile ../../snakelines.snake \
@@ -79,6 +86,27 @@ Sequences of the ITS gene (store them as reference/unite/unite.fa) may be downlo
 Example configuration:
 
 .. literalinclude:: ../../example/tatry/config_metagenomic.yaml
+   :language: yaml
+
+RDP classifier
+~~~~~~~~~~~~~~
+
+How to run example:
+
+RDP classifier has already prebuilt databases that may be used, specifically 16srrna, fungallsu, fungalits_warcup, fungalits_unite
+
+
+.. code-block:: bash
+
+   cd /usr/local/snakelines/example/tatry
+
+   snakemake \
+      --snakefile ../../snakelines.snake \
+      --configfile config_metagenomics_rdp.yaml
+
+Example configuration:
+
+.. literalinclude:: ../../example/tatry/config_metagenomic_rdp.yaml
    :language: yaml
 
 Planned improvements
