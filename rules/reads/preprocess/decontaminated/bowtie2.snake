@@ -22,23 +22,23 @@ rule bowtie2__filter_reads_from_reference:
         r2 = configured_temp('reads/decontaminated/{sample}_R2.fastq.gz')
     params:
         indices = expand('reference/{reference}/bowtie2_index/{reference}', reference=method_config['references']),
-        keep_param = '--al-conc-gz' if method_config.get('keep', False) else '--un-conc-gz'
+        keep_param = '--al-conc-gz' if method_config.get('keep', False) else '--un-conc-gz',
+        tmp_dir = 'reads/decontaminated/tmp/{sample}'
     threads:
         int(config['threads'])
     log:
-        prefix = 'reads/purified/log/{sample}'
+        prefix = 'reads/decontaminated/log/{sample}'
     conda:
         config['snakelines_dir'] + '/enviroments/others_env.yaml'
     shell:
         """
-        TMP_DIR=reads/filtered/tmp
         R1_IN={input.r1}
         R2_IN={input.r2}
 
         for INDEX in {params.indices}; do
 
             REF=`basename $INDEX`
-            REF_DIR=$TMP_DIR/$REF
+            REF_DIR={params.tmp_dir}/$REF
             mkdir -p $REF_DIR
 
             R1_OUT=$REF_DIR/{wildcards.sample}_R1.fastq.gz
@@ -62,5 +62,5 @@ rule bowtie2__filter_reads_from_reference:
         mv $R1_OUT {output.r1}
         mv $R2_OUT {output.r2}
 
-        rm -rf $TMP_DIR
+        rm -rf {params.tmp_dir}
         """
