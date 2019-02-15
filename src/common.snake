@@ -15,7 +15,7 @@ def configured_temp(read_file):
     """
     items = read_file.split('/')
     assert items[0] == 'reads' and len(items) == 3, \
-           'Method can be used only for read files in reads/{preprocess}/ directory, provided {}'.format(read_file)
+           'Method can be used only for read files in reads/{{preprocess}}/ directory, provided {}'.format(read_file)
 
     read_type = items[1]
     temporary = extract_from_config(config, ['reads', 'preprocess', read_type, 'temporary'], False)

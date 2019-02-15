@@ -47,6 +47,33 @@ User may define, where to put output reports.
    report_dir: report/public/01-exome  # Generated reports and essential output files would be stored there
 
 
+Email reporting
+---------------
+
+SnakeLines has a functionality to send email with a slightly configurable short report after completion of all tasks.
+To enable this functionality, the following block of configuration should be specified in the configuration file.
+The email client used is either `gmail` email client (if email/setup/gmail is specified) or linux native `sendmail` command (if not).
+In case of gmail, you have to provide the email address of the gmail account and the password to it in open text,
+so we recommend to use an email address specifically for this purpose. More info is inline in the configuration below as well as in the default configuration file.
+
+.. code-block:: yaml
+
+    email:                              # Setup email client (will not send emails if not specified)
+        setup:                          # Setup the sending
+            sendto:                     # Receiver address(es)
+                - sampleemail@gmail.com
+            gmail:                      # Setup gmail account for sending (the emails will look as to come from this address) - if not provided, try to send through linux "sendmail" command
+                login_name: "snakelines.mailclient@gmail.com"   # gmail address for sending emails
+                login_pass: "hesielko"                          # gmail password for this address
+        onsuccess:                      # Setup emails to send if the analysis succeed
+            send: True                  # Send only if true
+            list_files: False           # Include list of all generated files
+            list_copied: False          # Include list of all copied files
+        onerror:                        # Setup emails to send if the analysis failed
+            send: True                  # Send only if true
+            list_files: True            # Include list of files that should have been generated
+
+
 Adjust rules parameters
 -----------------------
 

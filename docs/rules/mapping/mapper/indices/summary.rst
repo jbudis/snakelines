@@ -21,28 +21,6 @@ Generate mapping index that is utilized by Bismark algorithm to map bisulfide tr
 
 - *fadir:* root directory of the reference sequence
 
-Bwa - Prepare Index
------------------------
-
-Generate mapping index that is utilized by BWA algorithm to map reads to a reference genome
-
-**Location**
-
-- *Filepath:* <SnakeLines_dir>/rules/mapping/mapper/indices/bwa_index.snake
-- *Rule name:* bwa__prepare_index
-
-**Input(s):**
-
-- *fa:* fasta reference genome
-
-**Output(s):**
-
-- *indecis:* 5 files with indeces. e.g '{fadir}/bwa_index/{sequence}.[amb,ann,bwt,pac,sa]'
-
-**Param(s):**
-
-- *index:* output filename's path prefix, e.g. '{fadir}/bwa_index/{sequence}'
-
 Bowtie2 - Prepare Index
 ---------------------------
 
@@ -64,4 +42,26 @@ Generate mapping index that is utilized by Bowtie2 algorithm to map reads to a r
 **Param(s):**
 
 - *index:* name of output reference, technically filename's path prefix, e.g. '{fadir}/bowtie2_index/{sequence}'
+
+Bwa - Prepare Index
+-----------------------
+
+Generate mapping index that is utilized by BWA algorithm to map reads to a reference genome
+
+**Location**
+
+- *Filepath:* <SnakeLines_dir>/rules/mapping/mapper/indices/bwa_index.snake
+- *Rule name:* bwa__prepare_index
+
+**Input(s):**
+
+- *fa:* fasta reference genome
+
+**Output(s):**
+
+- *indecis:* 5 files with indeces. e.g '{fadir}/bwa_index/{sequence}.[amb,ann,bwt,pac,sa]'
+
+**Param(s):**
+
+- *index:* output filename's path prefix, e.g. '{fadir}/bwa_index/{sequence}'
 
