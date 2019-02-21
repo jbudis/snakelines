@@ -7,6 +7,11 @@ reference:
             output:
                 index: protected(expand('reference/{sr.reference}/{sr.reference}.fai', sr=pipeline.sample_references))
 
+reference:
+    download:
+        output:
+            reference: expand('reference/{reference}/{reference}.fa', reference=pipeline.references)
+
 reads:
 
     preprocess:

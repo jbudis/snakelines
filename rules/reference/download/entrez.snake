@@ -1,0 +1,32 @@
+from Bio import Entrez
+from Bio import SeqIO
+
+rule entrez__download_sequences_by_genbank_id:
+    """
+    Download sequences from NCBI Genbank database according to the list of enumerated genbank ids
+    :output reference: Downloaded sequences in FASTA format
+    :output taxonomy: Taxonomies for downloaded sequences
+    :params genbank_ids: List of Genbank identifiers for sequences to download
+    :params email: Inform NCBI who you are to contact you in case of excessive use. Otherwise they may block your access directly.
+    """
+    output:
+        reference = protected('reference/{reference}/{reference}.fa'),
+        taxonomy = protected('reference/{reference}/{reference}.tax')
+    params:
+        genbank_ids = method_config[reference],
+        email = method_config['email']
+    run:
+        Entrez.email = params.email
+        with open(output.reference, 'w') as refs, open(output.taxonomy, 'w') as taxes:
+            for genbank_id in params.genbank_ids:
+                handle = Entrez.efetch(db="nucleotide", id=genbank_id, rettype="gb", retmode="text")
+                record = SeqIO.read(handle, "genbank")
+                handle.close()
+                SeqIO.write(record, refs, 'fasta')
+
+                taxonomy = ';'.join(record.annotations['taxonomy'])
+                if 'organism' in record.annotations:
+                    organism = record.annotations['organism']
+                    taxonomy = '{taxonomy};{organism}'.format(taxonomy=taxonomy, organism=organism)
+
+                taxes.write('{}\t{}\n'.format(genbank_id, taxonomy))
