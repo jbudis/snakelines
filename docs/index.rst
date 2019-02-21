@@ -33,6 +33,7 @@ Contents
    pipelines/quality_report
    pipelines/preprocess
    pipelines/mapping
+   pipelines/download_reference_and_mapping
    pipelines/assembly
    pipelines/variant_calling
    pipelines/methylation

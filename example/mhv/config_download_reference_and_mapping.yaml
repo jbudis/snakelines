@@ -8,7 +8,7 @@ threads: 16                          # Number of threads to use in analysis
 reference:
     download:
         method: entrez               # Supported values: entrez
-        email: fillme@somemail.com   # Inform NCBI who you are to contact you in case of excessive use.
+        email: FILLME@SOMEMAIL.COM   # Inform NCBI who you are to contact you in case of excessive use.
         mhv_ncbi:                    # List of genbank ids to download, one list for each reference database
             - U97553.2
             - AF127083.1
