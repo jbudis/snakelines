@@ -1,6 +1,5 @@
 samples:                            # List of sample categories to be analysed
     - name: example.*               # Regex expression of sample names to be analysed (reads/original/example.*_R1.fastq.gz)
-      reference: mhv                # Reference genome for reads in the category (reference/mhv/mhv.fa)
 
 report_dir: report/public/01-assembly   # Generated reports and essential output files would be stored there
 threads: 16                         # Number of threads to use in analysis
@@ -35,6 +34,7 @@ reads:                              # Prepare reads and quality reports for down
                 - trimmed
                 - decontaminated
                 - deduplicated
+
 
 assembly:                           # Join reads into longer sequences (contigs) based on their overlaps
     assembler:                      # Method for joining reads
