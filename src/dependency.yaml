@@ -324,11 +324,11 @@ qiime:
                 emperor_plot_reports:
                     from:   expand('reads/qiime/{name}-core-metrics-results/{type}_emperor/',
                                                 name=qiime_read_type,
-                                                type=['bray_curtis', 'jaccard', 'unweighted_unifrac', 'weighted_unifrac'])
+                                                type=config['qiime']['analysis']['core_metrics']['emperor_types'])
                     to:     expand('{report}/06_emperor_plot_reports/{name}-core-metrics-results/{type}_emperor/',
                                                 report=config['report_dir'],
                                                 name=qiime_read_type,
-                                                type=['bray_curtis', 'jaccard', 'unweighted_unifrac', 'weighted_unifrac'])
+                                                type=config['qiime']['analysis']['core_metrics']['emperor_types'])
 
                 custom_axes_reports:
                     from:   expand('reads/qiime/{name}-core-metrics-results/custom_axes/{type}_emperor_{column}/',

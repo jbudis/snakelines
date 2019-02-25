@@ -1,13 +1,13 @@
 rule qiime__taxa__barplot:
     """
     Create qiime barplot visualization of taxonomy data, calls 'qiime taxa barplot'
-    :input rarefield_table: qiime artifact of type FeatureTable[Frequency], obtained from core-metrics-results, e.g. reads/qiime/joined-core-metrics-results/rarefied_table.qza
+    :input table: qiime artifact of type FeatureTable[Frequency], e.g. reads/qiime/joined-table.qza
     :input taxonomy_qza: qiime artifact of type FeatureData[Taxonomy], e.g. reads/qiime/joined-taxonomy-dn-99.qza
     :input metadata: TSV metadata filepath, e.g. description/joined-sample-metadata.tsv
     :output qzv: qiime visualization file, can be exported to HTML, e.g. reads/qiime/joined-taxa-barplots-dn-99.qzv
     """
     input:
-        rarefield_table = 'reads/qiime/{name}-core-metrics-results/rarefied_table.qza',
+        table           = expand('reads/qiime/{{name}}-table{params_file_suffix}.qza', params_file_suffix = '-dn-{}'.format(method_config['similarity']) if method_config.get('similarity', '') != '' else ''),
         taxonomy_qza    = 'reads/qiime/{name}-taxonomy{file_suffix}.qza',
         metadata        = 'description/{name}-sample-metadata.tsv'
     output:
@@ -15,7 +15,7 @@ rule qiime__taxa__barplot:
     shell:
         '''
         qiime taxa barplot \
-            --i-table {input.rarefield_table} \
+            --i-table {input.table} \
             --i-taxonomy {input.taxonomy_qza} \
             --m-metadata-file {input.metadata} \
             --o-visualization {output.qzv}
