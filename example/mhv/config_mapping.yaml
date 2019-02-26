@@ -57,4 +57,5 @@ mapping:                            # Find the most similar genomic region to re
         quality_report:             # HTML summary with quality of mappings
             method: qualimap        # Supported values: qualimap
             map_types:              # List of post-process steps for quality reports
+                - sorted
                 - deduplicated

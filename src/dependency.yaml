@@ -43,19 +43,20 @@ reads:
                 fastqcs:
                     from: expand('reads/{read_type}/stats/{sample}_R{orientation}_fastqc.html',
                                   sample=pipeline.samples, orientation=[1,2],
-                                  read_type=read_types_with_fastqc_report)
+                                  read_type=read_types_with_quality_report)
 
-                    to:   expand('{report_dir}/{sample}/read_quality-{read_type}_R{orientation}.html',
+                    to:   expand('{report_dir}/{sample}/read_quality/{read_type}_R{orientation}.html',
                                   report_dir=config['report_dir'],
                                   sample=pipeline.samples, orientation=[1,2],
-                                  read_type=read_types_with_fastqc_report)
+                                  read_type=read_types_with_quality_report)
 
                 reports:
                     from: expand('reads/{read_type}/stats/summary.html',
-                                  read_type=read_types_with_fastqc_report)
+                                  read_type=read_types_with_quality_report)
 
-                    to:   expand('{report_dir}/_summary/read_quality-{read_type}.html',
-                                  report_dir=config['report_dir'], read_type=read_types_with_fastqc_report)
+                    to:   expand('{report_dir}/_summary/read_quality/{read_type}.html',
+                                  report_dir=config['report_dir'],
+                                  read_type=read_types_with_quality_report)
 
 mapping:
     mapper:
@@ -77,21 +78,35 @@ mapping:
                                   sr=pipeline.sample_references)
         sorted:
             output:
-                sorted: expand('mapping/{sr.reference}/sorted/{sr.sample}.bam', sr=pipeline.sample_references)
+                sorted: expand('mapping/{sr.reference}/sorted/{sr.sample}.bam',
+                                sr=pipeline.sample_references)
         deduplicated:
             output:
-                deduplicated: expand('mapping/{sr.reference}/deduplicated/{sr.sample}.bam', sr=pipeline.sample_references)
+                deduplicated: expand('mapping/{sr.reference}/deduplicated/{sr.sample}.bam',
+                                      sr=pipeline.sample_references)
+
     report:
         quality_report:
             output:
                 quality_reports:
-                    from: expand('mapping/{sr.reference}/{map_type}/stats-wgs/samples/{sr.sample}/report.pdf', sr=pipeline.sample_references, map_type=pipeline.postprocessed_map_type)
-                    to: expand('{report_dir}/{sr.reference}/samples/{sr.sample}/mapping_quality.pdf', report_dir=config['report_dir'], sr=pipeline.sample_references)
+                    from: expand('mapping/{sr.reference}/{map_type}/stats-wgs/samples/{sr.sample}/report.pdf',
+                                  sr=pipeline.sample_references, map_type=map_types_with_quality_report)
+
+                    to:   expand('{report_dir}/{sr.sample}/mapping_quality/{sr.reference}-{map_type}.pdf',
+                                  report_dir=config['report_dir'],
+                                  sr=pipeline.sample_references, map_type=map_types_with_quality_report)
+
                 summary_report:
-                    from: expand('mapping/{reference}/{map_type}/stats-wgs/summary/report.pdf', reference=multisample_references, map_type=pipeline.postprocessed_map_type)
-                    to: expand('{report_dir}/{reference}/summary/mapping_quality.pdf', report_dir=config['report_dir'], reference=multisample_references)
+                    from: expand('mapping/{reference}/{map_type}/stats-wgs/summary/report.pdf',
+                                  reference=multisample_references, map_type=map_types_with_quality_report)
+
+                    to:   expand('{report_dir}/_summary/mapping_quality/{reference}-{map_type}.pdf',
+                                  report_dir=config['report_dir'],
+                                  reference=multisample_references, map_type=map_types_with_quality_report)
+
             depends:
                 - mapping/mapper
+
         methylation:
             output:
                 methylation_reports:

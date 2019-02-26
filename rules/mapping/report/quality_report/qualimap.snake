@@ -3,7 +3,7 @@ include: config['snakelines_dir'] + '/rules/mapping/index/samtools.snake'
 import pandas as pd
 import os
 
-rule qualimap__mapping_quality_report_accross_reference:
+rule qualimap__mapping_quality_report_across_reference:
     """
     Generate summary statistics for mapped reads stored in BAM files. Statistics are calculated across
     whole reference genome.
@@ -44,7 +44,7 @@ rule qualimap__mapping_quality_report_accross_reference:
         """
 
 # TODO validate if this rule is working
-rule qualimap__mapping_quality_report_accross_panel:
+rule qualimap__mapping_quality_report_across_panel:
     """
     Generate summary statistics for mapped reads stored in BAM files. Statistics are calculated across
     genomic regions specified in the BED file.
@@ -139,4 +139,4 @@ rule qualimap__summarize_quality_reports:
         2> {log.err}
         """
 
-ruleorder: qualimap__mapping_quality_report_accross_reference > qualimap__mapping_quality_report_accross_panel
+ruleorder: qualimap__mapping_quality_report_across_reference > qualimap__mapping_quality_report_across_panel
