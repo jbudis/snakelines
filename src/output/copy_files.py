@@ -50,7 +50,7 @@ def store_snakelines_version(report_dir, version):
     :param version: str - version of the SnakeLines
     :return: None
     """
-    execution_dir = '{}/snakelines_log'.format(report_dir)
+    execution_dir = '{}/_execution'.format(report_dir)
     if not os.path.exists(execution_dir):
         os.makedirs(execution_dir)
 
@@ -68,7 +68,7 @@ def copy_config(report_dir, workflow):
     """
     config_file = workflow.overwrite_configfile
     if config_file:
-        report_file = '{}/snakelines_log/{}'.format(report_dir, os.path.basename(config_file))
+        report_file = '{}/_execution/{}'.format(report_dir, os.path.basename(config_file))
         copy_with_makedirs(config_file, report_file)
 
 
