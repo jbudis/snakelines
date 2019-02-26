@@ -2,57 +2,79 @@ reference:
     index:
         dict:
             output:
-                index: protected(expand('reference/{sr.reference}/{sr.reference}.dict', sr=pipeline.sample_references))
+                index: expand('reference/{sr.reference}/{sr.reference}.dict',
+                                         sr=pipeline.sample_references)
         fai:
             output:
-                index: protected(expand('reference/{sr.reference}/{sr.reference}.fai', sr=pipeline.sample_references))
+                index: expand('reference/{sr.reference}/{sr.reference}.fai',
+                                         sr=pipeline.sample_references)
 
 reads:
 
     preprocess:
         original:
             output:
-                reads: expand('reads/original/{sample}_R{orientation}.fastq.gz', sample=pipeline.samples, orientation=[1,2])
+                reads: expand('reads/original/{sample}_R{orientation}.fastq.gz',
+                               sample=pipeline.samples, orientation=[1,2])
         trimmed:
             output:
-                reads: expand('reads/trimmed/{sample}_R{orientation}.fastq.gz', sample=pipeline.samples, orientation=[1,2])
+                reads: expand('reads/trimmed/{sample}_R{orientation}.fastq.gz',
+                               sample=pipeline.samples, orientation=[1,2])
         decontaminated:
             output:
-                reads: expand('reads/decontaminated/{sample}_R{orientation}.fastq.gz', sample=pipeline.samples, orientation=[1,2])
+                reads: expand('reads/decontaminated/{sample}_R{orientation}.fastq.gz',
+                               sample=pipeline.samples, orientation=[1,2])
         deduplicated:
             output:
-                reads: expand('reads/deduplicated/{sample}_R{orientation}.fastq.gz', sample=pipeline.samples, orientation=[1,2])
+                reads: expand('reads/deduplicated/{sample}_R{orientation}.fastq.gz',
+                               sample=pipeline.samples, orientation=[1,2])
         joined:
             output:
-                reads: expand('reads/joined/{sample}_R{orientation}.fastq.gz', sample=pipeline.samples, orientation=[1,2,'M','C'])
+                reads: expand('reads/joined/{sample}_R{orientation}.fastq.gz',
+                               sample=pipeline.samples, orientation=[1, 2,'M','C'])
         subsampled:
             output:
-                reads: expand('reads/subsampled/{sample}_R{orientation}.fastq.gz', sample=pipeline.samples, orientation=[1,2])
+                reads: expand('reads/subsampled/{sample}_R{orientation}.fastq.gz',
+                               sample=pipeline.samples, orientation=[1,2])
 
     report:
         quality_report:
             output:
                 fastqcs:
-                    from: expand('reads/{read_type}/stats/{sample}_R{orientation}_fastqc.html', read_type=read_types_with_fastqc_report, sample=pipeline.samples, orientation=[1,2])
-                    to: expand('{report_dir}/read_quality_report/{read_type}/{sample}_R{orientation}_fastqc.html', report_dir=config['report_dir'],read_type=read_types_with_fastqc_report, sample=pipeline.samples, orientation=[1,2])
+                    from: expand('reads/{read_type}/stats/{sample}_R{orientation}_fastqc.html',
+                                  sample=pipeline.samples, orientation=[1,2],
+                                  read_type=read_types_with_fastqc_report)
+
+                    to:   expand('{report_dir}/{sample}/read_quality-{read_type}_R{orientation}.html',
+                                  report_dir=config['report_dir'],
+                                  sample=pipeline.samples, orientation=[1,2],
+                                  read_type=read_types_with_fastqc_report)
+
                 reports:
-                    from: expand('reads/{read_type}/stats/summary.html', read_type=read_types_with_fastqc_report)
-                    to: expand('{report_dir}/read_quality_report/{read_type}/index.html', report_dir=config['report_dir'], read_type=read_types_with_fastqc_report)
+                    from: expand('reads/{read_type}/stats/summary.html',
+                                  read_type=read_types_with_fastqc_report)
+
+                    to:   expand('{report_dir}/_summary/read_quality-{read_type}.html',
+                                  report_dir=config['report_dir'], read_type=read_types_with_fastqc_report)
 
 mapping:
     mapper:
         output:
-            alignments: expand('mapping/{sr.reference}/original/{sr.sample}.bam', sr=pipeline.sample_references)
+            alignments: expand('mapping/{sr.reference}/original/{sr.sample}.bam',
+                                sr=pipeline.sample_references)
         depends:
             - reads/preprocess
             - reads/report/quality_report
     index:
         output:
-            bam_indices: expand('mapping/{sr.reference}/{map_type}/{sr.sample}.bam.bai', sr=pipeline.sample_references, map_type=pipeline.postprocessed_map_type)
+            bam_indices: expand('mapping/{sr.reference}/{map_type}/{sr.sample}.bam.bai',
+                                 sr=pipeline.sample_references, map_type=pipeline.postprocessed_map_type)
+
     postprocess:
         original:
             output:
-                original: expand('mapping/{sr.reference}/original/{sr.sample}.bam', sr=pipeline.sample_references)
+                original: expand('mapping/{sr.reference}/original/{sr.sample}.bam',
+                                  sr=pipeline.sample_references)
         sorted:
             output:
                 sorted: expand('mapping/{sr.reference}/sorted/{sr.sample}.bam', sr=pipeline.sample_references)
