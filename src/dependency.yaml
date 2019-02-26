@@ -92,7 +92,7 @@ mapping:
                     from: expand('mapping/{sr.reference}/{map_type}/stats-wgs/samples/{sr.sample}/report.pdf',
                                   sr=pipeline.sample_references, map_type=map_types_with_quality_report)
 
-                    to:   expand('{report_dir}/{sr.sample}/mapping_quality/{sr.reference}-{map_type}.pdf',
+                    to:   expand('{report_dir}/{sr.sample}/mapping_quality/{map_type}-{sr.reference}.pdf',
                                   report_dir=config['report_dir'],
                                   sr=pipeline.sample_references, map_type=map_types_with_quality_report)
 
@@ -100,7 +100,7 @@ mapping:
                     from: expand('mapping/{reference}/{map_type}/stats-wgs/summary/report.pdf',
                                   reference=multisample_references, map_type=map_types_with_quality_report)
 
-                    to:   expand('{report_dir}/_summary/mapping_quality/{reference}-{map_type}.pdf',
+                    to:   expand('{report_dir}/_summary/mapping_quality/{map_type}-{reference}.pdf',
                                   report_dir=config['report_dir'],
                                   reference=multisample_references, map_type=map_types_with_quality_report)
 
@@ -186,7 +186,7 @@ classification:
                 from: expand('classification/{reference}/report/comparison/differential_analysis.tsv',
                               reference=pipeline.references)
 
-                to:   expand('{report_dir}/_summary/differential_analysis/expression-{reference}.tsv',
+                to:   expand('{report_dir}/_summary/differential_analysis-{reference}/expression.tsv',
                                 report_dir=config['report_dir'], reference=pipeline.references)
 
         filter_significant:
@@ -195,7 +195,7 @@ classification:
                     from: expand('classification/{reference}/report/comparison/significant.tsv',
                                   reference=pipeline.references)
 
-                    to:   expand('{report_dir}/_summary/differential_analysis/significantly_changed-{reference}.tsv',
+                    to:   expand('{report_dir}/_summary/differential_analysis-{reference}/significantly_changed.tsv',
                                   report_dir=config['report_dir'], reference=pipeline.references)
 
     report:
@@ -207,23 +207,33 @@ classification:
                                       reference=pipeline.references, tax_level=tax_levels_barplot,
                                       type=['counts', 'ratios'], format=barplot_formats)
 
-                        to:   expand('{report_dir}/_summary/taxonomy-{reference}/figures/{tax_level}.{type}.{format}',
+                        to:   expand('{report_dir}/_summary/taxonomy-{reference}/barplots/{tax_level}.{type}.{format}',
                                       report_dir=config['report_dir'], reference=pipeline.references,
                                       tax_level=tax_levels_barplot, type=['counts', 'ratios'], format=barplot_formats)
 
                 depends:
                     - classification/read_based
+
             pieplot:
                 output:
-                    krona_html:
+                    summary_html:
                         from: expand('classification/{reference}/report/krona/taxonomic_counts.html',
                                       reference=pipeline.references)
 
-                        to:   expand('{report_dir}/_summary/taxonomy-{reference}/krona.html',
+                        to:   expand('{report_dir}/_summary/taxonomy-{reference}/taxonomic_counts.html',
                                       report_dir=config['report_dir'], reference=pipeline.references)
+
+                    krona:
+                        from: expand('classification/{sr.reference}/report/krona/individual/{sr.sample}.html',
+                                      sr=pipeline.sample_references)
+
+                        to:   expand('{report_dir}/{sr.sample}/taxonomic_counts-{sr.reference}.html',
+                                      report_dir=config['report_dir'],
+                                      sr=pipeline.sample_references)
 
                 depends:
                     - classification/read_based
+
             count_table:
                 output:
                     tables:
@@ -236,6 +246,7 @@ classification:
                                       tax_level=tax_levels_count_table, type=['counts', 'ratios'])
                 depends:
                     - classification/read_based
+
         summary:
             output:
                 summary_html:
@@ -262,7 +273,7 @@ classification:
                         from: expand('classification/{reference}/report/tsv/summary.{format}',
                                       reference=pipeline.references, format=['tsv', 'xlsx'])
 
-                        to:   expand('{report_dir}/_summary/transcript_counts/summary-{reference}.{format}',
+                        to:   expand('{report_dir}/_summary/transcript_counts-{reference}/summary.{format}',
                                       report_dir=config['report_dir'],
                                       reference=pipeline.references, format=['tsv', 'xlsx'])
 
@@ -272,7 +283,7 @@ classification:
                         from: expand('classification/{reference}/report/comparison/pca.{format}',
                                       reference=pipeline.references, format=pca_formats)
 
-                        to:   expand('{report_dir}/_summary/transcript_counts/pca-{reference}.{format}',
+                        to:   expand('{report_dir}/_summary/transcript_counts-{reference}/pca.{format}',
                                       report_dir=config['report_dir'],
                                       reference=pipeline.references, format=pca_formats)
             depends:

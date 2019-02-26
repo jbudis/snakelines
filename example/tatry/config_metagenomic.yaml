@@ -1,8 +1,6 @@
 samples:                            # List of sample categories to be analysed
     - name: .*-16S                  # Regex expression of sample names to be analysed (reads/original/.*-16S_R1.fastq.gz)
       reference: silva-16S          # Reference genome for reads in the category (reference/silva-16S/silva-16S.fa)
-    - name: .*-ITS                  # Another category of samples, with names that end with "-ITS"
-      reference: unite              # Reference genome for reads in the category (reference/unite/unite.fa)
 
 report_dir: report/public/01-classify      # Generated reports and essential output files would be stored there
 threads: 16                         # Number of threads to use in analysis

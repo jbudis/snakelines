@@ -70,7 +70,8 @@ def copy_with_makedirs(src, dest, pipeline):
 
     # In case only one reference sequence is specified, remove its name from file paths
     if len(pipeline.references) == 1:
-        dest = dest.replace('-{}.'.format(pipeline.references[0]), '.')
+        dest = dest.replace('-{}.'.format(pipeline.references[0]), '.')  # from file names
+        dest = dest.replace('-{}/'.format(pipeline.references[0]), '/')  # from directories
 
     try:
         copy(src, dest)
