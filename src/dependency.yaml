@@ -281,7 +281,13 @@ classification:
 assembly:
     assembler:
         output:
-            contigs: expand('assembly/{sample}/contigs.fa', sample=pipeline.samples)
+            contigs:
+                from: expand('assembly/{sample}/contigs.fa',
+                              sample=pipeline.samples)
+
+                to:   expand('{report_dir}/{sample}/assembled_contigs.fa',
+                              report_dir=config['report_dir'],
+                              sample=pipeline.samples)
         depends:
             - reads/preprocess
             - reads/report
@@ -289,10 +295,19 @@ assembly:
         quality_report:
             output:
                 quality_reports:
-                    from: expand('assembly/{sample}/quality_report/report.pdf', sample=pipeline.samples)
-                    to: expand('{report_dir}/assembly/{sample}/report.pdf', report_dir=config['report_dir'], sample=pipeline.samples)
+                    from: expand('assembly/{sample}/quality_report/report.pdf',
+                                  sample=pipeline.samples)
+
+                    to:   expand('{report_dir}/{sample}/assembly_report/report.pdf',
+                                  report_dir=config['report_dir'],
+                                  sample=pipeline.samples)
+
         assembly_graph:
             output:
                 overlap_graphs:
-                    from: expand('assembly/{sample}/assembly_graph.svg', sample=pipeline.samples)
-                    to: expand('{report_dir}/assembly/{sample}/contigs.svg', report_dir=config['report_dir'], sample=pipeline.samples)
+                    from: expand('assembly/{sample}/assembly_graph.svg',
+                                  sample=pipeline.samples)
+
+                    to:   expand('{report_dir}/{sample}/assembly_report/contig_graph.svg',
+                                  report_dir=config['report_dir'],
+                                  sample=pipeline.samples)
