@@ -124,8 +124,11 @@ variant:
     caller:
         output:
             variants:
-                from: expand('variant/{sr.reference}-wgs/original/{sr.sample}.vcf', sr=pipeline.sample_references, map_type=pipeline.postprocessed_map_type)
-                to: expand('{report_dir}/{sr.reference}/samples/{sr.sample}/variants.vcf', report_dir=config['report_dir'], sr=pipeline.sample_references)
+                from: expand('variant/{sr.reference}-wgs/original/{sr.sample}.vcf',
+                              sr=pipeline.sample_references, map_type=pipeline.postprocessed_map_type)
+
+                to:   expand('{report_dir}/{sr.sample}/variants-{sr.reference}.vcf',
+                              report_dir=config['report_dir'], sr=pipeline.sample_references)
         depends:
             - reads/preprocess
             - reads/report/quality_report
@@ -140,8 +143,11 @@ variant:
         summary:
             output:
                 report:
-                    from: expand('variant/{sr.reference}-wgs/original/report/{sr.sample}.pdf', sr=pipeline.sample_references)
-                    to: expand('{report_dir}/{sr.reference}/samples/{sr.sample}/summary.pdf', report_dir=config['report_dir'], sr=pipeline.sample_references)
+                    from: expand('variant/{sr.reference}-wgs/original/report/{sr.sample}.pdf',
+                                  sr=pipeline.sample_references)
+
+                    to:   expand('{report_dir}/{sr.sample}/summary-{sr.reference}.pdf',
+                                  report_dir=config['report_dir'], sr=pipeline.sample_references)
             depends:
                 - reads/preprocess
                 - reads/report/quality_report
