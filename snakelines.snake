@@ -27,7 +27,7 @@ def get_files(source_dict):
     additional_params = {'expand': expand, 'protected': protected, 'temp': temp, 'config': config,
             'pipeline': pipeline, 'directory': directory, 'read_types_with_quality_report': read_types_with_quality_report,
             'multisample_references': multisample_references, 'tax_levels_count_table': tax_levels_count_table,
-            'tax_levels_barplot': tax_levels_barplot, 'barplot_formats': barplot_formats,
+            'tax_levels_barplot': tax_levels_barplot, 'barplot_formats': barplot_formats, 'pca_formats': pca_formats,
             'map_types_with_quality_report': map_types_with_quality_report}
     files_dict = {}
     for k,v in source_dict.items():

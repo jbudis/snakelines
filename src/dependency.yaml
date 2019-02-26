@@ -156,7 +156,8 @@ variant:
 classification:
     read_based:
         output:
-            kronas: expand('classification/{sr.reference}/report/krona/individual/{sr.sample}.krn', sr=pipeline.sample_references)
+            kronas: expand('classification/{sr.reference}/report/krona/individual/{sr.sample}.krn',
+                            sr=pipeline.sample_references)
         depends:
             - reads/preprocess
             - reads/report
@@ -173,66 +174,110 @@ classification:
                 - reads/report
     transcripts:
         output:
-            classification: expand('classification/{reference}/report/krona/individual/{sample}.krn', reference=pipeline.references, sample=pipeline.samples)
+            classification: expand('classification/{reference}/report/krona/individual/{sample}.krn',
+                                    reference=pipeline.references, sample=pipeline.samples)
         depends:
             - reads/preprocess
             - reads/report
+
     differential_analysis:
         output:
             analysis:
-                from: expand('classification/{reference}/report/comparison/differential_analysis.tsv', reference=pipeline.references)
-                to: expand('{report_dir}/{reference}/comparison/differential_analysis.tsv', report_dir=config['report_dir'], reference=pipeline.references)
+                from: expand('classification/{reference}/report/comparison/differential_analysis.tsv',
+                              reference=pipeline.references)
+
+                to:   expand('{report_dir}/_summary/differential_analysis/expression-{reference}.tsv',
+                                report_dir=config['report_dir'], reference=pipeline.references)
+
         filter_significant:
             output:
                 analysis:
-                    from: expand('classification/{reference}/report/comparison/significant.tsv', reference=pipeline.references)
-                    to: expand('{report_dir}/{reference}/comparison/significant.tsv', report_dir=config['report_dir'], reference=pipeline.references)
+                    from: expand('classification/{reference}/report/comparison/significant.tsv',
+                                  reference=pipeline.references)
+
+                    to:   expand('{report_dir}/_summary/differential_analysis/significantly_changed-{reference}.tsv',
+                                  report_dir=config['report_dir'], reference=pipeline.references)
+
     report:
         taxonomic_counts:
             barplot:
                 output:
                     barplots:
-                        from: expand('classification/{reference}/report/figures/{tax_level}.{type}.{format}', reference=pipeline.references, tax_level=tax_levels_barplot, type=['counts', 'ratios'], format=barplot_formats)
-                        to: expand('{report_dir}/{reference}/figures/{tax_level}.{type}.{format}', report_dir=config['report_dir'], reference=pipeline.references, tax_level=tax_levels_barplot, type=['counts', 'ratios'], format=barplot_formats)
+                        from: expand('classification/{reference}/report/figures/{tax_level}.{type}.{format}',
+                                      reference=pipeline.references, tax_level=tax_levels_barplot,
+                                      type=['counts', 'ratios'], format=barplot_formats)
+
+                        to:   expand('{report_dir}/_summary/taxonomy-{reference}/figures/{tax_level}.{type}.{format}',
+                                      report_dir=config['report_dir'], reference=pipeline.references,
+                                      tax_level=tax_levels_barplot, type=['counts', 'ratios'], format=barplot_formats)
+
                 depends:
                     - classification/read_based
             pieplot:
                 output:
                     krona_html:
-                        from: expand('classification/{reference}/report/krona/taxonomic_counts.html', reference=pipeline.references)
-                        to: expand('{report_dir}/{reference}/krona/taxonomic_counts.html', report_dir=config['report_dir'], reference=pipeline.references)
+                        from: expand('classification/{reference}/report/krona/taxonomic_counts.html',
+                                      reference=pipeline.references)
+
+                        to:   expand('{report_dir}/_summary/taxonomy-{reference}/krona.html',
+                                      report_dir=config['report_dir'], reference=pipeline.references)
+
                 depends:
                     - classification/read_based
             count_table:
                 output:
                     tables:
-                        from: expand('classification/{reference}/report/tsv/{tax_level}.{type}.tsv', reference=pipeline.references, tax_level=tax_levels_count_table, type=['counts', 'ratios'])
-                        to: expand('{report_dir}/{reference}/tsv/{tax_level}.{type}.tsv', report_dir=config['report_dir'], reference=pipeline.references, tax_level=tax_levels_count_table, type=['counts', 'ratios'])
+                        from: expand('classification/{reference}/report/tsv/{tax_level}.{type}.tsv',
+                                      reference=pipeline.references, tax_level=tax_levels_count_table,
+                                      type=['counts', 'ratios'])
+
+                        to:   expand('{report_dir}/_summary/taxonomy-{reference}/counts/{tax_level}.{type}.tsv',
+                                      report_dir=config['report_dir'], reference=pipeline.references,
+                                      tax_level=tax_levels_count_table, type=['counts', 'ratios'])
                 depends:
                     - classification/read_based
         summary:
             output:
                 summary_html:
-                    from: expand('assembly/{sample}/annotation/contigs/summary.html', sample=pipeline.samples)
-                    to: expand('{report_dir}/{sample}/contig_annotations.html', sample=pipeline.samples, report_dir=config['report_dir'])
+                    from: expand('assembly/{sample}/annotation/contigs/summary.html',
+                                  sample=pipeline.samples)
+
+                    to:   expand('{report_dir}/{sample}/contig_annotations.html',
+                                  sample=pipeline.samples, report_dir=config['report_dir'])
+
                 contigs:
-                    from: expand('assembly/{sample}/annotation/contigs/sequences/', sample=pipeline.samples)
-                    to: expand('{report_dir}/{sample}/sequences/', sample=pipeline.samples, report_dir=config['report_dir'])
+                    from: expand('assembly/{sample}/annotation/contigs/sequences/',
+                                  sample=pipeline.samples)
+
+                    to:   expand('{report_dir}/{sample}/sequences/',
+                                  sample=pipeline.samples, report_dir=config['report_dir'])
+
             depends:
                 - classification/contig_based
+
         transcripts:
             count_table:
                 output:
                     tsv_table:
-                        from: expand(['classification/{reference}/report/tsv/summary.xlsx','classification/{reference}/report/tsv/summary.tsv'], reference=pipeline.references)
-                        to: expand(['{report_dir}/{reference}/tsv/summary.xlsx','{report_dir}/{reference}/tsv/summary.tsv'], report_dir=config['report_dir'], reference=pipeline.references)
+                        from: expand('classification/{reference}/report/tsv/summary.{format}',
+                                      reference=pipeline.references, format=['tsv', 'xlsx'])
+
+                        to:   expand('{report_dir}/_summary/transcript_counts/summary-{reference}.{format}',
+                                      report_dir=config['report_dir'],
+                                      reference=pipeline.references, format=['tsv', 'xlsx'])
+
             pca:
                 output:
                     images:
-                        from: expand(['classification/{reference}/report/comparison/pca.svg','classification/{reference}/report/comparison/pca.png'], reference=pipeline.references)
-                        to: expand(['{report_dir}/{reference}/comparison/pca.svg','{report_dir}/{reference}/comparison/pca.png'], report_dir=config['report_dir'], reference=pipeline.references)
+                        from: expand('classification/{reference}/report/comparison/pca.{format}',
+                                      reference=pipeline.references, format=pca_formats)
+
+                        to:   expand('{report_dir}/_summary/transcript_counts/pca-{reference}.{format}',
+                                      report_dir=config['report_dir'],
+                                      reference=pipeline.references, format=pca_formats)
             depends:
                 - classification/samples
+
 assembly:
     assembler:
         output:
