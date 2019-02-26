@@ -110,8 +110,13 @@ mapping:
         methylation:
             output:
                 methylation_reports:
-                    from: expand('mapping/{sr.reference}/{map_type}/bismark/{sr.sample}.html', sr=pipeline.sample_references, map_type='original')
-                    to: expand('{report_dir}/{sr.reference}/samples/{sr.sample}/methylation.html', report_dir=config['report_dir'], sr=pipeline.sample_references)
+                    from: expand('mapping/{sr.reference}/{map_type}/bismark/{sr.sample}.html',
+                                  sr=pipeline.sample_references, map_type='original')
+
+                    to:   expand('{report_dir}/{sr.sample}/methylation_quality/{sr.reference}.html',
+                                  report_dir=config['report_dir'],
+                                  sr=pipeline.sample_references, map_type='original')
+
             depends:
                 - mapping/mapper
 
