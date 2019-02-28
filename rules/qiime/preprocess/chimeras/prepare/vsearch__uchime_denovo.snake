@@ -25,6 +25,7 @@ rule qiime__vsearch__uchime_denovo:
         uchime_out   = 'reads/qiime/{name}-uchime-dn-out'
     shell:
         '''
+        rmdir {params.uchime_out}
         qiime vsearch uchime-denovo \
               --i-table {input.table} \
               --i-sequences {input.rep_seqs} \
