@@ -1,0 +1,20 @@
+rule qiime__nonchimeric_wo_borderline:
+    """
+    Just copy sequences with chimeras to output.
+
+    :input table: qiime artifact of type FeatureTable[Frequency], e.g. reads/qiime/joined-table-w-chimeras.qza
+    :input rep_seqs: qiime artifact of type FeatureData[Sequence], e.g. reads/qiime/joined-rep-seqs-w-chimeras.qza
+    :output table: qiime artifact of type FeatureTable[Frequency] without chimeras and without borlerline chimeras, e.g. reads/qiime/joined-table.qza
+    :output rep_seqs: qiime artifact of type FeatureData[Sequence] without chimeras and without borlerline chimeras, e.g. reads/qiime/joined-rep.qza
+    """
+    input:
+        table       = 'reads/qiime/{name}-table-w-chimeras.qza',
+        rep_seqs    = 'reads/qiime/{name}-rep-seqs-w-chimeras.qza'
+    output:
+        table       = 'reads/qiime/{name}-table.qza',
+        rep_seqs    = 'reads/qiime/{name}-rep-seqs.qza'
+    shell:
+        '''
+            cp {input.table} {output.table}
+            cp {input.rep_seqs} {output.rep_seqs}
+        '''

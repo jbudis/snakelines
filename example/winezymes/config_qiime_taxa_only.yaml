@@ -28,11 +28,8 @@ reads:                              # Prepare reads and quality reports for down
                 - joined
 
 qiime_read_type: joined
-qiime_beta_significance_columns:
-    - aditivum
-    - material
-qiime_custom_axes_columns:
-    - must
+qiime_beta_significance_columns: []
+qiime_custom_axes_columns: []
 
 qiime:
     preprocess:
@@ -55,7 +52,7 @@ qiime:
                 minh     : 0.28
                 xn       : 8.0
             filter:
-                method: nonchimeric_wo_borderline   # other possible values: nonchimeric_w_borderline, none
+                method: nonchimeric_wo_borderline
         clustered:
             method: vsearch_cluster_features_de_novo
             similarity: 99
@@ -77,35 +74,23 @@ qiime:
         export:
             method: export
 
-    alignment:
-        method: phylogeny_align_to_tree_mafft_fasttree
+#    alignment:
+#        method: phylogeny_align_to_tree_mafft_fasttree
 
     analysis:
         core_metrics:
-            method: diversity_core_metrics_phylogenetic
+#            method: diversity_core_metrics_phylogenetic
             similarity: 99
-            alpha_types:
-                - evenness
-                - faith_pd
-                - observed_otus
-                - shannon
-            beta_types:
-                - bray_curtis
-                - jaccard
-                - unweighted_unifrac
-                - weighted_unifrac
-            emperor_types:
-                - bray_curtis
-                - jaccard
-                - unweighted_unifrac
-                - weighted_unifrac
-        diversity:
-            alpha:
-                method: diversity__alpha_group_significance
-            beta:
-                method: diversity__beta_group_significance
-            custom_axes:                   # requires sample-metadata with numeric columns
-                method: emperor__plot
+            alpha_types: []
+            beta_types: []
+            emperor_types: []
+#        diversity:
+#            alpha:
+#                method: diversity__alpha_group_significance
+#            beta:
+#                method: diversity__beta_group_significance
+#            custom_axes:                   # requires sample-metadata with numeric columns
+#                method: emperor__plot
         taxonomy:
             index:
                 method: feature_classifier__fit_classifier_naive_bayes

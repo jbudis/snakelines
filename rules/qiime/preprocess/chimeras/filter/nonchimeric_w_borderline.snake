@@ -1,0 +1,33 @@
+rule qiime__nonchimeric_w_borderline:
+    """
+    Removes chimeras, remains 'borderline chimeras'.
+
+    Calls 'qiime feature-table filter-features'.
+
+    :input table: qiime artifact of type FeatureTable[Frequency], e.g. reads/qiime/joined-table-w-chimeras.qza
+    :input rep_seqs: qiime artifact of type FeatureData[Sequence], e.g. reads/qiime/joined-rep-seqs-w-chimeras.qza
+    :input chimeras: list of chimeric sequences, e.g. reads/qiime/joined-uchime-dn-out/chimeras.qza
+    :output table: qiime artifact of type FeatureTable[Frequency] without chimeras and WITH borlerline chimeras, e.g. reads/qiime/joined-table.qza
+    :output rep_seqs: qiime artifact of type FeatureData[Sequence] without chimeras and WITH borlerline chimeras, e.g. reads/qiime/joined-rep.qza
+    """
+    input:
+        table       = 'reads/qiime/{name}-table-w-chimeras.qza',
+        rep_seqs    = 'reads/qiime/{name}-rep-seqs-w-chimeras.qza',
+        chimeras    = 'reads/qiime/{name}-uchime-dn-out/chimeras.qza'
+    output:
+        table       = 'reads/qiime/{name}-table.qza',
+        rep_seqs    = 'reads/qiime/{name}-rep-seqs.qza'
+    shell:
+        '''
+            qiime feature-table filter-features \
+              --i-table {input.table} \
+              --m-metadata-file {input.chimeras} \
+              --p-exclude-ids
+              --o-filtered-table {output.table}
+
+            qiime feature-table filter-seqs \
+              --i-data {input.rep_seqs} \
+              --m-metadata-file {input.chimeras} \
+              --p-exclude-ids
+              --o-filtered-data {output.rep_seqs}
+        '''

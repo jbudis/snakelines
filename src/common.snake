@@ -77,6 +77,9 @@ qiime_reference = extract_from_config(config, ['qiime', 'analysis', 'taxonomy', 
 similarity = extract_from_config(config, ['qiime', 'preprocess', 'clustered', 'similarity'], '')
 qiime_file_suffix = '-dn-{}'.format(similarity) if similarity != '' else ''
 
+chimeric = extract_from_config(config, ['qiime', 'preprocess', 'chimeras', 'filter', 'method'], '')
+qiime_chimeras_list = ['chimeras', 'nonchimeras'] if chimeric != '' else []
+
 qiime_alpha_types = extract_from_config(config, ['qiime', 'analysis', 'core_metrics', 'alpha_types'], [])
 qiime_beta_types = extract_from_config(config, ['qiime', 'analysis', 'core_metrics', 'beta_types'], [])
 qiime_emperor_types = extract_from_config(config, ['qiime', 'analysis', 'core_metrics', 'emperor'], [])

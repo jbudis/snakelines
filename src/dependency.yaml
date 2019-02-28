@@ -237,6 +237,14 @@ qiime:
                     classifier  : expand('reference/{reference}/qiime2_index/{reference}-classifier.qza', reference=qiime_reference)
 
     preprocess:
+        chimeras:
+            filter:
+                output      :
+                    table   : expand('reads/qiime/{name}-table.qza', name=qiime_read_type)
+                    rep_seqs: expand('reads/qiime/{name}-rep-seqs.qza', name=qiime_read_type)
+            prepare:
+                output      :
+                    qza     : expand('reads/qiime/{name}-uchime-dn-out/{type}.qza', name=qiime_read_type, type=qiime_chimeras_list)
         clustered:
             output:
                 table       : expand('reads/qiime/{name}-table-dn-{similarity}.qza', name=qiime_read_type, similarity=config['qiime']['preprocess']['clustered']['similarity'])
