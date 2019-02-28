@@ -28,8 +28,10 @@ if (exists("batch_attribute")) {
         litters = append(litters, metadata[sid, batch_attribute])
     }
     design <- model.matrix(~litters+groups)
+    design_to_store = design[, c('litters', 'groups')]
 } else {
     design <- model.matrix(~groups)
+    design_to_store = design[, c('groups')]
 }
 
 print(typeof(design['litters']))
@@ -66,7 +68,7 @@ diff = cbind(diff, FC, up_down)
 colnames(diff)[ncol(diff)-1] = 'FCexp^-1'
 
 write.table(diff, file = output_diff, quote=FALSE, sep='\t', row.names=F)
-write.table(cbind(sampleid = colnames(counts), design[, c('litters', 'groups')]), file = output_design, quote=FALSE, sep='\t', row.names=F)
+write.table(cbind(sampleid = colnames(counts), design_to_store), file = output_design, quote=FALSE, sep='\t', row.names=F)
 
 # TODO name the row index as "name"
 write.table(norm_counts, file = output_norm_counts, quote=FALSE, sep='\t', row.names=F)
