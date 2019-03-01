@@ -1,5 +1,5 @@
 samples:                            # List of sample categories to be analysed
-    - name: example.*               # Regex expression of sample names to be analysed (reads/original/example.*_R1.fastq.gz)
+    - name: example_A               # Regex expression of sample names to be analysed (reads/original/example.*_R1.fastq.gz)
       reference: mhv                # Reference genome for reads in the category (reference/mhv/mhv.fa)
 
 report_dir: report/public/01-viral  # Generated reports and essential output files would be stored there
@@ -45,16 +45,25 @@ mapping:                            # Find the most similar genomic region to re
         method: samtools            # Supported values: samtools
 
     postprocess:                    # Successive steps to refine mapped reads
-        original:                  # Reads retrieved from mapping process
+        original:                   # Reads retrieved from mapping process
             temporary: True         # If True, generated files would be removed after successful analysis
-        sorted:
-            method: samtools
-            temporary: True
-        read_group:
-            method: custom
-            temporary: True
+
+        sorted:                     # Order reads according to their genomic position
+            method: samtools        # Supported values: samtools
+            temporary: True         # If True, generated files would be removed after successful analysis
+
+        read_group:                 # Include sample name, flow cell, barcode and lanes to BAM header
+            method: custom          # Supported values: custom
+            temporary: True         # If True, generated files would be removed after successful analysis
+
         deduplicated:               # Mark duplicated reads (PCR duplicated)
             method: picard          # Supported values: picard
+            temporary: False        # If True, generated files would be removed after successful analysis
+
+        filtered:                     # Eliminate reads that do not meet conditions
+            method: bamtools          # Supported values: bamtools
+            min_map_quality: 20       # Minimal quality of mapping
+            drop_improper_pairs: True # Eliminate reads that do not pass paired-end resolution
 
     report:                         # Summary reports of mapping process and results
         quality_report:             # HTML summary with quality of mappings

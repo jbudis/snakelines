@@ -1,4 +1,3 @@
-# TODO hardcoded tmp_dir, do we need it?
 rule picard__mark_duplicates:
     """
     This tool locates and tags duplicate reads in a BAM or SAM file, where duplicate reads are defined as

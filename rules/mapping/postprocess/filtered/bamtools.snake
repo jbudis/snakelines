@@ -1,0 +1,28 @@
+rule bamtools__filter_fragments:
+    """
+     Remove fragments that do not meet user specified conditions. All values are inclusive (i.e. <= or =>)
+    :input bam: Mapped reads in BAM format
+    :output bam: Filtered reads in BAM format
+    :param min_map_quality: Minimal quality of mapping
+    :param drop_improper_pairs: Eliminate reads that do not pass paired-end resolution
+    """
+    input:
+        bam  = '{{mapper}}/{{reference}}/{map_type}/{{sample}}.bam'.format(map_type=method_config['input_map_type']),
+    output:
+        bam  = '{mapper}/{reference}/filtered/{sample}.bam'
+    params:
+        min_map_quality = '-mapQuality ">={}"'.format(method_config['min_map_quality']) if 'min_map_quality' in method_config else '',
+        drop_improper_pairs = '-isProperPair true' if method_config.get('drop_improper_pairs', False) else ''
+    log:
+        out  = '{mapper}/{reference}/filtered/log/{sample}.out',
+        err  = '{mapper}/{reference}/filtered/log/{sample}.err'
+    shell:
+        """
+        bamtools filter \
+            -in  {input.bam} \
+            -out {output.bam} \
+            {params.min_map_quality} \
+            {params.drop_improper_pairs} \
+        >  {log.out} \
+        2> {log.err}
+        """

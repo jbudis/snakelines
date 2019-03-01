@@ -4,7 +4,7 @@ rule custom__infer_read_groups:
     Write meta information as read groups to the output bam file.
     :input bam: Mapped reads in BAM format
     :output bam: Mapped reads with inferred read groups in BAM format
-    :params infer_script: File path to script that do real job here
+    :param infer_script: File path to script that do real job here
     """
     input:
         bam = 'mapping/{{reference}}/{map_type}/{{sample}}.bam'.format(map_type=method_config['input_map_type'])
