@@ -56,6 +56,9 @@ mapping:
         sorted:
             output:
                 sorted: expand('mapping/{sr.reference}/sorted/{sr.sample}.bam', sr=pipeline.sample_references)
+        read_group:
+            output:
+                read_group: expand('mapping/{sr.reference}/read_group/{sr.sample}.bam', sr=pipeline.sample_references)
         deduplicated:
             output:
                 deduplicated: expand('mapping/{sr.reference}/deduplicated/{sr.sample}.bam', sr=pipeline.sample_references)

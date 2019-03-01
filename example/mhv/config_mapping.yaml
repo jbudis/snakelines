@@ -49,7 +49,10 @@ mapping:                            # Find the most similar genomic region to re
             temporary: True         # If True, generated files would be removed after successful analysis
         sorted:
             method: samtools
-            temporary: False
+            temporary: True
+        read_group:
+            method: custom
+            temporary: True
         deduplicated:               # Mark duplicated reads (PCR duplicated)
             method: picard          # Supported values: picard
 

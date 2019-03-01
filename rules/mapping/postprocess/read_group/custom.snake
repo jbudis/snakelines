@@ -1,0 +1,29 @@
+rule custom__infer_read_groups:
+    """
+    Infer sample name, flow cell, barcode and lanes from the input BAM file from Illumina sequencing.
+    Write meta information as read groups to the output bam file.
+    :input bam: Mapped reads in BAM format
+    :output bam: Mapped reads with inferred read groups in BAM format
+    :params infer_script: File path to script that do real job here
+    """
+    input:
+        bam = 'mapping/{{reference}}/{map_type}/{{sample}}.bam'.format(map_type=method_config['input_map_type'])
+    output:
+        bam = 'mapping/{reference}/read_group/{sample}.bam'
+    log:
+        out = 'mapping/{reference}/read_group/log/{sample}.log',
+        err = 'mapping/{reference}/read_group/log/{sample}.err'
+    params:
+        infer_script = srcdir("scripts/infer_read_groups.py")
+    shell:
+        '''
+        samtools view \
+            -h \
+            {input.bam} \
+        | python3 {params.infer_script} \
+            {wildcards.sample} \
+            - \
+        | samtools view \
+            -bS \
+        > {output}
+        '''
