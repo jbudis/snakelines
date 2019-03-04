@@ -65,6 +65,9 @@ mapping:
         deduplicated:
             output:
                 deduplicated: expand('mapping/{sr.reference}/deduplicated/{sr.sample}.bam', sr=pipeline.sample_references)
+        deoverlapped:
+            output:
+                deoverlapped: expand('mapping/{sr.reference}/deduplicated/{sr.sample}.bam', sr=pipeline.sample_references)
     report:
         quality_report:
             output:
