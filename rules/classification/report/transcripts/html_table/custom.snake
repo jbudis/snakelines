@@ -1,0 +1,41 @@
+include: config['snakelines_dir'] + '/rules/reference/attributes/desc/custom.snake'
+
+import pandas as pd
+pd.set_option('display.max_colwidth', 1000000)
+pd.options.display.float_format = '{:e}'.format
+
+rule custom__visualise_transcriptomic_counts_in_html_table:
+    """
+    Take transcriptomic counts from several samples and merge them together into a single table.
+    :input table: TSV table with statistical evaluation of change in expression
+    :input desc: Description of reference sequences
+    :input template: HTML template with basic report outline
+    :output html: HTML page with sortable, filterable table of transcriptomic results
+    """
+    input:
+        table = 'classification/{reference}/report/comparison/differential_analysis.tsv',
+        descs = 'reference/{reference}/{reference}.transcripts.desc',
+        template = srcdir('templates/expressions.html'),
+    output:
+        html  = 'classification/{reference}/report/comparison/differential_analysis.html'
+    run:
+        def ncbi_link(ncbi_id):
+            return '<a href="https://www.ncbi.nlm.nih.gov/nuccore/{ncbi_id}">{ncbi_id}</a>'.format(ncbi_id=ncbi_id)
+
+        descs = pd.read_csv(input.descs, header=None, index_col=0, sep='\t')
+        descs.columns = ['description']
+
+        counts = pd.read_csv(input.table, header=0, index_col=0, sep='\t')
+        counts = counts.merge(descs, how='left', left_index=True, right_index=True)
+        counts['id'] = [ncbi_link(nid) for nid in counts.index]
+        reported = counts[['id', 'fold_change', 'up_down', 'FDR', 'description']]
+        reported['fold_change'] = reported.fold_change.apply(lambda x: '{:.2f}'.format(x))
+
+        TEMPLATE = open(input.template).read()
+        with open(output.html, 'w') as out:
+            html_table = reported \
+                .fillna('') \
+                .to_html(escape=False, index=False) \
+                .replace('<table ', '<table id="data" ')
+
+            out.write(TEMPLATE.format(attrs=html_table))

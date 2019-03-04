@@ -177,11 +177,28 @@ classification:
                     tsv_table:
                         from: expand(['classification/{reference}/report/tsv/summary.xlsx','classification/{reference}/report/tsv/summary.tsv'], reference=pipeline.references)
                         to: expand(['{report_dir}/{reference}/tsv/summary.xlsx','{report_dir}/{reference}/tsv/summary.tsv'], report_dir=config['report_dir'], reference=pipeline.references)
+                depends:
+                    - classification/differential_analysis
+
+            html_table:
+                output:
+                    html_table:
+                        from: expand('classification/{reference}/report/comparison/differential_analysis.html',
+                                      reference=pipeline.references)
+
+                        to:   expand('{report_dir}/{reference}/comparison/summary.html',
+                                      report_dir=config['report_dir'], reference=pipeline.references)
+                depends:
+                    - classification/differential_analysis
+
             pca:
                 output:
                     images:
                         from: expand(['classification/{reference}/report/comparison/pca.svg','classification/{reference}/report/comparison/pca.png'], reference=pipeline.references)
                         to: expand(['{report_dir}/{reference}/comparison/pca.svg','{report_dir}/{reference}/comparison/pca.png'], report_dir=config['report_dir'], reference=pipeline.references)
+                depends:
+                    - classification/differential_analysis
+
             depends:
                 - classification/samples
 assembly:

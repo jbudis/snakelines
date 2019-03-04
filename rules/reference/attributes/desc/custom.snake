@@ -1,0 +1,26 @@
+from Bio import SeqIO
+
+rule custom__prepare_description_file:
+    """
+    Extract ID and description from input reference sequences in FASTA format.
+    Assuming that id is the first word after '>'.
+    :input reference: Genomic sequences in FASTA format
+    :output desc: Description TSV file - 1st column is id of sequence, 2nd is description
+    """
+    input:
+        reference = 'reference/{reference}/{sequences}.fa'
+    output:
+        dict = protected('reference/{reference}/{sequences}.desc')
+    log:
+        out = 'reference/{reference}/log/{sequences}.desc.log',
+        err = 'reference/{reference}/log/{sequences}.desc.err'
+    conda:
+        config['snakelines_dir'] + '/enviroments/others_env.yaml'
+    run:
+        with open(output.dict, 'w') as out:
+            for seq in SeqIO.parse(input.reference, 'fasta'):
+                desc = seq.description
+                if desc.startswith(seq.id):
+                    desc = desc[len(seq.id) + 1:]
+                out.write('{}\t{}\n'.format(seq.id, desc))
+    

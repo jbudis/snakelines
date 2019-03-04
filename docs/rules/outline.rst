@@ -2,6 +2,13 @@ Rules
 =====
 - Reference
 
+  - Attributes
+
+    - Desc
+
+      .. toctree::
+        reference/attributes/desc/summary.rst
+
   - Index
 
     - Dict
@@ -171,6 +178,11 @@ Rules
 
         .. toctree::
           classification/report/transcripts/count_table/summary.rst
+
+      - Html Table
+
+        .. toctree::
+          classification/report/transcripts/html_table/summary.rst
 
     - Summary
 
