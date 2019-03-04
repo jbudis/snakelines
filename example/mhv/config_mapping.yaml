@@ -1,5 +1,5 @@
 samples:                            # List of sample categories to be analysed
-    - name: example_A               # Regex expression of sample names to be analysed (reads/original/example.*_R1.fastq.gz)
+    - name: example.*               # Regex expression of sample names to be analysed (reads/original/example.*_R1.fastq.gz)
       reference: mhv                # Reference genome for reads in the category (reference/mhv/mhv.fa)
 
 report_dir: report/public/01-viral  # Generated reports and essential output files would be stored there
@@ -74,3 +74,6 @@ mapping:                            # Find the most similar genomic region to re
             map_types:              # List of post-process steps for quality reports
                 - deduplicated
                 - deoverlapped
+
+    merged:                         # Merge all mapped reads into a single BAM file
+        method: bamtools            # Supported values: bamtools

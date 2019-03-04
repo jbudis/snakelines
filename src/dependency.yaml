@@ -68,6 +68,15 @@ mapping:
         deoverlapped:
             output:
                 deoverlapped: expand('mapping/{sr.reference}/deduplicated/{sr.sample}.bam', sr=pipeline.sample_references)
+
+    merged:
+        output:
+            merged_bam: expand('mapping/{reference}/merged/merged.bam',
+                                reference=pipeline.references)
+
+            merged_bai: expand('mapping/{reference}/merged/merged.bam.bai',
+                                reference=pipeline.references)
+
     report:
         quality_report:
             output:

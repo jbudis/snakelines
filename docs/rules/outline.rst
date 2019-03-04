@@ -71,6 +71,11 @@ Rules
       .. toctree::
         mapping/postprocess/sorted/summary.rst
 
+    - Deoverlapped
+
+      .. toctree::
+        mapping/postprocess/deoverlapped/summary.rst
+
     - Filtered
 
       .. toctree::
