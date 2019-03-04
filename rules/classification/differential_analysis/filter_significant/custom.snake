@@ -29,8 +29,10 @@ rule custom__filter_significantly_expressed_transcripts:
                     return False
             return True
 
-        all = pd.read_csv(input.table, sep='\t')
-        des = all[(all.FDR <= params.max_fdr) & (all['FCexp^-1'] >= params.min_fold_change)]
+        des = pd.read_csv(input.table, sep='\t')
+        des = des[des.FDR <= params.max_fdr]
+        des = des[(des.fold_change >=  params.min_fold_change) |
+                  (des.fold_change <= -params.min_fold_change)]
 
         if params.reproducible_expression:
             design = pd.DataFrame.from_csv(input.design, sep='\t', index_col=0)

@@ -34,8 +34,6 @@ if (exists("batch_attribute")) {
     design_to_store = design[, c('groups')]
 }
 
-print(typeof(design['litters']))
-
 dge <- DGEList(counts=counts, group=groups)
 dge <- calcNormFactors(dge)
 dge <- estimateGLMCommonDisp(dge, design)
@@ -56,16 +54,15 @@ for(i in diff[,2]){
 }
 FC = c()
 
-i=1
 for(f in diff[,2]){
     if(f<1){
-        FC = c(FC,diff[i,2]^-1)
+        f = -(f^(-1))
     }
-    else{FC = c(FC,diff[i,2])}
-    i=i+1
+    FC = c(FC, f)
 }
+
 diff = cbind(diff, FC, up_down)
-colnames(diff)[ncol(diff)-1] = 'FCexp^-1'
+colnames(diff)[ncol(diff)-1] = 'fold_change'
 
 write.table(diff, file = output_diff, quote=FALSE, sep='\t', row.names=F)
 write.table(cbind(sampleid = colnames(counts), design_to_store), file = output_design, quote=FALSE, sep='\t', row.names=F)
