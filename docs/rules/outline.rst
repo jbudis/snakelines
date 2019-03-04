@@ -81,6 +81,11 @@ Rules
       .. toctree::
         mapping/postprocess/filtered/summary.rst
 
+  - Merged
+
+    .. toctree::
+      mapping/merged/summary.rst
+
   - Mapper
 
     .. toctree::
