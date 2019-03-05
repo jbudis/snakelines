@@ -61,6 +61,11 @@ Rules
       .. toctree::
         mapping/postprocess/deduplicated/summary.rst
 
+    - Realigned
+
+      .. toctree::
+        mapping/postprocess/realigned/summary.rst
+
     - Read Group
 
       .. toctree::
