@@ -62,12 +62,15 @@ mapping:
         read_group:
             output:
                 read_group: expand('mapping/{sr.reference}/read_group/{sr.sample}.bam', sr=pipeline.sample_references)
+        realigned:
+            output:
+                read_group: expand('mapping/{sr.reference}/realigned/{sr.sample}.bam', sr=pipeline.sample_references)
         deduplicated:
             output:
                 deduplicated: expand('mapping/{sr.reference}/deduplicated/{sr.sample}.bam', sr=pipeline.sample_references)
         deoverlapped:
             output:
-                deoverlapped: expand('mapping/{sr.reference}/deduplicated/{sr.sample}.bam', sr=pipeline.sample_references)
+                deoverlapped: expand('mapping/{sr.reference}/deoverlapped/{sr.sample}.bam', sr=pipeline.sample_references)
 
     merged:
         output:

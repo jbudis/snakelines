@@ -58,7 +58,11 @@ mapping:                            # Find the most similar genomic region to re
 
         deduplicated:               # Mark duplicated reads (PCR duplicated)
             method: picard          # Supported values: picard
-            temporary: False        # If True, generated files would be removed after successful analysis
+            temporary: True         # If True, generated files would be removed after successful analysis
+
+        realigned:
+            method: gatk
+            temporary: True
 
         filtered:                     # Eliminate reads that do not meet conditions
             method: bamtools          # Supported values: bamtools
