@@ -69,9 +69,6 @@ mapping:                            # Find the most similar genomic region to re
             min_map_quality: 20       # Minimal quality of mapping
             drop_improper_pairs: True # Eliminate reads that do not pass paired-end resolution
 
-        deoverlapped:               # Eliminate reads that overlap each other, keeping only a single copy - suitable for very specific use cases only
-            method: custom          # Supported values: custom
-
     report:                         # Summary reports of mapping process and results
         quality_report:             # HTML summary with quality of mappings
             method: qualimap        # Supported values: qualimap
