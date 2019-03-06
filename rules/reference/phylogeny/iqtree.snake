@@ -10,7 +10,7 @@ rule iqtree__infer_phylogeny:
     output:
         tree      = 'reference/{reference}/alignment/{reference}.aln.treefile'
     log:
-        out       = 'reference/{reference}/alignment/log/treefile_{reference}.err',
+        out       = 'reference/{reference}/alignment/log/treefile_{reference}.log',
         err       = 'reference/{reference}/alignment/log/treefile_{reference}.err'
     params:
         model = '-m {} '.format(method_config['model']) if 'model' in method_config else ''

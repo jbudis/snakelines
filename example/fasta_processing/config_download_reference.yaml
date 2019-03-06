@@ -4,8 +4,8 @@ samples:                             # List of sample categories to be analysed
 
 reference:                           # Prepare and analyse reference sequences
     download:                        # Download reference sequences
-        method: entrez                   # Supported values: entrez
-        email: budis@dcs.fmph.uniba.sk   # Inform NCBI who you are to contact you in case of excessive use.
+        method: entrez               # Supported values: entrez
+        email: FILLME@SOMEMAIL.COM   # Inform NCBI who you are to contact you in case of excessive use.
         lacto_download1:             # List of genbank ids for the lacto_download1 reference
             - U32971
             - AF182732
