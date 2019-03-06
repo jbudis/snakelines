@@ -40,6 +40,8 @@ Contents
    pipelines/transcriptomics
    pipelines/metagenomics
    pipelines/viral_identification
+   pipelines/download_reference
+   pipelines/infer_phylogeny
 
 .. toctree::
    :caption: Documentation
