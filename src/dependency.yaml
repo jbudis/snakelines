@@ -10,7 +10,13 @@ reference:
 reference:
     download:
         output:
-            reference: expand('reference/{reference}/{reference}.fa', reference=pipeline.references)
+            reference: expand('reference/{reference}/{reference}.fa',
+                               reference=pipeline.references)
+
+    alignment:
+        output:
+            alignment: expand('reference/{reference}/alignment/{reference}.aln',
+                               reference=pipeline.references)
 
 reads:
 

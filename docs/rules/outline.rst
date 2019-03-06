@@ -2,6 +2,11 @@ Rules
 =====
 - Reference
 
+  - Alignment
+
+    .. toctree::
+      reference/alignment/summary.rst
+
   - Download
 
     .. toctree::
