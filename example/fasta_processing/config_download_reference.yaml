@@ -2,16 +2,16 @@ samples:                             # List of sample categories to be analysed
     - reference: lacto_download1     # Reference genome in the category (would be downloaded into reference/lacto_download1/lacto_download1.fa)
     - reference: lacto_download2     # Reference genome in the category (would be downloaded into reference/lacto_download2/lacto_download2.fa)
 
-reference:
-    download:
+reference:                           # Prepare and analyse reference sequences
+    download:                        # Download reference sequences
         method: entrez                   # Supported values: entrez
         email: budis@dcs.fmph.uniba.sk   # Inform NCBI who you are to contact you in case of excessive use.
-        lacto_download1:
+        lacto_download1:             # List of genbank ids for the lacto_download1 reference
             - U32971
             - AF182732
             - X74221
             - Z75478
-        lacto_download2:
+        lacto_download2:             # List of genbank ids for the lacto_download2 reference
             - AF074857
             - U97135
             - Z75475
