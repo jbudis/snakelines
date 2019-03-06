@@ -1,0 +1,28 @@
+rule iqtree__infer_phylogeny:
+    """
+    Infer phylogenetic relationships between aligned sequences
+    :input alignment: Aligned sequences in ALN format
+    :output tree: Phylogenetic tree with distances between sequences
+    :param model: Model to use for phylo tree generation - see iqtree documentation for more detail
+    """
+    input:
+        alignment = 'reference/{reference}/alignment/{reference}.aln'
+    output:
+        tree      = 'reference/{reference}/alignment/{reference}.aln.treefile'
+    log:
+        out       = 'reference/{reference}/alignment/log/treefile_{reference}.err',
+        err       = 'reference/{reference}/alignment/log/treefile_{reference}.err'
+    params:
+        model = '-m {} '.format(method_config['model']) if 'model' in method_config else ''
+    threads:
+        int(config['threads'])
+    shell:
+        '''
+        iqtree \
+            -s {input.alignment} \
+            {params.model} \
+            -redo \
+            -nt {threads} \
+         > {log.out} \
+        2> {log.err}
+        '''

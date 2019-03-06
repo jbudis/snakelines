@@ -7,6 +7,18 @@ Rules
     .. toctree::
       reference/alignment/summary.rst
 
+  - Report
+
+    - Comparison
+
+      .. toctree::
+        reference/report/comparison/summary.rst
+
+    - Phylogenetic Tree
+
+      .. toctree::
+        reference/report/phylogenetic_tree/summary.rst
+
   - Download
 
     .. toctree::
@@ -23,6 +35,11 @@ Rules
 
       .. toctree::
         reference/index/fai/summary.rst
+
+  - Phylogeny
+
+    .. toctree::
+      reference/phylogeny/summary.rst
 
 - Assembly
 

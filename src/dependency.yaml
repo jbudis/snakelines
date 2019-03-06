@@ -18,8 +18,39 @@ reference:
             alignment: expand('reference/{reference}/alignment/{reference}.aln',
                                reference=pipeline.references)
 
-reads:
+    phylogeny:
+        output:
+            phylogenic_tree: expand('reference/{reference}/alignment/{reference}.aln.treefile',
+                                     reference=pipeline.references)
+            depends:
+                - reference/alignment
 
+    report:
+        phylogenetic_tree:
+            output:
+                tree:
+                    from: expand('reference/{reference}/alignment/{reference}.aln.treefile.svg',
+                                  reference=pipeline.references)
+
+                    to:   expand('{report_dir}/_reference/{reference}/phylogeny.svg',
+                                  report_dir=config['report_dir'],
+                                  reference=pipeline.references)
+            depends:
+                - reference/phylogeny
+
+        comparison:
+            output:
+                html:
+                    from: expand('reference/{reference}/alignment/{reference}.aln.html',
+                                  reference=pipeline.references)
+
+                    to:   expand('{report_dir}/_reference/{reference}/alignment.html',
+                                  report_dir=config['report_dir'],
+                                  reference=pipeline.references)
+            depends:
+                - reference/alignment
+
+reads:
     preprocess:
         original:
             output:
