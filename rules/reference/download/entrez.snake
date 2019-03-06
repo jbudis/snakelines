@@ -13,7 +13,7 @@ rule entrez__download_sequences_by_genbank_id:
         reference = protected('reference/{reference}/{reference}.fa'),
         taxonomy = protected('reference/{reference}/{reference}.tax')
     params:
-        genbank_ids = method_config[reference],
+        genbank_ids = lambda wc: method_config[wc.reference],
         email = method_config['email']
     run:
         Entrez.email = params.email

@@ -44,9 +44,11 @@ rule pipeline:
 
 # on success copy the files to report directory and send email(s)
 onsuccess:
-    print("Copying and finalizing", file=sys.stderr)
-    copied = copy_input_files_with_consisent_names_dict(get_files(outputs), get_files(copy_where))
-    print("Copied {} files to report dir '{}'".format(copied, config['report_dir']), file=sys.stderr)
+    if 'report_dir' in config:
+        print("Copying and finalizing", file=sys.stderr)
+        copied = copy_input_files_with_consisent_names_dict(get_files(outputs), get_files(copy_where))
+        print("Copied {} files to report dir '{}'".format(copied, config['report_dir']), file=sys.stderr)
+
     send_email(config, get_files(outputs), get_files(copy_where), True)
 
 # on error send email(s)

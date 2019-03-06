@@ -29,15 +29,20 @@ sample_configurations = config.get('samples', DEFAULT_SAMPLE_CONFIGURATION)
 for sample_configuration in sample_configurations:
 
     # Filter samples according to the user configuration
-    wildcards = glob_wildcards('reads/original/{sample, %s}_R1.fastq.gz' % sample_configuration['name'])
-    assert len(wildcards.sample) > 0, 'No samples in reads/original/ match configured pattern {}'.format(sample_configuration['name'])
+    samples = []
+    if 'name' in sample_configuration:
+        wildcards = glob_wildcards('reads/original/{sample, %s}_R1.fastq.gz' % sample_configuration['name'])
+        assert len(wildcards.sample) > 0, 'No samples in reads/original/ match configured pattern {}'.format(sample_configuration['name'])
+        samples = wildcards.sample
+
     reference = sample_configuration.get('reference', None)
-    pipeline.add(wildcards.sample, reference,
+    pipeline.add(samples, reference,
                  sample_configuration.get('panel', None),
                  sample_configuration.get('prebuilt', False),
                  bool(extract_from_config(config, ['reference', 'download', reference], [])))
 
-assert not pipeline.is_empty(), 'No samples to analyse'
+if pipeline.is_empty():
+    print('No samples to analyse', file=sys.stderr)
 
 # impute types:
 impute_mapping_types(pipeline, config)

@@ -1,0 +1,19 @@
+samples:                             # List of sample categories to be analysed
+    - reference: mhv_ncbi            # Reference genome for reads in the category (reference/mhv/mhv.fa)
+    - reference: lacto               # Reference genome for reads in the category (reference/mhv/mhv.fa)
+
+reference:
+    download:
+        method: entrez                   # Supported values: entrez
+        email: budis@dcs.fmph.uniba.sk   # Inform NCBI who you are to contact you in case of excessive use.
+        mhv_ncbi:                        # List of genbank ids to download, one list for each reference database
+            - U97553.2
+            - AF127083.1
+        lacto:
+            - U32971
+            - AF182732
+
+    alignment:
+        method: mafft
+
+    phylogeny:
