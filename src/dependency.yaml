@@ -28,11 +28,19 @@ reference:
     report:
         phylogenetic_tree:
             output:
-                tree:
+                svg:
                     from: expand('reference/{reference}/alignment/{reference}.aln.treefile.svg',
                                   reference=pipeline.references)
 
                     to:   expand('{report_dir}/_reference/{reference}/phylogeny.svg',
+                                  report_dir=config['report_dir'],
+                                  reference=pipeline.references)
+
+                ascii:
+                    from: expand('reference/{reference}/alignment/{reference}.aln.treefile.ascii',
+                                  reference=pipeline.references)
+
+                    to:   expand('{report_dir}/_reference/{reference}/phylogeny.txt',
                                   report_dir=config['report_dir'],
                                   reference=pipeline.references)
             depends:
