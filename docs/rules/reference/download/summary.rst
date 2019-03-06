@@ -17,6 +17,6 @@ Download sequences from NCBI Genbank database according to the list of enumerate
 
 **Param(s):**
 
-- *genbank_ids:* List of Genbank identifiers for sequences to download
+- *method_config:* Configuration of entrez. It has to contain list of Genbank identifiers for sequences to download
 - *email:* Inform NCBI who you are to contact you in case of excessive use. Otherwise they may block your access directly.
 

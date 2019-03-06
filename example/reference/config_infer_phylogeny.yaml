@@ -1,0 +1,10 @@
+samples:                             # List of sample categories to be analysed
+    - reference: lacto               # Reference genome for reads in the category (reference/mhv/mhv.fa)
+
+reference:
+    alignment:
+        method: mafft
+
+    report:
+        phylogenetic_tree:
+            method: iqtree

@@ -1,0 +1,17 @@
+samples:                             # List of sample categories to be analysed
+    - reference: lacto1              # Reference genome in the category (would be downloaded into reference/lacto1/lacto1.fa)
+    - reference: lacto2              # Reference genome in the category (would be downloaded into reference/lacto2/lacto2.fa)
+
+reference:
+    download:
+        method: entrez                   # Supported values: entrez
+        email: budis@dcs.fmph.uniba.sk   # Inform NCBI who you are to contact you in case of excessive use.
+        lacto1:
+            - U32971
+            - AF182732
+            - X74221
+            - Z75478
+        lacto2:
+            - AF074857
+            - U97135
+            - Z75475
