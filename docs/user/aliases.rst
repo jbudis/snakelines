@@ -27,12 +27,11 @@ Add aliases for using pipelines locally. You can set up using conda with `USE_CO
    SNAKELINES_DIR=/data/snakelines/$USER   # Path to snakelines source files
    USE_CONDA=true
    CONDA_DIR=/data/snakelines/snakemake_repos
-if [ "USE_CONDA" = true ] ; then
-    alias basesnake='snakemake -d `pwd` --jobname {rulename}.{jobid} --reason --printshellcmds --snakefile $SNAKELINES_DIR/snakelines.snake' --use-conda --conda-prefix=$CONDA_DIR; else
-    alias basesnake='snakemake -d `pwd` --jobname {rulename}.{jobid} --reason --printshellcmds --snakefile $SNAKELINES_DIR/snakelines.snake'
-fi
+   if [ "USE_CONDA" = true ] ; then
+     alias basesnake='snakemake -d `pwd` --jobname {rulename}.{jobid} --reason --printshellcmds --snakefile $SNAKELINES_DIR/snakelines.snake' --use-conda --conda-prefix=$CONDA_DIR; else
+     alias basesnake='snakemake -d `pwd` --jobname {rulename}.{jobid} --reason --printshellcmds --snakefile $SNAKELINES_DIR/snakelines.snake'
+   fi
 
-   alias basesnake='snakemake -d `pwd` --jobname {rulename}.{jobid} --reason --printshellcmds --snakefile $SNAKELINES_DIR/snakelines.snake'
    alias snake='basesnake --config threads=$THREADS_LOCAL --cores $THREADS_LOCAL'
    alias dsnake='basesnake --config threads=$THREADS_LOCAL --dryrun'
 
