@@ -43,3 +43,4 @@ dependencies:
 - varscan=2.4.3
 - fast-virome-explorer=1.1.0.p1
 - r-virfinder=1.1
+- rdp_classifier=2.2

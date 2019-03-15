@@ -1,3 +1,5 @@
+SNAKELINES_VERSION = '0.3.0'
+
 import os
 import sys
 from src.config.dependency_load import load_config, check_dependency
@@ -23,7 +25,7 @@ outputs, copy_where = check_dependency(config['snakelines_dir'] + '/src/dependen
 # function to evaluate output directories from dependency.yaml
 def get_files(source_dict):
     additional_params = {'expand': expand, 'protected': protected, 'temp': temp, 'config': config,
-            'pipeline': pipeline, 'read_types_with_fastqc_report': read_types_with_fastqc_report,
+            'pipeline': pipeline, 'directory': directory, 'read_types_with_fastqc_report': read_types_with_fastqc_report,
             'multisample_references': multisample_references, 'tax_levels_count_table': tax_levels_count_table,
             'tax_levels_barplot': tax_levels_barplot, 'barplot_formats': barplot_formats}
     files_dict = {}
