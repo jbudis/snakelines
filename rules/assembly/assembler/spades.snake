@@ -14,11 +14,9 @@ rule spades__assemble_reads_into_contigs:
     :param mode: mode of operation of spades (do not change), extracted from config file
     :param careful: whether to use --careful parameter for spades (do not change), extracted from config file
     """
-
-
     input:
         r1 = 'reads/%s/{sample}_R1.fastq.gz' % pipeline.preprocessed_read_type,
-        r2 = 'reads/%s/{sample}_R1.fastq.gz' % pipeline.preprocessed_read_type
+        r2 = 'reads/%s/{sample}_R2.fastq.gz' % pipeline.preprocessed_read_type
     output:
         fastg     = 'assembly/{sample}/assembly_graph.fastg',
         gfa       = 'assembly/{sample}/assembly_graph.gfa',
@@ -40,9 +38,8 @@ rule spades__assemble_reads_into_contigs:
     shell:
         """
         spades.py \
-            -1 ./fixed1.fastq \
-            -2 ./fixed2.fastq \
-            -s ./unpaired.fastq \
+            -1 {input.r1} \
+            -2 {input.r2} \
             -o {params.outdir} \
             --threads {threads} \
             {params.mode} \
