@@ -50,6 +50,11 @@ Rules
 
     - Taxonomic Counts
 
+      - Alpha Diversity
+
+        .. toctree::
+          classification/report/taxonomic_counts/alpha_diversity/summary.rst
+
       - Barplot
 
         .. toctree::
