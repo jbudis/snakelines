@@ -49,3 +49,9 @@ classification:                     # Identify genomic source of sequenced reads
                 tax_levels:         # List of taxonomic levels for which plots would be generated
                     - class
                     - genus
+
+            alpha_diversity:        # Alpha diversity computation
+                method: custom      # Supported values: custom
+                tax_levels:         # List of taxonomic levels for which alpha diversities would be generated
+                    - class
+                    - genus

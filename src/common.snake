@@ -71,3 +71,6 @@ tax_levels_count_table.append('alltaxes')
 # Which taxonomic levels should be visualised in barplots, and in which image formats
 tax_levels_barplot = extract_from_config(config, ['classification', 'report', 'taxonomic_counts', 'barplot', 'tax_levels'], [])
 barplot_formats = extract_from_config(config, ['classification', 'report', 'taxonomic_counts', 'barplot', 'formats'], ['png'])
+
+# Which taxonomic levels should be computed as alpha_diversity
+tax_levels_alphas = extract_from_config(config, ['classification', 'report', 'taxonomic_counts', 'alpha_diversity', 'tax_levels'], [])
