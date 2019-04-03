@@ -165,8 +165,8 @@ classification:
             alpha_diversity:
                 output:
                     alpha_divs:
-                        from: expand('classification/{reference}/report/tsv/{tax_level}.alpha_div.tsv', reference=pipeline.references, tax_level=tax_levels_alphas)
-                        to: expand('{report_dir}/{reference}/tsv/{tax_level}.alpha_div.tsv', report_dir=config['report_dir'], reference=pipeline.references, tax_level=tax_levels_alphas)
+                        from: expand('classification/{reference}/report/tsv/{tax_level}.alpha{alpha_mode}.tsv', reference=pipeline.references, tax_level=tax_levels_alphas, alpha_mode=['_norm', '_pure'])
+                        to: expand('{report_dir}/{reference}/tsv/{tax_level}.alpha{alpha_mode}.tsv', report_dir=config['report_dir'], reference=pipeline.references, tax_level=tax_levels_alphas, alpha_mode=['_norm', '_pure'])
                 depends:
                     - classification/read_based
         summary:

@@ -52,6 +52,7 @@ classification:                     # Identify genomic source of sequenced reads
 
             alpha_diversity:        # Alpha diversity computation
                 method: custom      # Supported values: custom
+                min_reads: 10     # Minimal number of reads to keep a sample (for downsampling only)
                 tax_levels:         # List of taxonomic levels for which alpha diversities would be generated
                     - class
                     - genus
