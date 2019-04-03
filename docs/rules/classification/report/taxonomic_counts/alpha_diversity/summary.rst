@@ -14,5 +14,5 @@ Compute aplha diversity at selected taxonomic level, such as genus, species.
 
 **Output(s):**
 
-- *alpha_div:* Alpha diversities for single taxonomic level, e.g. species, order
+- *alpha_div:* Alpha diversities for single taxonomic level, e.g. species, order; either '_norm'-alized to the same counts or kept '_pure'.
 
