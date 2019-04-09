@@ -25,7 +25,6 @@ reads:                              # Prepare reads and quality reports for down
             read_types:             # List of preprocess steps for quality reports
                 - original
                 - trimmed
-                - decontaminated
                 - deduplicated
 
 assembly:                           # Join reads into longer sequences (contigs) based on their overlaps

@@ -58,14 +58,21 @@ def copy(src, dest):
         shutil.copy(src, dest)
 
 
-def copy_with_makedirs(src, dest):
+def copy_with_makedirs(src, dest, pipeline):
     """
     Copy a file or directory and create directory structure if necessary.
     :param src: str - source file or directory
     :param dest: str - destination file or directory
+    :param pipeline: object - SnakeLines internal object with information of samples, references, panels
     :return: None
     :raise IOError: if cannot copy
     """
+
+    # In case only one reference sequence is specified, remove its name from file paths
+    if len(pipeline.references) == 1:
+        dest = dest.replace('-{}.'.format(pipeline.references[0]), '.')  # from file names
+        dest = dest.replace('-{}/'.format(pipeline.references[0]), '/')  # from directories
+
     try:
         copy(src, dest)
     except IOError as e:
@@ -77,14 +84,16 @@ def copy_with_makedirs(src, dest):
         copy(src, dest)
 
 
-def copy_input_files_with_consisent_names_dict(input_dict, output_dict):
+def copy_input_files_with_consisent_names_dict(input_dict, output_dict, pipeline):
     """
     Compare names of the inputs and outputs of the two dictionaries. All items with the same name in inputs and outputs are copied,
     therefore generate output files.
     :param input_dict: dict - input file names and locations
     :param output_dict: dict - output file names and locations
+    :param pipeline: object - SnakeLines internal object with information of samples, references, panels
     :return: int - number of files copied
     """
+
     files_copied = 0
 
     for item_name, output_item in output_dict.items():
@@ -108,12 +117,12 @@ def copy_input_files_with_consisent_names_dict(input_dict, output_dict):
 
             # Single file items are directly copied
             if type(input_item) == str:
-                copy_with_makedirs(input_item, output_item)
+                copy_with_makedirs(input_item, output_item, pipeline)
                 files_copied += 1
             else:
                 # List items are copied item by item
                 for in_item, out_item in zip(input_item, output_item):
-                    copy_with_makedirs(in_item, out_item)
+                    copy_with_makedirs(in_item, out_item, pipeline)
                     files_copied += 1
 
     return files_copied

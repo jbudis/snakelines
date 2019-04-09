@@ -1,9 +1,9 @@
-samples:                            # List of sample categories to be analysed
-    - name: example.*               # Regex expression of sample names to be analysed (reads/original/example.*_R1.fastq.gz)
-      reference: mhv                # Reference genome for reads in the category (reference/mhv/mhv.fa)
+samples:                              # List of sample categories to be analysed
+    - name: example.*                 # Regex expression of sample names to be analysed (reads/original/example.*_R1.fastq.gz)
+      reference: mhv                  # Reference genome for reads in the category (reference/mhv/mhv.fa)
 
-report_dir: report/public/01-viral  # Generated reports and essential output files would be stored there
-threads: 16                         # Number of threads to use in analysis
+report_dir: report/public/01-mapping  # Generated reports and essential output files would be stored there
+threads: 16                           # Number of threads to use in analysis
 
 reads:                              # Prepare reads and quality reports for downstream analysis
     preprocess:                     # Pre-process of reads, eliminate sequencing artifacts, contamination ...
@@ -57,4 +57,5 @@ mapping:                            # Find the most similar genomic region to re
         quality_report:             # HTML summary with quality of mappings
             method: qualimap        # Supported values: qualimap
             map_types:              # List of post-process steps for quality reports
+                - sorted
                 - deduplicated

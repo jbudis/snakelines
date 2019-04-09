@@ -6,7 +6,7 @@ samples:                            # List of sample categories to be analysed
       reference: fungalits_unite    # RDP classifier Supported values: 16srrna, fungallsu, fungalits_unite, fungalits_warcup
       prebuilt: True                # Reference sequence reference/{reference}/{reference}.fa does not exist, but all required indices are already prepared
 
-report_dir: report/public/01-classify      # Generated reports and essential output files would be stored there
+report_dir: report/public/01-classify_rdp  # Generated reports and essential output files would be stored there
 threads: 16                         # Number of threads to use in analysis
 
 reads:                              # Prepare reads and quality reports for downstream analysis

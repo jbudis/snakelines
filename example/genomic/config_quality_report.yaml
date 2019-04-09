@@ -1,8 +1,8 @@
 samples:                            # List of sample categories to be analysed
     - name: example.*               # Regex expression of sample names to be analysed (reads/original/example.*_R1.fastq.gz)
 
-report_dir: report/public/01-preprocess # Generated reports and essential output files would be stored there
-threads: 16                         # Number of threads to use in analysis
+report_dir: report/public/01-quality_report # Generated reports and essential output files would be stored there
+threads: 16                                 # Number of threads to use in analysis
 
 reads:
     report:                         # Summary reports of read characteristics to assess their quality
