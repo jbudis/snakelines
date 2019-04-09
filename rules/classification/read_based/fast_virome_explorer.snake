@@ -1,6 +1,9 @@
+include: config['snakelines_dir'] + '/rules/mapping/index/samtools.snake'
+
 # Import python libraries
 import shutil
 import pandas as pd
+from Bio import SeqIO
 
 
 count_type = method_config['count_type']
@@ -29,7 +32,7 @@ rule fast_virome_explorer__estimate_virome_composition:
     input:
         reads_f     = 'reads/%s/{sample}_R1.fastq.gz' % pipeline.preprocessed_read_type,
         reads_r     = 'reads/%s/{sample}_R2.fastq.gz' % pipeline.preprocessed_read_type,
-        index       = 'reference/{{reference}}/kallisto_index/{{reference}}-kallisto-index-k{kmer_size}.idx'\
+        index       = 'reference/{{reference}}/kallisto_index/{{reference}}-k{kmer_size}.idx' \
                             .format(kmer_size=method_config['kmer_size']),
         ref_lens    = 'reference/{reference}/kallisto_index/{reference}.lens.txt'
     output:
@@ -39,7 +42,7 @@ rule fast_virome_explorer__estimate_virome_composition:
         out         = 'classification/{reference}/{sample}/log/{sample}.log', # log report from fast virome explorer tool
         err         = 'classification/{reference}/{sample}/log/{sample}.err'  # error report from fast virome explorer tool
     params:
-        outdir = 'classification/{reference}/{sample}',                       # ouput directory, necessary for fast virome explorer
+        outdir      = 'classification/{reference}/{sample}',                  # ouput directory, necessary for fast virome explorer
         cr = method_config['ratio_of_coverages'],
         co = method_config['genome_coverage'],
         cn = method_config['mapped_reads']
@@ -121,3 +124,39 @@ rule custom__convert_to_krona:
                                                             tax=virus[tax_column].replace(';', '\t')))
             else:
                 out.write('1\tNomatch\n')
+
+
+rule kallisto__prepare_index:
+    """
+    Index fasta file to quick identify source of input sequenced reads
+    :input reference: Genomic sequence file in fasta format to index
+    :output index: Index for the input reference genomic file
+    """
+    input:
+        reference = 'reference/{reference}/{reference}.fa'
+    output:
+        index     = 'reference/{reference}/kallisto_index/{reference}-k{kmer_size}.idx'
+    shell:
+        """
+        kallisto index \
+            --index {output.index} \
+            --kmer-size {wildcards.kmer_size} \
+            {input.reference}
+        """
+
+
+rule custom__prepare_read_lens:
+    """
+    Create TSV file with lengths of reference sequences, required for FVE analysis
+    :input reference: Genomic sequence file in fasta format to index
+    :output lens: TSV file with lengths of reference sequences
+    """
+    input:
+        reference = 'reference/{reference}/{reference}.fa'
+    output:
+        lens      = 'reference/{reference}/kallisto_index/{reference}.lens.txt'
+    run:
+        with open(output.lens, 'w') as out:
+            for seq in SeqIO.parse(input.reference, 'fasta'):
+                out.write('{seq_id}\tN/A\tN/A\t{length}\n'.format(seq_id=seq.id, length=len(seq)))
+
