@@ -134,6 +134,22 @@ For example:
 When using bash script, be sure you use full parameter names, where applicable.
 For example, --output-fmt is more informative than -O.
 
+Code style guidelines
+---------------------
+
+Before pull request, check if your code meets these guidelines
+
+* source code meets PEP-8 style guidelines - PyCharm will underline code that is problematic
+* remove unused imports
+* prefer docstrings before comments ('#')
+* avoid long lines (> 80 chars) - when possible
+* only fasta file should be in example references - avoid indices and other files that can be generated automatically
+* keep only a single reference for any example (if possible)
+* use method_config instead of config variable in snake files
+* use format instead of %
+* check grammar (especially misspelled words - they are detected and underlined by PyCharm)
+* documentation pages for new or modified rules are updated
+
 Method configuration
 --------------------
 
