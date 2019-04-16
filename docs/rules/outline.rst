@@ -2,6 +2,13 @@ Rules
 =====
 - Reference
 
+  - Taxonomy
+
+    - Infer
+
+      .. toctree::
+        reference/taxonomy/infer/summary.rst
+
   - Index
 
     - Dict

@@ -150,6 +150,38 @@ For example, if you have fasta file for human genome in separate directory (/dat
 
 Make sure, that the name of the link is the same as the name of the fasta file (without .fa suffix).
 
+Reference taxonomies
+~~~~~~~~~~~~~~~~~~~~
+
+Several computational pipelines requires taxonomic records for genomic sequences in reference fasta files.
+This is specially important for metagenomic pipelines, where the composition should be visualised on several levels, e.g. kingdom, species...
+SnakeLines therefore requires TSV .tax file, where each line represents taxonomy of a single sequence in the fasta file.
+
+::
+
+   |-- reference/silva-16S
+           |-- silva-16S.fa
+           |-- silva-16S.tax
+
+
+The first column correspond to the id of the sequence (typically first word in the '>' header).
+The second column correspond to the taxonomy, e.g.
+
+::
+
+   KF494428.1.1396    Bacteria;Epsilonbacteraeota;Campylobacteria;Campylobacterales;Thiovulaceae;Sulfuricurvum;Sulfuricurvum sp. EW1
+   AF506248.1.1375    Bacteria;Cyanobacteria;Oxyphotobacteria;Nostocales;Nostocaceae;Nostoc PCC-73102;Nostoc sp. Nephroma expallidum cyanobiont 23
+
+The .tax file should be prepared by user.
+However it can also be generated automatically from the fasta sequences, albeit in this case, only the limited information would be utilized.
+
+.. code:: yaml
+
+   reference:
+       taxonomy:
+           infer:
+               method: custom
+
 Use reference indices without fasta
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
