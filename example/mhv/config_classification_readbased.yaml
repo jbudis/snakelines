@@ -41,13 +41,13 @@ classification:
             count_table:             # Summary table with number of reads per taxonomic unit
                 method: custom       # Supported values: custom
                 tax_levels:          # List of taxonomic levels for which tables would be generated
-                - class
-                - genus
+                    - class
+                    - genus
             barplot:                 # Visualisation in bar plot form
                 method: custom       # Supported values: custom
                 formats:             # Output format of the resulting images (supported values: png, svg)
-                - png
-                - svg
+                    - png
+                    - svg
                 tax_levels:          # List of taxonomic levels for which plots would be generated (supporter values: class, genus)
-                - class
-                - genus
+                    - class
+                    - genus
