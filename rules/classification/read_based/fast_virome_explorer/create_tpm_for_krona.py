@@ -90,7 +90,7 @@ input_file = sys.argv[1]
 working_dir, working_file = create_working_accessories(input_file)[0], create_working_accessories(input_file)[1]
 dictionary = dict()
 abundance_file = '{}/abundance.tsv'.format(working_dir)
-krona_table = '{}/FastViromeExplorer-final-sorted-abundance-checked_tpm.tsv'.format(working_dir)
+krona_table = '{}/FastViromeExplorer-final-sorted-abundance_tpm.tsv'.format(working_dir)
 
 
 # Calling main function of script

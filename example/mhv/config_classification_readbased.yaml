@@ -5,6 +5,11 @@ samples:                             # List of sample categories to be analysed
 report_dir: report/public/01-viral   # Generated reports and essential output files would be stored there
 threads: 16                          # Number of threads to use in analysis
 
+reference:
+    taxonomy:
+        infer:
+            method: custom
+
 reads:                               # Prepare reads and quality reports for downstream analysis
     preprocess:                      # Pre-process of reads, eliminate sequencing artifacts, contamination ...
         trimmed:                     # Remove low quality parts of reads
@@ -41,13 +46,11 @@ classification:
             count_table:             # Summary table with number of reads per taxonomic unit
                 method: custom       # Supported values: custom
                 tax_levels:          # List of taxonomic levels for which tables would be generated
-                    - class
-                    - genus
+                    - kingdom
             barplot:                 # Visualisation in bar plot form
                 method: custom       # Supported values: custom
                 formats:             # Output format of the resulting images (supported values: png, svg)
                     - png
                     - svg
                 tax_levels:          # List of taxonomic levels for which plots would be generated (supporter values: class, genus)
-                    - class
-                    - genus
+                    - kingdom

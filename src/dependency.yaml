@@ -2,10 +2,15 @@ reference:
     index:
         dict:
             output:
-                index: protected(expand('reference/{sr.reference}/{sr.reference}.dict', sr=pipeline.sample_references))
+                index: protected(expand('reference/{reference}/{reference}.dict', reference=pipeline.references))
         fai:
             output:
-                index: protected(expand('reference/{sr.reference}/{sr.reference}.fai', sr=pipeline.sample_references))
+                index: protected(expand('reference/{reference}/{reference}.fai', reference=pipeline.references))
+
+    taxonomy:
+        infer:
+            output:
+                taxes: expand('reference/{reference}/{reference}.tax', reference=pipeline.references)
 
 reads:
 

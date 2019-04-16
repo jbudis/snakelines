@@ -64,23 +64,6 @@ rule fast_virome_explorer__estimate_virome_composition:
         '''
 
 
-rule custom__fill_na_values_with_virusnames:
-    """
-    Python script, replaces blank space in input TSV file with virus names from that row and create new changed TSV file.
-    :input composition: TSV table containing information about number of reads
-    :input py_script: path to python script
-                        assigned to taxonomic units (most common species), generated as output of previous rule
-    :output checked_composition: new TSV table but that NA values replace with virus names from first column
-    """
-    input:
-        composition         = 'classification/{reference}/{sample}/FastViromeExplorer-final-sorted-abundance.tsv',
-        py_script           = srcdir('fast_virome_explorer/fillna_with_virusname.py')
-    output:
-        checked_composition = 'classification/{reference}/{sample}/FastViromeExplorer-final-sorted-abundance-checked.tsv'
-    shell:
-        'python3 {input.py_script} {input.composition}'
-
-
 rule custom__convert_to_tpm_metric:
     """
     Python script (have to be set in config => count_type: tpm),
@@ -93,11 +76,11 @@ rule custom__convert_to_tpm_metric:
     :output checked_tpm_composition: new TSV table but that count metric is changed from read count to tpm
     """
     input:
-        checked_composition     = 'classification/{reference}/{sample}/FastViromeExplorer-final-sorted-abundance-checked.tsv',
+        checked_composition     = 'classification/{reference}/{sample}/FastViromeExplorer-final-sorted-abundance.tsv',
         abundance               = 'classification/{reference}/{sample}/abundance.tsv',
         py_script               = srcdir('fast_virome_explorer/create_tpm_for_krona.py')
     output:
-        checked_tpm_composition = 'classification/{reference}/{sample}/FastViromeExplorer-final-sorted-abundance-checked_tpm.tsv'
+        checked_tpm_composition = 'classification/{reference}/{sample}/FastViromeExplorer-final-sorted-abundance_tpm.tsv'
     shell:
        'python3 {input.py_script} {input.checked_composition}'
 
@@ -110,7 +93,7 @@ rule custom__convert_to_krona:
     :output krona: new krona file
     """
     input:
-        composition = 'classification/{{reference}}/{{sample}}/FastViromeExplorer-final-sorted-abundance-checked{count_suffix}.tsv'\
+        composition = 'classification/{{reference}}/{{sample}}/FastViromeExplorer-final-sorted-abundance{count_suffix}.tsv'\
                             .format(count_suffix=count_suffix)
     output:
         krona       = 'classification/{reference}/report/krona/individual/{sample}.krn'
