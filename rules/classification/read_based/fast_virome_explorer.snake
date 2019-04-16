@@ -149,14 +149,19 @@ rule custom__prepare_read_lens:
     """
     Create TSV file with lengths of reference sequences, required for FVE analysis
     :input reference: Genomic sequence file in fasta format to index
+    :input taxes: Taxonomy file in TSV format (each line represent a single reference sequence)
     :output lens: TSV file with lengths of reference sequences
     """
     input:
-        reference = 'reference/{reference}/{reference}.fa'
+        reference = 'reference/{reference}/{reference}.fa',
+        taxes     = 'reference/{reference}/{reference}.tax'
     output:
         lens      = 'reference/{reference}/kallisto_index/{reference}.lens.txt'
     run:
+        taxes = pd.read_csv(input.taxes, sep='\t', index_col=0, header=None)[1]
+
         with open(output.lens, 'w') as out:
             for seq in SeqIO.parse(input.reference, 'fasta'):
-                out.write('{seq_id}\tN/A\tN/A\t{length}\n'.format(seq_id=seq.id, length=len(seq)))
+                out.write('{seq_id}\t{seq_name}\t{tax}\t{length}\n'.format(seq_id=seq.id, seq_name=seq.description,
+                                                                           tax=taxes[seq.id], length=len(seq)))
 
