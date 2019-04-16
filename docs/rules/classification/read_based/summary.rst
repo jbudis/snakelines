@@ -113,6 +113,7 @@ Create TSV file with lengths of reference sequences, required for FVE analysis
 **Input(s):**
 
 - *reference:* Genomic sequence file in fasta format to index
+- *taxes:* Taxonomy file in TSV format (each line represent a single reference sequence)
 
 **Output(s):**
 
