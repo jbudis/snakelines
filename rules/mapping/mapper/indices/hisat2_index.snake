@@ -1,0 +1,36 @@
+rule hisat2__prepare_index:
+    """
+    Generate mapping index that is utilized by hisat2 algorithm to map reads to a reference genome
+    :input fa: fasta reference genome
+    :output indices: 6 files with indeces. e.g '{fadir}/hisat2_index/{sequence}.[1-4].bt2', '{fadir}/hisat2_index/{sequence}.rev.[1,2].bt2'
+    :param index: name of output reference, technically filename's path prefix, e.g. '{fadir}/hisat2_index/{sequence}'
+    """
+    input:
+        '{fadir}/{sequence}.fa'
+    output:
+        '{fadir}/bowtie2_index/{sequence}.1.ht2',
+        '{fadir}/bowtie2_index/{sequence}.2.ht2',
+        '{fadir}/bowtie2_index/{sequence}.3.ht2',
+        '{fadir}/bowtie2_index/{sequence}.4.ht2',
+        '{fadir}/bowtie2_index/{sequence}.5.ht2',
+        '{fadir}/bowtie2_index/{sequence}.6.ht2',
+        '{fadir}/bowtie2_index/{sequence}.7.ht2',
+        '{fadir}/bowtie2_index/{sequence}.8.ht2',
+    params:
+        index = '{fadir}/hisat2_index/{sequence}'
+    log:
+        out   = '{fadir}/hisat2_index/log/{sequence}.log',
+        err   = '{fadir}/hisat2_index/log/{sequence}.err',
+    threads:
+        int(config['threads'])
+    conda:
+        config['snakelines_dir'] + '/enviroments/others_env.yaml'
+    shell:
+        """
+        hisat2-build \
+            -p {threads} \
+            {input} \
+            {params.index} \
+        >  {log.out} \
+        2> {log.err}
+        """

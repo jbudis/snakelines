@@ -20,6 +20,7 @@ dependencies:
 - fastuniq=1.1
 - freebayes=1.1.0
 - gatk4=4.0.7
+- hisat2=2.1.0
 - iqtree=1.5.5
 - kallisto=0.43.1
 - krona=2.7

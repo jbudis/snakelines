@@ -2,7 +2,7 @@ rule bowtie2__prepare_index:
     """
     Generate mapping index that is utilized by Bowtie2 algorithm to map reads to a reference genome
     :input fa: fasta reference genome
-    :output indecis: 6 files with indeces. e.g '{fadir}/bowtie2_index/{sequence}.[1-4].bt2', '{fadir}/bowtie2_index/{sequence}.rev.[1,2].bt2'
+    :output indices: 6 files with indeces. e.g '{fadir}/bowtie2_index/{sequence}.[1-4].bt2', '{fadir}/bowtie2_index/{sequence}.rev.[1,2].bt2'
     :param index: name of output reference, technically filename's path prefix, e.g. '{fadir}/bowtie2_index/{sequence}'
     """
     input:
@@ -17,8 +17,8 @@ rule bowtie2__prepare_index:
     params:
         index = '{fadir}/bowtie2_index/{sequence}'
     log:
-        out = '{fadir}/log/{sequence}.log',
-        err = '{fadir}/log/{sequence}.err',
+        out   = '{fadir}/bowtie2_index/log/{sequence}.log',
+        err   = '{fadir}/bowtie2_index/log/{sequence}.err',
     threads:
         int(config['threads'])
     conda:

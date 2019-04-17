@@ -37,7 +37,7 @@ reads:                              # Prepare reads and quality reports for down
 
 mapping:                            # Find the most similar genomic region to reads in reference (mapping process)
     mapper:                         # Method for mapping
-        method: bowtie2
+        method: bowtie2             # Supported values: bowtie2, bwa, hisat2, bismark
         params: --very-sensitive    # Additional parameters
         only_concordant: False      # Keep only reads with consistently mapped reads from both paired-ends
 
