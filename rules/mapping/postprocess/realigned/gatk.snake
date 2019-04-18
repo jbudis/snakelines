@@ -1,15 +1,23 @@
 include: config['snakelines_dir'] + '/rules/reference/index/dict/picard.snake'
+include: config['snakelines_dir'] + '/rules/reference/index/fai/samtools.snake'
+include: config['snakelines_dir'] + '/rules/mapping/index/samtools.snake'
 
 rule gatk__identify_regions_to_realign:
     """
     Find places on genomes with indels for realignment.
     :input ref: Reference genomic sequences in FASTA format
+    :input fai: Reference index for faster sequence retrieval
+    :input dict: Reference index for faster sequence retrieval
     :input bam: Mapped reads for realignment in BAM format
+    :input bam: Mapped reads index for faster alignment retrieval
     :output intervals: Regions that need to be realigned
     """
     input:
-        ref = 'reference/{reference}/{reference}.fa',
-        bam = 'mapping/{{reference}}/{map_type}/{{sample}}.bam'.format(map_type=method_config['input_map_type'])
+        ref  = 'reference/{reference}/{reference}.fa',
+        fai  = 'reference/{reference}/{reference}.fa.fai',
+        dict = 'reference/{reference}/{reference}.dict',
+        bam  = 'mapping/{{reference}}/{map_type}/{{sample}}.bam'.format(map_type=method_config['input_map_type']),
+        bai  = 'mapping/{{reference}}/{map_type}/{{sample}}.bam.bai'.format(map_type=method_config['input_map_type'])
     output:
         intervals = configured_temp('mapping/{reference}/realigned/{sample}.intervals')
     log:
