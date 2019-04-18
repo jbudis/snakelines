@@ -17,7 +17,7 @@ reads:                              # Prepare reads and quality reports for down
 
         decontaminated:             # Eliminate fragments from known artificial source, e.g. contamination by human
             method: bowtie2         # Supported values: bowtie2
-            temporary: False        # If True, generated files would be removed after successful analysis
+            temporary: True         # If True, generated files would be removed after successful analysis
             references:             # List of reference genomes
                 - mhv
             keep: True              # Keep reads mapped to references (True) or remove them as contamination (False)
@@ -40,14 +40,12 @@ mapping:                            # Find the most similar genomic region to re
         method: bowtie2
         params: --very-sensitive    # Additional parameters
         only_concordant: False      # Keep only reads with consistently mapped reads from both paired-ends
+        temporary: True
 
     index:                          # Generate .bai index for mapped reads in .bam files
         method: samtools            # Supported values: samtools
 
     postprocess:                    # Successive steps to refine mapped reads
-        original:                   # Reads retrieved from mapping process
-            temporary: True         # If True, generated files would be removed after successful analysis
-
         sorted:                     # Order reads according to their genomic position
             method: samtools        # Supported values: samtools
             temporary: True         # If True, generated files would be removed after successful analysis

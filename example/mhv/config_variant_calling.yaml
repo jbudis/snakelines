@@ -46,13 +46,12 @@ mapping:                            # Find the most similar genomic region to re
         method: bowtie2             # Supported values: bowtie2
         params: --very-sensitive    # Additional parameters for the method
         only_concordant: False      # Keep only reads with consistently mapped reads from both paired-ends
+        temporary: True
 
     index:                          # Generate .bai index for mapped reads in .bam files
         method: samtools            # Supported values: samtools
 
     postprocess:                    # Successive steps to refine mapped reads
-        original:                   # Reads retrieved from mapping process
-            temporary: True         # If True, generated files would be removed after successful analysis
         sorted:
             method: samtools
             temporary: True

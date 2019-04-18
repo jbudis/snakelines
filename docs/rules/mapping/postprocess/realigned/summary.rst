@@ -11,7 +11,10 @@ Find places on genomes with indels for realignment.
 **Input(s):**
 
 - *ref:* Reference genomic sequences in FASTA format
+- *fai:* Reference index for faster sequence retrieval
+- *dict:* Reference index for faster sequence retrieval
 - *bam:* Mapped reads for realignment in BAM format
+- *bam:* Mapped reads index for faster alignment retrieval
 
 **Output(s):**
 
