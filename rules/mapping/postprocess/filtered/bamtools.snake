@@ -9,7 +9,7 @@ rule bamtools__filter_fragments:
     input:
         bam  = '{{mapper}}/{{reference}}/{map_type}/{{sample}}.bam'.format(map_type=method_config['input_map_type']),
     output:
-        bam  = '{mapper}/{reference}/filtered/{sample}.bam'
+        bam  = configured_temp('{mapper}/{reference}/filtered/{sample}.bam')
     params:
         min_map_quality = '-mapQuality ">={}"'.format(method_config['min_map_quality']) if 'min_map_quality' in method_config else '',
         drop_improper_pairs = '-isProperPair true' if method_config.get('drop_improper_pairs', False) else ''

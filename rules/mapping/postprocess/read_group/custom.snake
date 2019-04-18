@@ -9,7 +9,7 @@ rule custom__infer_read_groups:
     input:
         bam = 'mapping/{{reference}}/{map_type}/{{sample}}.bam'.format(map_type=method_config['input_map_type'])
     output:
-        bam = 'mapping/{reference}/read_group/{sample}.bam'
+        bam = configured_temp('mapping/{reference}/read_group/{sample}.bam')
     log:
         out = 'mapping/{reference}/read_group/log/{sample}.log',
         err = 'mapping/{reference}/read_group/log/{sample}.err'

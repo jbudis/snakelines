@@ -11,7 +11,7 @@ rule gatk__identify_regions_to_realign:
         ref = 'reference/{reference}/{reference}.fa',
         bam = 'mapping/{{reference}}/{map_type}/{{sample}}.bam'.format(map_type=method_config['input_map_type'])
     output:
-        intervals = 'mapping/{reference}/realigned/{sample}.intervals'
+        intervals = configured_temp('mapping/{reference}/realigned/{sample}.intervals')
     log:
         out = 'mapping/{reference}/realigned/log/{sample}.intervals.log',
         err = 'mapping/{reference}/realigned/log/{sample}.intervals.err'
@@ -43,7 +43,7 @@ rule gatk__realign_regions:
         bam = 'mapping/{{reference}}/{map_type}/{{sample}}.bam'.format(map_type=method_config['input_map_type']),
         intervals = 'mapping/{reference}/realigned/{sample}.intervals'
     output:
-        bam = 'mapping/{reference}/realigned/{sample}.bam'
+        bam = configured_temp('mapping/{reference}/realigned/{sample}.bam')
     log:
         out = 'mapping/{reference}/realigned/log/{sample}.intervals.log',
         err = 'mapping/{reference}/realigned/log/{sample}.intervals.err'

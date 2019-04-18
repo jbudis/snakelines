@@ -13,7 +13,7 @@ rule custom__remove_overlapping_reads:
         bam  = '{{mapper}}/{{reference}}/{map_type}/{{sample}}.bam'.format(map_type=method_config['input_map_type']),
         bai  = '{{mapper}}/{{reference}}/{map_type}/{{sample}}.bam.bai'.format(map_type=method_config['input_map_type'])
     output:
-        bam  = '{mapper}/{reference}/deoverlapped/{sample}.bam'
+        bam  = configured_temp('{mapper}/{reference}/deoverlapped/{sample}.bam')
     params:
         tmp_dir = config['tmp_dir']
     log:
