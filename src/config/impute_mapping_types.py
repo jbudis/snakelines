@@ -10,7 +10,7 @@ def impute_mapping_types(pipeline, config):
     :return: None
     """
     ORIGINAL_MAPPING = 'original'
-    setattr(pipeline, 'processed_map_type', ORIGINAL_MAPPING)
+    setattr(pipeline, 'postprocessed_map_type', ORIGINAL_MAPPING)
 
     # Find configuration file with reads->preprocess attributes
     if 'postprocess' not in config.get('mapping', {}):
