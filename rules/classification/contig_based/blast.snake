@@ -146,8 +146,8 @@ rule blast__prepare_reference_index_for_nucleotide:
         nin = protected('reference/{reference}/blast_index/{reference}.nin'),
         nsq = protected('reference/{reference}/blast_index/{reference}.nsq')
     log:
-        out = 'reference/{reference}/blast_index/log/{reference.log}',
-        err = 'reference/{reference}/blast_index/log/{reference.err}'
+        out = 'reference/{reference}/blast_index/log/{reference}.log',
+        err = 'reference/{reference}/blast_index/log/{reference}.err'
     params:
         index_prefix = 'reference/{reference}/blast_index/{reference}'
     conda:
@@ -180,8 +180,8 @@ rule blast__prepare_reference_index_for_protein:
         nin = protected('reference/{reference}/blast_index/{reference}.pin'),
         nsq = protected('reference/{reference}/blast_index/{reference}.psq')
     log:
-        out = 'reference/{reference}/blast_index/log/{reference.log}',
-        err = 'reference/{reference}/blast_index/log/{reference.err}'
+        out = 'reference/{reference}/blast_index/log/{reference}.log',
+        err = 'reference/{reference}/blast_index/log/{reference}.err'
     params:
         index_prefix = 'reference/{reference}/blast_index/{reference}'
     conda:
