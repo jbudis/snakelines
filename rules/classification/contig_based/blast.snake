@@ -176,9 +176,9 @@ rule blast__prepare_reference_index_for_protein:
     input:
         fa  = 'reference/{reference}/{reference}.fa'
     output:
-        nhr = protected('reference/{reference}/blast_index/{reference}.phr'),
-        nin = protected('reference/{reference}/blast_index/{reference}.pin'),
-        nsq = protected('reference/{reference}/blast_index/{reference}.psq')
+        phr = protected('reference/{reference}/blast_index/{reference}.phr'),
+        pin = protected('reference/{reference}/blast_index/{reference}.pin'),
+        psq = protected('reference/{reference}/blast_index/{reference}.psq')
     log:
         out = 'reference/{reference}/blast_index/log/{reference}.log',
         err = 'reference/{reference}/blast_index/log/{reference}.err'
