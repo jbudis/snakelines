@@ -8,14 +8,14 @@ rule hisat2__prepare_index:
     input:
         '{fadir}/{sequence}.fa'
     output:
-        '{fadir}/bowtie2_index/{sequence}.1.ht2',
-        '{fadir}/bowtie2_index/{sequence}.2.ht2',
-        '{fadir}/bowtie2_index/{sequence}.3.ht2',
-        '{fadir}/bowtie2_index/{sequence}.4.ht2',
-        '{fadir}/bowtie2_index/{sequence}.5.ht2',
-        '{fadir}/bowtie2_index/{sequence}.6.ht2',
-        '{fadir}/bowtie2_index/{sequence}.7.ht2',
-        '{fadir}/bowtie2_index/{sequence}.8.ht2',
+        '{fadir}/hisat2_index/{sequence}.1.ht2',
+        '{fadir}/hisat2_index/{sequence}.2.ht2',
+        '{fadir}/hisat2_index/{sequence}.3.ht2',
+        '{fadir}/hisat2_index/{sequence}.4.ht2',
+        '{fadir}/hisat2_index/{sequence}.5.ht2',
+        '{fadir}/hisat2_index/{sequence}.6.ht2',
+        '{fadir}/hisat2_index/{sequence}.7.ht2',
+        '{fadir}/hisat2_index/{sequence}.8.ht2',
     params:
         index = '{fadir}/hisat2_index/{sequence}'
     log:
