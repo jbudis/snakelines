@@ -81,3 +81,31 @@ For input preprocessed reads treated by Bisulfide Bismark finds the most similar
 - *bam_dir:* directory with the output bam file
 - *reference_dir:* directory with reference fasta, i.e. 'reference/{reference}'
 
+Hisat2 - Map Reads To Reference
+-----------------------------------
+
+For input preprocessed reads from RNA-seq hisat2 finds the most similar genomic region in the provided reference genome.
+The method accounts for specifics of RNA-seq read mapping, such as splice junctions.
+
+**Location**
+
+- *Filepath:* <SnakeLines_dir>/rules/mapping/mapper/hisat2.snake
+- *Rule name:* hisat2__map_reads_to_reference
+
+**Input(s):**
+
+- *r1:* gzipped fastq file with left reads, e.g. 'reads/%s/{sample}_R1.fastq.gz'
+- *r2:* gzipped fastq file with right reads, e.g. 'reads/%s/{sample}_R2.fastq.gz'
+- *index:* reference index (created by rule hisat2__prepare_index), e.g. 'reference/{reference}/hisat2_index/{reference}.1.bt2'
+- *ref:* reference genome, e.g. 'reference/{reference}/{reference}.fa'
+
+**Output(s):**
+
+- *bam:* mapped read in BAM file, e.g. 'mapping/{reference}/original/{sample}.bam'
+
+**Param(s):**
+
+- *index:* name of reference, technically filename's path prefix, e.g. 'reference/{reference}/hisat2_index/{reference}'
+- *additional:* additional params
+- *concordant:* only concordant reads
+

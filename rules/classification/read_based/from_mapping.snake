@@ -1,0 +1,24 @@
+from pysam import Samfile
+
+rule custom__convert_mapped_reads_for_krona:
+    """
+    Convert mapped files into standardised format suitable for generation of Krona reports
+    :input bam: Mapped post-processed reads in BAM format
+    :input bai: Index for BAM file
+    :input tax: Taxonomies for each reference sequence
+    :output krona: Tabular format suitable for Krona report generation
+    """
+    input:
+        bam      = 'mapping/{{reference}}/{map_type}/{{sample}}.bam'.format(map_type=pipeline.postprocessed_map_type),
+        bai      = 'mapping/{{reference}}/{map_type}/{{sample}}.bam.bai'.format(map_type=pipeline.postprocessed_map_type),
+        tax      = 'reference/{reference}/{reference}.tax'
+    output:
+        krona    = 'classification/{reference}/report/krona/individual/{sample}.krn'
+    run:
+        taxes = pd.read_csv(input.tax, sep='\t', index_col=0, header=None)[1].to_dict()
+        bam = Samfile(input.bam)
+
+        with open(output.krona, 'w') as out:
+            for stats in bam.get_index_statistics():
+                taxonomy = taxes[stats.contig].replace(';', '\t')
+                out.write('{}\t{}\n'.format(stats.mapped, taxonomy))

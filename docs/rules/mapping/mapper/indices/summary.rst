@@ -59,9 +59,31 @@ Generate mapping index that is utilized by Bowtie2 algorithm to map reads to a r
 
 **Output(s):**
 
-- *indecis:* 6 files with indeces. e.g '{fadir}/bowtie2_index/{sequence}.[1-4].bt2', '{fadir}/bowtie2_index/{sequence}.rev.[1,2].bt2'
+- *indices:* 6 files with indeces. e.g '{fadir}/bowtie2_index/{sequence}.[1-4].bt2', '{fadir}/bowtie2_index/{sequence}.rev.[1,2].bt2'
 
 **Param(s):**
 
 - *index:* name of output reference, technically filename's path prefix, e.g. '{fadir}/bowtie2_index/{sequence}'
+
+Hisat2 - Prepare Index
+--------------------------
+
+Generate mapping index that is utilized by hisat2 algorithm to map reads to a reference genome
+
+**Location**
+
+- *Filepath:* <SnakeLines_dir>/rules/mapping/mapper/indices/hisat2_index.snake
+- *Rule name:* hisat2__prepare_index
+
+**Input(s):**
+
+- *fa:* fasta reference genome
+
+**Output(s):**
+
+- *indices:* 6 files with indeces. e.g '{fadir}/hisat2_index/{sequence}.[1-4].bt2', '{fadir}/hisat2_index/{sequence}.rev.[1,2].bt2'
+
+**Param(s):**
+
+- *index:* name of output reference, technically filename's path prefix, e.g. '{fadir}/hisat2_index/{sequence}'
 
