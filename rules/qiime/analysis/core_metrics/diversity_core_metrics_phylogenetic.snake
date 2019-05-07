@@ -54,7 +54,7 @@ rule qiime__diversity_core_metrics_phylogenetic:
         int(config['threads'])
     shell:
         '''
-        rmdir {params.output_dir}
+        rm -rf {params.output_dir}
         min="cat {params.report_dir}/overview.html | egrep 'Minimum' | sed -E 's/[^0-9]*([0-9]*)[^0-9]*/\\1/'"
         min=$(eval $min)
         qiime diversity core-metrics-phylogenetic \
