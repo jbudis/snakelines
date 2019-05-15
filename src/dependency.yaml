@@ -89,7 +89,7 @@ mapping:
         quality_report:
             output:
                 quality_reports:
-                    from: expand('mapping/{sr.reference}/{map_type}/stats-wgs/samples/{sr.sample}/report.pdf',
+                    from: expand('mapping/{sr.reference}/{map_type}/stats-{sr.panel}/samples/{sr.sample}/report.pdf',
                                   sr=pipeline.sample_references, map_type=map_types_with_quality_report)
 
                     to:   expand('{report_dir}/{sr.sample}/mapping_quality/{map_type}-{sr.reference}.pdf',
@@ -97,12 +97,12 @@ mapping:
                                   sr=pipeline.sample_references, map_type=map_types_with_quality_report)
 
                 summary_report:
-                    from: expand('mapping/{reference}/{map_type}/stats-wgs/summary/report.pdf',
-                                  reference=multisample_references, map_type=map_types_with_quality_report)
+                    from: expand('mapping/{sr.reference}/{map_type}/stats-{sr.panel}/summary/report.pdf',
+                                  sr=multisample_references, map_type=map_types_with_quality_report)
 
-                    to:   expand('{report_dir}/_summary/mapping_quality/{map_type}-{reference}.pdf',
+                    to:   expand('{report_dir}/_summary/mapping_quality/{map_type}-{sr.reference}.pdf',
                                   report_dir=config['report_dir'],
-                                  reference=multisample_references, map_type=map_types_with_quality_report)
+                                  sr=multisample_references, map_type=map_types_with_quality_report)
 
             depends:
                 - mapping/mapper
@@ -124,10 +124,10 @@ variant:
     caller:
         output:
             variants:
-                from: expand('variant/{sr.reference}-wgs/original/{sr.sample}.vcf',
+                from: expand('variant/{sr.reference}-{sr.panel}/original/{sr.sample}.vcf',
                               sr=pipeline.sample_references, map_type=pipeline.postprocessed_map_type)
 
-                to:   expand('{report_dir}/{sr.sample}/variants-{sr.reference}.vcf',
+                to:   expand('{report_dir}/{sr.sample}/variants-{sr.reference}-{sr.panel}.vcf',
                               report_dir=config['report_dir'], sr=pipeline.sample_references)
         depends:
             - reads/preprocess
@@ -143,7 +143,7 @@ variant:
         summary:
             output:
                 report:
-                    from: expand('variant/{sr.reference}-wgs/original/report/{sr.sample}.pdf',
+                    from: expand('variant/{sr.reference}-{sr.panel}/original/report/{sr.sample}.pdf',
                                   sr=pipeline.sample_references)
 
                     to:   expand('{report_dir}/{sr.sample}/summary-{sr.reference}.pdf',

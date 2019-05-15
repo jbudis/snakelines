@@ -55,7 +55,7 @@ for import_file, method_config in import_files_in_config(config, rules_dir):
 map_types_with_quality_report = extract_from_config(config, ['mapping', 'report', 'quality_report', 'map_types'], [])
 
 # References with at least 2 samples
-multisample_references = [reference for reference in pipeline.references if len(pipeline.samples_for(reference)) > 1]
+multisample_references = [sr for sr in pipeline.sample_references if len(pipeline.samples_for(sr.reference)) > 1]
 
 # Find in configuration read preprocess types that should be generated
 preprocess = extract_from_config(config, ['reads', 'preprocess'], {})

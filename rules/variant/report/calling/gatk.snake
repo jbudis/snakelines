@@ -7,14 +7,14 @@ rule gatk__fix_vcf_header:
     :output vcf_index: Fixed VCF index.
     """
     input:
-        vcf = 'variant/{reference}-wgs/original/{sample}.vardict.vcf',
+        vcf = 'variant/{reference}-{panel}/original/{sample}.vardict.vcf',
         fasta = 'reference/{reference}/{reference}.fa'
     output:
-        vcf = 'variant/{reference}-wgs/original/{sample}.vcf',
-        vcf_index = 'variant/{reference}-wgs/original/{sample}.vcf.idx',
+        vcf = 'variant/{reference}-{panel}/original/{sample}.vcf',
+        vcf_index = 'variant/{reference}-{panel}/original/{sample}.vcf.idx',
     log:
-        out = 'variant/{reference}-wgs/original/log/{sample}.out',
-        err = 'variant/{reference}-wgs/original/log/{sample}.err',
+        out = 'variant/{reference}-{panel}/original/log/{sample}.out',
+        err = 'variant/{reference}-{panel}/original/log/{sample}.err',
     conda:
         config['snakelines_dir'] + '/enviroments/others_env.yaml'
     shell:
@@ -34,9 +34,9 @@ rule tabix__index_vcf:
     :output: tabix index of bgzipped VCF file
     """
     input:
-        '{path}/{filename}.vcf.gz'
+        '{path}/{filename}.vcf.bgz'
     output:
-        '{path}/{filename}.vcf.gz.tbi'
+        '{path}/{filename}.vcf.bgz.tbi'
     log:
         out = '{path}/log/{filename}_tabix.out',
         err = '{path}/log/{filename}_tabix.err'
@@ -55,13 +55,13 @@ rule picard__bed_to_interval_list:
     :output intervals: interval list
     """
     input:
-        bed      = 'reference/{reference}/annotation/wgs/regions.bed',
+        bed      = 'reference/{reference}/annotation/{panel}/regions.bed',
         seq_dict = 'reference/{reference}/{reference}.dict'
     output:
-        intervals = 'variant/{reference}-wgs/original/interval_list/{sample}.interval_list'
+        intervals = 'variant/{reference}-{panel}/original/interval_list/{sample}.interval_list'
     log:
-        out = 'variant/{reference}-wgs/original/interval_list/log/{sample}.out',
-        err = 'variant/{reference}-wgs/original/interval_list/log/{sample}.err'
+        out = 'variant/{reference}-{panel}/original/interval_list/log/{sample}.out',
+        err = 'variant/{reference}-{panel}/original/interval_list/log/{sample}.err'
     conda:
         config['snakelines_dir'] + '/enviroments/others_env.yaml'
     shell:
@@ -81,8 +81,8 @@ rule gatk__collect_variant_calling_metrics:
     GATK tool for generating
     :input vcf: called variants
     :input vcf_index: index of called variants
-    :input dbsnp: DBSNP in BGZF format.
-    :input dbsnp_index: DBSNP index of BGZF format.
+    :input dbsnp: DBSNP in BGZF format written by bgzip.
+    :input dbsnp_index: DBSNP tabix index.
     :input intervals: Genomic regions of interest.
     :output filename: Text file with summary of calling metrics.
     """
@@ -90,8 +90,8 @@ rule gatk__collect_variant_calling_metrics:
         vcf = 'variant/{reference}-{panel}/original/{sample}.vcf',
         vcf_index = 'variant/{reference}-{panel}/original/{sample}.vcf.idx',
 
-        dbsnp = 'reference/{reference}/dbsnp/dbsnp.vcf.gz',
-        dbsnp_index = 'reference/{reference}/dbsnp/dbsnp.vcf.gz.tbi',
+        dbsnp = 'reference/{reference}/variants/dbsnp.vcf.bgz',
+        dbsnp_index = 'reference/{reference}/variants/dbsnp.vcf.bgz.tbi',
 
         intervals = 'variant/{reference}-{panel}/original/interval_list/{sample}.interval_list'
     output:

@@ -76,7 +76,7 @@ rule fasta_summary__coverage:
     :output tsv: Mapping coverage in standardised unified format for fasta summary generation
     """
     input:
-        qualimap = '{indir}/mapping/stats-wgs/{name}/genome_results.txt',
+        qualimap = '{indir}/mapping/stats-{panel}/{name}/genome_results.txt',
     output:
         tsv      = '{indir}/annotation/{name}/attributes/coverage.tsv'
     run:
