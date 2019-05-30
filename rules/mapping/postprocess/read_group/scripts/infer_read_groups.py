@@ -4,7 +4,8 @@ from argparse import ArgumentParser
 from argparse import FileType
 
 parser = ArgumentParser(
-    description='Annotate reads with read groups infered from read ids. Script needs sample from single Illumina sequencing run')
+    description='Annotate reads with read groups infered from read ids. '
+                'Script needs sample from single Illumina sequencing run')
 parser.add_argument('--skip-merged', action='store_true', help='Skip reads from merged files, keeping only single sample. Otherwise throw error')
 parser.add_argument('sid', help='Sample unique identifier')
 parser.add_argument('insam', type=FileType('r'), default='-')
