@@ -1,15 +1,64 @@
-sample_pattern: dobv_003
-report_dir: public/01-fast_virome_explorer
+samples:                             # List of sample categories to be analysed
+    - name: .*                       # Regex expression of sample names to be analysed (reads/original/example.*_R1.fastq.gz)
+      reference: phagebook              # Reference genome or database, important to create kallisto index for used reference
 
-trim:                                   # Pre-process of reads, eliminate low quality sequences
-    read_type: original                 # Location of fastq files, would be searched in reads/<read_type>/*_R1.fastq.gz
-    crop: 500                           # Cut the read to a specified length
-    quality: 20                         # Cut read, once the average quality within the 5bp window falls below a threshold
-    headcrop: 20                         # Cut the specified number of bases from the start of the read
-    minlen: 35                          # Drop the read if it is below a specified length
-    temporary: True                     # Trimmed fastq files are deleted after all rules that use it as an input are completed
+report_dir: report/public/01-viral   # Generated reports and essential output files would be stored there
+threads: 16                          # Number of threads to use in analysis
 
-fast_virome_explorer:
-    reference: refseq
-    read_type: trimmed
-    kmer_size: 31
+reads:                               # Prepare reads and quality reports for downstream analysis
+    preprocess:                      # Pre-process of reads, eliminate sequencing artifacts, contamination ...
+        trimmed:                     # Remove low quality parts of reads
+            method: trimmomatic      # Supported values: trimmomatic
+            temporary: False         # If True, generated files would be removed after successful analysis
+            crop: 500                # Maximal number of bases in read to keep. Longer reads would be truncated.
+            quality: 20              # Minimal average quality of read bases to keep (inside sliding window of length 5)
+            headcrop: 20             # Number of bases to remove from the start of read
+            minlen: 35               # Minimal length of trimmed read. Shorter reads would be removed.
+#        decontaminated:            # Eliminate fragments from known artificial source, e.g. contamination by human
+#            method: bowtie2        # Supported values: bowtie2
+#            temporary: False       # If True, generated files would be removed after successful analysis
+#            references:            # List of reference genomes
+#                - mhv
+#            keep: True             # Keep reads mapped to references (True) or remove them as contamination (False)
+        deduplicated:                # Remove fragments with the same sequence (PCR duplicated)
+            method: fastuniq         # Supported values: fastuniq
+            temporary: False         # If True, generated files would be removed after successful analysis
+
+    report:                         # Summary reports of read characteristics to assess their quality
+        quality_report:             # HTML summary report of read quality
+            method: fastqc          # Supported values: fastqc
+            read_types:             # List of preprocess steps for quality reports (supported values: original, trimmed, decontaminated, deduplicated)
+                - original
+                - trimmed
+#                - decontaminated
+                - deduplicated
+
+classification:
+
+    read_based:                      # viral identification from the reads
+        method: fast_virome_explorer # Tool for viral identification from the read, supported values: fast_virome_explorer
+        read_type: deduplicated      # Type of reads use as input for fast_virome explorer
+        kmer_size: 31                # Size of analyzed k-mers (lower size = higher senzitivity and lower senzitivity of method and vice-versa)
+        count_type: tpm              # Supported metrics: read_count, tpm (transkripts per milion)
+        ratio_of_coverages: 0.02     # based on the ratio of the observed extent of genome coverage with the expected extent of genome coverage, if a virus has ratio_of_coverage < {set_value}, FastViromeExplorer discards the virus (default value is 0.3)
+        genome_coverage: 0.024       # observed extent of genome coverage by the mapped reads, if a virus has genome_coverage < {set_value}, FastViromeExplorer discards the virus (default value is 0.1, which means coverage of 10% of particular genome)
+        mapped_reads: 5              # the minimal number of mapped reads to the genome, if a virus has mapped_reads < {set_value}, FastViromeExplorer discards the virus (default value is 10)
+    report:                          # Summary reports of classification results
+        taxonomic_counts:            # Number of reads mapped to each taxonomic unit
+            pieplot:                 # Visualisation in pie plot form
+                method: krona        # Supported values: krona
+
+            count_table:             # Summary table with number of reads per taxonomic unit
+                method: custom       # Supported values: custom
+                tax_levels:          # List of taxonomic levels for which tables would be generated
+                - class
+                - genus
+
+            barplot:                 # Visualisation in bar plot form
+                method: custom       # Supported values: custom
+                formats:             # Output format of the resulting images (supported values: png, svg)
+                - png
+                - svg
+                tax_levels:          # List of taxonomic levels for which plots would be generated (supporter values: class, genus)
+                - class
+                - genus

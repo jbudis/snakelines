@@ -1,6 +1,0 @@
-sample-id	culture	environment	seqrun
-#q2:types	categorical	categorical	categorical
-wt-A-NOR	wild_type	normal	A
-wt-B-NOR	wild_type	normal	B
-dbl2-A-NOR	dbl2_mutant	normal	A
-dbl2-B-NOR	dbl2_mutant	normal	B

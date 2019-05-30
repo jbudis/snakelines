@@ -1,0 +1,59 @@
+samples:                                  # List of sample categories to be analysed
+    - name: example.*                     # Regex expression of sample names to be analysed (reads/original/example.*_R1.fastq.gz)
+      reference: mhv                      # Reference genome for reads in the category (reference/mhv/mhv.fa)
+
+report_dir: report/public/01-mapping_bwa  # Generated reports and essential output files would be stored there
+threads: 16                               # Number of threads to use in analysis
+
+reads:                              # Prepare reads and quality reports for downstream analysis
+    preprocess:                     # Pre-process of reads, eliminate sequencing artifacts, contamination ...
+        trimmed:                    # Remove low quality parts of reads
+            method: trimmomatic     # Supported values: trimmomatic
+            temporary: False        # If True, generated files would be removed after successful analysis
+            crop: 500               # Maximal number of bases in read to keep. Longer reads would be truncated.
+            quality: 20             # Minimal average quality of read bases to keep (inside sliding window of length 5)
+            headcrop: 20            # Number of bases to remove from the start of read
+            minlen: 35              # Minimal length of trimmed read. Shorter reads would be removed.
+
+        decontaminated:             # Eliminate fragments from known artificial source, e.g. contamination by human
+            method: bowtie2         # Supported values: bowtie2
+            temporary: False        # If True, generated files would be removed after successful analysis
+            references:             # List of reference genomes
+                - mhv
+            keep: True              # Keep reads mapped to references (True) or remove them as contamination (False)
+
+        deduplicated:               # Remove fragments with the same sequence (PCR duplicated)
+            method: fastuniq        # Supported values: fastuniq
+            temporary: False        # If True, generated files would be removed after successful analysis
+
+    report:                         # Summary reports of read characteristics to assess their quality
+        quality_report:             # HTML summary report of read quality
+            method: fastqc          # Supported values: fastqc
+            read_types:             # List of preprocess steps for quality reports
+                - original
+                - trimmed
+                - decontaminated
+                - deduplicated
+
+mapping:                            # Find the most similar genomic region to reads in reference (mapping process)
+    mapper:                         # Method for mapping
+        method: bwa                 # Supported values: bowtie2, bwa
+        params: -w 100              # Additional parameters for mapping
+        only_concordant: False      # Keep only reads with consistently mapped reads from both paired-ends
+        temporary: True
+
+    index:                          # Generate .bai index for mapped reads in .bam files
+        method: samtools            # Supported values: samtools
+
+    postprocess:                    # Successive steps to refine mapped reads
+        sorted:
+            method: samtools
+            temporary: False
+        deduplicated:               # Mark duplicated reads (PCR duplicated)
+            method: picard          # Supported values: picard
+
+    report:                         # Summary reports of mapping process and results
+        quality_report:             # HTML summary with quality of mappings
+            method: qualimap        # Supported values: qualimap
+            map_types:              # List of post-process steps for quality reports
+                - deduplicated
