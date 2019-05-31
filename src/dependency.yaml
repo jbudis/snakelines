@@ -78,12 +78,30 @@ mapping:
                                   sr=pipeline.sample_references)
         sorted:
             output:
-                sorted: expand('mapping/{sr.reference}/sorted/{sr.sample}.bam',
-                                sr=pipeline.sample_references)
+                sorted: expand('mapping/{sr.reference}/sorted/{sr.sample}.bam', sr=pipeline.sample_references)
+        filtered:
+            output:
+                read_group: expand('mapping/{sr.reference}/filtered/{sr.sample}.bam', sr=pipeline.sample_references)
+        read_group:
+            output:
+                read_group: expand('mapping/{sr.reference}/read_group/{sr.sample}.bam', sr=pipeline.sample_references)
+        realigned:
+            output:
+                read_group: expand('mapping/{sr.reference}/realigned/{sr.sample}.bam', sr=pipeline.sample_references)
         deduplicated:
             output:
-                deduplicated: expand('mapping/{sr.reference}/deduplicated/{sr.sample}.bam',
-                                      sr=pipeline.sample_references)
+                deduplicated: expand('mapping/{sr.reference}/deduplicated/{sr.sample}.bam', sr=pipeline.sample_references)
+        deoverlapped:
+            output:
+                deoverlapped: expand('mapping/{sr.reference}/deoverlapped/{sr.sample}.bam', sr=pipeline.sample_references)
+
+    merged:
+        output:
+            merged_bam: expand('mapping/{reference}/merged/merged.bam',
+                                reference=pipeline.references)
+
+            merged_bai: expand('mapping/{reference}/merged/merged.bam.bai',
+                                reference=pipeline.references)
 
     report:
         quality_report:

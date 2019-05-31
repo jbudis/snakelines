@@ -18,7 +18,7 @@ rule bowtie2__map_reads_to_reference:
         index = 'reference/{reference}/bowtie2_index/{reference}.1.bt2',
         ref   = 'reference/{reference}/{reference}.fa'
     output:
-        bam   = 'mapping/{reference}/original/{sample}.bam'
+        bam   = configured_temp('mapping/{reference}/original/{sample}.bam')
     log:
         err   = 'mapping/{reference}/original/log/{sample}.bowtie2.map_stats'
     params:

@@ -61,10 +61,35 @@ Rules
       .. toctree::
         mapping/postprocess/deduplicated/summary.rst
 
+    - Realigned
+
+      .. toctree::
+        mapping/postprocess/realigned/summary.rst
+
+    - Read Group
+
+      .. toctree::
+        mapping/postprocess/read_group/summary.rst
+
     - Sorted
 
       .. toctree::
         mapping/postprocess/sorted/summary.rst
+
+    - Deoverlapped
+
+      .. toctree::
+        mapping/postprocess/deoverlapped/summary.rst
+
+    - Filtered
+
+      .. toctree::
+        mapping/postprocess/filtered/summary.rst
+
+  - Merged
+
+    .. toctree::
+      mapping/merged/summary.rst
 
   - Mapper
 
