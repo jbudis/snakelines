@@ -36,14 +36,15 @@ rule vardict__prepare_bed_file:
         cut -f 1-4 {input.bed} > {output.bed}
         """
 
-# TODO variants should ve stored in original/ folder
+# TODO variants should be stored in "original" folder
+# TODO replace filtered by map_type
 rule vardict__call_germline_variants:
     """
     Identify small variation (SNP and indels) from the mapped reads.
     """
     input:
-        bam      = 'mapping/{reference}/deduplicated/{sample}.bam',
-        bai      = 'mapping/{reference}/deduplicated/{sample}.bam.bai',
+        bam      = 'mapping/{{reference}}/{map_type}/{{sample}}.bam'.format(map_type=pipeline.postprocessed_map_type),
+        bai      = 'mapping/{reference}/filtered/{sample}.bam.bai',
         bed      = 'reference/{reference}/annotation/{panel}/regions.vardict.bed',
         reffasta = 'reference/{reference}/{reference}.fa',
         reffaidx = 'reference/{reference}/{reference}.fa.fai'

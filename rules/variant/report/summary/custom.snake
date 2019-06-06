@@ -23,8 +23,8 @@ rule custom__summary_report:
             orientation=[1,2],
             read_type=pipeline.preprocessed_read_type,
         ),
-        qualimap_txt = 'mapping/{reference}/deduplicated/stats-{panel}/samples/{sample}/genome_results.txt',
-        qualimap_html = 'mapping/{reference}/deduplicated/stats-{panel}/samples/{sample}/qualimapReport.html',
+        qualimap_txt = 'mapping/{{reference}}/{map_type}/stats-{{panel}}/samples/{{sample}}/genome_results.txt'.format(map_type=pipeline.postprocessed_map_type),
+        qualimap_html = 'mapping/{{reference}}/{map_type}/stats-{{panel}}/samples/{{sample}}/qualimapReport.html'.format(map_type=pipeline.postprocessed_map_type),
         calling_stats = 'variant/{reference}-{panel}/original/calling_metrics/{sample}.variant_calling_summary_metrics'
     output:
         xml = 'variant/{reference}-{panel}/original/report/{sample}.xml',
