@@ -44,7 +44,7 @@ rule vardict__call_germline_variants:
     """
     input:
         bam      = 'mapping/{{reference}}/{map_type}/{{sample}}.bam'.format(map_type=pipeline.postprocessed_map_type),
-        bai      = 'mapping/{reference}/filtered/{sample}.bam.bai',
+        bai      = 'mapping/{{reference}}/{map_type}/{{sample}}.bam.bai'.format(map_type=pipeline.postprocessed_map_type),
         bed      = 'reference/{reference}/annotation/{panel}/regions.vardict.bed',
         reffasta = 'reference/{reference}/{reference}.fa',
         reffaidx = 'reference/{reference}/{reference}.fa.fai'
