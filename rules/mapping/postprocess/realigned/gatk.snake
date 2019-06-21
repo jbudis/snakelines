@@ -1,0 +1,72 @@
+include: config['snakelines_dir'] + '/rules/reference/index/dict/picard.snake'
+include: config['snakelines_dir'] + '/rules/reference/index/fai/samtools.snake'
+include: config['snakelines_dir'] + '/rules/mapping/index/samtools.snake'
+
+rule gatk__identify_regions_to_realign:
+    """
+    Find places on genomes with indels for realignment.
+    :input ref: Reference genomic sequences in FASTA format
+    :input fai: Reference index for faster sequence retrieval
+    :input dict: Reference index for faster sequence retrieval
+    :input bam: Mapped reads for realignment in BAM format
+    :input bam: Mapped reads index for faster alignment retrieval
+    :output intervals: Regions that need to be realigned
+    """
+    input:
+        ref  = 'reference/{reference}/{reference}.fa',
+        fai  = 'reference/{reference}/{reference}.fa.fai',
+        dict = 'reference/{reference}/{reference}.dict',
+        bam  = 'mapping/{{reference}}/{map_type}/{{sample}}.bam'.format(map_type=method_config['input_map_type']),
+        bai  = 'mapping/{{reference}}/{map_type}/{{sample}}.bam.bai'.format(map_type=method_config['input_map_type'])
+    output:
+        intervals = configured_temp('mapping/{reference}/realigned/{sample}.intervals')
+    log:
+        out = 'mapping/{reference}/realigned/log/{sample}.intervals.log',
+        err = 'mapping/{reference}/realigned/log/{sample}.intervals.err'
+    threads:
+        int(config['threads'])
+    conda:
+        config['snakelines_dir'] + '/enviroments/others_env.yaml'
+    shell:
+        '''
+        gatk3 RealignerTargetCreator \
+            -R {input.ref} \
+            -nt {threads} \
+            -I {input.bam} \
+            -o {output.intervals} \
+        >  {log.out} \
+        2> {log.err}
+        '''
+
+rule gatk__realign_regions:
+    """
+    Realign regions locally in places with indels that are problematic for standard mappers.
+    :input ref: Reference genomic sequences in FASTA format
+    :input bam: Mapped reads for realignment in BAM format
+    :input intervals: Regions that need to be realigned
+    :output bam: Realigned reads in BAM format
+    """
+    input:
+        ref = 'reference/{reference}/{reference}.fa',
+        bam = 'mapping/{{reference}}/{map_type}/{{sample}}.bam'.format(map_type=method_config['input_map_type']),
+        intervals = 'mapping/{reference}/realigned/{sample}.intervals'
+    output:
+        bam = configured_temp('mapping/{reference}/realigned/{sample}.bam')
+    log:
+        out = 'mapping/{reference}/realigned/log/{sample}.intervals.log',
+        err = 'mapping/{reference}/realigned/log/{sample}.intervals.err'
+    threads:
+        int(config['threads'])
+    conda:
+        config['snakelines_dir'] + '/enviroments/others_env.yaml'
+    shell:
+        '''
+        gatk3 IndelRealigner \
+            -R {input.ref} \
+            -I {input.bam} \
+            -targetIntervals {input.intervals} \
+            -o {output.bam} \
+            --disable_bam_indexing \
+        >  {log.out} \
+        2> {log.err}
+        '''

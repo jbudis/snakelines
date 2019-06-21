@@ -1,0 +1,87 @@
+import subprocess as proc
+
+rule custom__remove_overlapping_reads:
+    """
+    Removes overlapping mapped reads, keeping only a single copy.
+    This ensures that the each base is covered with at most one read.
+    The tool is suitable for specific use cases.
+    :input bam: Mapped reads in bam format
+    :input bai: Index to mapped reads for enable fast read retrieval from desired genomic region
+    :output bam: Mapped reads without overlapping reads.
+    """
+    input:
+        bam  = '{{mapper}}/{{reference}}/{map_type}/{{sample}}.bam'.format(map_type=method_config['input_map_type']),
+        bai  = '{{mapper}}/{{reference}}/{map_type}/{{sample}}.bam.bai'.format(map_type=method_config['input_map_type'])
+    output:
+        bam  = configured_temp('{mapper}/{reference}/deoverlapped/{sample}.bam')
+    params:
+        tmp_dir = config['tmp_dir']
+    log:
+        err  = '{mapper}/{reference}/deoverlapped/log/{sample}.err',
+    conda:
+        config['snakelines_dir'] + '/enviroments/others_env.yaml'
+    run:
+        log_err = open(log.err, 'w')
+
+        def get_alignment_len(cigar):
+            align_len = 0
+            digits = ''
+            for code in cigar:
+                if code.isdigit():
+                    digits += code
+                else:
+                    bases = int(digits)
+                    if code == 'M':
+                        align_len += bases
+                    elif code == 'D':
+                        align_len += bases
+                    elif code == 'I':
+                        pass
+                    else:
+                        log_err.write('Unknown cigar %s\n' % cigar)
+                    digits = ''
+
+            return bases - 1
+
+        last_end, last_chrom = 0, ''
+        sam = proc.Popen('samtools view -h {input}'.format(input=input.bam).split(),
+                         stdout=proc.PIPE, stderr=log_err)
+
+        out = proc.Popen('samtools view -bS -o {output} -'.format(output=output.bam).split(),
+                         stdin=proc.PIPE, stderr=log_err)
+
+        read_b = sam.stdout.readline()
+        read = read_b.decode("utf-8")
+        i = 0
+        while read:
+
+            # Header
+            if read.startswith('@'):
+                out.stdin.write(read_b)
+
+            # Reads
+            else:
+                items = read.split()
+                chrom, start, cigar = items[2], int(items[3]), items[5]
+                end = start + get_alignment_len(cigar)
+                if chrom != last_chrom:
+                    last_end, last_chrom = 0, chrom
+                    overlapped = False
+                else:
+                    overlapped = start <= last_end
+
+                if not overlapped:
+                    last_end = end
+                    out.stdin.write(read_b)
+
+            read_b = sam.stdout.readline()
+            read = read_b.decode("utf-8")
+
+            i += 1
+            if i % 1000 == 0:
+                out.stdin.flush()
+
+        out.stdin.flush()
+        out.stdin.close()
+        out.wait()
+        log_err.close()

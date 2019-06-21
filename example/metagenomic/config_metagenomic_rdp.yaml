@@ -1,0 +1,61 @@
+samples:                            # List of sample categories to be analysed
+    - name: .*-16S                  # Regex expression of sample names to be analysed (reads/original/.*-16S_R1.fastq.gz)
+      reference: 16srrna            # RDP classifier Supported values: 16srrna, fungallsu, fungalits_unite, fungalits_warcup
+      prebuilt: True                # Reference sequence reference/{reference}/{reference}.fa does not exist, but all required indices are already prepared
+    - name: .*-ITS                  # Regex expression of sample names to be analysed (reads/original/.*-ITS_R1.fastq.gz)
+      reference: fungalits_unite    # RDP classifier Supported values: 16srrna, fungallsu, fungalits_unite, fungalits_warcup
+      prebuilt: True                # Reference sequence reference/{reference}/{reference}.fa does not exist, but all required indices are already prepared
+
+report_dir: report/public/01-classify_rdp  # Generated reports and essential output files would be stored there
+threads: 16                         # Number of threads to use in analysis
+
+reads:                              # Prepare reads and quality reports for downstream analysis
+    preprocess:                     # Pre-process of reads, eliminate sequencing artifacts, contamination ...
+
+        subsampled:
+            method: seqtk
+            n_reads: 100
+
+        trimmed:                    # Remove low quality parts of reads
+            method: trimmomatic     # Supported values: trimmomatic
+            temporary: False        # If True, generated files would be removed after successful analysis
+            crop: 500               # Maximal number of bases in read to keep. Longer reads would be truncated.
+            quality: 20             # Minimal average quality of read bases to keep (inside sliding window of length 5)
+            headcrop: 20            # Number of bases to remove from the start of read
+            minlen: 35              # Minimal length of trimmed read. Shorter reads would be removed.
+
+        joined:                     # Join paired reads into single end reads based on sequence overlap
+            method: pear            # Supported values: pear
+            n_ambiguous_bases: 20   # Number of N bases between two reads without overlap
+
+    report:                         # Summary reports of read characteristics to assess their quality
+        quality_report:             # HTML summary report of read quality
+            method: fastqc          # Supported values: fastqc
+            read_types:             # List of preprocess steps for quality reports
+                - original
+                - trimmed
+
+classification:                     # Identify genomic source of sequenced reads
+    read_based:                     # Find homologue sequences by comparing reads to reference sequences
+        method: rdp                 # Supported values: metaxa2, rdp
+        confidence: 0.8             # Reliability cutoff for taxonomic classification
+
+    report:                         # Summary reports of classification results
+        taxonomic_counts:           # Number of reads mapped to each taxonomic unit
+            pieplot:                # Visualisation in pie plot form
+                method: krona       # Supported values: krona
+
+            count_table:            # Summary table with number of reads per taxonomic unit
+                method: custom      # Supported values: custom
+                tax_levels:         # List of taxonomic levels for which tables would be generated
+                    - class
+                    - genus
+
+            barplot:                # Visualisation in bar plot form
+                method: custom      # Supported values: custom
+                formats:            # Output format of the resulting images
+                    - png
+                    - svg
+                tax_levels:         # List of taxonomic levels for which plots would be generated
+                    - class
+                    - genus

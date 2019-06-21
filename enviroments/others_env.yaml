@@ -7,6 +7,7 @@ channels:
 - moustik
 - rsmulktis
 dependencies:
+- bamtools=2.4.1
 - bandage=0.8.1
 - bedtools=2.26.0
 - bismark=0.20.0
@@ -41,6 +42,6 @@ dependencies:
 - vardict=2017.04.18
 - vardict-java=1.5.1
 - varscan=2.4.3
-- fast-virome-explorer=1.1.0
+- fast-virome-explorer=1.1.0.p2
 - r-virfinder=1.1
 - rdp_classifier=2.2

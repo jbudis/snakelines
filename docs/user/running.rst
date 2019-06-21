@@ -24,16 +24,16 @@ Snakelines requires several Python3 modules to be installed prior to Snakelines.
 Note that Snakelines requires specific versions of these modules.
 List of required Python3 modules:
 
-* oyaml=0.7
-* pandas=0.19.2
-* biopython=1.72
-* seaborn=0.9.0
-* bs4=0.0.1
-* weasyprint=0.3
-* pysam=0.15.1
-* openpyxl=2.5.12
-* scikit-learn=0.18
-* tk=3.6.7-1
+* oyaml==0.7
+* pandas==0.19.2
+* biopython==1.72
+* seaborn==0.9.0
+* bs4==0.0.1
+* weasyprint==0.3
+* pysam==0.15.1
+* openpyxl==2.5.12
+* scikit-learn==0.18
+* tk==3.6.7-1
 
 Snakelines will be later shipped as a Conda package in Anaconda repository.
 

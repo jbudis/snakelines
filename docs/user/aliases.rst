@@ -19,14 +19,19 @@ Edit your ~/.bash_aliases file, to load aliases at login to the system.
 
    vim ~/.bash_aliases
 
-Add aliases for using pipelines locally
+Add aliases for using pipelines locally. You can set up using conda with `USE_CONDA` variable and location for downloaded tools from Anaconda repository.
 
 .. code-block:: bash
 
    THREADS_LOCAL=4     # Number of used threads, when running pipelines locally
    SNAKELINES_DIR=/data/snakelines/$USER   # Path to snakelines source files
+   USE_CONDA=true
+   CONDA_DIR=/data/snakelines/snakemake_repos
+   if [ "USE_CONDA" = true ] ; then
+     alias basesnake='snakemake -d `pwd` --jobname {rulename}.{jobid} --reason --printshellcmds --snakefile $SNAKELINES_DIR/snakelines.snake' --use-conda --conda-prefix=$CONDA_DIR ; else
+     alias basesnake='snakemake -d `pwd` --jobname {rulename}.{jobid} --reason --printshellcmds --snakefile $SNAKELINES_DIR/snakelines.snake'
+   fi
 
-   alias basesnake='snakemake -d `pwd` --jobname {rulename}.{jobid} --reason --printshellcmds --snakefile $SNAKELINES_DIR/snakelines.snake'
    alias snake='basesnake --config threads=$THREADS_LOCAL --cores $THREADS_LOCAL'
    alias dsnake='basesnake --config threads=$THREADS_LOCAL --dryrun'
 
