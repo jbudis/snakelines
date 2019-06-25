@@ -1,3 +1,4 @@
+include: config['snakelines_dir'] + '/rules/reference/annotation/regions.snake'
 include: config['snakelines_dir'] + '/rules/mapping/index/samtools.snake'
 include: config['snakelines_dir'] + '/rules/reference/index/fai/samtools.snake'
 
@@ -37,7 +38,6 @@ rule vardict__prepare_bed_file:
         """
 
 # TODO variants should be stored in "original" folder
-# TODO replace filtered by map_type
 rule vardict__call_germline_variants:
     """
     Identify small variation (SNP and indels) from the mapped reads.

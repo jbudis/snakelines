@@ -47,35 +47,6 @@ rule tabix__index_vcf:
         tabix -p vcf {input} 1>{log.out} 2>{log.err}
         """
 
-rule picard__bed_to_interval_list:
-    """
-    Conversion of BED file to GATK specific interval_list.
-    :input bed: BED file
-    :input seq_dict: sequence dictionary
-    :output intervals: interval list
-    """
-    input:
-        bed      = 'reference/{reference}/annotation/{panel}/regions.bed',
-        seq_dict = 'reference/{reference}/{reference}.dict'
-    output:
-        intervals = 'variant/{reference}-{panel}/original/interval_list/{sample}.interval_list'
-    log:
-        out = 'variant/{reference}-{panel}/original/interval_list/log/{sample}.out',
-        err = 'variant/{reference}-{panel}/original/interval_list/log/{sample}.err'
-    conda:
-        config['snakelines_dir'] + '/enviroments/others_env.yaml'
-    shell:
-        """
-        picard BedToIntervalList \
-            INPUT={input.bed} \
-            SEQUENCE_DICTIONARY={input.seq_dict} \
-            OUTPUT={output.intervals} \
-            SORT=true \
-            UNIQUE=true \
-            1> {log.out} \
-            2> {log.err}
-        """
-
 rule gatk__collect_variant_calling_metrics:
     """
     GATK tool for generating
@@ -89,11 +60,9 @@ rule gatk__collect_variant_calling_metrics:
     input:
         vcf = 'variant/{reference}-{panel}/original/{sample}.vcf',
         vcf_index = 'variant/{reference}-{panel}/original/{sample}.vcf.idx',
-
         dbsnp = 'reference/{reference}/variants/dbsnp.vcf.bgz',
         dbsnp_index = 'reference/{reference}/variants/dbsnp.vcf.bgz.tbi',
-
-        intervals = 'variant/{reference}-{panel}/original/interval_list/{sample}.interval_list'
+        intervals = 'reference/{reference}/annotation/{panel}/regions.interval_list',
     output:
         filename = 'variant/{reference}-{panel}/original/calling_metrics/{sample}.variant_calling_summary_metrics'
     log:

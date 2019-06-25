@@ -5,11 +5,6 @@ samples:                             # List of sample categories to be analysed
 report_dir: report/public/01-variant # Generated reports and essential output files would be stored there
 threads: 16                          # Number of threads to use in analysis
 
-reference:
-    index:
-        dict:
-            method: picard
-
 reads:                              # Prepare reads and quality reports for downstream analysis
     preprocess:                     # Pre-process of reads, eliminate sequencing artifacts, contamination ...
 
