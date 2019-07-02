@@ -44,8 +44,10 @@ classification:                     # Identify genomic source of sequenced reads
 
     report:
         transcripts:
+
             count_table:               # Summary table with number of reads per transcript
                 method: custom         # Supported values: custom
+
             html_table:                # Summary HTML table with results of differential expressions
                 method: custom         # Supported values: custom
                 annotation:            # Annotate with attributes from external sources
@@ -54,6 +56,10 @@ classification:                     # Identify genomic source of sequenced reads
                         - link         # Annotate with attribute link
                     - source: go       # Annotate with attributes from reference/{reference}/annotation.transcripts/go/attributes.tsv
                                        # Annotate with all attributes since explicit attributes are not defined
+
+            revigo:                    # GO annotation terms in format suitable for visualisation on the ReviGO website (http://revigo.irb.hr/)
+                method: custom         # Supported values: custom
+
 
             pca:
                 method: sklearn     # Supported values: sklearn

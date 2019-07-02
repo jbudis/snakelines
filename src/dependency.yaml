@@ -191,6 +191,17 @@ classification:
                 depends:
                     - classification/differential_analysis
 
+            revigo:
+                output:
+                    revigo_format:
+                        from: expand('classification/{reference}/report/comparison/significant.revigo.tsv',
+                                      reference=pipeline.references)
+
+                        to:   expand('{report_dir}/{reference}/comparison/significant.revigo.tsv',
+                                      report_dir=config['report_dir'], reference=pipeline.references)
+                depends:
+                    - classification/differential_analysis
+
             pca:
                 output:
                     images:

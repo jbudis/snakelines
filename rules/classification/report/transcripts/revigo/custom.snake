@@ -1,0 +1,22 @@
+import pandas as pd
+pd.set_option('display.max_colwidth', 1000000)
+pd.options.display.float_format = '{:e}'.format
+
+rule custom__export_de_genes_for_revigo:
+    """
+    Export differentially expressed genes and their GO annotations in format suitable for visualization
+    in the Revigo webpage (http://revigo.irb.hr/)
+    :input des: TSV table with DE genes
+    :input gos: Annotation of genes - TSV file with columns id and external_id
+    """
+    input:
+        des    = 'classification/{reference}/report/comparison/significant.tsv',
+        gos    = 'reference/{reference}/annotation.transcripts/go/attributes.tsv'
+    output:
+        revigo = 'classification/{reference}/report/comparison/significant.revigo.tsv'
+    run:
+        des = pd.read_csv(input.des, sep='\t', index_col='Row.names')
+        gos = pd.read_csv(input.gos, sep='\t', index_col=0)
+        merged = des.merge(gos, left_index=True, right_index=True, how='inner')
+        merged[['external_id', 'PValue']].to_csv(output.revigo, sep='\t', index=None, header=None)
+

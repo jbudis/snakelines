@@ -174,6 +174,11 @@ Rules
         .. toctree::
           classification/report/transcripts/pca/summary.rst
 
+      - Revigo
+
+        .. toctree::
+          classification/report/transcripts/revigo/summary.rst
+
       - Count Table
 
         .. toctree::
