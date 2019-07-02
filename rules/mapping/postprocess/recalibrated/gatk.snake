@@ -1,0 +1,59 @@
+include: config['snakelines_dir'] + '/rules/reference/index/fai/samtools.snake'
+include: config['snakelines_dir'] + '/rules/mapping/index/samtools.snake'
+
+rule gatk__recalibrate:
+    """
+        Generates recalibration table for Base Quality Score Recalibration (BQSR).
+    """
+    input:
+        bam         = 'mapping/{{reference}}/{map_type}/{{sample}}.bam'.format(map_type=method_config['input_map_type']),
+        bai         = 'mapping/{{reference}}/{map_type}/{{sample}}.bam.bai'.format(map_type=method_config['input_map_type']),
+        fasta       = 'reference/{reference}/{reference}.fa',
+        fai         = 'reference/{reference}/{reference}.fa.fai',
+        dbsnp       = 'reference/{reference}/variants/dbsnp.vcf.bgz',
+        dbsnp_index = 'reference/{reference}/variants/dbsnp.vcf.bgz.tbi',
+    output:
+        table = 'mapping/{reference}/recalibrated/{sample}.table'
+    log:
+        out = 'mapping/{reference}/recalibrated/log/{sample}.table.out',
+        err = 'mapping/{reference}/recalibrated/log/{sample}.table.err'
+    threads:
+        int(config['threads'])
+    shell:
+        """
+        gatk BaseRecalibrator \
+            --input {input.bam} \
+            --reference {input.fasta} \
+            --known-sites {input.dbsnp} \
+            --output {output.table} \
+        1> {log.out} \
+        2> {log.err}
+        """
+
+rule gatk__apply_bqsr:
+    """
+        Apply base quality score recalibration.
+    """
+    input:
+        bam     = 'mapping/{{reference}}/{map_type}/{{sample}}.bam'.format(map_type=method_config['input_map_type']),
+        bai     = 'mapping/{{reference}}/{map_type}/{{sample}}.bam.bai'.format(map_type=method_config['input_map_type']),
+        fasta   = 'reference/{reference}/{reference}.fa',
+        fai     = 'reference/{reference}/{reference}.fa.fai',
+        table   = 'mapping/{reference}/recalibrated/{sample}.table'
+    output:
+        bam = configured_temp('mapping/{reference}/recalibrated/{sample}.bam')
+    log:
+        out = 'mapping/{reference}/recalibrated/log/{sample}.bam.out',
+        err = 'mapping/{reference}/recalibrated/log/{sample}.bam.err'
+    threads:
+        int(config['threads'])
+    shell:
+        """
+        gatk ApplyBQSR \
+            --input {input.bam} \
+            --reference {input.fasta} \
+            --bqsr-recal-file {input.table} \
+            --output {output.bam}
+        1> {log.out} \
+        2> {log.err}
+        """

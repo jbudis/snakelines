@@ -53,8 +53,8 @@ rule gatk__realign_regions:
     output:
         bam = configured_temp('mapping/{reference}/realigned/{sample}.bam')
     log:
-        out = 'mapping/{reference}/realigned/log/{sample}.intervals.log',
-        err = 'mapping/{reference}/realigned/log/{sample}.intervals.err'
+        out = 'mapping/{reference}/realigned/log/{sample}.bam.log',
+        err = 'mapping/{reference}/realigned/log/{sample}.bam.err'
     threads:
         int(config['threads'])
     conda:

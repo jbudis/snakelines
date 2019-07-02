@@ -94,6 +94,9 @@ mapping:
         deoverlapped:
             output:
                 deoverlapped: expand('mapping/{sr.reference}/deoverlapped/{sr.sample}.bam', sr=pipeline.sample_references)
+        recalibrated:
+            output:
+                deoverlapped: expand('mapping/{sr.reference}/recalibrated/{sr.sample}.bam', sr=pipeline.sample_references)
 
     merged:
         output:

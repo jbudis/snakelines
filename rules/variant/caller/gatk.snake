@@ -4,6 +4,8 @@ include: config['snakelines_dir'] + '/rules/reference/index/fai/samtools.snake'
 
 rule gatk__call_germline_variants:
     """
+        Detect variants within the mapped reads and annotates them with dbSNP
+        if possible when the database is provided.
     """
     input:
         bam         = 'mapping/{{reference}}/{map_type}/{{sample}}.bam'.format(map_type=pipeline.postprocessed_map_type),
@@ -35,7 +37,7 @@ rule gatk__call_germline_variants:
             --intervals {input.bed} \
             $DBSNP \
             --native-pair-hmm-threads {threads} \
-            1> {log.out} \
-            2> {log.err}
+        1> {log.out} \
+        2> {log.err}
         """
 
