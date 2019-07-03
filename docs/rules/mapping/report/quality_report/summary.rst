@@ -1,5 +1,5 @@
-Qualimap - Mapping Quality Report Accross Reference
--------------------------------------------------------
+Qualimap - Mapping Quality Report Across Reference
+------------------------------------------------------
 
 Generate summary statistics for mapped reads stored in BAM files. Statistics are calculated across
 whole reference genome.
@@ -7,7 +7,7 @@ whole reference genome.
 **Location**
 
 - *Filepath:* <SnakeLines_dir>/rules/mapping/report/quality_report/qualimap.snake
-- *Rule name:* qualimap__mapping_quality_report_accross_reference
+- *Rule name:* qualimap__mapping_quality_report_across_reference
 
 **Input(s):**
 
@@ -20,8 +20,8 @@ whole reference genome.
 - *pdf:* Quality report of mapped reads in PDF format
 - *text:* Quality report of mapped reads in format suitable for automated processing
 
-Qualimap - Mapping Quality Report Accross Panel
----------------------------------------------------
+Qualimap - Mapping Quality Report Across Panel
+--------------------------------------------------
 
 Generate summary statistics for mapped reads stored in BAM files. Statistics are calculated across
 genomic regions specified in the BED file.
@@ -29,7 +29,7 @@ genomic regions specified in the BED file.
 **Location**
 
 - *Filepath:* <SnakeLines_dir>/rules/mapping/report/quality_report/qualimap.snake
-- *Rule name:* qualimap__mapping_quality_report_accross_panel
+- *Rule name:* qualimap__mapping_quality_report_across_panel
 
 **Input(s):**
 

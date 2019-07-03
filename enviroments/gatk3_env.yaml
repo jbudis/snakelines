@@ -1,0 +1,4 @@
+channels:
+- compbiocore
+dependencies:
+- gatk=3.8

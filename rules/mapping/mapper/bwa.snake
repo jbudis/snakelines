@@ -16,7 +16,7 @@ rule bwa__map_reads_to_reference:
         r2    = 'reads/%s/{sample}_R2.fastq.gz' % pipeline.preprocessed_read_type,
         index = 'reference/{reference}/bwa_index/{reference}.bwt',
     output:
-        bam   = 'mapping/{reference}/original/{sample}.bam'
+        bam   = configured_temp('mapping/{reference}/original/{sample}.bam')
     log:
         err   = 'mapping/{reference}/original/log/{sample}.bwa.map_stats'
     params:

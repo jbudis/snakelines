@@ -33,3 +33,20 @@ rule edger__identify_transcripts_with_changed_expression:
             {params.group_by} \
             {params.batch}
         '''
+
+rule edger__convert_summary_tsv_table_to_xlsx:
+    """
+    Convert summary.normed.tsv table to Excel format.
+    :input tsv_table: Table in tsv format
+    :output xlsx_table: Table in Excel format
+    """
+    input:
+        tsv_table = '{analysis_dir}/{reference}/report/tsv/summary.normed.tsv'
+    output:
+        xlsx_table = '{analysis_dir}/{reference}/report/tsv/summary.normed.xlsx'
+    run:
+        #load table in tsv format
+        table = pd.read_csv(input.tsv_table, sep='\t', header=None)
+        table.index.name = 'name'
+        #convert and save table in xlsx format
+        table.to_excel(output.xlsx_table)

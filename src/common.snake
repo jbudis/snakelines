@@ -5,33 +5,32 @@ from config.impute_mapping_types import impute_mapping_types, impute_read_types
 from config.load_imports import import_files_in_config
 from config.values_retrieval import extract_from_config
 
-# TODO: This should work for other types, such as mapping as well
-def configured_temp(read_file):
+def configured_temp(output_file):
     """
-    Choose if Fastq file should be marker by snakemake temporary flag temp() based on configuration. This function cannot(??) be made into pure python.
+    Choose if Fastq file should be marker by snakemake temporary flag temp() based on configuration.
+    This function cannot(??) be made into pure python.
 
-    :param read_file: output read file of a read preprocess rule
+    :param output_file: output read file of a rule
     :return: temporary output or normal output
     """
-    items = read_file.split('/')
-    assert items[0] == 'reads' and len(items) == 3, \
-           'Method can be used only for read files in reads/{preprocess}/ directory, provided {}'.format(read_file)
-
-    read_type = items[1]
-    temporary = extract_from_config(config, ['reads', 'preprocess', read_type, 'temporary'], False)
-    return temp(read_file) if temporary else read_file
+    return temp(output_file) if method_config.get('temporary', False) else output_file
 
 # create pipeline
 pipeline = Pipeline()
 
 DEFAULT_SAMPLE_CONFIGURATION = [{'name': '.*'}]
+DEFAULT_SAMPLE_LOCATION = 'reads/original/{}_R1.fastq.gz'
 sample_configurations = config.get('samples', DEFAULT_SAMPLE_CONFIGURATION)
 for sample_configuration in sample_configurations:
 
     # Filter samples according to the user configuration
-    wildcards = glob_wildcards('reads/original/{sample, %s}_R1.fastq.gz' % sample_configuration['name'])
-    assert len(wildcards.sample) > 0, 'No samples in reads/original/ match configured pattern {}'.format(sample_configuration['name'])
-    pipeline.add(wildcards.sample, sample_configuration.get('reference', None), sample_configuration.get('panel', None))
+    location = sample_configuration.get('location', DEFAULT_SAMPLE_LOCATION)
+    location = location.replace('{}', '{sample, %s}' % sample_configuration['name'])
+
+    wildcards = glob_wildcards(location)
+    assert len(wildcards.sample) > 0, 'No samples in {} match configured pattern {}'.format(location, sample_configuration['name'])
+    pipeline.add(wildcards.sample, sample_configuration.get('reference', None),
+                 sample_configuration.get('panel', None), sample_configuration.get('prebuilt', False))
 
 assert not pipeline.is_empty(), 'No samples to analyse'
 
@@ -61,7 +60,8 @@ preprocess = extract_from_config(config, ['reads', 'preprocess'], {})
 read_types_to_keep = [read_type for read_type in preprocess.keys() if not preprocess[read_type].get('temporary', True)]
 
 # Find in configuration read preprocess types for which should be report generated
-read_types_with_fastqc_report = extract_from_config(config, ['reads', 'report', 'quality_report', 'read_types'], [])
+read_types_with_quality_report = extract_from_config(config, ['reads', 'report', 'quality_report', 'read_types'], [])
+map_types_with_quality_report = extract_from_config(config, ['mapping', 'report', 'quality_report', 'map_types'], [])
 
 # Which taxonomic levels should be extracted in separate tables
 tax_levels_count_table = extract_from_config(config, ['classification', 'report', 'taxonomic_counts', 'count_table', 'tax_levels'], [])
@@ -70,3 +70,4 @@ tax_levels_count_table.append('alltaxes')
 # Which taxonomic levels should be visualised in barplots, and in which image formats
 tax_levels_barplot = extract_from_config(config, ['classification', 'report', 'taxonomic_counts', 'barplot', 'tax_levels'], [])
 barplot_formats = extract_from_config(config, ['classification', 'report', 'taxonomic_counts', 'barplot', 'formats'], ['png'])
+pca_formats = extract_from_config(config, ['classification', 'report', 'transcripts', 'pca', 'formats'], ['svg', 'png'])
