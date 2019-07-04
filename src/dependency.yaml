@@ -136,10 +136,22 @@ mapping:
 
                     to:   expand('{report_dir}/{sr.sample}/methylation_quality/{sr.reference}.html',
                                   report_dir=config['report_dir'],
-                                  sr=pipeline.sample_references, map_type='original')
+                                  sr=pipeline.sample_references)
 
             depends:
                 - mapping/mapper
+
+        recalibration:
+            output:
+                recalibration_reports:
+                    from: expand('mapping/{sr.reference}/recalibrated/qc-stats/samples/{sr.sample}/covariates.pdf',
+                                 sr=pipeline.sample_references)
+
+                    to:   expand('{report_dir}/{sr.sample}/recalibration/{sr.reference}.pdf',
+                                 report_dir=config['report_dir'],
+                                 sr=pipeline.sample_references)
+            depends:
+                - mapping/postprocess/recalibrated
 
 variant:
     caller:

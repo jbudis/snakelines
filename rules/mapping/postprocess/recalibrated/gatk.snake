@@ -1,9 +1,10 @@
+include: config['snakelines_dir'] + '/rules/reference/annotation/regions.snake'
 include: config['snakelines_dir'] + '/rules/reference/index/fai/samtools.snake'
 include: config['snakelines_dir'] + '/rules/mapping/index/samtools.snake'
 
-rule gatk__recalibrate:
+rule gatk__recalibrate_pass1:
     """
-        Generates recalibration table for Base Quality Score Recalibration (BQSR).
+        Generates first pass recalibration table for Base Quality Score Recalibration (BQSR).
     """
     input:
         bam         = 'mapping/{{reference}}/{map_type}/{{sample}}.bam'.format(map_type=method_config['input_map_type']),
@@ -12,11 +13,13 @@ rule gatk__recalibrate:
         fai         = 'reference/{reference}/{reference}.fa.fai',
         dbsnp       = 'reference/{reference}/variants/dbsnp.vcf.bgz',
         dbsnp_index = 'reference/{reference}/variants/dbsnp.vcf.bgz.tbi',
+        # TODO panel
+        bed         = 'reference/{reference}/annotation/twist/regions.interval_list'
     output:
-        table = 'mapping/{reference}/recalibrated/{sample}.table'
+        table = 'mapping/{reference}/recalibrated/{sample}.table.pass1'
     log:
-        out = 'mapping/{reference}/recalibrated/log/{sample}.table.out',
-        err = 'mapping/{reference}/recalibrated/log/{sample}.table.err'
+        out = 'mapping/{reference}/recalibrated/log/{sample}.table.pass1.out',
+        err = 'mapping/{reference}/recalibrated/log/{sample}.table.pass1.err'
     threads:
         int(config['threads'])
     shell:
@@ -25,6 +28,40 @@ rule gatk__recalibrate:
             --input {input.bam} \
             --reference {input.fasta} \
             --known-sites {input.dbsnp} \
+            --intervals {input.bed} \
+            --output {output.table} \
+        1> {log.out} \
+        2> {log.err}
+        """
+
+rule gatk__recalibrate_pass2:
+    """
+        Generates second pass recalibration table for Base Quality Score Recalibration (BQSR) validation.
+        @see https://gatkforums.broadinstitute.org/gatk/discussion/44/base-quality-score-recalibration-bqsr
+    """
+    input:
+        bam         = 'mapping/{reference}/recalibrated/{sample}.bam',
+        bai         = 'mapping/{reference}/recalibrated/{sample}.bam.bai',
+        fasta       = 'reference/{reference}/{reference}.fa',
+        fai         = 'reference/{reference}/{reference}.fa.fai',
+        dbsnp       = 'reference/{reference}/variants/dbsnp.vcf.bgz',
+        dbsnp_index = 'reference/{reference}/variants/dbsnp.vcf.bgz.tbi',
+        # TODO panel
+        bed         = 'reference/{reference}/annotation/twist/regions.interval_list'
+    output:
+        table = 'mapping/{reference}/recalibrated/{sample}.table.pass2'
+    log:
+        out = 'mapping/{reference}/recalibrated/log/{sample}.table.pass2.out',
+        err = 'mapping/{reference}/recalibrated/log/{sample}.table.pass2.err'
+    threads:
+        int(config['threads'])
+    shell:
+        """
+        gatk BaseRecalibrator \
+            --input {input.bam} \
+            --reference {input.fasta} \
+            --known-sites {input.dbsnp} \
+            --intervals {input.bed} \
             --output {output.table} \
         1> {log.out} \
         2> {log.err}
@@ -39,7 +76,9 @@ rule gatk__apply_bqsr:
         bai     = 'mapping/{{reference}}/{map_type}/{{sample}}.bam.bai'.format(map_type=method_config['input_map_type']),
         fasta   = 'reference/{reference}/{reference}.fa',
         fai     = 'reference/{reference}/{reference}.fa.fai',
-        table   = 'mapping/{reference}/recalibrated/{sample}.table'
+        table   = 'mapping/{reference}/recalibrated/{sample}.table.pass1',
+         # TODO panel
+        bed     = 'reference/{reference}/annotation/twist/regions.interval_list'
     output:
         bam = configured_temp('mapping/{reference}/recalibrated/{sample}.bam')
     log:
@@ -53,7 +92,8 @@ rule gatk__apply_bqsr:
             --input {input.bam} \
             --reference {input.fasta} \
             --bqsr-recal-file {input.table} \
-            --output {output.bam}
+            --intervals {input.bed} \
+            --output {output.bam} \
         1> {log.out} \
         2> {log.err}
         """

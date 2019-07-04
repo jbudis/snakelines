@@ -1,6 +1,6 @@
 include: config['snakelines_dir'] + '/rules/reference/annotation/regions.snake'
-include: config['snakelines_dir'] + '/rules/mapping/index/samtools.snake'
 include: config['snakelines_dir'] + '/rules/reference/index/fai/samtools.snake'
+include: config['snakelines_dir'] + '/rules/mapping/index/samtools.snake'
 
 rule gatk__call_germline_variants:
     """
