@@ -197,7 +197,7 @@ classification:
                         from: expand('classification/{reference}/report/comparison/significant.revigo.tsv',
                                       reference=pipeline.references)
 
-                        to:   expand('{report_dir}/{reference}/comparison/significant.revigo.tsv',
+                        to:   expand('{report_dir}/{reference}/comparison/revigo.txt',
                                       report_dir=config['report_dir'], reference=pipeline.references)
                 depends:
                     - classification/differential_analysis
