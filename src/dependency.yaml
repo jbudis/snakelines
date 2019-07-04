@@ -303,12 +303,27 @@ classification:
             count_table:
                 output:
                     tsv_table:
-                        from: expand('classification/{reference}/report/tsv/summary.{format}',
-                                      reference=pipeline.references, format=['tsv', 'xlsx'])
+                        from: expand('classification/{reference}/report/tsv/summary{subtype}.{format}',
+                                      subtype=['', '.normed'], format=['xlsx', 'tsv'],
+                                      reference=pipeline.references)
 
-                        to:   expand('{report_dir}/_summary/transcript_counts-{reference}/summary.{format}',
-                                      report_dir=config['report_dir'],
-                                      reference=pipeline.references, format=['tsv', 'xlsx'])
+                        to:   expand('{report_dir}/{reference}/tsv/summary{subtype}.{format}',
+                                      report_dir=config['report_dir'], subtype=['', '.normed'],
+                                      format=['xlsx', 'tsv'], reference=pipeline.references)
+                                      
+                depends:
+                    - classification/differential_analysis
+
+            html_table:
+                output:
+                    html_table:
+                        from: expand('classification/{reference}/report/comparison/differential_analysis.html',
+                                      reference=pipeline.references)
+
+                        to:   expand('{report_dir}/{reference}/comparison/summary.html',
+                                      report_dir=config['report_dir'], reference=pipeline.references)
+                depends:
+                    - classification/differential_analysis
 
             pca:
                 output:
@@ -319,6 +334,8 @@ classification:
                         to:   expand('{report_dir}/_summary/transcript_counts-{reference}/pca.{format}',
                                       report_dir=config['report_dir'],
                                       reference=pipeline.references, format=pca_formats)
+                    depends:
+                    - classification/transcripts/count_table
             depends:
                 - classification/samples
 
