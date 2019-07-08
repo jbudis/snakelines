@@ -37,6 +37,5 @@ rule phylo__visualise_phylogenetic_tree:
         phylo_tree.ladderize()
         with open(output.ascii, 'w') as out_ascii:
             Phylo.draw_ascii(phylo_tree, file=out_ascii)
-        print("Tu som 1") #DELETE
         Phylo.draw(phylo_tree, label_func=label_func, do_show=False)
         plt.savefig(output.svg,format='svg', bbox_inches='tight', dpi=300)
