@@ -2,6 +2,8 @@ samples:                             # List of sample categories to be analysed
     - reference: lacto_download1     # Reference genome in the category (would be downloaded into reference/lacto_download1/lacto_download1.fa)
     - reference: lacto_download2     # Reference genome in the category (would be downloaded into reference/lacto_download2/lacto_download2.fa)
 
+report_dir: report/public/01-ncbi_reference     # Generated reports and essential output files would be stored there
+
 reference:                           # Prepare and analyse reference sequences
     download:                        # Download reference sequences
         method: entrez               # Supported values: entrez
