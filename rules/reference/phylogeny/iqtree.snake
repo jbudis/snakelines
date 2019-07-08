@@ -16,6 +16,8 @@ rule iqtree__infer_phylogeny:
         model = '-m {} '.format(method_config['model']) if 'model' in method_config else ''
     threads:
         int(config['threads'])
+    conda:
+        config['snakelines_dir'] + '/enviroments/iqtree_env.yaml'
     shell:
         '''
         iqtree \

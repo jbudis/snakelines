@@ -28,12 +28,6 @@ class Pipeline:
                                    and so reference/{reference}/{reference}.fa could not exist yet
         """
 
-        # Check if both R1 and R2 files for all samples exist
-        for sample in samples:
-            r1, r2 = 'reads/original/{}_R1.fastq.gz'.format(sample), 'reads/original/{}_R2.fastq.gz'.format(sample)
-            assert os.path.exists(r1), 'Read file {} does not exist'.format(r1)
-            assert os.path.exists(r2), 'Read file {} does not exist'.format(r2)
-
         # Check, if reference file exists
         if reference and not (prebuilt_reference or would_be_downloaded):
             fasta = 'reference/{reference}/{reference}.fa'.format(reference=reference)

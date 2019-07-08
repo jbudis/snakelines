@@ -42,6 +42,36 @@ def copy_input_files_with_consistent_output_names(input_files, output_files):
             shutil.copy(in_item, out_item)
 
 
+def store_snakelines_version(report_dir, version):
+    """
+    Store version of the Snakelines into the report directory.
+    In combination with config file analysis should be reproducible.
+    :param report_dir: str - Directory for output files
+    :param version: str - version of the SnakeLines
+    :return: None
+    """
+    execution_dir = '{}/_execution'.format(report_dir)
+    if not os.path.exists(execution_dir):
+        os.makedirs(execution_dir)
+
+    version_file = '{}/snakelines_version.txt'.format(execution_dir)
+    with open(version_file, 'w') as out:
+        out.write(version)
+
+
+def copy_config(report_dir, workflow, pipeline):
+    """
+    Copy configuration file (snakemake --configfile argument) to the report directory
+    :param report_dir: str - Directory for output files
+    :param workflow: str - global snakemake variable
+    :return: None
+    """
+    config_file = workflow.overwrite_configfile
+    if config_file:
+        report_file = '{}/_execution/{}'.format(report_dir, os.path.basename(config_file))
+        copy_with_makedirs(config_file, report_file, pipeline)
+
+
 def copy(src, dest):
     """
     Copy a file or directory
@@ -58,14 +88,21 @@ def copy(src, dest):
         shutil.copy(src, dest)
 
 
-def copy_with_makedirs(src, dest):
+def copy_with_makedirs(src, dest, pipeline):
     """
     Copy a file or directory and create directory structure if necessary.
     :param src: str - source file or directory
     :param dest: str - destination file or directory
+    :param pipeline: object - SnakeLines internal object with information of samples, references, panels
     :return: None
     :raise IOError: if cannot copy
     """
+
+    # In case only one reference sequence is specified, remove its name from file paths
+    if len(pipeline.references) == 1:
+        dest = dest.replace('-{}.'.format(pipeline.references[0]), '.')  # from file names
+        dest = dest.replace('-{}/'.format(pipeline.references[0]), '/')  # from directories
+
     try:
         copy(src, dest)
     except IOError as e:
@@ -77,14 +114,16 @@ def copy_with_makedirs(src, dest):
         copy(src, dest)
 
 
-def copy_input_files_with_consisent_names_dict(input_dict, output_dict):
+def copy_input_files_with_consisent_names_dict(input_dict, output_dict, pipeline):
     """
     Compare names of the inputs and outputs of the two dictionaries. All items with the same name in inputs and outputs are copied,
     therefore generate output files.
     :param input_dict: dict - input file names and locations
     :param output_dict: dict - output file names and locations
+    :param pipeline: object - SnakeLines internal object with information of samples, references, panels
     :return: int - number of files copied
     """
+
     files_copied = 0
 
     for item_name, output_item in output_dict.items():
@@ -108,12 +147,12 @@ def copy_input_files_with_consisent_names_dict(input_dict, output_dict):
 
             # Single file items are directly copied
             if type(input_item) == str:
-                copy_with_makedirs(input_item, output_item)
+                copy_with_makedirs(input_item, output_item, pipeline)
                 files_copied += 1
             else:
                 # List items are copied item by item
                 for in_item, out_item in zip(input_item, output_item):
-                    copy_with_makedirs(in_item, out_item)
+                    copy_with_makedirs(in_item, out_item, pipeline)
                     files_copied += 1
 
     return files_copied

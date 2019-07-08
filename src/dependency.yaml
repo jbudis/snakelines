@@ -2,10 +2,12 @@ reference:
     index:
         dict:
             output:
-                index: protected(expand('reference/{sr.reference}/{sr.reference}.dict', sr=pipeline.sample_references))
+                index: expand('reference/{sr.reference}/{sr.reference}.dict',
+                                         sr=pipeline.sample_references)
         fai:
             output:
-                index: protected(expand('reference/{sr.reference}/{sr.reference}.fai', sr=pipeline.sample_references))
+                index: expand('reference/{sr.reference}/{sr.reference}.fai',
+                                         sr=pipeline.sample_references)
 
 reference:
     download:
@@ -62,69 +64,127 @@ reads:
     preprocess:
         original:
             output:
-                reads: expand('reads/original/{sample}_R{orientation}.fastq.gz', sample=pipeline.samples, orientation=[1,2])
+                reads: expand('reads/original/{sample}_R{orientation}.fastq.gz',
+                               sample=pipeline.samples, orientation=[1,2])
         trimmed:
             output:
-                reads: expand('reads/trimmed/{sample}_R{orientation}.fastq.gz', sample=pipeline.samples, orientation=[1,2])
+                reads: expand('reads/trimmed/{sample}_R{orientation}.fastq.gz',
+                               sample=pipeline.samples, orientation=[1,2])
         decontaminated:
             output:
-                reads: expand('reads/decontaminated/{sample}_R{orientation}.fastq.gz', sample=pipeline.samples, orientation=[1,2])
+                reads: expand('reads/decontaminated/{sample}_R{orientation}.fastq.gz',
+                               sample=pipeline.samples, orientation=[1,2])
         deduplicated:
             output:
-                reads: expand('reads/deduplicated/{sample}_R{orientation}.fastq.gz', sample=pipeline.samples, orientation=[1,2])
+                reads: expand('reads/deduplicated/{sample}_R{orientation}.fastq.gz',
+                               sample=pipeline.samples, orientation=[1,2])
         joined:
             output:
-                reads: expand('reads/joined/{sample}_R{orientation}.fastq.gz', sample=pipeline.samples, orientation=[1,2,'M','C'])
+                reads: expand('reads/joined/{sample}_R{orientation}.fastq.gz',
+                               sample=pipeline.samples, orientation=[1, 2,'M','C'])
         subsampled:
             output:
-                reads: expand('reads/subsampled/{sample}_R{orientation}.fastq.gz', sample=pipeline.samples, orientation=[1,2])
+                reads: expand('reads/subsampled/{sample}_R{orientation}.fastq.gz',
+                               sample=pipeline.samples, orientation=[1,2])
 
     report:
         quality_report:
             output:
                 fastqcs:
-                    from: expand('reads/{read_type}/stats/{sample}_R{orientation}_fastqc.html', read_type=read_types_with_fastqc_report, sample=pipeline.samples, orientation=[1,2])
-                    to: expand('{report_dir}/read_quality_report/{read_type}/{sample}_R{orientation}_fastqc.html', report_dir=config['report_dir'],read_type=read_types_with_fastqc_report, sample=pipeline.samples, orientation=[1,2])
+                    from: expand('reads/{read_type}/stats/{sample}_R{orientation}_fastqc.html',
+                                  sample=pipeline.samples, orientation=[1,2],
+                                  read_type=read_types_with_quality_report)
+
+                    to:   expand('{report_dir}/{sample}/read_quality/{read_type}_R{orientation}.html',
+                                  report_dir=config['report_dir'],
+                                  sample=pipeline.samples, orientation=[1,2],
+                                  read_type=read_types_with_quality_report)
+
                 reports:
-                    from: expand('reads/{read_type}/stats/summary.html', read_type=read_types_with_fastqc_report)
-                    to: expand('{report_dir}/read_quality_report/{read_type}/index.html', report_dir=config['report_dir'], read_type=read_types_with_fastqc_report)
+                    from: expand('reads/{read_type}/stats/summary.html',
+                                  read_type=read_types_with_quality_report)
+
+                    to:   expand('{report_dir}/_summary/read_quality/{read_type}.html',
+                                  report_dir=config['report_dir'],
+                                  read_type=read_types_with_quality_report)
 
 mapping:
     mapper:
         output:
-            alignments: expand('mapping/{sr.reference}/original/{sr.sample}.bam', sr=pipeline.sample_references)
+            alignments: expand('mapping/{sr.reference}/original/{sr.sample}.bam',
+                                sr=pipeline.sample_references)
         depends:
             - reads/preprocess
             - reads/report/quality_report
     index:
         output:
-            bam_indices: expand('mapping/{sr.reference}/{map_type}/{sr.sample}.bam.bai', sr=pipeline.sample_references, map_type=pipeline.postprocessed_map_type)
+            bam_indices: expand('mapping/{sr.reference}/{map_type}/{sr.sample}.bam.bai',
+                                 sr=pipeline.sample_references, map_type=pipeline.postprocessed_map_type)
+
     postprocess:
         original:
             output:
-                original: expand('mapping/{sr.reference}/original/{sr.sample}.bam', sr=pipeline.sample_references)
+                original: expand('mapping/{sr.reference}/original/{sr.sample}.bam',
+                                  sr=pipeline.sample_references)
         sorted:
             output:
                 sorted: expand('mapping/{sr.reference}/sorted/{sr.sample}.bam', sr=pipeline.sample_references)
+        filtered:
+            output:
+                read_group: expand('mapping/{sr.reference}/filtered/{sr.sample}.bam', sr=pipeline.sample_references)
+        read_group:
+            output:
+                read_group: expand('mapping/{sr.reference}/read_group/{sr.sample}.bam', sr=pipeline.sample_references)
+        realigned:
+            output:
+                read_group: expand('mapping/{sr.reference}/realigned/{sr.sample}.bam', sr=pipeline.sample_references)
         deduplicated:
             output:
                 deduplicated: expand('mapping/{sr.reference}/deduplicated/{sr.sample}.bam', sr=pipeline.sample_references)
+        deoverlapped:
+            output:
+                deoverlapped: expand('mapping/{sr.reference}/deoverlapped/{sr.sample}.bam', sr=pipeline.sample_references)
+
+    merged:
+        output:
+            merged_bam: expand('mapping/{reference}/merged/merged.bam',
+                                reference=pipeline.references)
+
+            merged_bai: expand('mapping/{reference}/merged/merged.bam.bai',
+                                reference=pipeline.references)
+
     report:
         quality_report:
             output:
                 quality_reports:
-                    from: expand('mapping/{sr.reference}/{map_type}/stats-wgs/samples/{sr.sample}/report.pdf', sr=pipeline.sample_references, map_type=pipeline.postprocessed_map_type)
-                    to: expand('{report_dir}/{sr.reference}/samples/{sr.sample}/mapping_quality.pdf', report_dir=config['report_dir'], sr=pipeline.sample_references)
+                    from: expand('mapping/{sr.reference}/{map_type}/stats-wgs/samples/{sr.sample}/report.pdf',
+                                  sr=pipeline.sample_references, map_type=map_types_with_quality_report)
+
+                    to:   expand('{report_dir}/{sr.sample}/mapping_quality/{map_type}-{sr.reference}.pdf',
+                                  report_dir=config['report_dir'],
+                                  sr=pipeline.sample_references, map_type=map_types_with_quality_report)
+
                 summary_report:
-                    from: expand('mapping/{reference}/{map_type}/stats-wgs/summary/report.pdf', reference=multisample_references, map_type=pipeline.postprocessed_map_type)
-                    to: expand('{report_dir}/{reference}/summary/mapping_quality.pdf', report_dir=config['report_dir'], reference=multisample_references)
+                    from: expand('mapping/{reference}/{map_type}/stats-wgs/summary/report.pdf',
+                                  reference=multisample_references, map_type=map_types_with_quality_report)
+
+                    to:   expand('{report_dir}/_summary/mapping_quality/{map_type}-{reference}.pdf',
+                                  report_dir=config['report_dir'],
+                                  reference=multisample_references, map_type=map_types_with_quality_report)
+
             depends:
                 - mapping/mapper
+
         methylation:
             output:
                 methylation_reports:
-                    from: expand('mapping/{sr.reference}/{map_type}/bismark/{sr.sample}.html', sr=pipeline.sample_references, map_type='original')
-                    to: expand('{report_dir}/{sr.reference}/samples/{sr.sample}/methylation.html', report_dir=config['report_dir'], sr=pipeline.sample_references)
+                    from: expand('mapping/{sr.reference}/{map_type}/bismark/{sr.sample}.html',
+                                  sr=pipeline.sample_references, map_type='original')
+
+                    to:   expand('{report_dir}/{sr.sample}/methylation_quality/{sr.reference}.html',
+                                  report_dir=config['report_dir'],
+                                  sr=pipeline.sample_references, map_type='original')
+
             depends:
                 - mapping/mapper
 
@@ -132,8 +192,11 @@ variant:
     caller:
         output:
             variants:
-                from: expand('variant/{sr.reference}-wgs/original/{sr.sample}.vcf', sr=pipeline.sample_references, map_type=pipeline.postprocessed_map_type)
-                to: expand('{report_dir}/{sr.reference}/samples/{sr.sample}/variants.vcf', report_dir=config['report_dir'], sr=pipeline.sample_references)
+                from: expand('variant/{sr.reference}-wgs/original/{sr.sample}.vcf',
+                              sr=pipeline.sample_references, map_type=pipeline.postprocessed_map_type)
+
+                to:   expand('{report_dir}/{sr.sample}/variants-{sr.reference}.vcf',
+                              report_dir=config['report_dir'], sr=pipeline.sample_references)
         depends:
             - reads/preprocess
             - reads/report/quality_report
@@ -148,8 +211,11 @@ variant:
         summary:
             output:
                 report:
-                    from: expand('variant/{sr.reference}-wgs/original/report/{sr.sample}.pdf', sr=pipeline.sample_references)
-                    to: expand('{report_dir}/{sr.reference}/samples/{sr.sample}/summary.pdf', report_dir=config['report_dir'], sr=pipeline.sample_references)
+                    from: expand('variant/{sr.reference}-wgs/original/report/{sr.sample}.pdf',
+                                  sr=pipeline.sample_references)
+
+                    to:   expand('{report_dir}/{sr.sample}/summary-{sr.reference}.pdf',
+                                  report_dir=config['report_dir'], sr=pipeline.sample_references)
             depends:
                 - reads/preprocess
                 - reads/report/quality_report
@@ -158,7 +224,8 @@ variant:
 classification:
     read_based:
         output:
-            kronas: expand('classification/{sr.reference}/report/krona/individual/{sr.sample}.krn', sr=pipeline.sample_references)
+            kronas: expand('classification/{sr.reference}/report/krona/individual/{sr.sample}.krn',
+                            sr=pipeline.sample_references)
         depends:
             - reads/preprocess
             - reads/report
@@ -175,70 +242,148 @@ classification:
                 - reads/report
     transcripts:
         output:
-            classification: expand('classification/{reference}/report/krona/individual/{sample}.krn', reference=pipeline.references, sample=pipeline.samples)
+            classification: expand('classification/{reference}/report/krona/individual/{sample}.krn',
+                                    reference=pipeline.references, sample=pipeline.samples)
         depends:
             - reads/preprocess
             - reads/report
+
     differential_analysis:
         output:
             analysis:
-                from: expand('classification/{reference}/report/comparison/differential_analysis.tsv', reference=pipeline.references)
-                to: expand('{report_dir}/{reference}/comparison/differential_analysis.tsv', report_dir=config['report_dir'], reference=pipeline.references)
+                from: expand('classification/{reference}/report/comparison/differential_analysis.tsv',
+                              reference=pipeline.references)
+
+                to:   expand('{report_dir}/_summary/differential_analysis-{reference}/expression.tsv',
+                                report_dir=config['report_dir'], reference=pipeline.references)
+
         filter_significant:
             output:
                 analysis:
-                    from: expand('classification/{reference}/report/comparison/significant.tsv', reference=pipeline.references)
-                    to: expand('{report_dir}/{reference}/comparison/significant.tsv', report_dir=config['report_dir'], reference=pipeline.references)
+                    from: expand('classification/{reference}/report/comparison/significant.tsv',
+                                  reference=pipeline.references)
+
+                    to:   expand('{report_dir}/_summary/differential_analysis-{reference}/significantly_changed.tsv',
+                                  report_dir=config['report_dir'], reference=pipeline.references)
+
     report:
         taxonomic_counts:
             barplot:
                 output:
                     barplots:
-                        from: expand('classification/{reference}/report/figures/{tax_level}.{type}.{format}', reference=pipeline.references, tax_level=tax_levels_barplot, type=['counts', 'ratios'], format=barplot_formats)
-                        to: expand('{report_dir}/{reference}/figures/{tax_level}.{type}.{format}', report_dir=config['report_dir'], reference=pipeline.references, tax_level=tax_levels_barplot, type=['counts', 'ratios'], format=barplot_formats)
+                        from: expand('classification/{reference}/report/figures/{tax_level}.{type}.{format}',
+                                      reference=pipeline.references, tax_level=tax_levels_barplot,
+                                      type=['counts', 'ratios'], format=barplot_formats)
+
+                        to:   expand('{report_dir}/_summary/taxonomy-{reference}/barplots/{tax_level}.{type}.{format}',
+                                      report_dir=config['report_dir'], reference=pipeline.references,
+                                      tax_level=tax_levels_barplot, type=['counts', 'ratios'], format=barplot_formats)
+
                 depends:
                     - classification/read_based
+
             pieplot:
                 output:
-                    krona_html:
-                        from: expand('classification/{reference}/report/krona/taxonomic_counts.html', reference=pipeline.references)
-                        to: expand('{report_dir}/{reference}/krona/taxonomic_counts.html', report_dir=config['report_dir'], reference=pipeline.references)
+                    summary_html:
+                        from: expand('classification/{reference}/report/krona/taxonomic_counts.html',
+                                      reference=pipeline.references)
+
+                        to:   expand('{report_dir}/_summary/taxonomy-{reference}/taxonomic_counts.html',
+                                      report_dir=config['report_dir'], reference=pipeline.references)
+
+                    krona:
+                        from: expand('classification/{sr.reference}/report/krona/individual/{sr.sample}.html',
+                                      sr=pipeline.sample_references)
+
+                        to:   expand('{report_dir}/{sr.sample}/taxonomic_counts-{sr.reference}.html',
+                                      report_dir=config['report_dir'],
+                                      sr=pipeline.sample_references)
+
                 depends:
                     - classification/read_based
+
             count_table:
                 output:
                     tables:
-                        from: expand('classification/{reference}/report/tsv/{tax_level}.{type}.tsv', reference=pipeline.references, tax_level=tax_levels_count_table, type=['counts', 'ratios'])
-                        to: expand('{report_dir}/{reference}/tsv/{tax_level}.{type}.tsv', report_dir=config['report_dir'], reference=pipeline.references, tax_level=tax_levels_count_table, type=['counts', 'ratios'])
+                        from: expand('classification/{reference}/report/tsv/{tax_level}.{type}.tsv',
+                                      reference=pipeline.references, tax_level=tax_levels_count_table,
+                                      type=['counts', 'ratios'])
+
+                        to:   expand('{report_dir}/_summary/taxonomy-{reference}/counts/{tax_level}.{type}.tsv',
+                                      report_dir=config['report_dir'], reference=pipeline.references,
+                                      tax_level=tax_levels_count_table, type=['counts', 'ratios'])
                 depends:
                     - classification/read_based
+
         summary:
             output:
                 summary_html:
-                    from: expand('assembly/{sample}/annotation/contigs/summary.html', sample=pipeline.samples)
-                    to: expand('{report_dir}/{sample}/contig_annotations.html', sample=pipeline.samples, report_dir=config['report_dir'])
+                    from: expand('assembly/{sample}/annotation/contigs/summary.html',
+                                  sample=pipeline.samples)
+
+                    to:   expand('{report_dir}/{sample}/contig_annotations.html',
+                                  sample=pipeline.samples, report_dir=config['report_dir'])
+
                 contigs:
-                    from: expand('assembly/{sample}/annotation/contigs/sequences/', sample=pipeline.samples)
-                    to: expand('{report_dir}/{sample}/sequences/', sample=pipeline.samples, report_dir=config['report_dir'])
+                    from: expand('assembly/{sample}/annotation/contigs/sequences/',
+                                  sample=pipeline.samples)
+
+                    to:   expand('{report_dir}/{sample}/sequences/',
+                                  sample=pipeline.samples, report_dir=config['report_dir'])
+
             depends:
                 - classification/contig_based
+
         transcripts:
             count_table:
                 output:
                     tsv_table:
-                        from: expand(['classification/{reference}/report/tsv/summary.xlsx','classification/{reference}/report/tsv/summary.tsv'], reference=pipeline.references)
-                        to: expand(['{report_dir}/{reference}/tsv/summary.xlsx','{report_dir}/{reference}/tsv/summary.tsv'], report_dir=config['report_dir'], reference=pipeline.references)
+                        from: expand('classification/{reference}/report/tsv/summary{subtype}.{format}',
+                                      subtype=['', '.normed'], format=['xlsx', 'tsv'],
+                                      reference=pipeline.references)
+
+                        to:   expand('{report_dir}/{reference}/tsv/summary{subtype}.{format}',
+                                      report_dir=config['report_dir'], subtype=['', '.normed'],
+                                      format=['xlsx', 'tsv'], reference=pipeline.references)
+                                      
+                depends:
+                    - classification/differential_analysis
+
+            html_table:
+                output:
+                    html_table:
+                        from: expand('classification/{reference}/report/comparison/differential_analysis.html',
+                                      reference=pipeline.references)
+
+                        to:   expand('{report_dir}/{reference}/comparison/summary.html',
+                                      report_dir=config['report_dir'], reference=pipeline.references)
+                depends:
+                    - classification/differential_analysis
+
             pca:
                 output:
                     images:
-                        from: expand(['classification/{reference}/report/comparison/pca.svg','classification/{reference}/report/comparison/pca.png'], reference=pipeline.references)
-                        to: expand(['{report_dir}/{reference}/comparison/pca.svg','{report_dir}/{reference}/comparison/pca.png'], report_dir=config['report_dir'], reference=pipeline.references)
+                        from: expand('classification/{reference}/report/comparison/pca.{format}',
+                                      reference=pipeline.references, format=pca_formats)
+
+                        to:   expand('{report_dir}/_summary/transcript_counts-{reference}/pca.{format}',
+                                      report_dir=config['report_dir'],
+                                      reference=pipeline.references, format=pca_formats)
+                    depends:
+                    - classification/transcripts/count_table
             depends:
                 - classification/samples
+
 assembly:
     assembler:
         output:
-            contigs: expand('assembly/{sample}/contigs.fa', sample=pipeline.samples)
+            contigs:
+                from: expand('assembly/{sample}/contigs.fa',
+                              sample=pipeline.samples)
+
+                to:   expand('{report_dir}/{sample}/assembled_contigs.fa',
+                              report_dir=config['report_dir'],
+                              sample=pipeline.samples)
         depends:
             - reads/preprocess
             - reads/report
@@ -246,10 +391,19 @@ assembly:
         quality_report:
             output:
                 quality_reports:
-                    from: expand('assembly/{sample}/quality_report/report.pdf', sample=pipeline.samples)
-                    to: expand('{report_dir}/assembly/{sample}/report.pdf', report_dir=config['report_dir'], sample=pipeline.samples)
+                    from: expand('assembly/{sample}/quality_report/report.pdf',
+                                  sample=pipeline.samples)
+
+                    to:   expand('{report_dir}/{sample}/assembly_report/report.pdf',
+                                  report_dir=config['report_dir'],
+                                  sample=pipeline.samples)
+
         assembly_graph:
             output:
                 overlap_graphs:
-                    from: expand('assembly/{sample}/assembly_graph.svg', sample=pipeline.samples)
-                    to: expand('{report_dir}/assembly/{sample}/contigs.svg', report_dir=config['report_dir'], sample=pipeline.samples)
+                    from: expand('assembly/{sample}/assembly_graph.svg',
+                                  sample=pipeline.samples)
+
+                    to:   expand('{report_dir}/{sample}/assembly_report/contig_graph.svg',
+                                  report_dir=config['report_dir'],
+                                  sample=pipeline.samples)

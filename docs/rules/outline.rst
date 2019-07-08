@@ -2,12 +2,12 @@ Rules
 =====
 - Reference
 
-  - Alignment
+  - Attributes
 
-    .. toctree::
-      reference/alignment/summary.rst
+    - Desc
 
-  - Report
+      .. toctree::
+        reference/attributes/desc/summary.rst
 
     - Comparison
 
@@ -198,6 +198,11 @@ Rules
 
         .. toctree::
           classification/report/transcripts/count_table/summary.rst
+
+      - Html Table
+
+        .. toctree::
+          classification/report/transcripts/html_table/summary.rst
 
     - Summary
 
