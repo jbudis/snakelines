@@ -2,14 +2,13 @@ reference:
     index:
         dict:
             output:
-                index: expand('reference/{sr.reference}/{sr.reference}.dict',
-                                         sr=pipeline.sample_references)
+                reference_index: expand('reference/{reference}/{reference}.dict',
+                                        reference=pipeline.references)
         fai:
             output:
-                index: expand('reference/{sr.reference}/{sr.reference}.fai',
-                                         sr=pipeline.sample_references)
+                index: expand('reference/{reference}/{reference}.fai',
+                                        reference=pipeline.references)
 
-reference:
     download:
         output:
             reference: expand('reference/{reference}/{reference}.fa',
