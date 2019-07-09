@@ -2,15 +2,64 @@ reference:
     index:
         dict:
             output:
-                index: expand('reference/{sr.reference}/{sr.reference}.dict',
-                                         sr=pipeline.sample_references)
+                reference_index: expand('reference/{reference}/{reference}.dict',
+                                        reference=pipeline.references)
         fai:
             output:
-                index: expand('reference/{sr.reference}/{sr.reference}.fai',
-                                         sr=pipeline.sample_references)
+                index: expand('reference/{reference}/{reference}.fai',
+                                        reference=pipeline.references)
+
+    download:
+        output:
+            reference: expand('reference/{reference}/{reference}.fa',
+                               reference=pipeline.references)
+
+    alignment:
+        output:
+            alignment: expand('reference/{reference}/alignment/{reference}.aln',
+                               reference=pipeline.references)
+
+    phylogeny:
+        output:
+            phylogenic_tree: expand('reference/{reference}/alignment/{reference}.aln.treefile',
+                                     reference=pipeline.references)
+            depends:
+                - reference/alignment
+
+    report:
+        phylogenetic_tree:
+            output:
+                svg:
+                    from: expand('reference/{reference}/alignment/{reference}.aln.treefile.svg',
+                                  reference=pipeline.references)
+
+                    to:   expand('{report_dir}/_reference/{reference}/phylogeny.svg',
+                                  report_dir=config['report_dir'],
+                                  reference=pipeline.references)
+
+                ascii:
+                    from: expand('reference/{reference}/alignment/{reference}.aln.treefile.ascii',
+                                  reference=pipeline.references)
+
+                    to:   expand('{report_dir}/_reference/{reference}/phylogeny.txt',
+                                  report_dir=config['report_dir'],
+                                  reference=pipeline.references)
+            depends:
+                - reference/phylogeny
+
+        comparison:
+            output:
+                html:
+                    from: expand('reference/{reference}/alignment/{reference}.aln.html',
+                                  reference=pipeline.references)
+
+                    to:   expand('{report_dir}/_reference/{reference}/alignment.html',
+                                  report_dir=config['report_dir'],
+                                  reference=pipeline.references)
+            depends:
+                - reference/alignment
 
 reads:
-
     preprocess:
         original:
             output:

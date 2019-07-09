@@ -9,6 +9,21 @@ Rules
       .. toctree::
         reference/attributes/desc/summary.rst
 
+    - Comparison
+
+      .. toctree::
+        reference/report/comparison/summary.rst
+
+    - Phylogenetic Tree
+
+      .. toctree::
+        reference/report/phylogenetic_tree/summary.rst
+
+  - Download
+
+    .. toctree::
+      reference/download/summary.rst
+
   - Index
 
     - Dict
@@ -20,6 +35,11 @@ Rules
 
       .. toctree::
         reference/index/fai/summary.rst
+
+  - Phylogeny
+
+    .. toctree::
+      reference/phylogeny/summary.rst
 
 - Assembly
 
@@ -68,35 +88,10 @@ Rules
       .. toctree::
         mapping/postprocess/deduplicated/summary.rst
 
-    - Realigned
-
-      .. toctree::
-        mapping/postprocess/realigned/summary.rst
-
-    - Read Group
-
-      .. toctree::
-        mapping/postprocess/read_group/summary.rst
-
     - Sorted
 
       .. toctree::
         mapping/postprocess/sorted/summary.rst
-
-    - Deoverlapped
-
-      .. toctree::
-        mapping/postprocess/deoverlapped/summary.rst
-
-    - Filtered
-
-      .. toctree::
-        mapping/postprocess/filtered/summary.rst
-
-  - Merged
-
-    .. toctree::
-      mapping/merged/summary.rst
 
   - Mapper
 
