@@ -1,0 +1,41 @@
+import matplotlib.pyplot as plt
+from Bio import Phylo
+from Bio import SeqIO
+
+rule phylo__visualise_phylogenetic_tree:
+    """
+    Infer phylogenetic relationships between aligned sequences
+    :input alignment: Aligned sequences in ALN format
+    :input tree: Phylogenetic tree with distances between sequences
+    :output svg: Phylogenetic tree in SVG format
+    :output ascii: Phylogenetic tree in text format
+    :param model: Model to use for phylo tree generation - see iqtree documentation for more detail
+    """
+    input:
+        alignment = 'reference/{reference}/alignment/{reference}.aln',
+        tree      = 'reference/{reference}/alignment/{reference}.aln.treefile'
+    output:
+        svg       = 'reference/{reference}/alignment/{reference}.aln.treefile.svg',
+        ascii     = 'reference/{reference}/alignment/{reference}.aln.treefile.ascii',
+    threads:
+        int(config['threads'])
+    run:
+        # If all sequences have defined proportion of reads they take in sample, append it to OTU labels
+        labels = {}
+        for contig in SeqIO.parse(input.alignment, 'fasta'):
+            ratio_items = re.findall(r"ratio=(0\.\d+|1)", contig.description)
+            if ratio_items and len(ratio_items) == 1:
+                ratio = float(ratio_items[0])
+                labels[contig.id] = '{contig.id}: {ratio: .2f}%'.format(contig=contig, ratio=ratio*100)
+            else:
+                labels = None
+                break
+
+        label_func = (lambda clade: labels.get(clade.name, '')) if labels else str
+
+        phylo_tree = Phylo.read(input.tree, "newick")
+        phylo_tree.ladderize()
+        with open(output.ascii, 'w') as out_ascii:
+            Phylo.draw_ascii(phylo_tree, file=out_ascii)
+        Phylo.draw(phylo_tree, label_func=label_func, do_show=False)
+        plt.savefig(output.svg,format='svg', bbox_inches='tight', dpi=300)

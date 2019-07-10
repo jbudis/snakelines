@@ -17,6 +17,7 @@ Compare counts of selected groups of samples and find features with significant 
 
 - *norm_counts:* TSV table with normalised number of reads (by sample read depth)
 - *table:* TSV table with statistical evaluation of change of expression
+- *design:* TSV table describing separation of samples into groups for differential expression
 
 **Param(s):**
 

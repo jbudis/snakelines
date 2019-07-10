@@ -1,9 +1,11 @@
-SNAKELINES_VERSION = '0.2.0'
+SNAKELINES_VERSION = '0.8.0'
 
 import os
 import sys
 from src.config.dependency_load import load_config, check_dependency
 from src.output.copy_files import copy_input_files_with_consisent_names_dict
+from src.output.copy_files import copy_config
+from src.output.copy_files import store_snakelines_version
 from src.output.send_email import send_email
 
 # Load configuration file if not already loaded
@@ -25,9 +27,11 @@ outputs, copy_where = check_dependency(config['snakelines_dir'] + '/src/dependen
 # function to evaluate output directories from dependency.yaml
 def get_files(source_dict):
     additional_params = {'expand': expand, 'protected': protected, 'temp': temp, 'config': config,
-            'pipeline': pipeline, 'directory': directory, 'read_types_with_fastqc_report': read_types_with_fastqc_report,
+            'pipeline': pipeline, 'directory': directory, 'read_types_with_quality_report': read_types_with_quality_report,
             'multisample_references': multisample_references, 'tax_levels_count_table': tax_levels_count_table,
-            'tax_levels_barplot': tax_levels_barplot, 'barplot_formats': barplot_formats, 'tax_levels_alphas': tax_levels_alphas,}
+            'tax_levels_barplot': tax_levels_barplot, 'barplot_formats': barplot_formats,
+            'tax_levels_alphas': tax_levels_alphas,'map_types_with_quality_report': map_types_with_quality_report}
+
     files_dict = {}
     for k,v in source_dict.items():
         try:
@@ -44,9 +48,12 @@ rule pipeline:
 
 # on success copy the files to report directory and send email(s)
 onsuccess:
-    print("Copying and finalizing", file=sys.stderr)
-    copied = copy_input_files_with_consisent_names_dict(get_files(outputs), get_files(copy_where))
-    print("Copied {} files to report dir '{}'".format(copied, config['report_dir']), file=sys.stderr)
+    if 'report_dir' in config:
+        print("Copying and finalizing", file=sys.stderr)
+        copied = copy_input_files_with_consisent_names_dict(get_files(outputs), get_files(copy_where), pipeline)
+        print("Copied {} files to report dir '{}'".format(copied, config['report_dir']), file=sys.stderr)
+        copy_config(config['report_dir'], workflow, pipeline)
+        store_snakelines_version(config['report_dir'], SNAKELINES_VERSION)
     send_email(config, get_files(outputs), get_files(copy_where), True)
 
 # on error send email(s)
