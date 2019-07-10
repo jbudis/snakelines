@@ -33,7 +33,9 @@ List of required Python3 modules:
 * pysam==0.15.1
 * openpyxl==2.5.12
 * scikit-learn==0.18
+* scikit-bio==0.5.1
 * tk==3.6.7-1
+
 
 Snakelines will be later shipped as a Conda package in Anaconda repository.
 
