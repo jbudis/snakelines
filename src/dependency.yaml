@@ -347,9 +347,9 @@ classification:
                                       subtype=['', '.normed'], format=['xlsx', 'tsv'],
                                       reference=pipeline.references)
 
-                        to:   expand('{report_dir}/{reference}/tsv/summary{subtype}.{format}',
+                        to:   expand('{report_dir}/_summary/transcript_counts/summary{subtype}.{format}',
                                       report_dir=config['report_dir'], subtype=['', '.normed'],
-                                      format=['xlsx', 'tsv'], reference=pipeline.references)
+                                      format=['xlsx', 'tsv'])
                                       
                 depends:
                     - classification/differential_analysis
@@ -360,8 +360,8 @@ classification:
                         from: expand('classification/{reference}/report/comparison/differential_analysis.html',
                                       reference=pipeline.references)
 
-                        to:   expand('{report_dir}/{reference}/comparison/summary.html',
-                                      report_dir=config['report_dir'], reference=pipeline.references)
+                        to:   expand('{report_dir}/_summary/differential_analysis/summary.html',
+                                      report_dir=config['report_dir'])
                 depends:
                     - classification/differential_analysis
 
