@@ -22,7 +22,7 @@ rule bismark__map_methyl_seq_reads_to_reference:
         ga_index             = 'reference/{reference}/Bisulfite_Genome/GA_conversion/BS_GA.1.bt2',
         ref                  = 'reference/{reference}/{reference}.fa'
     output:
-        bam                  = 'mapping/{reference}/original/{sample}.bam',
+        bam                  = configured_temp('mapping/{reference}/original/{sample}.bam'),
         alignment_report     = 'mapping/{reference}/original/bismark/{sample}-alignment_report.txt'
     log:
         out                  = 'mapping/{reference}/original/log/{sample}.bismark.log',
@@ -33,7 +33,7 @@ rule bismark__map_methyl_seq_reads_to_reference:
         bam_dir              = 'mapping/{reference}/original',
         reference_dir        = 'reference/{reference}'
     threads:
-        int(int(config['threads']) / 4)
+        max(2, int(int(config['threads']) / 4))
     conda:
         config['snakelines_dir'] + '/enviroments/others_env.yaml'
     shell:

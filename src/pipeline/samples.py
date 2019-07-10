@@ -16,22 +16,20 @@ class Pipeline:
         self.sample_defs = []
         self.__reference_map = {}
 
-    def add(self, samples, reference, panel):
+    def add(self, samples, reference, panel, prebuilt_reference, would_be_downloaded):
         """
         Add samples intended for analysis.
         :param samples: list of sample names to be analysed
         :param reference: name of reference fasta file for samples
         :param panel: name of targeted panel for samples
+        :param prebuilt_reference: if reference is only a parameter to a specific tool that utilize its own database,
+                                   and so reference/{reference}/{reference}.fa could not exist yet
+        :param would_be_downloaded: if reference would be created in the Snakelines execution,
+                                   and so reference/{reference}/{reference}.fa could not exist yet
         """
 
-        # Check if both R1 and R2 files for all samples exist
-        for sample in samples:
-            r1, r2 = 'reads/original/{}_R1.fastq.gz'.format(sample), 'reads/original/{}_R2.fastq.gz'.format(sample)
-            assert os.path.exists(r1), 'Read file {} does not exist'.format(r1)
-            assert os.path.exists(r2), 'Read file {} does not exist'.format(r2)
-
         # Check, if reference file exists
-        if reference:
+        if reference and not (prebuilt_reference or would_be_downloaded):
             fasta = 'reference/{reference}/{reference}.fa'.format(reference=reference)
             assert os.path.exists(fasta), 'Reference fasta {} does not exist'.format(fasta)
 

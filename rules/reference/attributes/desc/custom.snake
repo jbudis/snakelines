@@ -14,8 +14,6 @@ rule custom__prepare_description_file:
     log:
         out = 'reference/{reference}/log/{sequences}.desc.log',
         err = 'reference/{reference}/log/{sequences}.desc.err'
-    conda:
-        config['snakelines_dir'] + '/enviroments/others_env.yaml'
     run:
         with open(output.dict, 'w') as out:
             for seq in SeqIO.parse(input.reference, 'fasta'):

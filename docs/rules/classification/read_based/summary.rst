@@ -79,3 +79,40 @@ Convert metaxa2 classification files into standardised format suitable for gener
 
 - *krona:* Tabular format suitable for Krona report generation
 
+Rdp - Classify Reads
+------------------------
+
+Find closest homologue sequence for each sequenced fragment
+
+**Location**
+
+- *Filepath:* <SnakeLines_dir>/rules/classification/read_based/rdp.snake
+- *Rule name:* rdp__classify_reads
+
+**Input(s):**
+
+- *reads:* Joined sequenced fragments in fasta format
+
+**Output(s):**
+
+- *readtax:* Individual taxonomy for each analysed fragment
+- *taxonomy:* Summary taxonomies of classified sequenced fragments
+
+Rdp - Prepare For Krona
+---------------------------
+
+Convert RDP classification files into standardised format suitable for generation of Krona reports
+
+**Location**
+
+- *Filepath:* <SnakeLines_dir>/rules/classification/read_based/rdp.snake
+- *Rule name:* rdp__prepare_for_krona
+
+**Input(s):**
+
+- *classification:* Summarized classification from RDP classifier
+
+**Output(s):**
+
+- *krona:* Tabular format suitable for Krona report generation
+

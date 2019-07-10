@@ -22,7 +22,7 @@ rule krona__single_sample_pieplot:
         """
         ktImportText \
             -o {output.krona} \
-            {input.krns} \
+            {input.krn} \
         >  {log.out} \
         2> {log.err}
         """

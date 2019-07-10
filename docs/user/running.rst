@@ -24,16 +24,18 @@ Snakelines requires several Python3 modules to be installed prior to Snakelines.
 Note that Snakelines requires specific versions of these modules.
 List of required Python3 modules:
 
-* oyaml=0.7
-* pandas=0.19.2
-* biopython=1.72
-* seaborn=0.9.0
-* bs4=0.0.1
-* weasyprint=0.3
-* pysam=0.15.1
-* openpyxl=2.5.12
-* scikit-learn=0.18
-* tk=3.6.7-1
+* oyaml==0.7
+* pandas==0.19.2
+* biopython==1.72
+* seaborn==0.9.0
+* bs4==0.0.1
+* weasyprint==0.3
+* pysam==0.15.1
+* openpyxl==2.5.12
+* scikit-learn==0.18
+* scikit-bio==0.5.1
+* tk==3.6.7-1
+
 
 Snakelines will be later shipped as a Conda package in Anaconda repository.
 
@@ -150,6 +152,29 @@ For example, if you have fasta file for human genome in separate directory (/dat
 
 Make sure, that the name of the link is the same as the name of the fasta file (without .fa suffix).
 
+Download sequences from NCBI
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+SnakeMake can prepare reference database from the provided list of genbank ids.
+At first, sequences with specified ids in the configuration file would be downloaded from NCBI and aggregated into a single fasta file.
+Next, .tax file with taxonomies of downloaded sequences will be created.
+Finally, created sequence and taxonomy files would be used as the reference for downstream analysis.
+
+See example pipeline for `the mapping with downloaded reference <../pipelines/download_reference_and_mapping.html>`_.
+Other pipelines may be updated accordingly, you just need to include the ``reference`` block of configuration:
+
+.. code:: yaml
+
+   reference:
+      download:
+         method: entrez               # Supported values: entrez
+         email: FILLME@SOMEMAIL.COM   # Inform NCBI who you are to contact you in case of excessive use.
+         mhv_ncbi:                    # List of genbank ids to download, one list for each reference database
+            - U97553.2
+            - AF127083.1
+
+
+
 Use reference indices without fasta
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -185,6 +210,15 @@ You may link index directly to the project using
    ln --symbolic \
       /data/genome/metagenome/blast/nt/ \
       /data/projects/example/reference/nt/blast_index
+
+Such databases should be labelled with ``prebuilt: True`` value in the configuration, to avoid validation messages for missing fasta file:
+
+.. code:: bash
+
+   samples:                           # List of sample categories to be analysed
+      - name: .*-16S                  # Regex expression of sample names to be analysed (reads/original/.*-16S_R1.fastq.gz)
+        reference: 16srrna            # RDP classifier Supported values: 16srrna, fungallsu, fungalits_unite, fungalits_warcup
+        prebuilt: True                # Reference sequence reference/{reference}/{reference}.fa does not exist, but all required indices are already prepared
 
 Multi-threading
 ---------------
