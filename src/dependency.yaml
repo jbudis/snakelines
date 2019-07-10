@@ -360,7 +360,18 @@ classification:
                         from: expand('classification/{reference}/report/comparison/differential_analysis.html',
                                       reference=pipeline.references)
 
-                        to:   expand('{report_dir}/_summary/differential_analysis/summary.html',
+                        to: expand('{report_dir}/_summary/differential_analysis/summary.html',
+                                    report_dir=config['report_dir'])
+                depends:
+                    - classification/differential_analysis
+
+            revigo:
+                output:
+                    revigo_format:
+                        from: expand('classification/{reference}/report/comparison/significant.revigo.tsv',
+                                      reference=pipeline.references)
+
+                        to:   expand('{report_dir}/_summary/differential_analysis/revigo.txt',
                                       report_dir=config['report_dir'])
                 depends:
                     - classification/differential_analysis

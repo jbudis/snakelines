@@ -4,20 +4,24 @@ import pandas as pd
 pd.set_option('display.max_colwidth', 1000000)
 pd.options.display.float_format = '{:e}'.format
 
+annotations = {annotation['source']: annotation.get('attributes', []) for annotation in method_config.get('annotation', [])}
+
 rule custom__visualise_transcriptomic_counts_in_html_table:
     """
     Take transcriptomic counts from several samples and merge them together into a single table.
     :input table: TSV table with statistical evaluation of change in expression
     :input desc: Description of reference sequences
     :input template: HTML template with basic report outline
+    :input annotations: TSV files with attributes for annotated transcripts
     :output html: HTML page with sortable, filterable table of transcriptomic results
     """
     input:
-        table = 'classification/{reference}/report/comparison/differential_analysis.tsv',
-        descs = 'reference/{reference}/{reference}.transcripts.desc',
-        template = srcdir('templates/expressions.html'),
+        table       = 'classification/{reference}/report/comparison/differential_analysis.tsv',
+        descs       = 'reference/{reference}/{reference}.transcripts.desc',
+        template    = srcdir('templates/expressions.html'),
+        annotations = expand('reference/{{reference}}/annotation.transcripts/{source}/attributes.tsv', source=annotations.keys())
     output:
-        html  = 'classification/{reference}/report/comparison/differential_analysis.html'
+        html        = 'classification/{reference}/report/comparison/differential_analysis.html'
     run:
         def ncbi_link(ncbi_id):
             return '<a href="https://www.ncbi.nlm.nih.gov/nuccore/{ncbi_id}">{ncbi_id}</a>'.format(ncbi_id=ncbi_id)
@@ -30,6 +34,22 @@ rule custom__visualise_transcriptomic_counts_in_html_table:
         counts['id'] = [ncbi_link(nid) for nid in counts.index]
         reported = counts[['id', 'fold_change', 'up_down', 'FDR', 'description']]
         reported['fold_change'] = reported.fold_change.apply(lambda x: '{:.2f}'.format(x))
+
+        for annotation in input.annotations:
+            source_name = annotation.split('/')[3]
+            attributes = pd.read_csv(annotation, sep='\t', index_col=None)
+
+            if annotations[source_name]:
+                attributes = attributes[['id'] + annotations[source_name]]
+
+            for attribute_name in attributes.columns:
+                if attribute_name == 'id':
+                    continue
+
+                stored_attribute = '{}.{}'.format(source_name, attribute_name)
+                print(attributes.columns)
+                attribute = attributes.groupby('id')[attribute_name].apply(lambda x: '<br />'.join(x))
+                reported[stored_attribute] = attribute
 
         TEMPLATE = open(input.template).read()
         with open(output.html, 'w') as out:
