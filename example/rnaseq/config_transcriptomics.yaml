@@ -36,6 +36,11 @@ classification:                     # Identify genomic source of sequenced reads
         method: edger               # Supported values: edger
         group_by: culture           # Attribute name (in the metadata file header) that split samples into two groups for comparison
         batch: seqrun               # Attribute name (in the metadata file header) that split samples into groups with similar batch effect for correction
+        filter_significant:                # Filter transcripts with significant change in expression
+            method: custom                 # Supported values: custom
+            max_fdr: 0.05                  # Maximal value of fold discovery change for transcript to be reported
+            min_fold_change: 1.5           # Minimal value of fold change for transcript to be reported
+            reproducible_expression: True  # At least one read must be mapped to transcript in all samples from over-expressed group to be reported
 
         filter_significant:                # Filter transcripts with significant change in expression
             method: custom                 # Supported values: custom
@@ -45,6 +50,8 @@ classification:                     # Identify genomic source of sequenced reads
     report:
         transcripts:
             count_table:            # Summary table with number of reads per transcript
+                method: custom      # Supported values: custom
+            html_table:             # Summary HTML table with results of differential expressions
                 method: custom      # Supported values: custom
             pca:
                 method: sklearn     # Supported values: sklearn

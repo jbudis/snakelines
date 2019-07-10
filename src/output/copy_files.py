@@ -42,6 +42,36 @@ def copy_input_files_with_consistent_output_names(input_files, output_files):
             shutil.copy(in_item, out_item)
 
 
+def store_snakelines_version(report_dir, version):
+    """
+    Store version of the Snakelines into the report directory.
+    In combination with config file analysis should be reproducible.
+    :param report_dir: str - Directory for output files
+    :param version: str - version of the SnakeLines
+    :return: None
+    """
+    execution_dir = '{}/_execution'.format(report_dir)
+    if not os.path.exists(execution_dir):
+        os.makedirs(execution_dir)
+
+    version_file = '{}/snakelines_version.txt'.format(execution_dir)
+    with open(version_file, 'w') as out:
+        out.write(version)
+
+
+def copy_config(report_dir, workflow, pipeline):
+    """
+    Copy configuration file (snakemake --configfile argument) to the report directory
+    :param report_dir: str - Directory for output files
+    :param workflow: str - global snakemake variable
+    :return: None
+    """
+    config_file = workflow.overwrite_configfile
+    if config_file:
+        report_file = '{}/_execution/{}'.format(report_dir, os.path.basename(config_file))
+        copy_with_makedirs(config_file, report_file, pipeline)
+
+
 def copy(src, dest):
     """
     Copy a file or directory

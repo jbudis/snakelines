@@ -28,6 +28,20 @@ reference:                          # Reference processing - indexing, ...
             method: picard          # Supported values: picard
         fai:                        # Index fasta file to quicker retrieve substring sequences
             method: samtools        # Supported values: samtools
+            reference:                                 # Prepare and analyse reference sequences
+    alignment:                      # Multiple alignment of reference sequences
+        method: mafft               # Supported values: mafft
+
+    phylogeny:                      # Assess phylogenetic relationship between sequences
+        method: iqtree              # Supported values: iqtree
+        model: GTR+I+G4             # Model to use for phylo tree generation - see iqtree documentation
+
+    report:                         # Visually assess relationship between reference sequences
+        phylogenetic_tree:          # Visual inspection of distances between sequences in tree graph structure
+            method: phylo           # Supported values: phylo
+
+        comparison:                 # Interactive HTML visualization of multiple alignment
+            method: msaviewer       # Supported values: msaviewer
 
 reads:                              # Prepare reads and quality reports for downstream analysis
     preprocess:                     # Pre-process of reads, eliminate sequencing artifacts, contamination ...
@@ -134,6 +148,11 @@ classification:                     # Identify genomic source of sequenced reads
                     - png
                     - svg
                 tax_levels:         # List of taxonomic levels for which plots would be generated
+                    - class
+                    - genus
+            alpha_diversity:        # Alpha diversity computation
+                method: custom      # Supported values: custom
+                tax_levels:         # List of taxonomic levels for which alpha diversities would be generated
                     - class
                     - genus
         summary:                              # Aggregated HTML table with summarized attributes of contigs and homology (report for contig_based classification)

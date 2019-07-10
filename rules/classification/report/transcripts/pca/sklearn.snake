@@ -20,7 +20,7 @@ rule sklearn__pca_comparison:
     output:
         pca = '{analysis_dir}/{reference}/report/comparison/pca.{format, %s}' % '|'.join(SUPPORTED_IMAGE_FORMATS)
     run:
-        count_table = pd.read_csv(input.counts, sep='\t', index_col=0)
+        count_table = pd.read_csv(input.counts, sep='\t')
         counts = count_table.values.transpose()
 
         scaler = StandardScaler()
