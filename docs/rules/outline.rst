@@ -48,7 +48,16 @@ Rules
     - Quality Report
 
       .. toctree::
-        assembly/report/quality_report/summary.rst
+        classification/report/summary/summary.rst
+
+    - Taxonomic Counts
+
+      - Alpha Diversity
+
+        .. toctree::
+          classification/report/taxonomic_counts/alpha_diversity/summary.rst
+
+      - Barplot
 
     - Assembly Graph
 

@@ -1,0 +1,126 @@
+import pandas as pd
+import skbio
+import numpy as np
+import collections as col
+
+tax_ranks = ['kingdom', 'phylum', 'class', 'order', 'family',
+             'genus', 'species', 'subspecies', 'subsubspecies', 'variety', 'form']
+
+def downsample_row(row, downsampling):
+    """
+    Downsample a row of a dataframe.
+    :param row: pd.Series object - row to subsample from
+    :param downsampling: int - how many to keep
+    :return: pd.Series object - subsampled row.
+    """
+    data = []
+
+    for i, val in row.items():
+        data.extend([i] * int(val))
+
+    np.random.seed(5)
+
+    data = np.random.choice(data, size=downsampling, replace=False)
+    data_counter = col.Counter(data)
+
+    for i, val in row.items():
+        row[i] = data_counter[i]
+
+    return row
+
+
+def downsample(taxons, downsample=None, min_sum=100000):
+    """
+    Downsample whole dataframe row by row.
+    :param taxons: pd.DataFrame - table to downsample
+    :param downsample: int - how many to keep; defaults to minimal sum
+    :param min_sum: int - minimal number
+    :return: pd.DataFrame - subsampled table to output
+    """
+    # first drop rows that does not have minimal sum:
+    rows_to_drop = taxons.index[taxons.sum(axis=1) < min_sum]
+    taxons_res = taxons.drop(rows_to_drop, axis=0)
+
+    # set downsample level:
+    if downsample is None:
+        downsample = int(min(taxons_res.sum(axis=1)))
+
+    # now subsample:
+    for en, (i, row) in enumerate(taxons_res.iterrows()):
+        taxons_res.loc[i] = downsample_row(row, downsample)
+
+    return taxons_res
+
+
+rule custom__alpha_diversity:
+    """
+    Compute aplha diversity at selected taxonomic level, such as genus, species.
+    :input tax_level_abs: Aggregated counts for single taxonomic level, e.g. species, order
+    :output alpha_div: Alpha diversities for single taxonomic level, e.g. species, order; either '_norm'-alized to the same counts or kept '_pure'.
+    """
+    input:
+        tax_level_abs = '{analysis_dir}/{reference}/report/tsv/{tax_level, %s}.counts.tsv' % ('|'.join(tax_ranks[:-1])),
+    output:
+        alpha_div = '{analysis_dir}/{reference}/report/tsv/{tax_level, %s}.alpha{alpha_mode, _norm|_pure}.tsv' % ('|'.join(tax_ranks[:-1])),
+    run:
+        # read the dataframe
+        taxons = pd.DataFrame.from_csv(input.tax_level_abs, sep='\t', index_col=None)
+        taxons = taxons.fillna('')
+
+        # correct the dataframe and transpose it
+        taxa_to_merge = list(filter(lambda x: x in taxons.columns, tax_ranks))
+        taxons['taxa'] = taxons[taxa_to_merge].apply(lambda x: '|'.join(x).strip('|'), axis=1)
+        taxons = taxons.drop(taxa_to_merge, axis=1)
+        taxons = taxons.set_index('taxa')
+        taxons = taxons.transpose()
+
+        # join duplicates:
+        taxons2 = pd.DataFrame(0, index=taxons.index, columns=[])
+        for name, value in taxons.items():
+            if name in taxons2.columns:
+                taxons2[name] += value
+            else:
+                taxons2[name] = value
+        taxons = taxons2
+
+        # drop Unclassified
+        taxons = taxons.drop(filter(lambda x: x.startswith("Unclassified"), taxons.columns), axis=1)
+
+        # correct empty values:
+        taxons = taxons.apply(lambda x: pd.to_numeric(x, errors='coerce')).fillna(0.0)
+
+        # subsample to some extent?
+        if wildcards.alpha_mode == '_norm':
+            try:
+                min_sum = config['classification']['report']['taxonomic_counts']['alpha_diversity']['min_reads']
+            except KeyError:
+                min_sum = 100000
+            taxons = downsample(taxons, min_sum=min_sum)
+
+        # collect diversities
+        diversities = skbio.diversity.get_alpha_diversity_metrics()
+        skip_diversity = ['faith_pd', 'lladser_ci', 'kempton_taylor_q', 'michaelis_menten_fit', 'goods_coverage', 'ace', 'chao1_ci', 'esty_ci', 'osd']
+        diversities = list(filter(lambda x: x not in skip_diversity, diversities))
+
+        # gather "good" columns
+        #count_cols = [col for col in taxons.columns if col.startswith('Bacteria') or col.startswith('Eukaryota')]
+        count_cols = taxons.columns
+
+        # apply diversities:
+        for metric in diversities:
+            taxons['alpha_' + metric] = [0.0] * len(taxons.index)
+
+        for metric in diversities:
+            for i in taxons.index:
+                suma = sum(taxons[count_cols].loc[i])
+                if suma == 0:
+                    taxons.set_value(i, 'alpha_' + metric, float('nan'))
+                    continue
+                cnts = (np.array(taxons[count_cols].loc[i])).astype('int64')
+                ad = skbio.diversity.alpha_diversity(metric, cnts)
+                taxons.set_value(i, 'alpha_' + metric, ad)
+
+        # create table and print it
+        div_columns = list(map(lambda x: 'alpha_'+x, diversities))
+        alphas = taxons[div_columns]
+        alphas.to_csv(output.alpha_div, sep='\t')

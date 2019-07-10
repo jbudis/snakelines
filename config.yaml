@@ -150,6 +150,11 @@ classification:                     # Identify genomic source of sequenced reads
                 tax_levels:         # List of taxonomic levels for which plots would be generated
                     - class
                     - genus
+            alpha_diversity:        # Alpha diversity computation
+                method: custom      # Supported values: custom
+                tax_levels:         # List of taxonomic levels for which alpha diversities would be generated
+                    - class
+                    - genus
         summary:                              # Aggregated HTML table with summarized attributes of contigs and homology (report for contig_based classification)
             method: fasta_summary             # Supported values: fasta_summary
             max_query_seqs: 20000             # Maximal number of contigs to report (ordered by their length)

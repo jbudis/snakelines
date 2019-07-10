@@ -313,7 +313,13 @@ classification:
                                       tax_level=tax_levels_count_table, type=['counts', 'ratios'])
                 depends:
                     - classification/read_based
-
+            alpha_diversity:
+                output:
+                    alpha_divs:
+                        from: expand('classification/{reference}/report/tsv/{tax_level}.alpha{alpha_mode}.tsv', reference=pipeline.references, tax_level=tax_levels_alphas, alpha_mode=['_norm', '_pure'])
+                        to: expand('{report_dir}/{reference}/tsv/{tax_level}.alpha{alpha_mode}.tsv', report_dir=config['report_dir'], reference=pipeline.references, tax_level=tax_levels_alphas, alpha_mode=['_norm', '_pure'])
+                depends:
+                    - classification/read_based
         summary:
             output:
                 summary_html:
@@ -341,9 +347,9 @@ classification:
                                       subtype=['', '.normed'], format=['xlsx', 'tsv'],
                                       reference=pipeline.references)
 
-                        to:   expand('{report_dir}/{reference}/tsv/summary{subtype}.{format}',
+                        to:   expand('{report_dir}/_summary/transcript_counts/summary{subtype}.{format}',
                                       report_dir=config['report_dir'], subtype=['', '.normed'],
-                                      format=['xlsx', 'tsv'], reference=pipeline.references)
+                                      format=['xlsx', 'tsv'])
                                       
                 depends:
                     - classification/differential_analysis
@@ -354,8 +360,8 @@ classification:
                         from: expand('classification/{reference}/report/comparison/differential_analysis.html',
                                       reference=pipeline.references)
 
-                        to:   expand('{report_dir}/{reference}/comparison/summary.html',
-                                      report_dir=config['report_dir'], reference=pipeline.references)
+                        to:   expand('{report_dir}/_summary/differential_analysis/summary.html',
+                                      report_dir=config['report_dir'])
                 depends:
                     - classification/differential_analysis
 

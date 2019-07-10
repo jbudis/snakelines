@@ -1,4 +1,4 @@
-SNAKELINES_VERSION = '0.7.0'
+SNAKELINES_VERSION = '0.8.0'
 
 import os
 import sys
@@ -30,7 +30,8 @@ def get_files(source_dict):
             'pipeline': pipeline, 'directory': directory, 'read_types_with_quality_report': read_types_with_quality_report,
             'multisample_references': multisample_references, 'tax_levels_count_table': tax_levels_count_table,
             'tax_levels_barplot': tax_levels_barplot, 'barplot_formats': barplot_formats, 'pca_formats': pca_formats,
-            'map_types_with_quality_report': map_types_with_quality_report}
+            'tax_levels_alphas': tax_levels_alphas,'map_types_with_quality_report': map_types_with_quality_report}
+
     files_dict = {}
     for k,v in source_dict.items():
         try:
