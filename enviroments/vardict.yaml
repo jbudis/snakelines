@@ -1,4 +1,6 @@
 channels:
 - bioconda
+- r
 dependencies:
 - vardict=2017.04.18
+- r=3.6.0
