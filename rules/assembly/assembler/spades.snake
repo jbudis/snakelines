@@ -34,7 +34,7 @@ rule spades__assemble_reads_into_contigs:
         out = 'assembly/{sample}/log/spades.log',
         err = 'assembly/{sample}/log/spades.err'
     conda:
-        config['snakelines_dir'] + '/enviroments/others_env.yaml'
+        config['snakelines_dir'] + '/enviroments/spades.yaml'
     shell:
         """
         spades.py \

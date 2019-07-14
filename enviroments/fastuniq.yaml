@@ -1,0 +1,4 @@
+channels:
+- bioconda
+dependencies:
+- fastuniq=1.1

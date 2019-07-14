@@ -22,7 +22,7 @@ rule quast__quality_report_for_assembled_contigs:
     threads:
         int(config['threads'])
     conda:
-        config['snakelines_dir'] + '/enviroments/quast_env.yaml'
+        config['snakelines_dir'] + '/enviroments/quast.yaml'
     shell:
         """
         quast \

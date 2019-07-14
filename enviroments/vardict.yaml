@@ -1,0 +1,4 @@
+channels:
+- bioconda
+dependencies:
+- vardict=2017.04.18

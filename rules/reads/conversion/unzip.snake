@@ -13,7 +13,7 @@ rule pigz__unzip_file:
     threads:
         int(config['threads'])
     conda:
-        config['snakelines_dir'] + '/enviroments/others_env.yaml'
+        config['snakelines_dir'] + '/enviroments/pigz.yaml'
     shell:
         """
         set +euo pipefail

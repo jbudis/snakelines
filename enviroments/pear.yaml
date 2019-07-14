@@ -1,0 +1,4 @@
+channels:
+- bioconda
+dependencies:
+- pear=0.9.6

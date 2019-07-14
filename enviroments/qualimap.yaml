@@ -1,4 +1,4 @@
 channels:
 - bioconda
 dependencies:
-- iqtree=1.6.11
+- qualimap=2.2.2c

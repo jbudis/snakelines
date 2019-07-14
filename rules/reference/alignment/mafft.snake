@@ -15,7 +15,7 @@ rule mafft__align_sequences_in_reference:
     threads:
         int(config['threads'])
     conda:
-        config['snakelines_dir'] + '/enviroments/mafft_env.yaml'
+        config['snakelines_dir'] + '/enviroments/mafft.yaml'
     shell:
         '''
         mafft \
