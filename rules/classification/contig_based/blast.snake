@@ -62,7 +62,7 @@ rule blast__find_homologues:
     threads:
         int(config['threads'])
     conda:
-        config['snakelines_dir'] + '/enviroments/others_env.yaml'
+        config['snakelines_dir'] + '/enviroments/blast.yaml'
     shell:
         """
         set +e pipefail
@@ -151,7 +151,7 @@ rule blast__prepare_reference_index_for_nucleotide:
     params:
         index_prefix = 'reference/{reference}/blast_index/{reference}'
     conda:
-        config['snakelines_dir'] + '/enviroments/others_env.yaml'
+        config['snakelines_dir'] + '/enviroments/blast.yaml'
     shell:
         """
         makeblastdb \
@@ -185,7 +185,7 @@ rule blast__prepare_reference_index_for_protein:
     params:
         index_prefix = 'reference/{reference}/blast_index/{reference}'
     conda:
-        config['snakelines_dir'] + '/enviroments/others_env.yaml'
+        config['snakelines_dir'] + '/enviroments/blast.yaml'
     shell:
         """
         makeblastdb \

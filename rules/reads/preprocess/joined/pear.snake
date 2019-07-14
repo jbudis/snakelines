@@ -41,7 +41,7 @@ rule pear__join_read_pairs:
         out = 'reads/joined/log/{sample}.log',
         err = 'reads/joined/log/{sample}.err',
     conda:
-        config['snakelines_dir'] + '/enviroments/others_env.yaml'
+        config['snakelines_dir'] + '/enviroments/pear_pigz.yaml'
     shell:
         """
         pear \

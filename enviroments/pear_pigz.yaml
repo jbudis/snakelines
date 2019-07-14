@@ -1,0 +1,6 @@
+channels:
+- bioconda
+- g2554711
+dependencies:
+- pear=0.9.6
+- pigz=2.3.4-0

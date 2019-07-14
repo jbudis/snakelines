@@ -9,7 +9,7 @@ rule bandage__visualise_contig_overlaps:
     output:
         svg = '{path}/{sample}.svg'
     conda:
-        config['snakelines_dir'] + '/enviroments/others_env.yaml'
+        config['snakelines_dir'] + '/enviroments/bandage.yaml'
     shell:
         """
         Bandage image \

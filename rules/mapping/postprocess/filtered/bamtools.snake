@@ -17,7 +17,7 @@ rule bamtools__filter_fragments:
         out  = '{mapper}/{reference}/filtered/log/{sample}.out',
         err  = '{mapper}/{reference}/filtered/log/{sample}.err'
     conda:
-        config['snakelines_dir'] + '/enviroments/others_env.yaml'
+        config['snakelines_dir'] + '/enviroments/bamtools.yaml'
     shell:
         """
         bamtools filter \

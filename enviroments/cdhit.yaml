@@ -1,0 +1,4 @@
+channels:
+- agbiome
+dependencies:
+- cdhit=4.6.1

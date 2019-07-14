@@ -16,7 +16,7 @@ rule gatk__fix_vcf_header:
         out = 'variant/{reference}-wgs/original/log/{sample}.out',
         err = 'variant/{reference}-wgs/original/log/{sample}.err',
     conda:
-        config['snakelines_dir'] + '/enviroments/others_env.yaml'
+        config['snakelines_dir'] + '/enviroments/gatk4.yaml'
     shell:
         """
         gatk SelectVariants \
@@ -41,7 +41,7 @@ rule tabix__index_vcf:
         out = '{path}/log/{filename}_tabix.out',
         err = '{path}/log/{filename}_tabix.err'
     conda:
-        config['snakelines_dir'] + '/enviroments/others_env.yaml'
+        config['snakelines_dir'] + '/enviroments/samtools.yaml'
     shell:
         """
         tabix -p vcf {input} 1>{log.out} 2>{log.err}
@@ -63,7 +63,7 @@ rule picard__bed_to_interval_list:
         out = 'variant/{reference}-wgs/original/interval_list/log/{sample}.out',
         err = 'variant/{reference}-wgs/original/interval_list/log/{sample}.err'
     conda:
-        config['snakelines_dir'] + '/enviroments/others_env.yaml'
+        config['snakelines_dir'] + '/enviroments/picard.yaml'
     shell:
         """
         picard BedToIntervalList \
@@ -100,7 +100,7 @@ rule gatk__collect_variant_calling_metrics:
         out = 'variant/{reference}-{panel}/original/calling_metrics/log/{sample}.out',
         err = 'variant/{reference}-{panel}/original/calling_metrics/log/{sample}.err'
     conda:
-        config['snakelines_dir'] + '/enviroments/others_env.yaml'
+        config['snakelines_dir'] + '/enviroments/gatk4.yaml'
     shell:
         """
         gatk CollectVariantCallingMetrics \

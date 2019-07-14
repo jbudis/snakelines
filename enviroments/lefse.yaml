@@ -1,0 +1,4 @@
+channels:
+- bioconda
+dependencies:
+- lefse=1.0.8
