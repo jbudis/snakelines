@@ -54,7 +54,7 @@ rule vardict__call_germline_variants:
     threads:
         int(config['threads'])
     conda:
-        config['snakelines_dir'] + '/enviroments/vardict.yaml'
+        config['snakelines_dir'] + '/enviroments/vardict-java.yaml'
     shell:
         """
         vardict-java \
