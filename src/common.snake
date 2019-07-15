@@ -25,13 +25,16 @@ for sample_configuration in sample_configurations:
 
     # Filter samples according to the user configuration
     samples = []
-    location = sample_configuration.get('location', DEFAULT_SAMPLE_LOCATION)
-    location = location.replace('{}', '{sample, %s}' % sample_configuration['name'])
-    wildcards = glob_wildcards(location)
-    assert len(wildcards.sample) > 0, 'No samples in {} match configured pattern {}'.format(location, sample_configuration['name'])
+    if 'name' in sample_configuration:
+        location = sample_configuration.get('location', DEFAULT_SAMPLE_LOCATION)
+        location = location.replace('{}', '{sample, %s}' % sample_configuration['name'])
+        wildcards = glob_wildcards(location)
+        samples = wildcards.sample
+        assert len(wildcards.sample) > 0, 'No samples in {} match configured pattern {}'.format(location, sample_configuration['name'])
     
+
     reference = sample_configuration.get('reference', None)
-    pipeline.add(wildcards.sample,
+    pipeline.add(samples,
                 reference,
                 sample_configuration.get('panel', None),
                 sample_configuration.get('prebuilt', False),
