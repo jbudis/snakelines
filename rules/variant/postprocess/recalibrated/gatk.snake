@@ -1,0 +1,72 @@
+ gatk__recalibrate:
+    """
+        Builds a recalibration model to score variant quality for filtering purposes.
+    """
+    input:
+        vcf     = 'variant/{{reference}}-{{panel}}/{process_type}/{{sample}}.vcf'.format(process_type=method_config['input_variant_type']),
+        fasta   = 'reference/{reference}/{reference}.fa',
+        fai     = 'reference/{reference}/{reference}.fa.fai',
+        dbsnp       = 'reference/{reference}/variants/dbsnp.vcf.bgz',
+        dbsnp_index = 'reference/{reference}/variants/dbsnp.vcf.bgz.tbi',
+        bed         = 'reference/{reference}/annotation/twist/regions.interval_list',
+    output:
+        recal   = 'variant/{reference}-{panel}/recalibrated/{sample}.recal',
+        model   = 'variant/{reference}-{panel}/recalibrated/{sample}.model',
+        tranches   = 'variant{reference}-{panel}/recalibrated/{sample}.tranches'
+        script   = 'variant{reference}-{panel}/recalibrated/{sample}.r'
+    log:
+        out     = 'variant/{reference}-{panel}/recalibrated/log/{sample}.recal.out',
+        err     = 'variant/{reference}-{panel}/recalibrated/log/{sample}.recal.err'
+    threads:
+        int(config['threads'])
+    shell:
+        """
+        VariantRecalibrator \
+            --reference {input.fasta} \
+            --intervals {input.bed} \
+            --input {input.vcf} \
+            --resource {input.dbsnp} \
+            --tranches_file {output.tranches} \
+            --recal_file {output.recal} \
+            --use_annotation TODO \
+            --use_annotation TODO \
+            --use_annotation TODO \
+            --use_annotation TODO \
+            --mode SNP \
+            --output_model {output.model} \
+            --rscript_file {output.script}
+        1> {log.out} \
+        2> {log.err}
+        """
+
+rule gatk__apply_vqsr:
+    """
+        Applies a score cutoff to filter variants based on a recalibration table.
+    """
+    input:
+        vcf     = 'variant/{{reference}}-{{panel}}/{process_type}/{{sample}}.vcf'.format(process_type=method_config['input_variant_type']),
+        fasta   = 'reference/{reference}/{reference}.fa',
+        fai     = 'reference/{reference}/{reference}.fa.fai',
+        recal   = 'variant/{reference}-{panel}/recalibrated/{sample}.recal',
+        bed         = 'reference/{reference}/annotation/twist/regions.interval_list',
+    output:
+        vcf     = 'variant/{reference}-{panel}/recalibrated/{sample}.vcf',
+    log:
+        out     = 'variant/{reference}-{panel}/recalibrated/log/{sample}.vcf.out',
+        err     = 'variant/{reference}-{panel}/recalibrated/log/{sample}.vcf.err'
+    threads:
+        int(config['threads'])
+    shell:
+        """
+        gatk ApplyVQSR \
+           --reference {input.fasta} \
+           --intervals {input.bed} \
+           --variant {input.vcf} \
+           --truth-sensitivity-filter-level 99.0 \
+           --tranches-file {input.tranches} \
+           --recal-file {input.recal} \
+           --mode SNP \
+           --output {output.vcf} \
+        1> {log.out} \
+        2> {log.err}
+        """

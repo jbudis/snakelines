@@ -74,29 +74,29 @@ mapping:
     postprocess:
         original:
             output:
-                original: expand('mapping/{sr.reference}/original/{sr.sample}.bam',
+                mapped_reads: expand('mapping/{sr.reference}/original/{sr.sample}.bam',
                                   sr=pipeline.sample_references)
         sorted:
             output:
-                sorted: expand('mapping/{sr.reference}/sorted/{sr.sample}.bam', sr=pipeline.sample_references)
+                mapped_reads: expand('mapping/{sr.reference}/sorted/{sr.sample}.bam', sr=pipeline.sample_references)
         filtered:
             output:
-                read_group: expand('mapping/{sr.reference}/filtered/{sr.sample}.bam', sr=pipeline.sample_references)
+                mapped_reads: expand('mapping/{sr.reference}/filtered/{sr.sample}.bam', sr=pipeline.sample_references)
         read_group:
             output:
-                read_group: expand('mapping/{sr.reference}/read_group/{sr.sample}.bam', sr=pipeline.sample_references)
+                mapped_reads: expand('mapping/{sr.reference}/read_group/{sr.sample}.bam', sr=pipeline.sample_references)
         realigned:
             output:
-                read_group: expand('mapping/{sr.reference}/realigned/{sr.sample}.bam', sr=pipeline.sample_references)
+                mapped_reads: expand('mapping/{sr.reference}/realigned/{sr.sample}.bam', sr=pipeline.sample_references)
         deduplicated:
             output:
-                deduplicated: expand('mapping/{sr.reference}/deduplicated/{sr.sample}.bam', sr=pipeline.sample_references)
+                mapped_reads: expand('mapping/{sr.reference}/deduplicated/{sr.sample}.bam', sr=pipeline.sample_references)
         deoverlapped:
             output:
-                deoverlapped: expand('mapping/{sr.reference}/deoverlapped/{sr.sample}.bam', sr=pipeline.sample_references)
+                mapped_reads: expand('mapping/{sr.reference}/deoverlapped/{sr.sample}.bam', sr=pipeline.sample_references)
         recalibrated:
             output:
-                deoverlapped: expand('mapping/{sr.reference}/recalibrated/{sr.sample}.bam', sr=pipeline.sample_references)
+                mapped_reads: expand('mapping/{sr.reference}/recalibrated/{sr.sample}.bam', sr=pipeline.sample_references)
 
     merged:
         output:
@@ -156,9 +156,9 @@ mapping:
 variant:
     caller:
         output:
-            variants:
-                from: expand('variant/{sr.reference}-{sr.panel}/original/{sr.sample}.vcf',
-                              sr=pipeline.sample_references, map_type=pipeline.postprocessed_map_type)
+            variant_calls:
+                from: expand('variant/{sr.reference}-{sr.panel}/{process_type}/{sr.sample}.vcf',
+                              sr=pipeline.sample_references, process_type=pipeline.postprocessed_variant_type)
 
                 to:   expand('{report_dir}/{sr.sample}/variants-{sr.reference}-{sr.panel}.vcf',
                               report_dir=config['report_dir'], sr=pipeline.sample_references)
@@ -166,6 +166,21 @@ variant:
             - reads/preprocess
             - reads/report/quality_report
             - mapping/mapper
+
+    postprocess:
+        original:
+            output:
+                variant_calls:
+                    expand('variant/{sr.reference}-{sr.panel}/original/{sr.sample}.vcf',
+                            sr=pipeline.sample_references)
+
+        recalibrated:
+            output:
+                variant_calls:
+                    expand('variant/{sr.reference}-{sr.panel}/recalibrated/{sr.sample}.vcf',
+                            sr=pipeline.sample_references)
+
+
     report:
         calling:
             output: []

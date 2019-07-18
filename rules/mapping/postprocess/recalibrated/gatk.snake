@@ -69,7 +69,7 @@ rule gatk__recalibrate_pass2:
 
 rule gatk__apply_bqsr:
     """
-        Apply base quality score recalibration.
+        Applies base quality score recalibration.
     """
     input:
         bam     = 'mapping/{{reference}}/{map_type}/{{sample}}.bam'.format(map_type=method_config['input_map_type']),

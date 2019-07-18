@@ -8,13 +8,14 @@ rule gatk__call_germline_variants:
         if possible when the database is provided.
     """
     input:
-        bam         = 'mapping/{{reference}}/{map_type}/{{sample}}.bam'.format(map_type=pipeline.postprocessed_map_type),
-        bai         = 'mapping/{{reference}}/{map_type}/{{sample}}.bam.bai'.format(map_type=pipeline.postprocessed_map_type),
+        bam         = 'mapping/{reference}/%s/{sample}.bam' % pipeline.postprocessed_map_type,
+        bai         = 'mapping/{reference}/%s/{sample}.bam.bai' % pipeline.postprocessed_map_type,
         bed         = 'reference/{reference}/annotation/{panel}/regions.interval_list',
         fasta       = 'reference/{reference}/{reference}.fa',
         fai         = 'reference/{reference}/{reference}.fa.fai',
     output:
-        vcf         = 'variant/{reference}-{panel}/{state}/{sample}.vcf'
+        vcf         = 'variant/{reference}-{panel}/{state}/{sample}.vcf',
+        vcf_index   = 'variant/{reference}-{panel}/{state}/{sample}.vcf.idx'
     params:
         dbsnp       = 'reference/{reference}/variants/dbsnp.vcf.bgz',
         dbsnp_index = 'reference/{reference}/variants/dbsnp.vcf.bgz.tbi',

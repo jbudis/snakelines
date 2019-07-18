@@ -2,6 +2,35 @@ include: config['snakelines_dir'] + '/rules/reference/annotation/regions.snake'
 include: config['snakelines_dir'] + '/rules/mapping/index/samtools.snake'
 include: config['snakelines_dir'] + '/rules/reference/index/fai/samtools.snake'
 
+rule gatk__fix_vcf_header:
+    """
+    Adds missing sequence dictionary to VCF header. This job also generates VCF index (.idx).
+    :input vcf: Raw VCF from variant caller vardict.
+    :input fasta: Reference sequence.
+    :output vcf: Fixed VCF.
+    :output vcf_index: Fixed VCF index.
+    """
+    input:
+        vcf = 'variant/{reference}-{panel}/original/{sample}.vardict.vcf',
+        fasta = 'reference/{reference}/{reference}.fa'
+    output:
+        vcf = 'variant/{reference}-{panel}/original/{sample}.vcf',
+        vcf_index = 'variant/{reference}-{panel}/original/{sample}.vcf.idx',
+    log:
+        out = 'variant/{reference}-{panel}/original/log/{sample}.out',
+        err = 'variant/{reference}-{panel}/original/log/{sample}.err',
+    conda:
+        config['snakelines_dir'] + '/enviroments/others_env.yaml'
+    shell:
+        """
+        gatk SelectVariants \
+            -V {input.vcf} \
+            -R {input.fasta} \
+            -O {output.vcf} \
+            1>{log.out} \
+            2>{log.err}
+        """
+
 rule vardict__create_wgs_bed_file:
     """
     Creates bed file with whole genomic regions in reference fasta file. Simple way to unite WGS and panel analysis.
@@ -43,8 +72,8 @@ rule vardict__call_germline_variants:
     Identify small variation (SNP and indels) from the mapped reads.
     """
     input:
-        bam      = 'mapping/{{reference}}/{map_type}/{{sample}}.bam'.format(map_type=pipeline.postprocessed_map_type),
-        bai      = 'mapping/{{reference}}/{map_type}/{{sample}}.bam.bai'.format(map_type=pipeline.postprocessed_map_type),
+        bam      = 'mapping/{reference}/%s/{sample}.bam' % pipeline.postprocessed_map_type,
+        bai      = 'mapping/{reference}/%s/{sample}.bam.bai' % pipeline.postprocessed_map_type,
         bed      = 'reference/{reference}/annotation/{panel}/regions.vardict.bed',
         reffasta = 'reference/{reference}/{reference}.fa',
         reffaidx = 'reference/{reference}/{reference}.fa.fai'
