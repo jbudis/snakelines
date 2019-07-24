@@ -5,6 +5,7 @@ rule edger__identify_transcripts_with_changed_expression:
     :input metadata: File with samples attributes - use for separating samples into compared groups
     :output norm_counts: TSV table with normalised number of reads (by sample read depth)
     :output table: TSV table with statistical evaluation of change of expression
+    :output design: TSV table describing separation of samples into groups for differential expression
     :param group_by: attribute (in the metadata file header) that would split samples into two categories
     :param batch: attribute (in the metadata file header) that would split samples categories with similar batch bias effect (e.g. samples from same sequencing run)
     """
@@ -14,12 +15,13 @@ rule edger__identify_transcripts_with_changed_expression:
         edger = srcdir('scripts/edger.R')
     output:
         norm_counts = '{analysis_dir}/{reference}/report/tsv/summary.normed.tsv',
-        table  = '{analysis_dir}/{reference}/report/comparison/differential_analysis.tsv'
+        table  = '{analysis_dir}/{reference}/report/comparison/differential_analysis.tsv',
+        design = '{analysis_dir}/{reference}/report/comparison/design.tsv',
     params:
         group_by = method_config['group_by'],
         batch = method_config.get('batch', '')
     conda:
-        config['snakelines_dir'] + '/enviroments/edger_env.yaml'
+        config['snakelines_dir'] + '/enviroments/edger.yaml'
     shell:
         '''
         Rscript {input.edger} \
@@ -27,6 +29,24 @@ rule edger__identify_transcripts_with_changed_expression:
             {input.metadata} \
             {output.norm_counts} \
             {output.table} \
+            {output.design} \
             {params.group_by} \
             {params.batch}
         '''
+
+rule edger__convert_summary_tsv_table_to_xlsx:
+    """
+    Convert summary.normed.tsv table to Excel format.
+    :input tsv_table: Table in tsv format
+    :output xlsx_table: Table in Excel format
+    """
+    input:
+        tsv_table = '{analysis_dir}/{reference}/report/tsv/summary.normed.tsv'
+    output:
+        xlsx_table = '{analysis_dir}/{reference}/report/tsv/summary.normed.xlsx'
+    run:
+        #load table in tsv format
+        table = pd.read_csv(input.tsv_table, sep='\t', header=None)
+        table.index.name = 'name'
+        #convert and save table in xlsx format
+        table.to_excel(output.xlsx_table)

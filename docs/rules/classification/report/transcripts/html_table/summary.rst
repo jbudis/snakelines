@@ -13,6 +13,7 @@ Take transcriptomic counts from several samples and merge them together into a s
 - *table:* TSV table with statistical evaluation of change in expression
 - *desc:* Description of reference sequences
 - *template:* HTML template with basic report outline
+- *annotations:* TSV files with attributes for annotated transcripts
 
 **Output(s):**
 

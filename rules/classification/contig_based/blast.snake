@@ -62,7 +62,7 @@ rule blast__find_homologues:
     threads:
         int(config['threads'])
     conda:
-        config['snakelines_dir'] + '/enviroments/others_env.yaml'
+        config['snakelines_dir'] + '/enviroments/blast.yaml'
     shell:
         """
         set +e pipefail
@@ -130,7 +130,6 @@ rule blast__annotate_with_taxonomy:
                 out_blast.write('\n')
 
 
-# TODO add reference indices for protein databases as well
 rule blast__prepare_reference_index_for_nucleotide:
     """
     Creates blast indices from genomic sequences.
@@ -147,18 +146,52 @@ rule blast__prepare_reference_index_for_nucleotide:
         nin = protected('reference/{reference}/blast_index/{reference}.nin'),
         nsq = protected('reference/{reference}/blast_index/{reference}.nsq')
     log:
-        out = 'reference/{reference}/blast_index/log/{reference.log}',
-        err = 'reference/{reference}/blast_index/log/{reference.err}'
+        out = 'reference/{reference}/blast_index/log/{reference}.log',
+        err = 'reference/{reference}/blast_index/log/{reference}.err'
     params:
         index_prefix = 'reference/{reference}/blast_index/{reference}'
     conda:
-        config['snakelines_dir'] + '/enviroments/others_env.yaml'
+        config['snakelines_dir'] + '/enviroments/blast.yaml'
     shell:
         """
         makeblastdb \
             -in {input.fa} \
             -input_type fasta \
             -dbtype nucl \
+            -title {wildcards.reference} \
+            -out {params.index_prefix} \
+        >  {log.out} \
+        2> {log.err}
+        """
+
+rule blast__prepare_reference_index_for_protein:
+    """
+    Creates blast indices from protein sequences.
+    :input fa: Genomic protein sequences in fasta format
+    :output phr: Part of blast index
+    :output pin: Part of blast index
+    :output psq: Part of blast index
+    :params index_prefix: Prefix name of output blast database files
+    """
+    input:
+        fa  = 'reference/{reference}/{reference}.fa'
+    output:
+        phr = protected('reference/{reference}/blast_index/{reference}.phr'),
+        pin = protected('reference/{reference}/blast_index/{reference}.pin'),
+        psq = protected('reference/{reference}/blast_index/{reference}.psq')
+    log:
+        out = 'reference/{reference}/blast_index/log/{reference}.log',
+        err = 'reference/{reference}/blast_index/log/{reference}.err'
+    params:
+        index_prefix = 'reference/{reference}/blast_index/{reference}'
+    conda:
+        config['snakelines_dir'] + '/enviroments/blast.yaml'
+    shell:
+        """
+        makeblastdb \
+            -in {input.fa} \
+            -input_type fasta \
+            -dbtype prot \
             -title {wildcards.reference} \
             -out {params.index_prefix} \
         >  {log.out} \

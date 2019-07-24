@@ -1,0 +1,4 @@
+channels:
+- bioconda
+dependencies:
+- snpsift=4.3.1t

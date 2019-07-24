@@ -1,0 +1,4 @@
+channels:
+- g2554711
+dependencies:
+- r-virfinder=1.1

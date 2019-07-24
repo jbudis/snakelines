@@ -18,8 +18,6 @@ rule custom__remove_overlapping_reads:
         tmp_dir = config['tmp_dir']
     log:
         err  = '{mapper}/{reference}/deoverlapped/log/{sample}.err',
-    conda:
-        config['snakelines_dir'] + '/enviroments/others_env.yaml'
     run:
         log_err = open(log.err, 'w')
 

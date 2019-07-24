@@ -50,7 +50,7 @@ rule salmon__classify_reads:
     threads:
         int(config['threads'])
     conda:
-        config['snakelines_dir'] + '/enviroments/others_env.yaml'
+        config['snakelines_dir'] + '/enviroments/salmon.yaml'
     shell:
         '''
         salmon quant \
@@ -88,7 +88,7 @@ rule salmon__create_reference_index:
         out       = 'reference/{reference}/salmon_index/log/db.log',
         err       = 'reference/{reference}/salmon_index/log/db.err'
     conda:
-        config['snakelines_dir'] + '/enviroments/others_env.yaml'
+        config['snakelines_dir'] + '/enviroments/salmon.yaml'
     shell:
         '''
         salmon index \

@@ -2,6 +2,28 @@ Rules
 =====
 - Reference
 
+  - Attributes
+
+    - Desc
+
+      .. toctree::
+        reference/attributes/desc/summary.rst
+
+    - Comparison
+
+      .. toctree::
+        reference/report/comparison/summary.rst
+
+    - Phylogenetic Tree
+
+      .. toctree::
+        reference/report/phylogenetic_tree/summary.rst
+
+  - Download
+
+    .. toctree::
+      reference/download/summary.rst
+
   - Index
 
     - Dict
@@ -14,6 +36,11 @@ Rules
       .. toctree::
         reference/index/fai/summary.rst
 
+  - Phylogeny
+
+    .. toctree::
+      reference/phylogeny/summary.rst
+
 - Assembly
 
   - Report
@@ -21,7 +48,16 @@ Rules
     - Quality Report
 
       .. toctree::
-        assembly/report/quality_report/summary.rst
+        classification/report/summary/summary.rst
+
+    - Taxonomic Counts
+
+      - Alpha Diversity
+
+        .. toctree::
+          classification/report/taxonomic_counts/alpha_diversity/summary.rst
+
+      - Barplot
 
     - Assembly Graph
 
@@ -61,35 +97,10 @@ Rules
       .. toctree::
         mapping/postprocess/deduplicated/summary.rst
 
-    - Realigned
-
-      .. toctree::
-        mapping/postprocess/realigned/summary.rst
-
-    - Read Group
-
-      .. toctree::
-        mapping/postprocess/read_group/summary.rst
-
     - Sorted
 
       .. toctree::
         mapping/postprocess/sorted/summary.rst
-
-    - Deoverlapped
-
-      .. toctree::
-        mapping/postprocess/deoverlapped/summary.rst
-
-    - Filtered
-
-      .. toctree::
-        mapping/postprocess/filtered/summary.rst
-
-  - Merged
-
-    .. toctree::
-      mapping/merged/summary.rst
 
   - Mapper
 
@@ -192,10 +203,20 @@ Rules
         .. toctree::
           classification/report/transcripts/pca/summary.rst
 
+      - Revigo
+
+        .. toctree::
+          classification/report/transcripts/revigo/summary.rst
+
       - Count Table
 
         .. toctree::
           classification/report/transcripts/count_table/summary.rst
+
+      - Html Table
+
+        .. toctree::
+          classification/report/transcripts/html_table/summary.rst
 
     - Summary
 

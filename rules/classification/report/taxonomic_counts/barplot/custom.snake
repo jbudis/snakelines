@@ -1,9 +1,11 @@
 include: config['snakelines_dir'] + '/rules/classification/report/taxonomic_counts/count_table/custom.snake'
 
 import pandas as pd
-import numpy as np
+
+import matplotlib
+matplotlib.use('Agg')
+from matplotlib import pyplot as plt
 import seaborn as sns
-import matplotlib.pyplot as plt
 
 # TODO script throws warning RuntimeError: main thread is not in main loop, but still generates figures
 

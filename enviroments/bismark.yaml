@@ -1,0 +1,4 @@
+channels:
+- bioconda
+dependencies:
+- bismark=0.20.0

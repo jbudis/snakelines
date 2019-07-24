@@ -123,7 +123,7 @@ rule fasta_summary__mapped_reads:
     output:
         tsv = '{indir}/annotation/{name}/attributes/mapped_reads.tsv'
     conda:
-        config['snakelines_dir'] + '/enviroments/others_env.yaml'
+        config['snakelines_dir'] + '/enviroments/samtools.yaml'
     shell:
         """
         echo -e '\tMapped reads' > {output.tsv}
