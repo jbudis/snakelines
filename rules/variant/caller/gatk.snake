@@ -1,6 +1,7 @@
 include: config['snakelines_dir'] + '/rules/reference/annotation/regions.snake'
-include: config['snakelines_dir'] + '/rules/reference/index/fai/samtools.snake'
 include: config['snakelines_dir'] + '/rules/mapping/index/samtools.snake'
+include: config['snakelines_dir'] + '/rules/reference/index/fai/samtools.snake'
+include: config['snakelines_dir'] + '/rules/reference/index/dict/picard.snake'
 
 rule gatk__call_germline_variants:
     """
@@ -14,16 +15,16 @@ rule gatk__call_germline_variants:
         fasta       = 'reference/{reference}/{reference}.fa',
         fai         = 'reference/{reference}/{reference}.fa.fai',
     output:
-        vcf         = 'variant/{reference}-{panel}/{state}/{sample}.vcf',
-        vcf_index   = 'variant/{reference}-{panel}/{state}/{sample}.vcf.idx'
+        vcf         = 'variant/{reference}-{panel}/original/{sample}.vcf',
+        vcf_index   = 'variant/{reference}-{panel}/original/{sample}.vcf.idx'
     params:
         dbsnp       = 'reference/{reference}/variants/dbsnp.vcf.bgz',
         dbsnp_index = 'reference/{reference}/variants/dbsnp.vcf.bgz.tbi',
     threads:
         int(config['threads'])
     log:
-        out = 'variant/{reference}-{panel}/{state}/log/{sample}.vcf.out',
-        err = 'variant/{reference}-{panel}/{state}/log/{sample}.vcf.err'
+        out = 'variant/{reference}-{panel}/original/log/{sample}.vcf.out',
+        err = 'variant/{reference}-{panel}/original/log/{sample}.vcf.err'
     shell:
         """
         DBSNP=
