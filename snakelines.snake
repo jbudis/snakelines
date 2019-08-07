@@ -7,6 +7,7 @@ from src.output.copy_files import copy_input_files_with_consisent_names_dict
 from src.output.copy_files import copy_config
 from src.output.copy_files import store_snakelines_version
 from src.output.send_email import send_email
+from src.output.report import snakemake_report
 
 # Load configuration file if not already loaded
 config = load_config(config)
@@ -47,12 +48,17 @@ rule pipeline:
 
 # on success copy the files to report directory and send email(s)
 onsuccess:
-    print("Copying and finalizing", file=sys.stderr)
+    print("Success - finalizing", file=sys.stderr)
+
     copied = copy_input_files_with_consisent_names_dict(get_files(outputs), get_files(copy_where), pipeline)
     print("Copied {} files to report dir '{}'".format(copied, config['report_dir']), file=sys.stderr)
+
     copy_config(config['report_dir'], workflow, pipeline)
     store_snakelines_version(config['report_dir'], SNAKELINES_VERSION)
     send_email(config, get_files(outputs), get_files(copy_where), True)
+
+    print("Creating runtime report", file=sys.stderr)
+    snakemake_report(outdir=config['report_dir'], snakefile=workflow.snakefile, configfile=workflow.overwrite_configfile)
 
 # on error send email(s)
 onerror:

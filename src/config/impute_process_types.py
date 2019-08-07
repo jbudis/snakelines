@@ -66,8 +66,9 @@ def impute_variant_types(pipeline, config):
     
     # Add new read_type attribute to the main config, so rules for preprocess steps may deduce input read files
     previous_type = original_type
-    for this_type in config['variant']['postprocess'].keys():
-        config['variant']['postprocess'][this_type]['input_variant_type'] = previous_type
-        previous_type = this_type
+    if config['variant']['postprocess'] is not None:
+        for this_type in config['variant']['postprocess'].keys():
+            config['variant']['postprocess'][this_type]['input_variant_type'] = previous_type
+            previous_type = this_type
     
     setattr(pipeline, 'postprocessed_variant_type', previous_type)

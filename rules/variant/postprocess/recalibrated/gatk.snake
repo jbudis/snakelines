@@ -1,3 +1,7 @@
+include: config['snakelines_dir'] + '/rules/reference/annotation/regions.snake'
+include: config['snakelines_dir'] + '/rules/reference/index/fai/samtools.snake'
+include: config['snakelines_dir'] + '/rules/reference/index/dict/picard.snake'
+
 rule gatk__recalibrate:
     """
         Builds a recalibration model to score variant quality for filtering purposes.
@@ -8,6 +12,7 @@ rule gatk__recalibrate:
         vcf            = 'variant/{reference}-{panel}/%s/{sample}.vcf' % method_config['input_variant_type'],
         fasta          = 'reference/{reference}/{reference}.fa',
         fai            = 'reference/{reference}/{reference}.fa.fai',
+        dict           = 'reference/{reference}/{reference}.dict',
         hapmap         = 'reference/{reference}/variants/hapmap.vcf.bgz',
         hapmap_index   = 'reference/{reference}/variants/hapmap.vcf.bgz.tbi',
         omni           = 'reference/{reference}/variants/omni.vcf.bgz',
@@ -20,18 +25,20 @@ rule gatk__recalibrate:
     output:
         vcf      = 'variant/{reference}-{panel}/recalibrated/{sample}.recalibration.vcf',
         model    = 'variant/{reference}-{panel}/recalibrated/{sample}.model',
-        tranches = 'variant{reference}-{panel}/recalibrated/{sample}.tranches',
-        script   = 'variant{reference}-{panel}/recalibrated/{sample}.r'
+        tranches = 'variant/{reference}-{panel}/recalibrated/{sample}.tranches',
+        script   = 'variant/{reference}-{panel}/recalibrated/{sample}.r'
     log:
-        out = 'variant/{reference}-{panel}/recalibrated/log/{sample}.recal.out',
-        err = 'variant/{reference}-{panel}/recalibrated/log/{sample}.recal.err'
+        out = 'variant/{reference}-{panel}/recalibrated/log/{sample}.recalibration.out',
+        err = 'variant/{reference}-{panel}/recalibrated/log/{sample}.recalibration.err'
     threads:
         int(config['threads'])
     shell:
+        # --disable-sequence-dictionary-validation
         """
         gatk VariantRecalibrator \
             --reference {input.fasta} \
             --intervals {input.bed} \
+            --sequence-dictionary {input.dict} \
             --variant {input.vcf} \
             --resource {input.dbsnp} \
             --tranches-file {output.tranches} \
@@ -40,11 +47,11 @@ rule gatk__recalibrate:
             --resource 1000G,known=false,training=true,truth=false,prior=10.0:{input.thousand} \
             --resource dbsnp,known=true,training=false,truth=false,prior=2.0:{input.dbsnp} \
             --use-annotation DP \
+            --use-annotation MQ \
+            --use-annotation MQRankSum \
             --use-annotation QD \
             --use-annotation FS \
             --use-annotation SOR \
-            --use-annotation MQ \
-            --use-annotation MQRankSum \
             --use-annotation ReadPosRankSum \
             --mode SNP \
             --output-model {output.model} \
@@ -62,23 +69,25 @@ rule gatk__apply_vqsr:
         vcf           = 'variant/{reference}-{panel}/%s/{sample}.vcf' % method_config['input_variant_type'],
         fasta         = 'reference/{reference}/{reference}.fa',
         fai           = 'reference/{reference}/{reference}.fa.fai',
+        dict          = 'reference/{reference}/{reference}.dict',
         recalibration = 'variant/{reference}-{panel}/recalibrated/{sample}.recalibration.vcf',
         bed           = 'reference/{reference}/annotation/twist/regions.interval_list',
-        tranches = 'variant{reference}-{panel}/recalibrated/{sample}.tranches',
+        tranches      = 'variant/{reference}-{panel}/recalibrated/{sample}.tranches',
     output:
-        vcf      = 'variant/{reference}-{panel}/recalibrated/{sample}.vcf',
+        vcf = 'variant/{reference}-{panel}/recalibrated/{sample}.vcf',
     log:
         out = 'variant/{reference}-{panel}/recalibrated/log/{sample}.vcf.out',
         err = 'variant/{reference}-{panel}/recalibrated/log/{sample}.vcf.err'
     threads:
         int(config['threads'])
     shell:
+        # --truth-sensitivity-filter-level 99.0 \
         """
         gatk ApplyVQSR \
            --reference {input.fasta} \
            --intervals {input.bed} \
+           --sequence-dictionary {input.dict} \
            --variant {input.vcf} \
-           --truth-sensitivity-filter-level 99.5 \
            --tranches-file {input.tranches} \
            --recal-file {input.recalibration} \
            --mode SNP \

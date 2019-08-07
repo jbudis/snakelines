@@ -23,6 +23,7 @@ rule bwa__map_reads_to_reference:
     params:
         index = 'reference/{reference}/bwa_index/{reference}',
         additional = method_config.get('params', ''),
+        # TODO try these params
         # concordant = '-B 40 -O 60 -E 10  –L100' if method_config.get('only_concordant', False) else ''
     threads:
         int(config['threads'])
@@ -35,7 +36,6 @@ rule bwa__map_reads_to_reference:
             {params.index} \
             {input.r1} \
             {input.r2} \
-            -M \
             2> {log.err} \
         | samtools view -bS > {output.bam} \
         """

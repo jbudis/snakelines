@@ -72,10 +72,6 @@ mapping:
                                  sr=pipeline.sample_references, map_type=pipeline.postprocessed_map_type)
 
     postprocess:
-        original:
-            output:
-                mapped_reads: expand('mapping/{sr.reference}/original/{sr.sample}.bam',
-                                  sr=pipeline.sample_references)
         sorted:
             output:
                 mapped_reads: expand('mapping/{sr.reference}/sorted/{sr.sample}.bam', sr=pipeline.sample_references)
@@ -157,10 +153,10 @@ variant:
     caller:
         output:
             variant_calls:
-                from: expand('variant/{sr.reference}-{sr.panel}/{process_type}/{sr.sample}.vcf',
-                              sr=pipeline.sample_references, process_type=pipeline.postprocessed_variant_type)
+                from: expand('variant/{sr.reference}-{sr.panel}/original/{sr.sample}.vcf',
+                              sr=pipeline.sample_references)
 
-                to:   expand('{report_dir}/{sr.sample}/variants-{sr.reference}-{sr.panel}.vcf',
+                to:   expand('{report_dir}/{sr.sample}/original-{sr.reference}-{sr.panel}.vcf',
                               report_dir=config['report_dir'], sr=pipeline.sample_references)
         depends:
             - reads/preprocess
@@ -168,18 +164,15 @@ variant:
             - mapping/mapper
 
     postprocess:
-        original:
-            output:
-                variant_calls:
-                    expand('variant/{sr.reference}-{sr.panel}/original/{sr.sample}.vcf',
-                            sr=pipeline.sample_references)
-
         recalibrated:
             output:
                 variant_calls:
-                    expand('variant/{sr.reference}-{sr.panel}/recalibrated/{sr.sample}.vcf',
-                            sr=pipeline.sample_references)
-
+                    from:
+                        expand('variant/{sr.reference}-{sr.panel}/recalibrated/{sr.sample}.vcf',
+                                sr=pipeline.sample_references)
+                    to:
+                        expand('{report_dir}/{sr.sample}/recalibrated-{sr.reference}-{sr.panel}.vcf',
+                               report_dir=config['report_dir'], sr=pipeline.sample_references)
 
     report:
         calling:
@@ -190,7 +183,7 @@ variant:
                 - mapping/mapper
         summary:
             output:
-                report:
+                pdf:
                     from: expand('variant/{sr.reference}-{sr.panel}/original/report/{sr.sample}.pdf',
                                   sr=pipeline.sample_references)
 
@@ -200,6 +193,7 @@ variant:
                 - reads/preprocess
                 - reads/report/quality_report
                 - mapping/mapper
+
 
 classification:
     read_based:

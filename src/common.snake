@@ -63,6 +63,7 @@ read_types_to_keep = [read_type for read_type in preprocess.keys() if not prepro
 # Find in configuration read preprocess types for which should be report generated
 read_types_with_quality_report = extract_from_config(config, ['reads', 'report', 'quality_report', 'read_types'], [])
 map_types_with_quality_report = extract_from_config(config, ['mapping', 'report', 'quality_report', 'map_types'], [])
+variant_types_with_quality_report = extract_from_config(config, ['variant', 'report', 'calling', 'variant_types'], [])
 
 # Which taxonomic levels should be extracted in separate tables
 tax_levels_count_table = extract_from_config(config, ['classification', 'report', 'taxonomic_counts', 'count_table', 'tax_levels'], [])
