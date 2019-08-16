@@ -1,4 +1,4 @@
-include: config['snakelines_dir'] + '/rules/mapping/index/samtools.snake'
+# include: config['snakelines_dir'] + '/rules/mapping/index/samtools.snake'
 
 def all_bams(wildcards):
     return expand('mapping/{reference}/{map_type}/{sample}.bam',

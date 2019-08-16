@@ -20,13 +20,7 @@ rule trimmomatic__trim_reads:
         r1 = configured_temp('reads/trimmed/{sample}_R1.fastq.gz'),
         r2 = configured_temp('reads/trimmed/{sample}_R2.fastq.gz')
     params:
-        r1 = 'reads/trimmed/{sample}_R1.fastq',
-        r2 = 'reads/trimmed/{sample}_R2.fastq',
-        additional = method_config.get('additional_params', ''),
-        quality = 'SLIDINGWINDOW:5:%s' % method_config.get('quality', ''),
-        headcrop = 'HEADCROP:%s' % method_config.get('headcrop', ''),
-        crop = 'CROP:%s' % method_config.get('crop', ''),
-        minlen = 'MINLEN:%s' % method_config.get('minlen', '')
+        params = method_config.get('params', ''),
     threads:
         int(config['threads'])
     log:
@@ -43,12 +37,8 @@ rule trimmomatic__trim_reads:
             {input.r2} \
             {output.r1} /dev/null \
             {output.r2} /dev/null \
-            {params.additional} \
-            {params.crop} \
-            {params.headcrop} \
-            {params.quality} \
-            {params.minlen} \
-        >  {log.out} \
+            {params.params} \
+        1> {log.out} \
         2> {log.err}
         """
 
