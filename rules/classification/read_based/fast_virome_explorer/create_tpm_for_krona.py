@@ -32,14 +32,13 @@ def create_working_accessories(input_file):
 
 
 def create_tpm_table(input_file, dictionary, abundance_file, krona_table):
-   """
-   Creates tpm table for krona Tools
-   :param input_file:
-   :param dictionary:
-   :param abundance_file:
-   :param krona_table:
-   """
-    # load input file and extract ncbi_id into dictionary
+    """
+    Creates tpm table for krona Tools
+    :param input_file:
+    :param dictionary:
+    :param abundance_file:
+    :param krona_table:
+    """
     load_input_file = pd.read_csv(input_file, header = None, sep='\t')
     for i in range(len(load_input_file[0])):
         if i != 0:
@@ -80,7 +79,7 @@ input_file = sys.argv[1]
 working_dir, working_file = create_working_accessories(input_file)[0], create_working_accessories(input_file)[1]
 dictionary = dict()
 abundance_file = '{}/abundance.tsv'.format(working_dir)
-krona_table = '{}/FastViromeExplorer-final-sorted-abundance-checked_tpm.tsv'.format(working_dir)
+krona_table = '{}/FastViromeExplorer-final-sorted-abundance_checked_tpm.tsv'.format(working_dir)
 
 # calling main function of script
 create_tpm_table(input_file, dictionary, abundance_file, krona_table)

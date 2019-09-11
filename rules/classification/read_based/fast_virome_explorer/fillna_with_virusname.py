@@ -51,7 +51,7 @@ def fillna_with_virusname(input_file):
 input_file = sys.argv[1]  # As input serves first shell argument
 working_dir, working_file = create_working_accessories(input_file)[0], create_working_accessories(input_file)[1]
 output_file = list()
-output_file += ['.'.join(input_file.split('.')[:-1]), '-checked.', input_file.split('.')[-1]]  # Creates new output name
+output_file += ['.'.join(input_file.split('.')[:-1]), '_checked.', input_file.split('.')[-1]]  # Creates new output name
 output_file = ''.join(output_file)
 
 # Calling main function of script
