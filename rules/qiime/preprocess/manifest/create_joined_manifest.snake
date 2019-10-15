@@ -1,3 +1,5 @@
+import os
+
 rule qiime__create_joined_manifest:
     """
     Creates manifest file for joined samples, that it required later for importing those samples into qiime.
@@ -10,9 +12,18 @@ rule qiime__create_joined_manifest:
     output:
         manifest = 'reads/qiime/{name}.manifest'
     params:
-        path = '$PWD/reads/{name}/*_RM.fastq.gz'
-    shell:
-        '''
-        echo "sample-id,absolute-filepath,direction" >> {output.manifest}
-        ls {params.path} | sed -E "s/(.*)(\/)([^\/]*)(_RM.fastq.gz)/\\3,\\1\\2\\3\\4,forward/g" >> {output.manifest}
-        '''
+        pwd = '$PWD'
+#        path = '$PWD/reads/{read_type}/*_RM.fastq.gz'.format(read_type=pipeline.preprocessed_read_type)
+    run:
+        with open(output.manifest, 'w') as out:
+            out.write('sample-id,absolute-filepath,direction\n')
+            for read_file in input.rm:
+                sample_name = os.path.basename(read_file).split('_RM')[0]
+                out.write('{sample_name},{pwd}/{read_file},forward\n'.format(sample_name=sample_name,pwd=params.pwd,read_file=read_file))
+#
+#
+#    shell:
+#        '''
+#        echo "sample-id,absolute-filepath,direction" >> {output.manifest}
+#        ls {params.path} | sed -E "s/(.*)(\/)([^\/]*)(_RM.fastq.gz)/\\3,\\1\\2\\3\\4,forward/g" >> {output.manifest}
+#        '''

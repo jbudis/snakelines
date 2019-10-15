@@ -20,7 +20,7 @@ rule qiime__create_metadata_file:
     output:
         metadata = 'description/{name}-sample-metadata.tsv'
     params:
-        path = '$PWD/reads/{name}/*_RM.fastq.gz',
+        path = '$PWD/reads/{read_type}/*_RM.fastq.gz'.format(read_type=pipeline.preprocessed_read_type),
         sep = method_config['column_separator']
     shell:
         '''
