@@ -14,9 +14,9 @@ rule qiime__taxa__barplot:
         qzv             = 'reads/qiime/{name}-taxa-barplots{file_suffix}.qzv'
     shell:
         '''
-        qiime taxa barplot \
-            --i-table {input.table} \
-            --i-taxonomy {input.taxonomy_qza} \
-            --m-metadata-file {input.metadata} \
-            --o-visualization {output.qzv}
+            qiime taxa barplot \
+                --i-table {input.table} \
+                --i-taxonomy {input.taxonomy_qza} \
+                --m-metadata-file {input.metadata} \
+                --o-visualization {output.qzv}
         '''

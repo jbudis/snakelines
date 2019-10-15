@@ -5,8 +5,8 @@ rule qiime__create_joined_manifest:
     :output manifest: TSV manifest file in format 'sample-id,absolute-filepath,direction', e.g. reads/qiime/joined.manifest
     """
     input:
-        rm    = expand('reads/{{name}}/{sample}_RM.fastq.gz',
-                        sample=pipeline.samples)
+        rm    = expand('reads/{read_type}/{sample}_RM.fastq.gz',
+                        sample=pipeline.samples, read_type=pipeline.preprocessed_read_type)
     output:
         manifest = 'reads/qiime/{name}.manifest'
     params:
