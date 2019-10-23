@@ -40,8 +40,6 @@ rule vardict__create_wgs_bed_file:
         fai = 'reference/{reference}/{reference}.fa.fai'
     output:
         bed = 'reference/{reference}/annotation/wgs/regions.bed'
-    conda:
-        config['snakelines_dir'] + '/enviroments/others_env.yaml'
     shell:
           """
         awk \
@@ -60,8 +58,6 @@ rule vardict__prepare_bed_file:
         bed = 'reference/{reference}/annotation/{panel}/regions.bed',
     output:
         bed = 'reference/{reference}/annotation/{panel}/regions.vardict.bed',
-    conda:
-        config['snakelines_dir'] + '/enviroments/others_env.yaml'
     shell:
         """
         cut -f 1-4 {input.bed} > {output.bed}
@@ -89,7 +85,7 @@ rule vardict__call_germline_variants:
     threads:
         int(config['threads'])
     conda:
-        config['snakelines_dir'] + '/enviroments/others_env.yaml'
+        config['snakelines_dir'] + '/enviroments/vardict-java.yaml'
     shell:
         """
         vardict-java \
@@ -120,7 +116,7 @@ rule vardict__test_strand_bias:
     log:
         err = 'variant/{reference}-{panel}/original/log/{sample}.test_strand_bias.err'
     conda:
-        config['snakelines_dir'] + '/enviroments/others_env.yaml'
+        config['snakelines_dir'] + '/enviroments/vardict.yaml'
     shell:
         """
         cat {input.vdc} \
@@ -144,7 +140,7 @@ rule vardict__tsb_to_vcf:
         read_depth             = method_config.get('soft_filter', {}).get('read_depth', 10),
         min_nonref_allele_freq = method_config.get('soft_filter', {}).get('min_nonref_allele_freq', 0.2)
     conda:
-        config['snakelines_dir'] + '/enviroments/others_env.yaml'
+        config['snakelines_dir'] + '/enviroments/vardict.yaml'
     shell:
         """
         var2vcf_valid.pl \

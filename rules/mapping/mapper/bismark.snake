@@ -35,7 +35,7 @@ rule bismark__map_methyl_seq_reads_to_reference:
     threads:
         max(2, int(int(config['threads']) / 4))
     conda:
-        config['snakelines_dir'] + '/enviroments/others_env.yaml'
+        config['snakelines_dir'] + '/enviroments/bismark.yaml'
     shell:
         '''
         bismark \

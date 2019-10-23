@@ -25,8 +25,8 @@ rule gatk__identify_regions_to_realign:
         err = 'mapping/{reference}/realigned/log/{sample}.intervals.err'
     threads:
         int(config['threads'])
-    conda:
-        config['snakelines_dir'] + '/enviroments/others_env.yaml'
+#    conda:
+#        config['snakelines_dir'] + '/enviroments/gatk3.yaml'
     shell:
         '''
         gatk3 RealignerTargetCreator \
@@ -57,8 +57,8 @@ rule gatk__realign_regions:
         err = 'mapping/{reference}/realigned/log/{sample}.bam.err'
     threads:
         int(config['threads'])
-    conda:
-        config['snakelines_dir'] + '/enviroments/others_env.yaml'
+#    conda:
+#        config['snakelines_dir'] + '/enviroments/gatk3.yaml'
     shell:
         '''
         gatk3 IndelRealigner \

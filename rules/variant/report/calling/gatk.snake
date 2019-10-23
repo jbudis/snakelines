@@ -12,11 +12,12 @@ rule tabix__index_vcf:
         out = '{path}/log/{filename}_tabix.out',
         err = '{path}/log/{filename}_tabix.err'
     conda:
-        config['snakelines_dir'] + '/enviroments/others_env.yaml'
+        config['snakelines_dir'] + '/enviroments/samtools.yaml'
     shell:
         """
         tabix -p vcf {input} 1>{log.out} 2>{log.err}
         """
+
 
 rule gatk__collect_variant_calling_metrics:
     """
@@ -40,7 +41,7 @@ rule gatk__collect_variant_calling_metrics:
         out = 'variant/{reference}-{panel}/original/calling_metrics/log/{sample}.out',
         err = 'variant/{reference}-{panel}/original/calling_metrics/log/{sample}.err'
     conda:
-        config['snakelines_dir'] + '/enviroments/others_env.yaml'
+        config['snakelines_dir'] + '/enviroments/gatk4.yaml'
     shell:
         """
         gatk CollectVariantCallingMetrics \

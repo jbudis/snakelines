@@ -24,15 +24,24 @@ sample_configurations = config.get('samples', DEFAULT_SAMPLE_CONFIGURATION)
 for sample_configuration in sample_configurations:
 
     # Filter samples according to the user configuration
-    location = sample_configuration.get('location', DEFAULT_SAMPLE_LOCATION)
-    location = location.replace('{}', '{sample, %s}' % sample_configuration['name'])
+    samples = []
+    if 'name' in sample_configuration:
+        location = sample_configuration.get('location', DEFAULT_SAMPLE_LOCATION)
+        location = location.replace('{}', '{sample, %s}' % sample_configuration['name'])
+        wildcards = glob_wildcards(location)
+        samples = wildcards.sample
+        assert len(wildcards.sample) > 0, 'No samples in {} match configured pattern {}'.format(location, sample_configuration['name'])
+    
 
-    wildcards = glob_wildcards(location)
-    assert len(wildcards.sample) > 0, 'No samples in {} match configured pattern {}'.format(location, sample_configuration['name'])
-    pipeline.add(wildcards.sample, sample_configuration.get('reference', None),
-                 sample_configuration.get('panel', None), sample_configuration.get('prebuilt', False))
+    reference = sample_configuration.get('reference', None)
+    pipeline.add(samples,
+                reference,
+                sample_configuration.get('panel', None),
+                sample_configuration.get('prebuilt', False),
+                bool(extract_from_config(config, ['reference', 'download', reference], [])))
 
-assert not pipeline.is_empty(), 'No samples to analyse'
+if pipeline.is_empty():
+    print('No samples to analyse', file=sys.stderr)
 
 # impute types:
 impute_read_types(pipeline, config)
@@ -72,4 +81,8 @@ tax_levels_count_table.append('alltaxes')
 # Which taxonomic levels should be visualised in barplots, and in which image formats
 tax_levels_barplot = extract_from_config(config, ['classification', 'report', 'taxonomic_counts', 'barplot', 'tax_levels'], [])
 barplot_formats = extract_from_config(config, ['classification', 'report', 'taxonomic_counts', 'barplot', 'formats'], ['png'])
+
+# Which taxonomic levels should be computed as alpha_diversity
+tax_levels_alphas = extract_from_config(config, ['classification', 'report', 'taxonomic_counts', 'alpha_diversity', 'tax_levels'], [])
+
 pca_formats = extract_from_config(config, ['classification', 'report', 'transcripts', 'pca', 'formats'], ['svg', 'png'])

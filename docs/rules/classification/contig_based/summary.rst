@@ -64,3 +64,23 @@ Creates blast indices from genomic sequences.
 - *nin:* Part of blast index
 - *nsq:* Part of blast index
 
+Blast - Prepare Reference Index For Protein
+-----------------------------------------------
+
+Creates blast indices from protein sequences.
+
+**Location**
+
+- *Filepath:* <SnakeLines_dir>/rules/classification/contig_based/blast.snake
+- *Rule name:* blast__prepare_reference_index_for_protein
+
+**Input(s):**
+
+- *fa:* Genomic protein sequences in fasta format
+
+**Output(s):**
+
+- *phr:* Part of blast index
+- *pin:* Part of blast index
+- *psq:* Part of blast index
+

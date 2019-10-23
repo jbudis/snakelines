@@ -2,15 +2,64 @@ reference:
     index:
         dict:
             output:
-                index: expand('reference/{sr.reference}/{sr.reference}.dict',
-                                         sr=pipeline.sample_references)
+                reference_index: expand('reference/{reference}/{reference}.dict',
+                                        reference=pipeline.references)
         fai:
             output:
-                index: expand('reference/{sr.reference}/{sr.reference}.fai',
-                                         sr=pipeline.sample_references)
+                index: expand('reference/{reference}/{reference}.fai',
+                                        reference=pipeline.references)
+
+    download:
+        output:
+            reference: expand('reference/{reference}/{reference}.fa',
+                               reference=pipeline.references)
+
+    alignment:
+        output:
+            alignment: expand('reference/{reference}/alignment/{reference}.aln',
+                               reference=pipeline.references)
+
+    phylogeny:
+        output:
+            phylogenic_tree: expand('reference/{reference}/alignment/{reference}.aln.treefile',
+                                     reference=pipeline.references)
+            depends:
+                - reference/alignment
+
+    report:
+        phylogenetic_tree:
+            output:
+                svg:
+                    from: expand('reference/{reference}/alignment/{reference}.aln.treefile.svg',
+                                  reference=pipeline.references)
+
+                    to:   expand('{report_dir}/_reference/{reference}/phylogeny.svg',
+                                  report_dir=config['report_dir'],
+                                  reference=pipeline.references)
+
+                ascii:
+                    from: expand('reference/{reference}/alignment/{reference}.aln.treefile.ascii',
+                                  reference=pipeline.references)
+
+                    to:   expand('{report_dir}/_reference/{reference}/phylogeny.txt',
+                                  report_dir=config['report_dir'],
+                                  reference=pipeline.references)
+            depends:
+                - reference/phylogeny
+
+        comparison:
+            output:
+                html:
+                    from: expand('reference/{reference}/alignment/{reference}.aln.html',
+                                  reference=pipeline.references)
+
+                    to:   expand('{report_dir}/_reference/{reference}/alignment.html',
+                                  report_dir=config['report_dir'],
+                                  reference=pipeline.references)
+            depends:
+                - reference/alignment
 
 reads:
-
     preprocess:
         original:
             output:
@@ -288,7 +337,13 @@ classification:
                                       tax_level=tax_levels_count_table, type=['counts', 'ratios'])
                 depends:
                     - classification/read_based
-
+            alpha_diversity:
+                output:
+                    alpha_divs:
+                        from: expand('classification/{reference}/report/tsv/{tax_level}.alpha{alpha_mode}.tsv', reference=pipeline.references, tax_level=tax_levels_alphas, alpha_mode=['_norm', '_pure'])
+                        to: expand('{report_dir}/{reference}/tsv/{tax_level}.alpha{alpha_mode}.tsv', report_dir=config['report_dir'], reference=pipeline.references, tax_level=tax_levels_alphas, alpha_mode=['_norm', '_pure'])
+                depends:
+                    - classification/read_based
         summary:
             output:
                 summary_html:
@@ -316,9 +371,9 @@ classification:
                                       subtype=['', '.normed'], format=['xlsx', 'tsv'],
                                       reference=pipeline.references)
 
-                        to:   expand('{report_dir}/{reference}/tsv/summary{subtype}.{format}',
+                        to:   expand('{report_dir}/_summary/transcript_counts/summary{subtype}.{format}',
                                       report_dir=config['report_dir'], subtype=['', '.normed'],
-                                      format=['xlsx', 'tsv'], reference=pipeline.references)
+                                      format=['xlsx', 'tsv'])
                                       
                 depends:
                     - classification/differential_analysis
@@ -329,8 +384,19 @@ classification:
                         from: expand('classification/{reference}/report/comparison/differential_analysis.html',
                                       reference=pipeline.references)
 
-                        to:   expand('{report_dir}/{reference}/comparison/summary.html',
-                                      report_dir=config['report_dir'], reference=pipeline.references)
+                        to: expand('{report_dir}/_summary/differential_analysis/summary.html',
+                                    report_dir=config['report_dir'])
+                depends:
+                    - classification/differential_analysis
+
+            revigo:
+                output:
+                    revigo_format:
+                        from: expand('classification/{reference}/report/comparison/significant.revigo.tsv',
+                                      reference=pipeline.references)
+
+                        to:   expand('{report_dir}/_summary/differential_analysis/revigo.txt',
+                                      report_dir=config['report_dir'])
                 depends:
                     - classification/differential_analysis
 

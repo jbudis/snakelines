@@ -11,7 +11,7 @@ rule samtools__bam_index:
     benchmark:
         '{path}/log/{sample}.index.benchmark'
     conda:
-        config['snakelines_dir'] + '/enviroments/others_env.yaml'
+        config['snakelines_dir'] + '/enviroments/samtools.yaml'
     shell:
         """
         samtools index {input.bam}

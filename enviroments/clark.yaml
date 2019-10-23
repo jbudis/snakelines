@@ -1,0 +1,4 @@
+channels:
+- agbiome
+dependencies:
+- clark=1.2.3

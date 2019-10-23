@@ -1,4 +1,4 @@
-SNAKELINES_VERSION = '0.6.0'
+SNAKELINES_VERSION = '0.9.2'
 
 import os
 import sys
@@ -31,7 +31,8 @@ def get_files(source_dict):
             'pipeline': pipeline, 'directory': directory, 'read_types_with_quality_report': read_types_with_quality_report,
             'multisample_references': multisample_references, 'tax_levels_count_table': tax_levels_count_table,
             'tax_levels_barplot': tax_levels_barplot, 'barplot_formats': barplot_formats, 'pca_formats': pca_formats,
-            'map_types_with_quality_report': map_types_with_quality_report}
+            'tax_levels_alphas': tax_levels_alphas,'map_types_with_quality_report': map_types_with_quality_report}
+
     files_dict = {}
     for k,v in source_dict.items():
         try:
@@ -48,17 +49,19 @@ rule pipeline:
 
 # on success copy the files to report directory and send email(s)
 onsuccess:
-    print("Success - finalizing", file=sys.stderr)
+    if 'report_dir' in config:
+        print("Success - finalizing", file=sys.stderr)
 
-    copied = copy_input_files_with_consisent_names_dict(get_files(outputs), get_files(copy_where), pipeline)
-    print("Copied {} files to report dir '{}'".format(copied, config['report_dir']), file=sys.stderr)
+        copied = copy_input_files_with_consisent_names_dict(get_files(outputs), get_files(copy_where), pipeline)
+        print("Copied {} files to report dir '{}'".format(copied, config['report_dir']), file=sys.stderr)
 
-    copy_config(config['report_dir'], workflow, pipeline)
-    store_snakelines_version(config['report_dir'], SNAKELINES_VERSION)
+        copy_config(config['report_dir'], workflow, pipeline)
+        store_snakelines_version(config['report_dir'], SNAKELINES_VERSION)
+
+        print("Creating runtime report", file=sys.stderr)
+        snakemake_report(outdir=config['report_dir'], snakefile=workflow.snakefile, configfile=workflow.overwrite_configfile)
+
     send_email(config, get_files(outputs), get_files(copy_where), True)
-
-    print("Creating runtime report", file=sys.stderr)
-    snakemake_report(outdir=config['report_dir'], snakefile=workflow.snakefile, configfile=workflow.overwrite_configfile)
 
 # on error send email(s)
 onerror:

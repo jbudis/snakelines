@@ -33,12 +33,15 @@ Contents
    pipelines/quality_report
    pipelines/preprocess
    pipelines/mapping
+   pipelines/download_reference_and_mapping
    pipelines/assembly
    pipelines/variant_calling
    pipelines/methylation
    pipelines/transcriptomics
    pipelines/metagenomics
    pipelines/viral_identification
+   pipelines/download_reference
+   pipelines/infer_phylogeny
 
 .. toctree::
    :caption: Documentation

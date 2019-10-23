@@ -27,7 +27,7 @@ rule bwa__map_reads_to_reference:
     threads:
         int(config['threads'])
     conda:
-        config['snakelines_dir'] + '/enviroments/others_env.yaml'
+        config['snakelines_dir'] + '/enviroments/bwa_samtools.yaml'
     shell:
         """
         bwa mem \

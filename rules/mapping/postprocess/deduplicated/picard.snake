@@ -20,7 +20,7 @@ rule picard__mark_duplicates:
     benchmark:
             '{mapper}/{reference}/deduplicated/log/{sample}.benchmark'
     conda:
-        config['snakelines_dir'] + '/enviroments/others_env.yaml'
+        config['snakelines_dir'] + '/enviroments/picard.yaml'
     shell:
         """
         TEMP_DIR=$(mktemp -d {params.tmp_dir}/XXXXXXXXXXX)

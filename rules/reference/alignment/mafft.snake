@@ -1,0 +1,26 @@
+rule mafft__align_sequences_in_reference:
+    """
+    Align sequences (globally) in the reference fasta file to identify homology regions
+    :input reference: Reference sequences in FASTA format
+    :output alignment: Aligned sequences in ALN format
+    :param genbank_ids: List of Genbank identifiers for sequences to download
+    :param email: Inform NCBI who you are to contact you in case of excessive use. Otherwise they may block your access directly.
+    """
+    input:
+        reference = 'reference/{reference}/{reference}.fa'
+    output:
+        alignment = 'reference/{reference}/alignment/{reference}.aln'
+    log:
+        err       = 'reference/{reference}/alignment/log/aligned_{reference}.err'
+    threads:
+        int(config['threads'])
+    conda:
+        config['snakelines_dir'] + '/enviroments/mafft.yaml'
+    shell:
+        '''
+        mafft \
+            --thread {threads} \
+            {input.reference} \
+        >  {output.alignment} \
+        2> {log.err}
+        '''

@@ -1,0 +1,4 @@
+channels:
+- conda-forge
+dependencies:
+- blast=2.7.1

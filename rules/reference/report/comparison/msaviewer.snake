@@ -1,8 +1,13 @@
-rule msaviewer_html_report:
+rule msaviewer__visualise_alignment:
+    """
+    Visualise multiple alignment between aligned sequences
+    :input alignment: Aligned sequences in ALN format
+    :output html: Interactive visualization of the alignment
+    """
     input:
-        '{path}/{sample}.aln'
+        alignment = 'reference/{reference}/alignment/{reference}.aln'
     output:
-        '{path}/{sample}.html'
+        html      = 'reference/{reference}/alignment/{reference}.aln.html'
     run:
         TEMPLATE = '''
         <html>
@@ -35,8 +40,8 @@ rule msaviewer_html_report:
             </script>
         </body>
         '''
-        seq_list = map(str.strip, open(input[0]))
+        seq_list = map(str.strip, open(input.alignment))
         seqs = '\\n\\\n'.join(seq_list)
-        html = TEMPLATE.format(sample=wildcards.sample, seqs=seqs)
-        with open(output[0], 'w') as out:
+        html = TEMPLATE.format(sample=wildcards.reference, seqs=seqs)
+        with open(output.html, 'w') as out:
             out.write(html)

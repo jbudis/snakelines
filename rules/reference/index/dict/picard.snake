@@ -12,7 +12,7 @@ rule picard__prepare_dict_index:
         out = 'reference/{reference}/log/picard_index.log',
         err = 'reference/{reference}/log/picard_index.err'
     conda:
-        config['snakelines_dir'] + '/enviroments/others_env.yaml'
+        config['snakelines_dir'] + '/enviroments/picard.yaml'
     shell:
         """
         picard CreateSequenceDictionary \
