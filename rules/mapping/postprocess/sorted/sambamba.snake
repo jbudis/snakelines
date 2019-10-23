@@ -24,7 +24,7 @@ rule sambamba__sort_mapped_reads:
         sambamba sort \
             --out {output.bam} \
             --nthreads {threads} \
-            --memory-limit 10GB \
+            --memory-limit 120GB \
             {input.bam} \
         1> {log.out} \
         2> {log.err}

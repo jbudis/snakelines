@@ -25,6 +25,8 @@ rule gatk__call_germline_variants:
     log:
         out = 'variant/{reference}-{panel}/original/log/{sample}.vcf.out',
         err = 'variant/{reference}-{panel}/original/log/{sample}.vcf.err'
+    conda:
+        config['snakelines_dir'] + '/enviroments/others_env.yaml'
     shell:
         """
         DBSNP=

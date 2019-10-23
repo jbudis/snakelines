@@ -34,6 +34,12 @@ rule gatk__recalibrate:
         int(config['threads'])
     shell:
         # --disable-sequence-dictionary-validation
+#        --use-annotation DP \
+#        --use-annotation MQ \
+#        --use-annotation MQRankSum \
+#        --use-annotation QD \
+#        --use-annotation FS \
+#        --use-annotation SOR \
         """
         gatk VariantRecalibrator \
             --reference {input.fasta} \
@@ -46,12 +52,6 @@ rule gatk__recalibrate:
             --resource omni,known=false,training=true,truth=true,prior=12.0:{input.omni} \
             --resource 1000G,known=false,training=true,truth=false,prior=10.0:{input.thousand} \
             --resource dbsnp,known=true,training=false,truth=false,prior=2.0:{input.dbsnp} \
-            --use-annotation DP \
-            --use-annotation MQ \
-            --use-annotation MQRankSum \
-            --use-annotation QD \
-            --use-annotation FS \
-            --use-annotation SOR \
             --use-annotation ReadPosRankSum \
             --mode SNP \
             --output-model {output.model} \

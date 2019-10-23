@@ -10,6 +10,8 @@ rule fastp__trim_reads:
         report = 'reads/%s/stats/{sample}_fastp.html' % method_config['input_read_type'],
     params:
         params = method_config.get('params', ''),
+        correction = '--correction' if method_config.get('paired', '') else '',
+        detect_adapter = '--detect_adapter_for_pe' if method_config.get('paired', '') else ''
     threads:
         int(config['threads'])
     log:
@@ -26,6 +28,8 @@ rule fastp__trim_reads:
             --out1 {output.r1} \
             --out2 {output.r2} \
             --html {output.report} \
+            {params.correction} \
+            {params.detect_paired} \
             {params.params} \
         1> {log.out} \
         2> {log.err}

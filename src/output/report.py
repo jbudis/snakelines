@@ -11,6 +11,7 @@ def snakemake_report(outdir: str, snakefile: str, configfile: str):
         '--configfile',
         configfile,
         '--report',
-        report_file
+        report_file,
+        '--nolock'
     ]
     subprocess.run(args)

@@ -27,6 +27,8 @@ rule sambamba__mark_duplicates:
         """
         sambamba markdup \
             --nthreads {threads} \
+            --overflow-list-size 2000000 \
+            --hash-table-size 2000000 \
             {input.bam} \
             {output.bam} \
         1> {log.out} \
