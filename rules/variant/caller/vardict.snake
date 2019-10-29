@@ -1,9 +1,8 @@
 include: config['snakelines_dir'] + '/rules/reference/annotation/regions.snake'
-# include: config['snakelines_dir'] + '/rules/mapping/index/samtools.snake'
 include: config['snakelines_dir'] + '/rules/reference/index/fai/samtools.snake'
 include: config['snakelines_dir'] + '/rules/reference/index/dict/picard.snake'
 
-rule gatk__fix_vcf_header:
+rule gatk__prepare_vcf:
     """
     Adds missing sequence dictionary to VCF header. This job also generates VCF index (.idx).
     :input vcf: Raw VCF from variant caller vardict.
@@ -16,12 +15,12 @@ rule gatk__fix_vcf_header:
         fasta = 'reference/{reference}/{reference}.fa'
     output:
         vcf = 'variant/{reference}-{panel}/original/{sample}.vcf',
-        vcf_index = 'variant/{reference}-{panel}/original/{sample}.vcf.idx',
+        vcf_index = 'variant/{reference}-{panel}/original/{sample}.vcf.idx'
     log:
         out = 'variant/{reference}-{panel}/original/log/{sample}.out',
-        err = 'variant/{reference}-{panel}/original/log/{sample}.err',
+        err = 'variant/{reference}-{panel}/original/log/{sample}.err'
     conda:
-        config['snakelines_dir'] + '/enviroments/others_env.yaml'
+        config['snakelines_dir'] + '/enviroments/gatk4.yaml'
     shell:
         """
         gatk SelectVariants \

@@ -1,6 +1,5 @@
 include: config['snakelines_dir'] + '/rules/reference/index/dict/picard.snake'
 include: config['snakelines_dir'] + '/rules/reference/index/fai/samtools.snake'
-# include: config['snakelines_dir'] + '/rules/mapping/index/samtools.snake'
 
 rule gatk__identify_regions_to_realign:
     """

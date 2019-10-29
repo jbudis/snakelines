@@ -6,8 +6,6 @@ rule annotation__create_wgs_bed_file:
         fai = 'reference/{reference}/{reference}.fa.fai'
     output:
         bed = 'reference/{reference}/annotation/wgs/regions.bed'
-    conda:
-        config['snakelines_dir'] + '/enviroments/others_env.yaml'
     shell:
           """
         awk \
@@ -34,7 +32,7 @@ rule picard__bed_to_interval_list:
         out = 'reference/{reference}/annotation/{panel}/log/bed_to_interval_list.out',
         err = 'reference/{reference}/annotation/{panel}/log/bed_to_interval_list.err',
     conda:
-        config['snakelines_dir'] + '/enviroments/others_env.yaml'
+        config['snakelines_dir'] + '/enviroments/picard.yaml'
     shell:
         """
         picard BedToIntervalList \

@@ -1,5 +1,3 @@
-# include: config['snakelines_dir'] + '/rules/mapping/index/samtools.snake'
-
 import pandas as pd
 import os
 

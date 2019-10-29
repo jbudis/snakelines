@@ -12,8 +12,6 @@ rule sambamba__bam_index:
         '{path}/log/{sample}.index.benchmark'
     threads:
         int(config['threads'])
-    conda:
-        config['snakelines_dir'] + '/enviroments/others_env.yaml'
     shell:
         """
         sambamba index --nthreads={threads} {input.bam}

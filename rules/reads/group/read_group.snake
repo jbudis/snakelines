@@ -12,8 +12,6 @@ rule custom__save_read_group:
         err = 'reads/%s/read_group/log/{sample}.err' % pipeline.preprocessed_read_type
     params:
         script = srcdir("save_read_group.py")
-    conda:
-        config['snakelines_dir'] + '/enviroments/others_env.yaml'
     shell:
         """
         python3 \

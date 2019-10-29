@@ -17,8 +17,6 @@ rule fastp__trim_reads:
     log:
         out = 'reads/trimmed/log/{sample}.log',
         err = 'reads/trimmed/log/{sample}.err'
-    conda:
-        config['snakelines_dir'] + '/enviroments/others_env.yaml'
     shell:
         """
         fastp \
