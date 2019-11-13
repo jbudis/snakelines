@@ -1,5 +1,5 @@
 import os
-from collections import namedtuple
+from collections import namedtuple, OrderedDict
 
 
 class Pipeline:
@@ -33,20 +33,13 @@ class Pipeline:
             fasta = 'reference/{reference}/{reference}.fa'.format(reference=reference)
             assert os.path.exists(fasta), 'Reference fasta {} does not exist'.format(fasta)
         
-        # Check, if panel bed file exists
-        if panel:
-            assert reference, 'Panel cannot be defined without reference'
-            bed = 'reference/{reference}/annotation/{panel}/regions.bed'.format(reference=reference, panel=panel)
-            assert os.path.exists(bed), 'Panel bed file {} does not exist'.format(bed)
+        panel_str = self._panel_str(panel, reference)
+        
+        if panel_str not in self.panels:
+            self.panels.append(panel_str)
         
         # Extend lists
         self.samples.extend(samples)
-        
-        if panel:
-            if panel not in self.panels:
-                self.panels.append(panel)
-        else:
-            panel = self.WGS_PANEL
         
         if reference:
             if reference not in self.references:
@@ -60,7 +53,37 @@ class Pipeline:
             for sample in samples:
                 # TODO here should be check if tuple already stored
                 SampleReference = namedtuple('SampleReference', 'sample reference panel')
-                self.sample_references.append(SampleReference(sample, reference, panel))
+                self.sample_references.append(SampleReference(sample, reference, panel_str))
+    
+    def _panel_str(self, panel: OrderedDict, reference: str) -> str:
+        # select panel
+        if panel and panel['name'] != self.WGS_PANEL:
+            # defined panel requires a bed file
+            assert reference, 'Panel cannot be defined without a reference'
+            
+            # define original bed
+            panel_str = panel['name']
+            bed = 'reference/{reference}/annotation/{panel}/regions.bed' \
+                .format(reference=reference, panel=panel_str)
+            
+            if 'flank' in panel:
+                # use flanked bed
+                panel_str = '{panel}_flank{flank}'.format(panel=panel['name'], flank=panel['flank'])
+                flanked_bed = 'reference/{reference}/annotation/{panel}/regions.bed' \
+                    .format(reference=reference, panel=panel_str)
+                
+                if not os.path.exists(bed) and not os.path.exists(flanked_bed):
+                    # neither flanked bed or original bed exist
+                    raise FileNotFoundError('Panel bed file %s does not exist' % bed)
+            
+            elif not os.path.exists(bed):
+                raise FileNotFoundError('Panel bed file %s does not exist' % bed)
+        
+        else:
+            # undefined panel is whole genome "panel"
+            panel_str = self.WGS_PANEL
+            
+        return panel_str
     
     def is_empty(self):
         """

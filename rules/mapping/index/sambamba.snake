@@ -14,5 +14,8 @@ rule sambamba__bam_index:
         int(config['threads'])
     shell:
         """
-        sambamba index --nthreads={threads} {input.bam}
+        sambamba index \
+            --nthreads={threads} \
+            {input.bam} \
+            1> /dev/null
         """

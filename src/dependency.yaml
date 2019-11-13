@@ -201,7 +201,7 @@ mapping:
 variant:
     caller:
         output:
-            variant_calls:
+            vcf:
                 from: expand('variant/{sr.reference}-{sr.panel}/original/{sr.sample}.vcf',
                               sr=pipeline.sample_references)
 
@@ -215,7 +215,7 @@ variant:
     postprocess:
         recalibrated:
             output:
-                variant_calls:
+                vcf:
                     from:
                         expand('variant/{sr.reference}-{sr.panel}/recalibrated/{sr.sample}.vcf',
                                 sr=pipeline.sample_references)
@@ -223,13 +223,45 @@ variant:
                         expand('{report_dir}/{sr.sample}/recalibrated-{sr.reference}-{sr.panel}.vcf',
                                report_dir=config['report_dir'], sr=pipeline.sample_references)
 
+        annotated:
+            output:
+                vcf:
+                    from:
+                        expand('variant/{sr.reference}-{sr.panel}/annotated/{sr.sample}.vcf',
+                            sr=pipeline.sample_references)
+                    to:
+                        expand('{report_dir}/{sr.sample}/annotated-{sr.reference}-{sr.panel}.vcf',
+                               report_dir=config['report_dir'], sr=pipeline.sample_references)
+
+                tsv:
+                    from: expand('variant/{sr.reference}-{sr.panel}/annotated/{sr.sample}.tsv',
+                                  sr=pipeline.sample_references)
+
+                    to: expand('{report_dir}/{sr.sample}/annotated-{sr.reference}-{sr.panel}.tsv',
+                        report_dir=config['report_dir'], sr=pipeline.sample_references)
+
+                html:
+                    from: expand('variant/{sr.reference}-{sr.panel}/annotated/{sr.sample}.report.html',
+                        sr=pipeline.sample_references)
+
+                    to: expand('{report_dir}/{sr.sample}/annotated-{sr.reference}-{sr.panel}.report.html',
+                        report_dir=config['report_dir'], sr=pipeline.sample_references)
+
     report:
         calling:
-            output: []
+            output:
+                metrics:
+                    from: expand('variant/{sr.reference}-{sr.panel}/original/calling_metrics/{sr.sample}.variant_calling_detail_metrics',
+                                  sr=pipeline.sample_references)
+
+                    to:   expand('{report_dir}/{sr.sample}/original-{sr.reference}-{sr.panel}.metrics.tsv',
+                                  report_dir=config['report_dir'], sr=pipeline.sample_references)
+
             depends:
                 - reads/preprocess
                 - reads/report/quality_report
                 - mapping/mapper
+
         summary:
             output:
                 pdf:
@@ -242,7 +274,6 @@ variant:
                 - reads/preprocess
                 - reads/report/quality_report
                 - mapping/mapper
-
 
 classification:
     read_based:

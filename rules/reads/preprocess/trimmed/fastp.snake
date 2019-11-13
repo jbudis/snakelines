@@ -1,5 +1,6 @@
 rule fastp__trim_reads:
     """
+        Advanced trimming with optional corrections.
     """
     input:
         r1 = 'reads/%s/{sample}_R1.fastq.gz' % method_config['input_read_type'],

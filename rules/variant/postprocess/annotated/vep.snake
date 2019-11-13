@@ -1,0 +1,86 @@
+def dbnsfp_plugin(wildcards, feature_list):
+    if not feature_list:
+        return ''
+
+    feature_str = ','.join(feature_list)
+    return '--plugin dbNSFP,reference/%s/variants/dbnsfp.bgz,%s' % (wildcards.reference, feature_str)
+
+
+rule vep__annotate_vcf:
+    """
+        Annotate VCF file using selected dbNSFP features.
+    """
+    input:
+        vcf   = 'variant/{reference}-{panel}/%s/{sample}.vcf' % method_config['input_variant_type'],
+        fasta = 'reference/{reference}/{reference}.fa',
+        fai   = 'reference/{reference}/{reference}.fa.fai',
+    output:
+        vcf   = 'variant/{reference}-{panel}/annotated/{sample}.vcf',
+        stats = 'variant/{reference}-{panel}/annotated/{sample}.report.html'
+    params:
+        assembly = method_config['assembly'],
+        cache = 'reference/{reference}/annotation/vep',
+        dbnsfp = lambda wildcards: dbnsfp_plugin(wildcards, method_config.get('plugins', {}).get('dbnsfp', []))
+    log:
+        out = 'variant/{reference}-{panel}/annotated/log/{sample}.vcf.out',
+        err = 'variant/{reference}-{panel}/annotated/log/{sample}.vcf.err'
+    threads:
+        int(config['threads'])
+    shell:
+        """
+        vep \
+            --cache \
+            --dir {params.cache} \
+            --species homo_sapiens \
+            --fasta {input.fasta} \
+            --input_file {input.vcf} \
+            --format vcf \
+            --output_file {output.vcf} \
+            --stats_file {output.stats} \
+            --fork {threads} \
+            --assembly {params.assembly} \
+            {params.dbnsfp} \
+            --vcf \
+            --force_overwrite \
+        1> {log.out} \
+        2> {log.err}
+        """
+
+rule vep__annotate_tsv:
+    """
+        Annotate VCF file using selected dbNSFP features and save it in TSV format.
+    """
+    input:
+        vcf   = 'variant/{reference}-{panel}/%s/{sample}.vcf' % method_config['input_variant_type'],
+        fasta = 'reference/{reference}/{reference}.fa',
+        fai   = 'reference/{reference}/{reference}.fa.fai',
+    output:
+        tsv   = 'variant/{reference}-{panel}/annotated/{sample}.tsv',
+    params:
+        assembly = method_config['assembly'],
+        cache = 'reference/{reference}/annotation/vep',
+        dbnsfp = lambda wildcards: dbnsfp_plugin(wildcards, method_config.get('plugins', {}).get('dbnsfp', []))
+    log:
+        out = 'variant/{reference}-{panel}/annotated/log/{sample}.tsv.out',
+        err = 'variant/{reference}-{panel}/annotated/log/{sample}.tsv.err'
+    threads:
+        int(config['threads'])
+    shell:
+        """
+        vep \
+            --cache \
+            --dir {params.cache} \
+            --species homo_sapiens \
+            --fasta {input.fasta} \
+            --input_file {input.vcf} \
+            --format vcf \
+            --output_file {output.tsv} \
+            --no_stats \
+            --fork {threads} \
+            --assembly {params.assembly} \
+            {params.dbnsfp} \
+            --tab \
+            --force_overwrite \
+        1> {log.out} \
+        2> {log.err}
+        """

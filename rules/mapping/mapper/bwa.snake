@@ -22,6 +22,8 @@ rule bwa__map_reads_to_reference:
     log:
         out   = 'mapping/{reference}/original/log/{sample}.bam.out',
         err   = 'mapping/{reference}/original/log/{sample}.bam.err'
+    benchmark:
+         'mapping/{reference}/original/log/{sample}.bam.benchmark'
     params:
         index = 'reference/{reference}/bwa_index/{reference}',
     threads:

@@ -24,6 +24,8 @@ rule gatk__call_germline_variants:
     log:
         out = 'variant/{reference}-{panel}/original/log/{sample}.vcf.out',
         err = 'variant/{reference}-{panel}/original/log/{sample}.vcf.err'
+    benchmark:
+        'variant/{reference}-{panel}/original/log/{sample}.vcf.benchmark',
     conda:
         config['snakelines_dir'] + '/enviroments/gatk4.yaml'
     shell:

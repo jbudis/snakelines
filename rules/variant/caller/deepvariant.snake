@@ -1,0 +1,75 @@
+include: config['snakelines_dir'] + '/rules/reference/annotation/regions.snake'
+include: config['snakelines_dir'] + '/rules/reference/index/fai/samtools.snake'
+include: config['snakelines_dir'] + '/rules/reference/index/dict/picard.snake'
+
+
+rule deepvariant__call_germline_variants:
+    """
+        Variant calling using deep neural network.
+    """
+    input:
+        bam   = 'mapping/{reference}/%s/{sample}.bam' % pipeline.postprocessed_map_type,
+        bai   = 'mapping/{reference}/%s/{sample}.bam.bai' % pipeline.postprocessed_map_type,
+        bed   = 'reference/{reference}/annotation/{panel}/regions.bed',
+        fasta = 'reference/{reference}/{reference}.fa',
+        fai   = 'reference/{reference}/{reference}.fa.fai',
+    output:
+        vcf = 'variant/{reference}-{panel}/original/{sample}.deepvariant.vcf'
+    params:
+        model = lambda wildcards: 'WGS' if wildcards.panel == 'wgs' else 'WES'
+    threads:
+        int(config['threads'])
+    log:
+        out = 'variant/{reference}-{panel}/original/log/{sample}.vcf.out',
+        err = 'variant/{reference}-{panel}/original/log/{sample}.vcf.err'
+    benchmark:
+          'variant/{reference}-{panel}/original/log/{sample}.vcf.benchmark',
+#    conda:
+#        config['snakelines_dir'] + '/enviroments/gatk4.yaml'
+    shell:
+        # TODO replace docker
+        """
+        sudo docker run \
+            -v /data:/data \
+            -w $(pwd -P) \
+            gcr.io/deepvariant-docker/deepvariant:0.8.0 \
+            /opt/deepvariant/bin/run_deepvariant \
+            --model_type={params.model} \
+            --ref={input.fasta} \
+            --reads={input.bam} \
+            --regions={input.bed} \
+            --output_vcf={output.vcf} \
+            --num_shards={threads} \
+        1> {log.out} \
+        2> {log.err}
+        """
+
+
+rule gatk__prepare_vcf:
+    """
+    Adds missing sequence dictionary to VCF header. This job also generates VCF index (.idx).
+    :input vcf: Raw VCF from variant caller vardict.
+    :input fasta: Reference sequence.
+    :output vcf: Fixed VCF.
+    :output vcf_index: Fixed VCF index.
+    """
+    input:
+        vcf = 'variant/{reference}-{panel}/original/{sample}.deepvariant.vcf',
+        fasta = 'reference/{reference}/{reference}.fa'
+    output:
+        vcf = 'variant/{reference}-{panel}/original/{sample}.vcf',
+        vcf_index = 'variant/{reference}-{panel}/original/{sample}.vcf.idx',
+    log:
+        out = 'variant/{reference}-{panel}/original/log/{sample}.out',
+        err = 'variant/{reference}-{panel}/original/log/{sample}.err',
+    conda:
+        config['snakelines_dir'] + '/enviroments/gatk4.yaml'
+    shell:
+        """
+        gatk SelectVariants \
+            -V {input.vcf} \
+            -R {input.fasta} \
+            -O {output.vcf} \
+            1>{log.out} \
+            2>{log.err}
+        """

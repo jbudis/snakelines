@@ -36,7 +36,8 @@ rule gatk__collect_variant_calling_metrics:
         dbsnp_index = 'reference/{reference}/variants/dbsnp.vcf.bgz.tbi',
         intervals = 'reference/{reference}/annotation/{panel}/regions.interval_list',
     output:
-        filename = 'variant/{reference}-{panel}/original/calling_metrics/{sample}.variant_calling_summary_metrics'
+        summary = 'variant/{reference}-{panel}/original/calling_metrics/{sample}.variant_calling_summary_metrics',
+        detail  = 'variant/{reference}-{panel}/original/calling_metrics/{sample}.variant_calling_detail_metrics'
     log:
         out = 'variant/{reference}-{panel}/original/calling_metrics/log/{sample}.out',
         err = 'variant/{reference}-{panel}/original/calling_metrics/log/{sample}.err'

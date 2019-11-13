@@ -1,0 +1,17 @@
+rule bedtools__make_flanked_bed:
+    """
+        Extend each region on both ends by same number of bases.
+    """
+    input:
+        bed = 'reference/{reference}/annotation/{panel}/regions.bed',
+        fai = 'reference/{reference}/{reference}.fa.fai'
+    output:
+        bed = 'reference/{reference}/annotation/{panel}_flank{flank}/regions.bed',
+    shell:
+        """
+        bedtools slop \
+            -b {wildcards.flank} \
+            -i {input.bed} \
+            -g {input.fai} \
+        1> {output.bed}
+        """
