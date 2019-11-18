@@ -7,7 +7,11 @@ from src.output.copy_files import copy_input_files_with_consisent_names_dict
 from src.output.copy_files import copy_config
 from src.output.copy_files import store_snakelines_version
 from src.output.send_email import send_email
-from src.output.report import snakemake_report
+from src.output.report import runtime_report
+from src.output.report import multiqc_report
+from src.output.report import write_output_filenames
+
+from snakemake.io import OutputFiles
 
 # Load configuration file if not already loaded
 config = load_config(config)
@@ -43,6 +47,7 @@ def get_files(source_dict):
     return files_dict
 
 # "pipeline" rule that generates all of the required files
+
 rule pipeline:
     input:
         **get_files(outputs)
@@ -58,8 +63,15 @@ onsuccess:
         copy_config(config['report_dir'], workflow, pipeline)
         store_snakelines_version(config['report_dir'], SNAKELINES_VERSION)
 
-        print("Creating runtime report", file=sys.stderr)
-        snakemake_report(outdir=config['report_dir'], snakefile=workflow.snakefile, configfile=workflow.overwrite_configfile)
+        print("Writing output filenames")
+        out_list_filename = '%s/_execution/rules_output.txt' % config['report_dir']
+        write_output_filenames(out_list_filename, workflow)
+
+        print("Generating MultiQC report", file=sys.stderr)
+        multiqc_report(outdir='%s/_summary' % config['report_dir'], out_list_filename=out_list_filename)
+
+        print("Generating runtime report", file=sys.stderr)
+        runtime_report(outdir='%s/_execution' % config['report_dir'], snakefile=workflow.snakefile, configfile=workflow.overwrite_configfile)
 
     send_email(config, get_files(outputs), get_files(copy_where), True)
 

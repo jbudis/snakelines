@@ -17,5 +17,5 @@ rule sambamba__bam_index:
         sambamba index \
             --nthreads={threads} \
             {input.bam} \
-            1> /dev/null
+            &> /dev/null
         """
