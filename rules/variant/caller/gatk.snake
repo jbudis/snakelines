@@ -30,7 +30,7 @@ rule gatk__call_germline_variants:
         config['snakelines_dir'] + '/enviroments/gatk4.yaml'
     shell:
         """
-        DBSNP=
+        DBSNP=''
         if [ -f {params.dbsnp} -a -f {params.dbsnp_index} ]; then
             DBSNP='--dbsnp {params.dbsnp}'
         fi

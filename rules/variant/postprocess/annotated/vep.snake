@@ -1,11 +1,3 @@
-def dbnsfp_plugin(wildcards, feature_list):
-    if not feature_list:
-        return ''
-
-    feature_str = ','.join(feature_list)
-    return '--plugin dbNSFP,reference/%s/variants/dbnsfp.bgz,%s' % (wildcards.reference, feature_str)
-
-
 rule vep__annotate_vcf:
     """
         Annotate VCF file using selected dbNSFP features.
@@ -20,7 +12,7 @@ rule vep__annotate_vcf:
     params:
         assembly = method_config['assembly'],
         cache = 'reference/{reference}/annotation/vep',
-        dbnsfp = lambda wildcards: dbnsfp_plugin(wildcards, method_config.get('plugins', {}).get('dbnsfp', []))
+        dbnsfp = ','.join(method_config.get('plugins', {}).get('dbnsfp', [])),
     log:
         out = 'variant/{reference}-{panel}/annotated/log/{sample}.vcf.out',
         err = 'variant/{reference}-{panel}/annotated/log/{sample}.vcf.err'
@@ -28,6 +20,11 @@ rule vep__annotate_vcf:
         int(config['threads'])
     shell:
         """
+        DBNSFP=''
+        if [ ! -z {params.dbnsfp} ]; then
+            DBNSFP='--plugin dbNSFP,reference/{wildcards.reference}/variants/dbnsfp.bgz,{params.dbnsfp}'
+        fi
+
         vep \
             --cache \
             --dir {params.cache} \
@@ -39,9 +36,9 @@ rule vep__annotate_vcf:
             --stats_file {output.stats} \
             --fork {threads} \
             --assembly {params.assembly} \
-            {params.dbnsfp} \
             --vcf \
             --force_overwrite \
+            $DBNSFP \
         1> {log.out} \
         2> {log.err}
         """
@@ -59,7 +56,7 @@ rule vep__annotate_tsv:
     params:
         assembly = method_config['assembly'],
         cache = 'reference/{reference}/annotation/vep',
-        dbnsfp = lambda wildcards: dbnsfp_plugin(wildcards, method_config.get('plugins', {}).get('dbnsfp', []))
+        dbnsfp = ','.join(method_config.get('plugins', {}).get('dbnsfp', [])),
     log:
         out = 'variant/{reference}-{panel}/annotated/log/{sample}.tsv.out',
         err = 'variant/{reference}-{panel}/annotated/log/{sample}.tsv.err'
@@ -67,6 +64,13 @@ rule vep__annotate_tsv:
         int(config['threads'])
     shell:
         """
+        DBNSFP=''
+        if [ ! -z {params.dbnsfp} ]; then
+            DBNSFP='--plugin dbNSFP,reference/{wildcards.reference}/variants/dbnsfp.bgz,{params.dbnsfp}'
+        fi
+
+        echo $DBNSFP
+
         vep \
             --cache \
             --dir {params.cache} \
@@ -78,9 +82,9 @@ rule vep__annotate_tsv:
             --no_stats \
             --fork {threads} \
             --assembly {params.assembly} \
-            {params.dbnsfp} \
             --tab \
             --force_overwrite \
+            $DBNSFP \
         1> {log.out} \
         2> {log.err}
         """
