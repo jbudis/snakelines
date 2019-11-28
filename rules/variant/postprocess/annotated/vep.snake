@@ -22,7 +22,7 @@ rule vep__annotate_vcf:
         """
         DBNSFP=''
         if [ ! -z {params.dbnsfp} ]; then
-            DBNSFP='--plugin dbNSFP,reference/{wildcards.reference}/variants/dbnsfp.bgz,{params.dbnsfp}'
+            DBNSFP='--plugin dbNSFP,reference/{wildcards.reference}/variants/dbnsfp/dbNSFP4.0c.gz,{params.dbnsfp}'
         fi
 
         vep \
@@ -66,10 +66,8 @@ rule vep__annotate_tsv:
         """
         DBNSFP=''
         if [ ! -z {params.dbnsfp} ]; then
-            DBNSFP='--plugin dbNSFP,reference/{wildcards.reference}/variants/dbnsfp.bgz,{params.dbnsfp}'
+            DBNSFP='--plugin dbNSFP,reference/{wildcards.reference}/variants/dbnsfp/dbNSFP4.0c.gz,{params.dbnsfp}'
         fi
-
-        echo $DBNSFP
 
         vep \
             --cache \

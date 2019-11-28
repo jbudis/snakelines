@@ -77,12 +77,15 @@ def copy(src, dest):
     :return: None
     :raise IOError, PermissionError: if cannot copy, e.g. the directory structure does not exists
     """
-    if os.path.isdir(src):
-        if os.path.exists(dest):
-            shutil.rmtree(dest)
-        shutil.copytree(src, dest)
-    else:
-        shutil.copy(src, dest)
+    try:
+        if os.path.isdir(src):
+            if os.path.exists(dest):
+                shutil.rmtree(dest)
+            shutil.copytree(src, dest)
+        else:
+            shutil.copy(src, dest)
+    except OSError as e:
+        raise OSError('can not copy from %s to %s' % (src, dest)) from e
 
 
 def copy_with_makedirs(src, dest, pipeline):
