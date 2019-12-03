@@ -57,11 +57,11 @@ rule pipeline:
 
 onstart:
     pipeline_started = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-    print('pipeline run started at %s' % pipeline_started)
+    print('pipeline run started at %s' % pipeline_started, file=sys.stderr)
 
 onsuccess:
     pipeline_finished = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-    print('pipeline run finished at %s' % pipeline_finished)
+    print('pipeline run finished at %s' % pipeline_finished, file=sys.stderr)
 
     execution_dir = '%s/_execution/%s' % (config['report_dir'], pipeline_finished)
     summary_dir = '%s/_summary' % config['report_dir']
@@ -82,7 +82,7 @@ onsuccess:
         copy_config(execution_dir, workflow, pipeline)
         store_snakelines_version(execution_dir, SNAKELINES_VERSION)
 
-        print("Writing output filenames")
+        print("Writing output filenames", file=sys.stderr)
         out_list_filename = '%s/rules_output.txt' % execution_dir
         write_output_filenames(out_list_filename, workflow)
 
