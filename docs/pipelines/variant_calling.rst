@@ -58,7 +58,7 @@ How to run example:
 
 Example configuration:
 
-.. literalinclude:: ../../example/mhv/config_variant_calling.yaml
+.. literalinclude:: ../../example/genomic/config_variant_calling.yaml
    :language: yaml
 
 Planned improvements

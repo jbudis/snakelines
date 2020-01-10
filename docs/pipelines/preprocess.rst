@@ -60,7 +60,7 @@ How to run example:
 
 Example configuration:
 
-.. literalinclude:: ../../example/mhv/config_preprocess.yaml
+.. literalinclude:: ../../example/genomic/config_preprocess.yaml
    :language: yaml
 
 Planned improvements

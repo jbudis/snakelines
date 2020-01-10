@@ -57,7 +57,7 @@ How to run example:
 
 Example configuration:
 
-.. literalinclude:: ../../example/mhv/config_quality_report.yaml
+.. literalinclude:: ../../example/genomic/config_quality_report.yaml
    :language: yaml
 
 Planned improvements

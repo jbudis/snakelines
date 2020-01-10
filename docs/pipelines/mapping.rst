@@ -59,7 +59,7 @@ How to run example:
 
 Example configuration:
 
-.. literalinclude:: ../../example/mhv/config_mapping.yaml
+.. literalinclude:: ../../example/genomic/config_mapping.yaml
    :language: yaml
 
 Planned improvements

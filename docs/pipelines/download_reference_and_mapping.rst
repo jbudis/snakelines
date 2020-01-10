@@ -63,7 +63,7 @@ How to run example:
 
 Example configuration:
 
-.. literalinclude:: ../../example/mhv/config_download_reference_and_mapping.yaml
+.. literalinclude:: ../../example/genomic/config_download_reference_and_mapping.yaml
    :language: yaml
 
 Planned improvements

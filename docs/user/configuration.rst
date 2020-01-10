@@ -200,7 +200,7 @@ Example configuration
 
 Example for a basic variant calling pipeline.
 
-.. literalinclude:: ../../example/mhv/config_variant_calling.yaml
+.. literalinclude:: ../../example/genomic/config_variant_calling.yaml
    :language: yaml
 
 

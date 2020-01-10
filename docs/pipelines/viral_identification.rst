@@ -50,7 +50,7 @@ How to run example:
 
 Example configuration:
 
-.. literalinclude:: ../../example/mhv/config_viral_identification.yaml
+.. literalinclude:: ../../example/genomic/config_viral_identification.yaml
    :language: yaml
 
 Planned improvements

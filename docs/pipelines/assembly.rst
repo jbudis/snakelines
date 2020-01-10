@@ -50,7 +50,7 @@ How to run example:
 
 Example configuration:
 
-.. literalinclude:: ../../example/mhv/config_assembly.yaml
+.. literalinclude:: ../../example/genomic/config_assembly.yaml
    :language: yaml
 
 Planned improvements

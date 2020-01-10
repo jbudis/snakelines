@@ -51,7 +51,7 @@ How to run example:
 
 Example configuration:
 
-.. literalinclude:: ../../example/mhv/config_methylseq.yaml
+.. literalinclude:: ../../example/genomic/config_methylseq.yaml
    :language: yaml
 
 Planned improvements

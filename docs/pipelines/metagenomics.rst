@@ -85,7 +85,7 @@ Sequences of the ITS gene (store them as reference/unite/unite.fa) may be downlo
 
 Example configuration:
 
-.. literalinclude:: ../../example/tatry/config_metagenomic.yaml
+.. literalinclude:: ../../example/metagenomic/config_metagenomic.yaml
    :language: yaml
 
 RDP classifier
@@ -106,7 +106,7 @@ RDP classifier has already prebuilt databases that may be used, specifically 16s
 
 Example configuration:
 
-.. literalinclude:: ../../example/tatry/config_metagenomic_rdp.yaml
+.. literalinclude:: ../../example/metagenomic/config_metagenomic_rdp.yaml
    :language: yaml
 
 Planned improvements
