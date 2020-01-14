@@ -19,7 +19,7 @@ First, the pipeline uses the mafft program to perform a multiple sequence alignm
 **Output(s):**
 
 - *alignment:* aligned sequences, qiime artifact of type FeatureData[AlignedSequence], e.g. reads/qiime/joined-aligned-rep-seqs-dn-99.qza
-- *masked_alignment:* masked aligned sequences, qiime artifact of type FeatureData[AlignedSequence], e.g. reads/qiime/joined-masked-aligned-rep-seqs-dn-99.qza
+- *masked_alignment:* masked aligned sequences, qiime artifact of type FeatureData[AlignedSequence], e.g. reads/qiime/joined-rep-masked-aligned-seqs-dn-99.qza
 - *unrooted_tree:* unrooted tree, qiime artifact of type Phylogeny[Unrooted], e.g. reads/qiime/joined-unrooted-tree-dn-99.qza
 - *rooted_tree:* rooted tree, qiime artifact of type Phylogeny[Rooted], e.g. reads/qiime/joined-rooted-tree-dn-99.qza
 

@@ -6,13 +6,13 @@ rule qiime__vsearch_dereplicate_sequences:
 
     :input qza: qiime artifact of type SampleData[JoinedSequencesWithQuality] | SampleData[SequencesWithQuality] | SampleData[Sequences], e.g. reads/qiime/joined-table.qza
     :output table: qiime artifact of type FeatureTable[Frequency], e.g. reads/qiime/joined-table-w-chimeras.qza
-    :output rep_seqs: qiime artifact of type FeatureData[Sequence], e.g. reads/qiime/joined-rep-seqs-w-chimeras.qza
+    :output rep_seqs: qiime artifact of type FeatureData[Sequence], e.g. reads/qiime/joined-rep-w-chimeras-seqs.qza
     """
     input:
         qza       = "reads/qiime/{name}-imported.qza"
     output:
         table     = "reads/qiime/{name}-table-w-chimeras.qza",
-        rep_seqs  = "reads/qiime/{name}-rep-seqs-w-chimeras.qza"
+        rep_seqs  = "reads/qiime/{name}-rep-w-chimeras-seqs.qza"
     shell:
         '''
         qiime vsearch dereplicate-sequences \

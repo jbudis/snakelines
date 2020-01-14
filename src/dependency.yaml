@@ -206,8 +206,8 @@ assembly:
 qiime:
     alignment:
         output:
-            alignment: expand('reads/qiime/{name}-aligned-rep-seqs{file_suffix}.qza', name=qiime_reference, file_suffix=qiime_file_suffix)
-            masked_alignment: expand('reads/qiime/{name}-masked-aligned-rep-seqs{file_suffix}.qza', name=qiime_reference, file_suffix=qiime_file_suffix)
+            alignment: expand('reads/qiime/{name}-rep-aligned-seqs{file_suffix}.qza', name=qiime_reference, file_suffix=qiime_file_suffix)
+            masked_alignment: expand('reads/qiime/{name}-rep-masked-aligned-seqs{file_suffix}.qza', name=qiime_reference, file_suffix=qiime_file_suffix)
             unrooted_tree: expand('reads/qiime/{name}-unrooted-tree{file_suffix}.qza', name=qiime_reference, file_suffix=qiime_file_suffix)
             rooted_tree: expand('reads/qiime/{name}-rooted-tree{file_suffix}.qza', name=qiime_reference, file_suffix=qiime_file_suffix)
     analysis:

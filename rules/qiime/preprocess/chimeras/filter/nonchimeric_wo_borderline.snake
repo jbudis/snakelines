@@ -5,14 +5,14 @@ rule qiime__nonchimeric_wo_borderline:
     Calls 'qiime feature-table filter-features'.
 
     :input table: qiime artifact of type FeatureTable[Frequency], e.g. reads/qiime/joined-table-w-chimeras.qza
-    :input rep_seqs: qiime artifact of type FeatureData[Sequence], e.g. reads/qiime/joined-rep-seqs-w-chimeras.qza
+    :input rep_seqs: qiime artifact of type FeatureData[Sequence], e.g. reads/qiime/joined-rep-w-chimeras-seqs.qza
     :input nonchimeras: list of nonchimeric sequences, e.g. reads/qiime/joined-uchime-dn-out/nonchimeras.qza
     :output table: qiime artifact of type FeatureTable[Frequency] without chimeras and without borlerline chimeras, e.g. reads/qiime/joined-table.qza
     :output rep_seqs: qiime artifact of type FeatureData[Sequence] without chimeras and without borlerline chimeras, e.g. reads/qiime/joined-rep.qza
     """
     input:
         table       = 'reads/qiime/{name}-table-w-chimeras.qza',
-        rep_seqs    = 'reads/qiime/{name}-rep-seqs-w-chimeras.qza',
+        rep_seqs    = 'reads/qiime/{name}-rep-w-chimeras-seqs.qza',
         nonchimeras = 'reads/qiime/{name}-uchime-dn-out/nonchimeras.qza'
     output:
         table       = 'reads/qiime/{name}-table.qza',

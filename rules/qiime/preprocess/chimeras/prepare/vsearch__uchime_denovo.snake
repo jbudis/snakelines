@@ -2,7 +2,7 @@ rule qiime__vsearch__uchime_denovo:
     """
     Finds chimeric and nonchimeric seqeunces
     :input table: qiime artifact of type FeatureTable[Frequency], e.g. reads/qiime/joined-table-w-chimeras.qza
-    :input rep_seqs: qiime artifact of type FeatureData[Sequence], e.g. reads/qiime/joined-rep-seqs-w-chimeras.qza
+    :input rep_seqs: qiime artifact of type FeatureData[Sequence], e.g. reads/qiime/joined-rep-w-chimeras-seqs.qza
     :params dn: [FLOAT] No vote pseudo-count, corresponding to the parameter n in the chimera scoring function. [default: 1.4]
     :params mindiffs: [INTEGER RANGE] Minimum number of differences per segment. [default: 3]
     :params mindiv: [FLOAT] Minimum divergence from closest parent. [default: 0.8]
@@ -12,7 +12,7 @@ rule qiime__vsearch__uchime_denovo:
     """
     input:
         table     = 'reads/qiime/{name}-table-w-chimeras.qza',
-        rep_seqs  = 'reads/qiime/{name}-rep-seqs-w-chimeras.qza'
+        rep_seqs  = 'reads/qiime/{name}-rep-w-chimeras-seqs.qza'
     output:
         chimeras    = 'reads/qiime/{name}-uchime-dn-out/chimeras.qza',
         nonchimeras = 'reads/qiime/{name}-uchime-dn-out/nonchimeras.qza'
