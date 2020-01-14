@@ -26,5 +26,6 @@ rule qiime__feature_classifier__classify_sklearn:
           --i-classifier {input.classifier} \
           --i-reads {input.rep_seqs} \
           --p-n-jobs {threads} \
+          --p-reads-per-batch 20000 \
           --o-classification {output.taxonomy}
         '''
