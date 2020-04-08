@@ -64,7 +64,7 @@ rule custom__alpha_diversity:
         alpha_div = '{analysis_dir}/{reference}/report/tsv/{tax_level, %s}.alpha{alpha_mode, _norm|_pure}.tsv' % ('|'.join(tax_ranks[:-1])),
     run:
         # read the dataframe
-        taxons = pd.DataFrame.from_csv(input.tax_level_abs, sep='\t', index_col=None)
+        taxons = pd.read_csv(input.tax_level_abs, sep='\t', index_col=None)
         taxons = taxons.fillna('')
 
         # correct the dataframe and transpose it

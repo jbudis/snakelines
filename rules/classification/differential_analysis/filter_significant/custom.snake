@@ -35,7 +35,7 @@ rule custom__filter_significantly_expressed_transcripts:
                   (des.fold_change <= -params.min_fold_change)]
 
         if params.reproducible_expression:
-            design = pd.DataFrame.from_csv(input.design, sep='\t', index_col=0)
+            design = pd.read_csv(input.design, sep='\t', index_col=0)
             group1_ids = design[design.groups == 1].index
             group2_ids = design[design.groups == 2].index
             des['reproducible'] = des.apply(lambda transcript: is_reproducible(transcript, group1_ids, group2_ids), axis=1)
