@@ -1,9 +1,10 @@
-import shutil
 import errno
 import os
-
-
+import shutil
 # TODO this should be renamed to matching or deleted - unused
+import sys
+
+
 def copy_input_files_with_consistent_output_names(input_files, output_files):
     """
     Compare names of the inputs and outputs of the rule. All items with the same name in inputs and outputs are copied,
@@ -26,7 +27,8 @@ def copy_input_files_with_consistent_output_names(input_files, output_files):
 
         # Check if items with the same name have also same data type, both should be list or str
         input_item, output_item = getattr(input_files, item_name), getattr(output_files, item_name)
-        assert type(input_item) == type(output_item), 'Output and input items with name {} for the rule have different data types {} and {}'.format(
+        assert type(input_item) == type(
+            output_item), 'Output and input items with name {} for the rule have different data types {} and {}'.format(
             item_name, type(input_item), type(output_item))
 
         # Check if items with the same name have also same length
@@ -102,6 +104,8 @@ def copy_with_makedirs(src, dest, pipeline):
 
     try:
         copy(src, dest)
+    except PermissionError:
+        print(f'permission error on copy from {src} to {dest}', file=sys.stderr)
     except IOError as e:
         # ENOENT(2): file does not exist, raised also on missing dest parent dir
         if e.errno != errno.ENOENT:
@@ -135,12 +139,14 @@ def copy_input_files_with_consisent_names_dict(input_dict, output_dict, pipeline
 
             # Check if items with the same name have also same data type
             assert type(input_item) == type(output_item), 'Output and input items with name {} \
-                    for the rule have different data types {} and {}'.format(item_name, type(input_item), type(output_item))
+                    for the rule have different data types {} and {}'.format(item_name, type(input_item),
+                                                                             type(output_item))
 
             # Check if items with the same name have also same length
             if type(input_item) is list and type(output_item) is list:
                 assert len(input_item) == len(output_item), 'Output and input items with name {} \
-                        for the rule have different lengths {} and {}'.format(item_name, len(input_item), len(output_item))
+                        for the rule have different lengths {} and {}'.format(item_name, len(input_item),
+                                                                              len(output_item))
 
             # Single file items are directly copied
             if type(input_item) == str:
