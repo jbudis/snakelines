@@ -27,7 +27,7 @@ rule deepvariant__call_germline_variants:
 #    conda:
 #        config['snakelines_dir'] + '/enviroments/gatk4.yaml'
     singularity:
-        'docker://google/deepvariant:0.9.0'
+        'docker://google/deepvariant:0.10.0'
     shell:
         """
         /opt/deepvariant/bin/run_deepvariant \
