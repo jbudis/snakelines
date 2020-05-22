@@ -1,0 +1,34 @@
+rule bamtools__filter_fragments:
+    """
+     Filter reads that fall into selected regions
+    :input bam: Mapped reads in BAM format
+    :output bam: Filtered reads in BAM format
+    :param min_map_quality: Minimal quality of mapping
+    :param drop_improper_pairs: Eliminate reads that do not pass paired-end resolution
+    """
+    input:
+        bam  = '{{mapper}}/{{reference}}/{map_type}/{{sample}}.bam'.format(map_type=method_config['input_map_type']),
+        bed = 'reference/{reference}/annotation/{regions}/regions.bed'.format(regions=method_config['regions']),
+    output:
+        bam  = configured_temp('{mapper}/{reference}/filtered/{sample}.bam')
+    params:
+        min_map_quality = method_config.get('min_map_quality', 0),
+    log:
+        out  = '{mapper}/{reference}/filtered/log/{sample}.out',
+        err  = '{mapper}/{reference}/filtered/log/{sample}.err'
+    threads:
+        int(config['threads'])
+    conda:
+        config['snakelines_dir'] + '/enviroments/samtools.yaml'
+    shell:
+        """
+        samtools view \
+            {input.bam} \
+            -b \
+            -o {output.bam} \
+            -L {input.bed} \
+            -q {params.min_map_quality} \
+            --threads {threads} \
+        >  {log.out} \
+        2> {log.err}
+        """
