@@ -1,10 +1,13 @@
+# TODO: make bed file optional
+
 rule bamtools__filter_fragments:
     """
      Filter reads that fall into selected regions
     :input bam: Mapped reads in BAM format
+    :input bed: Regions to filter in BED format
     :output bam: Filtered reads in BAM format
     :param min_map_quality: Minimal quality of mapping
-    :param drop_improper_pairs: Eliminate reads that do not pass paired-end resolution
+    :param regions: Name of the directory with bed file under reference/{reference}/annotation/{regions}/regions.bed
     """
     input:
         bam  = '{{mapper}}/{{reference}}/{map_type}/{{sample}}.bam'.format(map_type=method_config['input_map_type']),
