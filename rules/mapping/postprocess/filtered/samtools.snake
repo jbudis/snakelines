@@ -1,6 +1,6 @@
 # TODO: make bed file optional
 
-rule bamtools__filter_fragments:
+rule samtools__filter_fragments:
     """
      Filter reads that fall into selected regions
     :input bam: Mapped reads in BAM format
@@ -11,7 +11,7 @@ rule bamtools__filter_fragments:
     """
     input:
         bam  = '{{mapper}}/{{reference}}/{map_type}/{{sample}}.bam'.format(map_type=method_config['input_map_type']),
-        bed = 'reference/{reference}/annotation/{regions}/regions.bed'.format(regions=method_config['regions']),
+        bed = 'reference/{{reference}}/annotation/{regions}/regions.bed'.format(regions=method_config['regions']),
     output:
         bam  = configured_temp('{mapper}/{reference}/filtered/{sample}.bam')
     params:
