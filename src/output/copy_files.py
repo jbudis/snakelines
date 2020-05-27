@@ -104,8 +104,8 @@ def copy_with_makedirs(src, dest, pipeline):
 
     try:
         copy(src, dest)
-    except PermissionError:
-        print(f'permission error on copy from {src} to {dest}', file=sys.stderr)
+    # except PermissionError:
+    #     print(f'permission error on copy from {src} to {dest}', file=sys.stderr)
     except IOError as e:
         # ENOENT(2): file does not exist, raised also on missing dest parent dir
         if e.errno != errno.ENOENT:
