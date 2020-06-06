@@ -2,27 +2,12 @@ Rules
 =====
 - Reference
 
-  - Attributes
+  - Taxonomy
 
-    - Desc
-
-      .. toctree::
-        reference/attributes/desc/summary.rst
-
-    - Comparison
+    - Infer
 
       .. toctree::
-        reference/report/comparison/summary.rst
-
-    - Phylogenetic Tree
-
-      .. toctree::
-        reference/report/phylogenetic_tree/summary.rst
-
-  - Download
-
-    .. toctree::
-      reference/download/summary.rst
+        reference/taxonomy/infer/summary.rst
 
   - Index
 
@@ -36,11 +21,6 @@ Rules
       .. toctree::
         reference/index/fai/summary.rst
 
-  - Phylogeny
-
-    .. toctree::
-      reference/phylogeny/summary.rst
-
 - Assembly
 
   - Report
@@ -48,16 +28,7 @@ Rules
     - Quality Report
 
       .. toctree::
-        classification/report/summary/summary.rst
-
-    - Taxonomic Counts
-
-      - Alpha Diversity
-
-        .. toctree::
-          classification/report/taxonomic_counts/alpha_diversity/summary.rst
-
-      - Barplot
+        assembly/report/quality_report/summary.rst
 
     - Assembly Graph
 
@@ -203,20 +174,10 @@ Rules
         .. toctree::
           classification/report/transcripts/pca/summary.rst
 
-      - Revigo
-
-        .. toctree::
-          classification/report/transcripts/revigo/summary.rst
-
       - Count Table
 
         .. toctree::
           classification/report/transcripts/count_table/summary.rst
-
-      - Html Table
-
-        .. toctree::
-          classification/report/transcripts/html_table/summary.rst
 
     - Summary
 

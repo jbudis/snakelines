@@ -55,4 +55,3 @@ rule krona_all_txt:
             -n +2 \
         > {output}
         '''
-

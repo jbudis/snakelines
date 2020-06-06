@@ -7,7 +7,7 @@ rule custom__export_de_genes_for_revigo:
     Export differentially expressed genes and their GO annotations in format suitable for visualization
     in the Revigo webpage (http://revigo.irb.hr/)
     :input des: TSV table with DE genes
-    :input gos: Annotation of genes - TSV file with columns id and external_id
+    :input gos: annotation of genes - TSV file with columns id and external_id
     """
     input:
         des    = 'classification/{reference}/report/comparison/significant.tsv',

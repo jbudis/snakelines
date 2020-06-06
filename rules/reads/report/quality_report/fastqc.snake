@@ -59,7 +59,7 @@ rule fastqc__html_summary_for_paired_reads:
             {output} \
             {input}
         """
-
+#konca a
 rule fastqc__quality_report:
     """
     Generate HTML report with plots assessing various quality control aspects of NGS reads

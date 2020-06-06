@@ -24,7 +24,7 @@ rule bowtie2__map_reads_to_reference:
     params:
         index = 'reference/{reference}/bowtie2_index/{reference}',
         additional = method_config.get('params', ''),
-        concordant = '--no-mixed --no-discordant --no-unal' if method_config.get('only_concordant', False) else ''
+        concordant = '--no-mixed --no-unal --no-discordant' if method_config.get('only_concordant', False) else ''
     threads:
         int(config['threads'])
     conda:
@@ -36,8 +36,8 @@ rule bowtie2__map_reads_to_reference:
             -1 {input.r1} \
             -2 {input.r2} \
             --threads {threads} \
-            {params.concordant} \
             {params.additional} \
+            {params.concordant} \
         2> {log.err} \
         | samtools view -bS - \
         > {output.bam}

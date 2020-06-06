@@ -20,28 +20,11 @@ Asses viral composition of sample based on read_counts of particular taxonomic u
 - *composition:* TSV table containing information about number of reads assigned to taxonomic units (most common species)
 - *abundance:* TSV table containing NCBI ID of all found taxonomic units with assigned read counts and transkripts per milion
 
-Custom - Fill Na Values With Virusnames
--------------------------------------------
-
-Python script, replaces blank space in input TSV file with virus names from that row and create new changed TSV file.
-
-**Location**
-
-- *Filepath:* <SnakeLines_dir>/rules/classification/read_based/fast_virome_explorer.snake
-- *Rule name:* custom__fill_na_values_with_virusnames
-
-**Input(s):**
-
-- *composition:* TSV table containing information about number of reads assigned to taxonomic units (most common species), generated as output of previous rule
-
-**Output(s):**
-
-- *checked_composition:* new TSV table but that NA values replace with virus names from first column
-
 Custom - Convert To Tpm Metric
 ----------------------------------
 
-Python script (have to be set in config => count_type: tpm), create new TSV table with metric turned into tpm (transcripts per milion).
+Python script (have to be set in config => count_type: tpm),
+Create new TSV table with metric turned into tpm (transcripts per milion).
 
 **Location**
 
@@ -50,8 +33,11 @@ Python script (have to be set in config => count_type: tpm), create new TSV tabl
 
 **Input(s):**
 
-- *checked_composition:* checked TSV table in previous rule, containing information about number of reads assigned to taxonomic units (most common species)
-- *abundance:* TSV table containing NCBI ID of all found taxonomic units with assigned read counts and transkripts per milion, output from rule fast_virome_explorer__estimate_virome_composition
+- *checked_composition:* checked TSV table in previous rule, containing information about number of reads
+assigned to taxonomic units (most common species)
+- *abundance:* TSV table containing NCBI ID of all found taxonomic units with assigned read counts and
+transcripts per milion, output from rule fast_virome_explorer__estimate_virome_composition
+- *py_script:* path to  python script
 
 **Output(s):**
 
@@ -69,11 +55,49 @@ Create from input file new krona file.
 
 **Input(s):**
 
-- *composition:* containing information about number of reads assigned to taxonomic units (most common species), output file from one of the last two previous rules (according to selected count metric)
+- *composition:* containing information about number of reads assigned to taxonomic units (most common species),
+output file from one of the last two previous rules (according to selected count metric)
 
 **Output(s):**
 
 - *krona:* new krona file
+
+Kallisto - Prepare Index
+----------------------------
+
+Index fasta file to quick identify source of input sequenced reads
+
+**Location**
+
+- *Filepath:* <SnakeLines_dir>/rules/classification/read_based/fast_virome_explorer.snake
+- *Rule name:* kallisto__prepare_index
+
+**Input(s):**
+
+- *reference:* Genomic sequence file in fasta format to index
+
+**Output(s):**
+
+- *index:* Index for the input reference genomic file
+
+Custom - Prepare Read Lens
+------------------------------
+
+Create TSV file with lengths of reference sequences, required for FVE analysis
+
+**Location**
+
+- *Filepath:* <SnakeLines_dir>/rules/classification/read_based/fast_virome_explorer.snake
+- *Rule name:* custom__prepare_read_lens
+
+**Input(s):**
+
+- *reference:* Genomic sequence file in fasta format to index
+- *taxes:* Taxonomy file in TSV format (each line represent a single reference sequence)
+
+**Output(s):**
+
+- *lens:* TSV file with lengths of reference sequences
 
 Metaxa2 - Classify Reads
 ----------------------------

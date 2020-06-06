@@ -1,0 +1,56 @@
+include: config['snakelines_dir'] + '/rules/mapping/index/samtools.snake'
+
+# Import python libraries
+import shutil
+import pandas as pd
+from Bio import SeqIO
+import subprocess
+
+
+rule fast_virome_explorer__estimate_virome_composition:
+    """
+    Asses viral composition of sample based on read_counts of particular taxonomic units.
+    :input reads_f: fastq file with sequences from forward strand
+    :input reads_r: fastq file with sequences from reverse strand
+    :input index: kallisto index created from reference database
+    :input ref_lens: lenghts of particular reference genomes from database
+    :output composition: TSV table containing information about number of reads assigned to taxonomic units (most common species)
+    :output abundance: TSV table containing NCBI ID of all found taxonomic units with assigned read counts and transkripts per milion
+    :params outdir: output directory for fast_virome_explorer
+    :params cr: ratio of coverages parameter
+    :params co: genome coverage parameter
+    :params cn: mapped reads paramater
+    """
+    input:
+        reads_f     = 'reads/%s/{sample}_R1.fastq.gz' % pipeline.preprocessed_read_type,
+        reads_r     = 'reads/%s/{sample}_R2.fastq.gz' % pipeline.preprocessed_read_type,
+        index       = 'reference/{{reference}}/kallisto_index/{{reference}}-kallisto-index-k{kmer_size}.idx' \
+                            .format(kmer_size=method_config['kmer_size']),
+        ref_lens    = 'reference/{reference}/kallisto_index/{reference}.lens.txt'
+    output:
+        composition = 'classification/{reference}/{sample}/FastViromeExplorer-final-sorted-abundance.tsv',
+        abundance   = 'classification/{reference}/{sample}/abundance.tsv'
+    log:
+        out         = 'classification/{reference}/{sample}/log/{sample}.log', # log report from fast virome explorer tool
+        err         = 'classification/{reference}/{sample}/log/{sample}.err'  # error report from fast virome explorer tool
+    params:
+        outdir      = 'classification/{reference}/{sample}',                  # ouput directory, necessary for fast virome explorer
+        cr = method_config['ratio_of_coverages'],
+        co = method_config['genome_coverage'],
+        cn = method_config['mapped_reads']
+    conda:
+        config['snakelines_dir'] + '/enviroments/fast-virome-explorer.yaml'
+    shell:
+        '''
+        fast_virome_explorer \
+            -1 {input.reads_f} \
+            -2 {input.reads_r} \
+            -i {input.index} \
+            -o {params.outdir} \
+            -l {input.ref_lens} \
+            -cr {params.cr} \
+            -co {params.co} \
+            -cn {params.cn} \
+         > {log.out} \
+        2> {log.err}
+        '''

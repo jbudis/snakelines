@@ -51,6 +51,9 @@ rule bowtie2__filter_reads_from_reference:
                 -2 $R2_IN \
                 --very-sensitive \
                 --threads {threads} \
+                --no-mixed \
+                --no-unal \
+                --no-discordant \
                 {params.keep_param} $R_MASK \
             > /dev/null \
             2> {log.prefix}.$REF.log

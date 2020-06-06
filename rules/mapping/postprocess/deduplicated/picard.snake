@@ -27,8 +27,8 @@ rule picard__mark_duplicates:
             I={input.bam} \
             O={output.bam} \
             M={log.stat} \
-            TMP_DIR=$TEMP_DIR \
             VALIDATION_STRINGENCY=SILENT \
+            TMP_DIR=$TEMP_DIR \
         >  {log.out} \
         2> {log.err}
 

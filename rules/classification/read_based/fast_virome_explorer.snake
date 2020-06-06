@@ -109,22 +109,27 @@ rule custom__fill_taxonomy:
     :output fill_taxonomy: new TSV table containing taxonomy information
     """
     input:
-        checked_composition = 'classification/{reference}/{sample}/FastViromeExplorer-final-sorted-abundance_checked{count_suffix}.tsv',
-        bash_script         = srcdir('fast_virome_explorer/get-ncbi_taxonomy.sh')
+        composition = 'classification/{reference}/{sample}/FastViromeExplorer-final-sorted-abundance_checked{count_suffix}.tsv',
+        tax_file = 'reference/{reference}/{reference}.tax'
     output:
-        fill_taxonomy       = 'classification/{reference}/{sample}/FastViromeExplorer-final-sorted-abundance_checked_taxonomy{count_suffix}.tsv'
+        filled_taxonomy = 'classification/{reference}/{sample}/FastViromeExplorer-final-sorted-abundance_checked_taxonomy{count_suffix}.tsv'
     run:
-        df = pd.read_csv(input.checked_composition, sep='\t')
-        command = '/data/snakelines/smolak/rules/classification/read_based/fast_virome_explorer/get-ncbi_taxonomy.sh {ncbi_id}'
+        df = pd.read_csv(input.composition, sep='\t')
+        df_tax = pd.read_csv(input.tax_file, sep='\t', names=['ncbi_id', 'taxonomy'])
 
         for index, row in df.iterrows():
-            ncbi_id = df.loc[index, '#VirusIdentifier']
-            taxonomy = subprocess.check_output(command.format(ncbi_id=ncbi_id), shell=True)
-            taxonomy = taxonomy.decode()
-            taxonomy = taxonomy.strip()
-            df.loc[index, 'kingdom;phylum;class;order;family;genus;species'] = taxonomy
+            try:
+                taxonomy = df_tax.loc[df_tax['ncbi_id'] == row['#VirusIdentifier'], 'taxonomy'].tolist()[0]
+                virus_name = taxonomy.split(';')[-1]
 
-        df.to_csv(output.fill_taxonomy, header= True, sep= '\t', index= False)
+                df.loc[index, 'kingdom;phylum;class;order;family;genus;species'] = taxonomy
+                df.loc[index, 'VirusName'] = virus_name
+            except:
+                virus_name = row['#VirusIdentifier']
+                taxonomy = 'unclassified;unclassified;unclassified;unclassified;unclassified;unclassified;{}'.format(virus_name)
+                print('WARNING: unavailable taxonomy for {}'.format(virus_name))
+
+        df.to_csv(output.filled_taxonomy, header= True, sep= '\t', index= False)
 
 
 rule custom__convert_to_krona:
@@ -179,11 +184,11 @@ rule custom__prepare_read_lens:
     """
     input:
         reference = 'reference/{reference}/{reference}.fa',
-        taxes     = 'reference/{reference}/{reference}.tax'
+        #taxes     = 'reference/{reference}/{reference}.tax'
     output:
         lens      = 'reference/{reference}/kallisto_index/{reference}.lens.txt'
     run:
-        taxes = pd.read_csv(input.taxes, sep='\t', index_col=0, header=None)[1]
+        #taxes = pd.read_csv(input.taxes, sep='\t', index_col=0, header=None)[1]
 
         with open(output.lens, 'w') as out:
             for seq in SeqIO.parse(input.reference, 'fasta'):

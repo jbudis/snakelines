@@ -1,0 +1,23 @@
+from Bio import SeqIO
+
+rule custom__infer_taxonomy:
+    """
+    Create taxonomy file from fasta headers, where:
+        * id is the first word in the sequence name
+        * taxonomy is the description of the sequence
+    :input reference: Genomic sequence file in fasta format
+    :output taxes: Taxonomy file in TSV format
+    """
+    input:
+        reference = 'reference/{reference}/{reference}.fa'
+    output:
+        taxes     = 'reference/{reference}/{reference}.tax'
+    run:
+        with open(output.taxes, 'w') as out:
+            for seq in SeqIO.parse(input.reference, 'fasta'):
+                description = seq.description
+                if description.startswith(seq.id):
+                    description = description[len(seq.id) + 1: ]
+
+                out.write('{}\t{}\n'.format(seq.id, description))
+

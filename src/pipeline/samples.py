@@ -27,7 +27,7 @@ class Pipeline:
         :param would_be_downloaded: if reference would be created in the Snakelines execution,
                                    and so reference/{reference}/{reference}.fa could not exist yet
         """
-
+        print(samples,reference,panel,prebuilt_reference,would_be_downloaded)
         # Check, if reference file exists
         if reference and not (prebuilt_reference or would_be_downloaded):
             fasta = 'reference/{reference}/{reference}.fa'.format(reference=reference)
