@@ -98,7 +98,7 @@ def check_dependency(dependency_file, config_dict):
                 temporary = 'temporary' in subc and subc['temporary']
                 if 'from' in subd['output'][output_file] and 'to' in subd['output'][output_file]:
                     inputs[path_underscored + output_file] = add_temp(subd['output'][output_file]['from'], temporary)
-                    outputs[path_underscored + output_file] = add_temp(subd['output'][output_file]['to'], temporary)
+                    outputs[path_underscored + output_file]me = add_temp(subd['output'][output_file]['to'], temporary)
                 elif type(subd['output'][output_file]) is str:
                     inputs[path_underscored + output_file] = add_temp(subd['output'][output_file], temporary)
                 else:

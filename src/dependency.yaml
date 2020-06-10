@@ -13,6 +13,13 @@ reference:
         output:
             reference: expand('reference/{reference}/{reference}.fa',
                                reference=pipeline.references)
+            depends:
+                - assembly/assembler
+
+    create:
+        output:
+            reference: expand('reference/{reference}/{reference}.fa',
+                reference=pipeline.references)
 
     alignment:
         output:

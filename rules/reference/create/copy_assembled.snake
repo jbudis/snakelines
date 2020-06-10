@@ -1,0 +1,17 @@
+import os
+
+# TODO: rename and documentation
+rule entrez__download_sequences_by_genbank_id:
+    """
+    Download sequences from NCBI Genbank database according to the list of enumerated genbank ids
+    :output reference: Downloaded sequences in FASTA format
+    :output taxonomy: Taxonomies for downloaded sequences
+    :param method_config: Configuration of entrez. It has to contain list of Genbank identifiers for sequences to download
+    :param email: Inform NCBI who you are to contact you in case of excessive use. Otherwise they may block your access directly.
+    """
+    input:
+        assembly = 'assembly/{reference}/contigs.fa'
+    output:
+        reference = protected('reference/assembled_{reference}/assembled_{reference}.fa')
+    run:
+        os.copy(input.assembly, output.reference)
