@@ -303,9 +303,10 @@ qiime:
                                                 name=qiime_reference,
                                                 type=['taxonomy', 'taxa-barplots'],
                                                 similarity=config['qiime']['analysis']['core_metrics']['similarity'])
-                    to:     expand('{report}/03_taxonomy_report/{name}-{type}-dn-{similarity}/',
+                    to:     expand('{report}/03_taxonomy_report/{name}-{type}-dn-{similarity}{confidence_suffix}/',
                                                 report=config['report_dir'],
                                                 name=qiime_reference,
+                                                confidence_suffix=qiime_confidence_suffix,
                                                 type=['taxonomy', 'taxa-barplots'],
                                                 similarity=config['qiime']['analysis']['core_metrics']['similarity'])
 

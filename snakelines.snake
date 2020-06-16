@@ -30,6 +30,7 @@ def get_files(source_dict):
             'qiime_read_type': qiime_read_type,
             'qiime_reference': qiime_reference,
             'similarity': similarity,
+            'qiime_confidence_suffix': qiime_confidence_suffix,
             'qiime_file_suffix': qiime_file_suffix,
             'qiime_chimeras_list': qiime_chimeras_list,
             'qiime_alpha_types': qiime_alpha_types,

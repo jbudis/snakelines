@@ -74,6 +74,9 @@ barplot_formats = extract_from_config(config, ['classification', 'report', 'taxo
 qiime_read_type = extract_from_config(config, ['qiime_read_type'], 'original')
 qiime_reference = extract_from_config(config, ['qiime', 'analysis', 'taxonomy', 'classify', 'reference'], 'silva')
 
+confidence = extract_from_config(config, ['qiime', 'analysis', 'taxonomy', 'classify', 'confidence'], '')
+qiime_confidence_suffix = '-confidence-{}'.format(confidence) if confidence != '' else ''
+
 similarity = extract_from_config(config, ['qiime', 'preprocess', 'clustered', 'similarity'], '')
 qiime_file_suffix = '-dn-{}'.format(similarity) if similarity != '' else ''
 
