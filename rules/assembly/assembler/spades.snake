@@ -1,3 +1,5 @@
+# TODO: check option "careful"
+
 rule spades__assemble_reads_into_contigs:
     """
     Assemble preprocessed reads into the larger genomic sequences, contigs. Also generate contig overlap graphs and
