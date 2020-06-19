@@ -1,4 +1,5 @@
-include: config['snakelines_dir'] + '/rules/mapping/index/samtools.snake'
+#include: config['snakelines_dir'] + '/rules/mapping/index/samtools.snake'
+include: config['snakelines_dir'] + '/rules/reference/index/dict/picard.snake'
 include: config['snakelines_dir'] + '/rules/reference/index/fai/samtools.snake'
 
 rule vardict__create_wgs_bed_file:
@@ -38,8 +39,8 @@ rule vardict__call_germline_variants:
     Identify small variation (SNP and indels) from the mapped reads.
     """
     input:
-        bam      = 'mapping/{reference}/deduplicated/{sample}.bam',
-        bai      = 'mapping/{reference}/deduplicated/{sample}.bam.bai',
+        bam      = 'mapping/{reference}/%s/{sample}.bam'       % pipeline.postprocessed_map_type,
+        bai      = 'mapping/{reference}/%s/{sample}.bam.bai'   % pipeline.postprocessed_map_type,
         bed      = 'reference/{reference}/annotation/{panel}/regions.vardict.bed',
         reffasta = 'reference/{reference}/{reference}.fa',
         reffaidx = 'reference/{reference}/{reference}.fa.fai'
@@ -79,11 +80,11 @@ rule vardict__test_strand_bias:
     Perform statistical testing of strand bias.
     """
     input:
-        vdc = 'variant/{reference}-{panel}/{state}/{sample}.vdc'
+        vdc = 'variant/{reference}-{panel}/{map_type}/{sample}.vdc'
     output:
-        tsb = temp('variant/{reference}-{panel}/{state}/{sample}.tsb')
+        tsb = temp('variant/{reference}-{panel}/{map_type}/{sample}.tsb')
     log:
-        err = 'variant/{reference}-{panel}/{state}/log/{sample}.test_strand_bias.err'
+        err = 'variant/{reference}-{panel}/{map_type}/log/{sample}.test_strand_bias.err'
     conda:
         config['snakelines_dir'] + '/enviroments/vardict.yaml'
     shell:
@@ -100,9 +101,9 @@ rule vardict__tsb_to_vcf:
     Convert intermediate files of Vardict to VCF format
     """
     input:
-        tsb = 'variant/{reference}-{panel}/{state}/{sample}.tsb'
+        tsb = 'variant/{reference}-{panel}/{map_type}/{sample}.tsb'
     output:
-        vcf = temp('variant/{reference}-{panel}/{state}/{sample}.vardict.vcf')
+        vcf = temp('variant/{reference}-{panel}/{map_type}/{sample}.vardict.vcf')
     params:
         min_mean_base_quality  = method_config.get('soft_filter', {}).get('min_mean_base_quality', 20),
         min_map_quality        = method_config.get('soft_filter', {}).get('min_map_quality', 20),
@@ -122,4 +123,34 @@ rule vardict__tsb_to_vcf:
             -N {wildcards.sample} \
             {input} \
         > {output}
+        """
+
+rule gatk__fix_vcf_header:
+    """
+    Adds missing sequence dictionary to VCF header. This job also generates VCF index (.idx).
+    :input vcf: Raw VCF from variant caller vardict.
+    :input fasta: Reference sequence.
+    :output vcf: Fixed VCF.
+    :output vcf_index: Fixed VCF index.
+    """
+    input:
+        vcf   =     'variant/{reference}-{panel}/{map_type}/{sample}.vardict.vcf',
+        fasta =     'reference/{reference}/{reference}.fa',
+        dict  =     'reference/{reference}/{reference}.dict'
+    output:
+        vcf =       'variant/{reference}-{panel}/{map_type}/{sample}.vcf',
+        vcf_index = 'variant/{reference}-{panel}/{map_type}/{sample}.vcf.idx'
+    log:
+        out =       'variant/{reference}-{panel}/{map_type}/log/{sample}.out',
+        err =       'variant/{reference}-{panel}/{map_type}/log/{sample}.err'
+    conda:
+        config['snakelines_dir'] + '/enviroments/gatk4.yaml'
+    shell:
+        """
+        gatk SelectVariants \
+            -V {input.vcf} \
+            -R {input.fasta} \
+            -O {output.vcf} \
+            1>{log.out} \
+            2>{log.err}
         """
