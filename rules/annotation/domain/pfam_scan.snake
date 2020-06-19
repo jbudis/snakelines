@@ -1,0 +1,59 @@
+import pandas as pd
+from Bio import SeqIO
+import argparse
+from io import StringIO
+
+rule custom__filter_endolysines:
+    """
+    Filter out and save all proteins with keyword 'lysin'
+    :input annotated_proteins: protein fasta file
+    :output endolysines_faa: protein fasta file with filtered results
+    :output endolysines_fna: nucleotide fasta file with filtered results
+    :output endolysines_tsv: summary table about filtered results
+    :params pyscript: path to the python script
+    """
+    input:
+        annotated_proteins = 'annotation/{sample}/{sample}.faa'
+    output:
+        endolysines_faa = 'annotation/{sample}/{sample}_endolysines.faa',
+        endolysines_fna = 'annotation/{sample}/{sample}_endolysines.fna',
+        endolysines_tsv = 'annotation/{sample}/{sample}_endolysines.tsv'
+    params:
+        py_script       = srcdir('scripts/extract_endolysines.py')
+    shell:
+        '''
+        python3 {params.py_script} \
+               --input {input.annotated_proteins} \
+               --output_faa {output.endolysines_faa} \
+               --output_ffn {output.endolysines_fna} \
+               --output_tsv {output.endolysines_tsv}
+        '''
+
+rule pfam_scan__find_and_annotate_domains:
+    """
+    Search protein fasta sequences against a library of Pfam HMM
+    :input endolysines: protein fasta file contained endolysines
+    :output tsv: dataframe containing information about identified domains
+    :output pfam_db: path to pfam database directory    
+    """
+    input:
+        endolysines   = 'annotation/{sample}/{sample}_endolysines.faa'
+    output:
+        tsv         = 'annotation/{sample}/domains/{sample}.tsv'
+    log:
+        out         = 'annotation/{sample}/domains/log.out', # log report from fast virome explorer tool
+        err         = 'annotation/{sample}/domains/log.err'  # error report from fast virome explorer tool
+    params:
+        pfam_db     = 'reference/pfam_db/'                  # ouput directory, necessary for fast virome explorer
+    threads:
+        int(config['threads'])
+    shell:
+        '''
+        pfam_scan.pl \
+            -fasta {input.endolysines} \
+            -outfile {output.tsv} \
+            -dir {params.pfam_db} \
+            -cpu {threads} \
+         > {log.out} \
+        2> {log.err}
+        '''
