@@ -1,0 +1,140 @@
+samples:                            # List of sample categories to be analysed
+    - name: .*               # Regex expression of sample names to be analysed (reads/original/example.*_R1.fastq.gz)
+      reference: assembled_contigs               # Reference genome for reads in the category (reference/mhv/mhv.fa)
+
+report_dir: report/public/26-mapping  # Generated reports and essential output files would be stored there
+threads: 16                         # Number of threads to use in analysis
+
+reference:
+    create:
+        method: copy_contigs
+
+reads:                              # Prepare reads and quality reports for downstream analysis
+    preprocess:                     # Pre-process of reads, eliminate sequencing artifacts, contamination ...
+        trimmed:                    # Remove low quality parts of reads
+            method: trimmomatic     # Supported values: trimmomatic
+            temporary: False        # If True, generated files would be removed after successful analysis
+            crop: 500               # Maximal number of bases in read to keep. Longer reads would be truncated.
+            quality: 20             # Minimal average quality of read bases to keep (inside sliding window of length 5)
+            headcrop: 20            # Number of bases to remove from the start of read
+            minlen: 35              # Minimal length of trimmed read. Shorter reads would be removed.
+
+#        decontaminated:             # Eliminate fragments from known artificial source, e.g. contamination by human
+#            method: bowtie2         # Supported values: bowtie2
+#            temporary: False        # If True, generated files would be removed after successful analysis
+#            references:             # List of reference genomes
+#                - hg38
+#            keep: True              # Keep reads mapped to references (True) or remove them as contamination (False)
+
+        deduplicated:               # Remove fragments with the same sequence (PCR duplicated)
+            method: fastuniq        # Supported values: fastuniq
+            temporary: False        # If True, generated files would be removed after successful analysis
+
+    report:                         # Summary reports of read characteristics to assess their quality
+        quality_report:             # HTML summary report of read quality
+            method: fastqc          # Supported values: fastqc
+            read_types:             # List of preprocess steps for quality reports
+                - original
+                - trimmed
+#                - decontaminated
+                - deduplicated
+
+assembly:                           # Join reads into longer sequences (contigs) based on their overlaps
+    assembler:                      # Method for joining reads
+        method: spades              # Supported values: spades
+        mode: meta              # Supported values: standard, meta, plasmid, rna, iontorrent
+#        careful: Faslse               # Can not be combined with the meta mode. Tries to reduce number of mismatches and short indels, longer runtime
+
+    report:                         # Summary reports for assembly process and results
+        quality_report:             # Quality of assembled contigs
+            method: quast           # Supported values: quast
+
+        assembly_graph:             # Visualisation of overlaps between assembled contigs
+            method: bandage         # Supported values: bandage
+
+annotation:
+    gene:
+        method: prokka
+    domain:
+        method: pfam_scan
+
+mapping:                            # Find the most similar genomic region to reads in reference (mapping process)
+    mapper:                         # Method for mapping
+        method: bowtie2
+        params: --very-sensitive    # Additional parameters
+        only_concordant: False      # Keep only reads with consistently mapped reads from both paired-ends
+
+    index:                          # Generate .bai index for mapped reads in .bam files
+        method: samtools            # Supported values: samtools
+
+    postprocess:                    # Successive steps to refine mapped reads
+        original:                  # Reads retrieved from mapping process
+            temporary: True         # If True, generated files would be removed after successful analysis
+        sorted:
+            method: samtools
+            temporary: False
+#        deduplicated:               # Mark duplicated reads (PCR duplicated)
+#            method: picard          # Supported values: picard
+
+    report:                         # Summary reports of mapping process and results
+        quality_report:             # HTML summary with quality of mappings
+            method: qualimap        # Supported values: qualimap
+            map_types:              # List of post-process steps for quality reports
+                - sorted
+
+classification:                               # Identify genomic source of sequenced reads
+    contig_based:                             # Find homologue sequences based on assembled contigs
+        method: blast                         # Supported values: blast
+        reference:                            # List of reference genomes to search for homology
+            mhv_classification:                              # Name of reference genome (reference/mhv/mhv.fa)
+                query_type: nucleotide        # Nucleotide or protein, according to sequence type in input .fa files
+                target_type: nucleotide       # Nucleotide or protein, according to sequence type in blast database
+                max_target_seqs: 10           # Number of best hit reference sequences from blast database for each input sequence
+
+    viral:                                    # Customized methods for identification of viruses
+        identification:                       # Identification of contigs with similarity to viral genomes
+            method: virfinder                 # Supported values: virfinder
+
+    report:                                   # Summary reports of classification results
+        summary:                              # Aggregated HTML table with summarized attributes of contigs and homology
+            method: fasta_summary             # Supported values: fasta_summary
+            max_query_seqs: 20000             # Maximal number of contigs to report (ordered by their length)
+            max_target_seqs: 5                # Maximal number of homologues from reference genomes to report
+            min_query_coverage: 0.01          # Show only hits that have at least this proportion of contig mapped to reference
+            include:                          # Optional attributes of contigs to report
+                - virfinder                   # Probability that contig is from virus
+                - coverage                   # Number of aligned reads per contig
+                - blast                       # Homologues identified by Blast against specified reference databases
+
+            html:                             # Attributes applicable only for the HTML report, would NOT be used in the TSV table
+                seqs_per_page: 100            # Number of table rows (sequences) per page
+                sort_by: 'Sequence'           # Rows would be sorted according to values in this column
+                sort_how: 'asc'               # Values would be sorted in desc(ending) or asc(ending) order
+                columns:                      # Show only these attributes, in this order
+                    - Sequence                # Names of contigs with link to fasta files with its sequence
+                    - Length                  # Number of bases
+                    - Compress ratio          # Complexity of contig sequence, may be used to filter repetitive sequences
+                    - Coverage                # Average number of reads covering each base of contig
+                    - VirFinder pvalue        # Probability that contig is from viral genome
+                    - Homologue link          # Reference sequences with homology
+                    - Mapped reads            # Number of mapped reads to contigs
+
+variant:                                    # Identify variation in reads given reference genome
+    caller:                                 # Method for variant identification
+        method: vardict                     # Supported values: vardict
+        hard_filter:                        # Variants that do not pass any of these filters would NOT be present in the VCF file
+            min_nonref_allele_freq: 0.05    # Minimal proportion of reads with alternative allele against all observations
+            min_alternate_count: 2          # Minimal number of reads with alternative allele
+            min_map_quality: 15             # Minimal average mapping quality of reads with alternative allele
+        soft_filter:                        # Failing these filters would be indicated in the FILTER field of the VCF file
+            min_map_quality: 20             # Minimal average mapping quality of reads with alternative allele
+            read_depth: 10                  # Minimal number of reads with alternative allele
+            min_nonref_allele_freq: 0.20    # Minimal proportion of reads with alternative allele against all observations
+            min_mean_base_quality: 20       # Minimal average base quality of bases that support alternative allele
+
+#    report:
+#        calling:
+#            method: gatk
+
+#        summary:
+#            method: custom

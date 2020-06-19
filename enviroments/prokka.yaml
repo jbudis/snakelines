@@ -1,4 +1,5 @@
 channels:
 - bioconda
 dependencies:
-- prokka=1.12.0
+- prokka=1.13.4
+- tbl2asn-forever=25.7.1f
