@@ -5,9 +5,9 @@ rule samtools__bam_index:
     :output bai: Index to mapped reads for enable fast read retrieval from desired genomic region
     """
     input:
-        bam = '{path}/{sample}.bam'
+        bam = 'mapping/{reference}/%s/{sample}.bam' % pipeline.postprocessed_map_type
     output:
-        '{path}/{sample}.bam.bai'
+        bai = 'mapping/{reference}/%s/{sample}.bam.bai' % pipeline.postprocessed_map_type
     conda:
         config['snakelines_dir'] + '/enviroments/samtools.yaml'
     shell:

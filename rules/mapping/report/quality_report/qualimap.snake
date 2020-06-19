@@ -96,47 +96,47 @@ def qualimap_pdf_reports(wildcards):
                    map_type=wildcards.map_type, panel=wildcards.panel,
                    sample=pipeline.samples_for(wildcards.reference))
 
-rule qualimap__summarize_quality_reports:
-    """
-    Aggregate results from individual bamqc results to a single summary report
-    :input reports: List of pdf qualimap reports to aggregate
-    :output html: Aggregated quality report of mapped reads in HTML format
-    :output pdf: Aggregated quality report of mapped reads in PDF format
-    :params sample_list: Auxiliary file that would be generated with names and paths to individual sample reports
-    :params out_dir: Directory, where output reports would be generated
-    """
-    input:
-        reports     = qualimap_pdf_reports
-    output:
-        html        = '{mapper}/{reference}/{map_type}/stats-{panel}/summary/multisampleBamQcReport.html',
-        pdf         = '{mapper}/{reference}/{map_type}/stats-{panel}/summary/report.pdf',
-    params:
-        sample_list = '{mapper}/{reference}/{map_type}/stats-{panel}/summary/samples.list',
-        out_dir     = '{mapper}/{reference}/{map_type}/stats-{panel}/summary'
-    log:
-        out         = '{mapper}/{reference}/{map_type}/stats-{panel}/summary/log/analysis.log',
-        err         = '{mapper}/{reference}/{map_type}/stats-{panel}/summary/log/analysis.err',
-    conda:
-        config['snakelines_dir'] + '/enviroments/qualimap.yaml'
-    shell:
-        """
-        # Prepare sample list file for the qualimap
-        ## Column1: Sample name
-        ## Column2: Path to precomputed bamqc report
-
-        for REPORT in {input.reports}; do
-            REPORT_DIR=`dirname $REPORT`
-            SAMPLE=`basename $REPORT_DIR`
-            echo -e "$SAMPLE\t$REPORT_DIR" >> {params.sample_list}
-        done
-
-        # Run qualimap on samples specified in sample list
-        qualimap multi-bamqc \
-            -d {params.sample_list} \
-            -outdir {params.out_dir} \
-            -outformat PDF:HTML \
-        >  {log.out} \
-        2> {log.err}
-        """
+#rule qualimap__summarize_quality_reports:
+#    """
+#    Aggregate results from individual bamqc results to a single summary report
+#    :input reports: List of pdf qualimap reports to aggregate
+#    :output html: Aggregated quality report of mapped reads in HTML format
+#    :output pdf: Aggregated quality report of mapped reads in PDF format
+#    :params sample_list: Auxiliary file that would be generated with names and paths to individual sample reports
+#    :params out_dir: Directory, where output reports would be generated
+#    """
+#    input:
+#        reports     = qualimap_pdf_reports
+#    output:
+#        html        = '{mapper}/{reference}/{map_type}/stats-{panel}/summary/multisampleBamQcReport.html',
+#        pdf         = '{mapper}/{reference}/{map_type}/stats-{panel}/summary/report.pdf',
+#    params:
+#        sample_list = '{mapper}/{reference}/{map_type}/stats-{panel}/summary/samples.list',
+#        out_dir     = '{mapper}/{reference}/{map_type}/stats-{panel}/summary'
+#    log:
+#        out         = '{mapper}/{reference}/{map_type}/stats-{panel}/summary/log/analysis.log',
+#        err         = '{mapper}/{reference}/{map_type}/stats-{panel}/summary/log/analysis.err',
+#    conda:
+#        config['snakelines_dir'] + '/enviroments/qualimap.yaml'
+#    shell:
+#        """
+#        # Prepare sample list file for the qualimap
+#        ## Column1: Sample name
+#        ## Column2: Path to precomputed bamqc report
+#
+#        for REPORT in {input.reports}; do
+#            REPORT_DIR=`dirname $REPORT`
+#            SAMPLE=`basename $REPORT_DIR`
+#            echo -e "$SAMPLE\t$REPORT_DIR" >> {params.sample_list}
+#        done
+#
+#        # Run qualimap on samples specified in sample list
+#        qualimap multi-bamqc \
+#            -d {params.sample_list} \
+#            -outdir {params.out_dir} \
+#            -outformat PDF:HTML \
+#        >  {log.out} \
+#        2> {log.err}
+#        """
 
 ruleorder: qualimap__mapping_quality_report_across_reference > qualimap__mapping_quality_report_across_panel

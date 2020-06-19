@@ -38,7 +38,7 @@ for sample_configuration in sample_configurations:
                 reference,
                 sample_configuration.get('panel', None),
                 sample_configuration.get('prebuilt', False),
-                bool(extract_from_config(config, ['reference', 'download', reference], [])))
+                bool(extract_from_config(config, ['reference', 'create', 'method'], [])))
 
 if pipeline.is_empty():
     print('No samples to analyse', file=sys.stderr)

@@ -16,7 +16,7 @@ class Pipeline:
         self.sample_defs = []
         self.__reference_map = {}
 
-    def add(self, samples, reference, panel, prebuilt_reference, would_be_downloaded):
+    def add(self, samples, reference, panel, prebuilt_reference, would_be_created):
         """
         Add samples intended for analysis.
         :param samples: list of sample names to be analysed
@@ -27,12 +27,10 @@ class Pipeline:
         :param would_be_downloaded: if reference would be created in the Snakelines execution,
                                    and so reference/{reference}/{reference}.fa could not exist yet
         """
-        print(samples,reference,panel,prebuilt_reference,would_be_downloaded)
         # Check, if reference file exists
-        if reference and not (prebuilt_reference or would_be_downloaded):
+        if reference and not (prebuilt_reference or would_be_created):
             fasta = 'reference/{reference}/{reference}.fa'.format(reference=reference)
             assert os.path.exists(fasta), 'Reference fasta {} does not exist'.format(fasta)
-
         # Check, if panel bed file exists
         if panel:
             assert reference, 'Panel cannot be defined without reference'
@@ -42,13 +40,26 @@ class Pipeline:
         # Extend lists
         self.samples.extend(samples)
 
-        if reference:
+        if would_be_created:
+            #reference = samples.copy()
+
+            for ref in samples:
+                self.references.append(ref)
+                self.__reference_map[ref] = ref
+            print('=========', self.references, self.__reference_map)
+
+            for sample in samples:
+                # TODO here should be check if tuple already stored
+                self.sample_references.append(namedtuple('SampleReference', 'sample reference')(sample, sample))
+
+        if reference and not would_be_created:
 
             if reference not in self.references:
                 self.references.append(reference)
 
             if reference in self.__reference_map:
                 self.__reference_map[reference].extend(samples)
+
             else:
                 self.__reference_map[reference] = samples
 
