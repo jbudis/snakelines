@@ -45,7 +45,7 @@ rule blast__find_homologues:
     :param blast_database: Prefix name of the input blast database files
     """
     input:
-        blast_db = find_blast_db,
+        blast_db = 'reference/{reference}/{reference}.fa',
         fasta   = '{indir}/{name}.fa'
     output:
         tsv     = '{indir}/blast/{reference}/{name}.blast.tsv'

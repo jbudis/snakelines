@@ -1,5 +1,6 @@
 # TODO: this source should be thoroughly documented
 # TODO: method_config should be renamed to method_config
+include: config['snakelines_dir'] + '/rules/mapping/report/quality_report/qualimap.snake'
 
 import subprocess
 import snakemake
@@ -37,9 +38,9 @@ rule fasta_summary__blast:
     :output tsv: Classification in unified format
     """
     input:
-        blast = '{indir}/blast/{reference}/{name}.blast.tax.tsv'
+        blast = 'assembly/{sample}/blast/{reference}/{name}.blast.tax.tsv'
     output:
-        tsv   = '{indir}/annotation/{name}/attributes/blast/{reference}.blast.tsv'
+        tsv   = 'assembly/{sample}/annotation/{name}/attributes/blast/{reference}.blast.tsv'
     params:
         min_query_coverage = method_config.get('min_query_coverage', 0),
         max_target_seqs = method_config.get('max_target_seqs', 999999999)
@@ -76,9 +77,9 @@ rule fasta_summary__coverage:
     :output tsv: Mapping coverage in standardised unified format for fasta summary generation
     """
     input:
-        qualimap = '{indir}/mapping/stats-wgs/{name}/genome_results.txt',
+        qualimap = 'mapping/{sample}/sorted/stats-wgs/samples/{sample}/genome_results.txt'
     output:
-        tsv      = '{indir}/annotation/{name}/attributes/coverage.tsv'
+        tsv      = 'assembly/{sample}/annotation/{name}/attributes/coverage.tsv'
     run:
         is_seq_coverage_line = False
         seq_coverage_header = '>>>>>>> Coverage per contig'
@@ -118,10 +119,10 @@ rule fasta_summary__mapped_reads:
     :output tsv: Mapped reads per reference sequence in standardised unified format for fasta summary generation
     """
     input:
-        bam = '{indir}/mapping/{name}.bam',
-        bai = '{indir}/mapping/{name}.bam.bai'
+        bam = 'mapping/{sample}/sorted/{sample}.bam',
+        bai = 'mapping/{sample}/sorted/{sample}.bam.bai'
     output:
-        tsv = '{indir}/annotation/{name}/attributes/mapped_reads.tsv'
+        tsv = 'assembly/{sample}/annotation/{name}/attributes/mapped_reads.tsv'
     conda:
         config['snakelines_dir'] + '/enviroments/samtools.yaml'
     shell:
@@ -132,9 +133,9 @@ rule fasta_summary__mapped_reads:
 
 rule fasta_summary__virfinder:
     input:
-        pvalues   = '{indir}/virfinder/{name}.pvalues.tsv'
+        pvalues   = 'assembly/{sample}/virfinder/{name}.pvalues.tsv'
     output:
-        tsv       = '{indir}/annotation/{name}/attributes/virfinder.tsv'
+        tsv       = 'assembly/{sample}/annotation/{name}/attributes/virfinder.tsv'
     run:
         pvalues = pd.read_csv(input.pvalues, sep='\t', index_col=0)
         pvalues.index.names = ['']
@@ -152,12 +153,12 @@ rule fasta_summary__copy_contigs:
     :output seqinfo: Statistics of genomic sequences in standardised unified format for fasta summary generation
     """
     input:
-        fasta     = '{indir}/{name}.fa'
+        fasta     = 'assembly/{sample}/{name}.fa'
     output:
-        fasta_dir = directory('{indir}/annotation/{name}/sequences/'),
-        seqinfo   = '{indir}/annotation/{name}/attributes/seqinfo.fa'
+        fasta_dir = directory('assembly/{sample}/annotation/{name}/sequences/'),
+        seqinfo   = 'assembly/{sample}/annotation/{name}/attributes/seqinfo.fa'
     params:
-        fasta     = '{indir}/annotation/{name}/sequences/all_contigs.fa',
+        fasta     = 'assembly/{sample}/annotation/{name}/sequences/all_contigs.fa',
     run:
         shutil.copyfile(input.fasta, params.fasta)
 
@@ -180,8 +181,8 @@ rule fasta_summary__copy_contigs:
         infos.to_csv(output.seqinfo, sep='\t')
 
 def blast_attr_tsvs(wildcards):
-    return expand('{indir}/annotation/{name}/attributes/blast/{reference}.blast.tsv',
-                   indir=wildcards.indir, name=wildcards.name, reference=blast_references)
+    return expand('assembly/{sample}/annotation/{name}/attributes/blast/{reference}.blast.tsv',
+                   sample=wildcards.sample, name=wildcards.name, reference=blast_references)
 
 rule fasta_summary__summarize_annotations:
     """
@@ -196,18 +197,18 @@ rule fasta_summary__summarize_annotations:
     input:
         # Required files to generate blast summary
         template = srcdir('templates/abundances.html'),
-        fasta_dir       = '{indir}/annotation/{name}/sequences/',
-        attrs_seqinfo   = '{indir}/annotation/{name}/attributes/seqinfo.fa',
+        fasta_dir       = 'assembly/{sample}/annotation/{name}/sequences/',
+        attrs_seqinfo   = 'assembly/{sample}/annotation/{name}/attributes/seqinfo.fa',
 
         # Optional columns of the table
         attrs_blast         =  blast_attr_tsvs                                         if include_blast     else [],
-        attrs_coverage      = '{indir}/annotation/{name}/attributes/coverage.tsv'      if include_coverage  else [],
-        attrs_mapped_reads  = '{indir}/annotation/{name}/attributes/mapped_reads.tsv'  if include_coverage  else [],
-        attrs_virfinder     = '{indir}/annotation/{name}/attributes/virfinder.tsv'     if include_virfinder else [],
+        attrs_coverage      = 'assembly/{sample}/annotation/{name}/attributes/coverage.tsv'      if include_coverage  else [],
+        attrs_mapped_reads  = 'assembly/{sample}/annotation/{name}/attributes/mapped_reads.tsv'  if include_coverage  else [],
+        attrs_virfinder     = 'assembly/{sample}/annotation/{name}/attributes/virfinder.tsv'     if include_virfinder else [],
 
     output:
-        html  = '{indir}/annotation/{name}/summary.html',
-        tsv   = '{indir}/annotation/{name}/summary.html.tsv'
+        html  = 'assembly/{sample}/annotation/{name}/summary.html',
+        tsv   = 'assembly/{sample}/annotation/{name}/summary.html.tsv'
     params:
         fasta = 'sequences/all_contigs.fa',
         max_query_seqs = method_config.get('max_query_seqs', None),
