@@ -48,6 +48,7 @@ rule qiime__diversity_core_metrics_phylogenetic:
         emperor_plots   = expand('reads/qiime/{{name}}-core-metrics-results/{emperor_types}_emperor.qzv', emperor_types=['bray_curtis', 'jaccard', 'unweighted_unifrac', 'weighted_unifrac']),
         pcoa_results    = expand('reads/qiime/{{name}}-core-metrics-results/{beta_types}_pcoa_results.qza', beta_types=['bray_curtis', 'jaccard', 'unweighted_unifrac', 'weighted_unifrac'])
     params:
+        tmp_dir     = method_config['tmp_dir'] if method_config.get('tmp_dir', '') != '' else '/tmp',
         output_dir  = 'reads/qiime/{name}-core-metrics-results',
         report_dir  = 'reads/qiime/{name}-imported'
     threads:
@@ -57,6 +58,7 @@ rule qiime__diversity_core_metrics_phylogenetic:
         rm -rf {params.output_dir}
         min="cat {params.report_dir}/overview.html | egrep 'Minimum' | sed -E 's/[^0-9]*([0-9]*)[^0-9]*/\\1/'"
         min=$(eval $min)
+        export TMPDIR={params.tmp_dir};
         qiime diversity core-metrics-phylogenetic \
           --i-phylogeny {input.rooted_tree} \
           --i-table {input.table} \

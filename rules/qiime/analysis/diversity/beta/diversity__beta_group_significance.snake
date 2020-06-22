@@ -13,8 +13,11 @@ rule qiime__diversity__beta_group_significance:
         metadata        = 'description/{name}-sample-metadata.tsv'
     output:
         qzv             = 'reads/qiime/{name}-core-metrics-results/beta/{type}_{column}_significance.qzv'
+    params:
+        tmp_dir         = method_config['tmp_dir'] if method_config.get('tmp_dir', '') != '' else '/tmp'
     shell:
         '''
+        export TMPDIR={params.tmp_dir};
         qiime diversity beta-group-significance \
           --i-distance-matrix {input.distance_matrix} \
           --m-metadata-file {input.metadata} \

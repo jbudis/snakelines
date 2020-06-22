@@ -13,8 +13,11 @@ rule qiime__diversity__alpha_group_significance:
         metadata    = 'description/{name}-sample-metadata.tsv'
     output:
         qzv         = 'reads/qiime/{name}-core-metrics-results/alpha/{type}_group_significance.qzv'
+    params:
+        tmp_dir     = method_config['tmp_dir'] if method_config.get('tmp_dir', '') != '' else '/tmp'
     shell:
         '''
+        export TMPDIR={params.tmp_dir};
         qiime diversity alpha-group-significance \
           --i-alpha-diversity {input.vector} \
           --m-metadata-file {input.metadata} \
