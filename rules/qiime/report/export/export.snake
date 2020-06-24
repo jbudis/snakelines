@@ -10,9 +10,11 @@ rule qiime__tools_export:
     output:
         html = 'reads/qiime/{visualization}/index.html',
         export_dir = directory('reads/qiime/{visualization}/')
+    params:
+        tmp_dir   = method_config['tmp_dir'] if method_config.get('tmp_dir', '') != '' else '/tmp'
     shell:
         '''
-        qiime tools export \
+        export TMPDIR={params.tmp_dir}; qiime tools export \
           --input-path {input.qzv} \
           --output-path {output.export_dir}
         '''
