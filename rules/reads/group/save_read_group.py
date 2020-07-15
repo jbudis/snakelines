@@ -9,7 +9,7 @@ readgroup = ''
 
 with gzip.open(in_fastq, 'rt') as fastq_file:
     header = fastq_file.readline()
-    
+
     if header is not None:
         # assume illumina header
         # @AP2-11:127:H53WFDMXX:1:1101:1271:1031 1:N:0:GGACTCCT+GTAAGGAG
@@ -20,14 +20,26 @@ with gzip.open(in_fastq, 'rt') as fastq_file:
             platform = 'ILLUMINA'
         else:
             # assume bgi header
-            # @ERR2618717.1 CL200036657L2C001R002_104504 length=150
             segments = header.split(' ')
             if len(segments) >= 2:
-                flowcell = segments[1]
-                platform = 'BGI'
+                # modified BGI header ?
+                # @ERR2618717.1 CL200036657L2C001R002_104504 length=150
+                bgi_header = segments[1]
             else:
-                raise ValueError('unable to obtain flowcell from read header: ' % header)
-        
+                # orignal BGI header, remove @
+                bgi_header = segments[0][1:]
+
+            if bgi_header[0] == 'C':
+                # CL200036657L2C001R002_104504
+                platform = 'BGISEQ-500'
+                flowcell = bgi_header[:13]
+            elif bgi_header[0] == 'V':
+                # V300038198L4C001R0010019425/1
+                platform = 'MGISEQ-2000'
+                flowcell = bgi_header[:12]
+            else:
+                raise ValueError('unknown format of read header: %s' % header)
+
         readgroup += '@RG\t'
         readgroup += 'ID:%s.%s\t' % (flowcell, sid)
         readgroup += 'LB:%s.%s\t' % (flowcell, sid)
