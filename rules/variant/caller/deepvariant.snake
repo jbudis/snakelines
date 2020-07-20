@@ -14,7 +14,8 @@ rule deepvariant__call_germline_variants:
         fasta = 'reference/{reference}/{reference}.fa',
         fai   = 'reference/{reference}/{reference}.fa.fai',
     output:
-        vcf = 'variant/{reference}-{panel}/original/{sample}.deepvariant.vcf'
+        vcf  = 'variant/{reference}-{panel}/original/{sample}.deepvariant.vcf',
+        gvcf = 'variant/{reference}-{panel}/original/{sample}.deepvariant.gvcf'
     params:
         model = lambda wildcards: 'WGS' if wildcards.panel == 'wgs' else 'WES'
     threads:
@@ -36,6 +37,7 @@ rule deepvariant__call_germline_variants:
             --reads={input.bam} \
             --regions={input.bed} \
             --output_vcf={output.vcf} \
+            --output_gvcf={output.gvcf} \
             --num_shards={threads} \
         1> {log.out} \
         2> {log.err}
