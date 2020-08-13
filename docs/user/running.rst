@@ -12,32 +12,20 @@ Software requirements
 
 Minimal software requirements are:
 
-* Linux (tested on Ubuntu 16.04.1)
-* `SnakeMake <https://snakemake.readthedocs.io/en/stable/>`_ (tested on 5.2.2)
-* Miniconda (tested on 4.5.11)
+* Linux (tested on Ubuntu 18.04)
+* `SnakeMake <https://snakemake.readthedocs.io/en/stable/>`_ (tested on 5.13.0)
+* Miniconda (tested on 4.8.3)
 
 Python3 module dependencies
 ---------------------------
 
 Snakelines requires several Python3 modules to be installed prior to Snakelines. All of these modules can be installed via Conda package manager or via Pip3 with the exception of Tkinter that can be obtained via e.g. apt-get.
 
-Note that Snakelines requires specific versions of these modules.
-List of required Python3 modules:
-
-* oyaml==0.7
-* pandas==0.19.2
-* biopython==1.72
-* seaborn==0.9.0
-* bs4==0.0.1
-* weasyprint==0.3
-* pysam==0.15.1
-* openpyxl==2.5.12
-* scikit-learn==0.18
-* scikit-bio==0.5.1
-* tk==3.6.7-1
-
+Note that Snakelines requires specific versions of these modules. These modules can be installed with this command (including snakemake):
 
 Snakelines will be later shipped as a Conda package in Anaconda repository.
+.. code:: bash
+    pip install numpy oyaml pandas biopython seaborn bs4 weasyprint pysam openpyxl scikit-learn scikit-bio jinja2 snakemake
 
 Conda channel dependencies
 --------------------------
