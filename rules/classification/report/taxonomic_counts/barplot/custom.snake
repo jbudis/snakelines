@@ -50,7 +50,7 @@ rule custom__visualise_taxonomic_counts_as_barplot:
 
         # Aggregate the rest of taxons into the one "Other" taxon
         rest_sum = rest[sids + [SUM_COL]].sum()
-        rest_sum.set_value(wildcards.tax_level, 'Other')
+        rest_sum._set_value(wildcards.tax_level, 'Other')
         plot_counts = tops.iloc[::-1].append(rest_sum, ignore_index=True)[[wildcards.tax_level] + sids].set_index(wildcards.tax_level)
 
         # Plot the most abundant and "Other" taxons

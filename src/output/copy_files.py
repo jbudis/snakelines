@@ -66,7 +66,7 @@ def copy_config(report_dir, workflow, pipeline):
     :param workflow: str - global snakemake variable
     :return: None
     """
-    config_file = workflow.overwrite_configfile
+    config_file = workflow.overwrite_configfiles[0]
     if config_file:
         report_file = '{}/_execution/{}'.format(report_dir, os.path.basename(config_file))
         copy_with_makedirs(config_file, report_file, pipeline)

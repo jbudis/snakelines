@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#! python
 
 from argparse import ArgumentParser
 import os
@@ -63,7 +63,7 @@ def generate_icon_row(report_name, report_file, report_icons, report):
     sequences, lens = retrieve_summary(report)
     for text in [report_name, '{0:,}'.format(int(sequences)), lens]:
         tr.appendChild(prepare_text_cell(text))
-    for icon, pos in zip(report_icons, xrange(len(report_icons))):
+    for icon, pos in zip(report_icons, range(len(list(report_icons)))):
         td, a = doc.createElement('td'), doc.createElement('a')
         a.attributes['href'] = '%s#M%s' % (report_file.split('/')[-1], pos)
         a.attributes['title'] = labels[pos]

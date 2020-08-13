@@ -29,7 +29,7 @@ rule gatk__identify_regions_to_realign:
 #        config['snakelines_dir'] + '/enviroments/gatk3.yaml'
     shell:
         '''
-        gatk3 RealignerTargetCreator \
+        gatk3 --analysis_type RealignerTargetCreator \
             -R {input.ref} \
             -nt {threads} \
             -I {input.bam} \
@@ -61,7 +61,7 @@ rule gatk__realign_regions:
 #        config['snakelines_dir'] + '/enviroments/gatk3.yaml'
     shell:
         '''
-        gatk3 IndelRealigner \
+        gatk3 --analysis_type IndelRealigner \
             -R {input.ref} \
             -I {input.bam} \
             -targetIntervals {input.intervals} \

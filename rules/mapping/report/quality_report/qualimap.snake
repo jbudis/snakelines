@@ -32,6 +32,7 @@ rule qualimap__mapping_quality_report_across_reference:
         config['snakelines_dir'] + '/enviroments/qualimap.yaml'
     shell:
         """
+        unset DISPLAY
         qualimap bamqc \
             --java-mem-size=100G \
             -bam {input.bam} \
@@ -75,6 +76,7 @@ rule qualimap__mapping_quality_report_across_panel:
         config['snakelines_dir'] + '/enviroments/qualimap.yaml'
     shell:
         """
+        unset DISPLAY
         qualimap bamqc \
             --java-mem-size=100G \
             -bam {input.bam} \
@@ -120,6 +122,7 @@ rule qualimap__summarize_quality_reports:
         config['snakelines_dir'] + '/enviroments/qualimap.yaml'
     shell:
         """
+        unset DISPLAY
         # Prepare sample list file for the qualimap
         ## Column1: Sample name
         ## Column2: Path to precomputed bamqc report

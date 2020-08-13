@@ -1,4 +1,6 @@
 channels:
+- defaults
 - g2554711
 dependencies:
+- python=3.6.9
 - fast-virome-explorer=1.1.0.p2
