@@ -10,8 +10,9 @@ rule qiime__import_manifest:
     output:
         qza         = 'reads/qiime/{name}-imported.qza'
     params:
-        data_type = method_config['data_type']
+        data_type = method_config['data_type'],
+        data_format   = method_config['data_format'] if method_config.get('data_format', '') != '' else 'SingleEndFastqManifestPhred33'
     shell:
         '''
-        qiime tools import --type 'SampleData[{params.data_type}]' --input-path {input.manifest} --output-path {output.qza} --input-format SingleEndFastqManifestPhred33
+        qiime tools import --type 'SampleData[{params.data_type}]' --input-path {input.manifest} --output-path {output.qza} --input-format {params.data_format}
         '''
