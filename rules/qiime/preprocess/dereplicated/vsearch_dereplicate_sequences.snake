@@ -13,9 +13,11 @@ rule qiime__vsearch_dereplicate_sequences:
     output:
         table     = "reads/qiime/{name}-table-w-chimeras.qza",
         rep_seqs  = "reads/qiime/{name}-rep-w-chimeras-seqs.qza"
+    params:
+        tmp_dir   = method_config['tmp_dir'] if method_config.get('tmp_dir', '') != '' else '/tmp'
     shell:
         '''
-        qiime vsearch dereplicate-sequences \
+        export TMPDIR={params.tmp_dir}; qiime vsearch dereplicate-sequences \
           --i-sequences {input.qza} \
           --o-dereplicated-table {output.table} \
           --o-dereplicated-sequences {output.rep_seqs}
