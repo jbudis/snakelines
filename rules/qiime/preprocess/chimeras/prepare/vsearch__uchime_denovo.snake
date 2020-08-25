@@ -22,11 +22,12 @@ rule qiime__vsearch__uchime_denovo:
         mindiv    = '--p-mindiv {}'.format(method_config['mindiv']) if method_config.get('mindiv', '') != '' else '',
         minh      = '--p-minh {}'.format(method_config['minh']) if method_config.get('minh', '') != '' else '',
         xn        = '--p-xn {}'.format(method_config['xn']) if method_config.get('xn', '') != '' else '',
-        uchime_out   = 'reads/qiime/{name}-uchime-dn-out'
+        uchime_out   = 'reads/qiime/{name}-uchime-dn-out',
+        tmp_dir   = method_config['tmp_dir'] if method_config.get('tmp_dir', '') != '' else '/tmp'
     shell:
         '''
         rm -rf {params.uchime_out}
-        qiime vsearch uchime-denovo \
+        export TMPDIR={params.tmp_dir}; qiime vsearch uchime-denovo \
               --i-table {input.table} \
               --i-sequences {input.rep_seqs} \
               {params.dn} \

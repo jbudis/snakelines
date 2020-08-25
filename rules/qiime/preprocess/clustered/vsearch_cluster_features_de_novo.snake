@@ -17,12 +17,13 @@ rule qiime__vsearch_cluster_features_de_novo:
         table     = 'reads/qiime/{name}-table-dn-{similarity}.qza',
         rep_seqs  = 'reads/qiime/{name}-rep-seqs-dn-{similarity}.qza'
     params:
-        similarity = '{similarity}'
+        similarity = '{similarity}',
+        tmp_dir   = method_config['tmp_dir'] if method_config.get('tmp_dir', '') != '' else '/tmp'
     threads:
         int(config['threads'])
     shell:
         '''
-        qiime vsearch cluster-features-de-novo \
+        export TMPDIR={params.tmp_dir}; qiime vsearch cluster-features-de-novo \
           --i-table {input.table} \
           --i-sequences {input.rep_seqs} \
           --p-perc-identity 0.{params.similarity} \
