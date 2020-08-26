@@ -22,12 +22,15 @@ with gzip.open(in_fastq, 'rt') as fastq_file:
             # assume bgi header
             segments = header.split(' ')
             if len(segments) >= 2:
-                # modified BGI header ?
+                # stupid BGI header ?
                 # @ERR2618717.1 CL200036657L2C001R002_104504 length=150
                 bgi_header = segments[1]
             else:
-                # orignal BGI header, remove @
+                # genuine BGI header, remove @
                 bgi_header = segments[0][1:]
+
+            # upper case is standard
+            bgi_header = bgi_header.upper()
 
             if bgi_header[0] == 'C':
                 # CL200036657L2C001R002_104504
@@ -35,7 +38,7 @@ with gzip.open(in_fastq, 'rt') as fastq_file:
                 flowcell = bgi_header[:13]
             elif bgi_header[0] == 'V':
                 # V300038198L4C001R0010019425/1
-                platform = 'MGISEQ-2000'
+                platform = 'MGISEQ-2000'  # aka DNBSEQ-G400
                 flowcell = bgi_header[:12]
             else:
                 raise ValueError('unknown format of read header: %s' % header)

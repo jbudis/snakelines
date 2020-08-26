@@ -17,7 +17,7 @@ rule gatk__call_germline_variants:
         vcf         = 'variant/{reference}-{panel}/original/{sample}.vcf',
         vcf_index   = 'variant/{reference}-{panel}/original/{sample}.vcf.idx'
     params:
-        sample_ploidy   = method_config.get('sample_ploidy', 2)
+        sample_ploidy   = method_config.get('sample_ploidy', 2),
         dbsnp           = 'reference/{reference}/variants/dbsnp.vcf.bgz',
         dbsnp_index     = 'reference/{reference}/variants/dbsnp.vcf.bgz.tbi'
     threads:
