@@ -18,7 +18,8 @@ rule qiime__feature_classifier__classify_sklearn:
         taxonomy  = 'reads/qiime/{name}-taxonomy{file_suffix}.qza' # TODO how about {reference} in output file?
     params:
         tmp_dir   = method_config['tmp_dir'] if method_config.get('tmp_dir', '') != '' else '/tmp',
-        confidence = method_config['confidence'] if method_config.get('confidence', '') != '' else '0.7'
+        confidence = method_config['confidence'] if method_config.get('confidence', '') != '' else '0.7',
+        reads_per_batch = method_config['reads_per_batch'] if method_config.get('reads_per_batch', '') != '' else '20000'
     threads:
         int(config['threads'])
     shell:
@@ -27,7 +28,7 @@ rule qiime__feature_classifier__classify_sklearn:
           --i-classifier {input.classifier} \
           --i-reads {input.rep_seqs} \
           --p-n-jobs {threads} \
-          --p-reads-per-batch 20000 \
+          --p-reads-per-batch {params.reads_per_batch} \
           --p-confidence {params.confidence} \
           --o-classification {output.taxonomy}
         '''
