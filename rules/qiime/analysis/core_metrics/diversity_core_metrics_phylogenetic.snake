@@ -38,15 +38,15 @@ rule qiime__diversity_core_metrics_phylogenetic:
     """
     input:
         html        = 'reads/qiime/{name}-table-dn-{similarity}/index.html',
-        rooted_tree = expand('reads/qiime/{{name}}-rooted-tree-dn-{similarity}.qza', params_file_suffix = '-dn-{}'.format(method_config['similarity']) if method_config.get('similarity', '') != '' else ''),
-        table       = expand('reads/qiime/{{name}}-table-dn-{similarity}.qza', params_file_suffix = '-dn-{}'.format(method_config['similarity']) if method_config.get('similarity', '') != '' else ''),
+        rooted_tree = 'reads/qiime/{name}-rooted-tree-dn-{similarity}.qza',
+        table       = 'reads/qiime/{name}-table-dn-{similarity}.qza',
         metadata    = 'description/{name}-sample-metadata.tsv'
     output:
         rarefield_table = 'reads/qiime/{name}-core-metrics-results-dn-{similarity}/rarefied_table.qza',
-        vector          = expand('reads/qiime/{{name}}-core-metrics-results-dn-{similarity}/{alpha_types}_vector.qza', alpha_types=['evenness', 'faith_pd', 'observed_otus', 'shannon']),
-        distance_matrix = expand('reads/qiime/{{name}}-core-metrics-results-dn-{similarity}/{beta_types}_distance_matrix.qza', beta_types=['bray_curtis', 'jaccard', 'unweighted_unifrac', 'weighted_unifrac']),
-        emperor_plots   = expand('reads/qiime/{{name}}-core-metrics-results-dn-{similarity}/{emperor_types}_emperor.qzv', emperor_types=['bray_curtis', 'jaccard', 'unweighted_unifrac', 'weighted_unifrac']),
-        pcoa_results    = expand('reads/qiime/{{name}}-core-metrics-results-dn-{similarity}/{beta_types}_pcoa_results.qza', beta_types=['bray_curtis', 'jaccard', 'unweighted_unifrac', 'weighted_unifrac'])
+        vector          = expand('reads/qiime/{{name}}-core-metrics-results-dn-{{similarity}}/{alpha_types}_vector.qza', alpha_types=['evenness', 'faith_pd', 'observed_otus', 'shannon']),
+        distance_matrix = expand('reads/qiime/{{name}}-core-metrics-results-dn-{{similarity}}/{beta_types}_distance_matrix.qza', beta_types=['bray_curtis', 'jaccard', 'unweighted_unifrac', 'weighted_unifrac']),
+        emperor_plots   = expand('reads/qiime/{{name}}-core-metrics-results-dn-{{similarity}}/{emperor_types}_emperor.qzv', emperor_types=['bray_curtis', 'jaccard', 'unweighted_unifrac', 'weighted_unifrac']),
+        pcoa_results    = expand('reads/qiime/{{name}}-core-metrics-results-dn-{{similarity}}/{beta_types}_pcoa_results.qza', beta_types=['bray_curtis', 'jaccard', 'unweighted_unifrac', 'weighted_unifrac'])
     params:
         tmp_dir     = method_config['tmp_dir'] if method_config.get('tmp_dir', '') != '' else '/tmp',
         output_dir  = 'reads/qiime/{name}-core-metrics-results-dn-{similarity}',
