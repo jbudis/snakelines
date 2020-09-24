@@ -5,14 +5,14 @@ rule qiime__vsearch_dereplicate_sequences:
     Calls 'qiime vsearch dereplicate-sequences'.
 
     :input qza: qiime artifact of type SampleData[JoinedSequencesWithQuality] | SampleData[SequencesWithQuality] | SampleData[Sequences], e.g. reads/qiime/joined-table.qza
-    :output table: qiime artifact of type FeatureTable[Frequency], e.g. reads/qiime/joined-table-w-chimeras.qza
-    :output rep_seqs: qiime artifact of type FeatureData[Sequence], e.g. reads/qiime/joined-rep-w-chimeras-seqs.qza
+    :output table: qiime artifact of type FeatureTable[Frequency], e.g. reads/qiime/joined-table_imported.qza
+    :output rep_seqs: qiime artifact of type FeatureData[Sequence], e.g. reads/qiime/joined-rep_seqs_imported.qza
     """
     input:
         qza       = "reads/qiime/{name}-imported.qza"
     output:
-        table     = "reads/qiime/{name}-table-w-chimeras.qza",
-        rep_seqs  = "reads/qiime/{name}-rep-w-chimeras-seqs.qza"
+        table     = "reads/qiime/{name}-table_imported.qza",
+        rep_seqs  = "reads/qiime/{name}-rep_seqs_imported.qza"
     params:
         tmp_dir   = method_config['tmp_dir'] if method_config.get('tmp_dir', '') != '' else '/tmp'
     shell:

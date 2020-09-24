@@ -4,15 +4,15 @@ rule qiime__diversity__beta_group_significance:
 
     Calls 'qiime diversity beta-group-significance'.
 
-    :input distance_matrix: distance matrix for beta diversity, qiime artifact of type DistanceMatrix, e.g. reads/qiime/joined-core-metrics-results/bray_curtis_distance_matrix.qza
+    :input distance_matrix: distance matrix for beta diversity, qiime artifact of type DistanceMatrix, e.g. reads/qiime/joined-core-metrics-results-dn-99/bray_curtis_distance_matrix.qza
     :input metadata: samples' metadata filepath in TSV format (tab-separated value), e.g. description/joined-sample-metadata.tsv
-    :output qzv: qiime visualization, e.g. reads/qiime/joined-core-metrics-results/beta/bray_curtis_col4_significance.qzv
+    :output qzv: qiime visualization, e.g. reads/qiime/joined-core-metrics-results-dn-99/beta/bray_curtis_col4_significance.qzv
     """
     input:
-        distance_matrix = 'reads/qiime/{name}-core-metrics-results/{type}_distance_matrix.qza',
+        distance_matrix = 'reads/qiime/{name}-core-metrics-results-dn-{similarity}/{type}_distance_matrix.qza',
         metadata        = 'description/{name}-sample-metadata.tsv'
     output:
-        qzv             = 'reads/qiime/{name}-core-metrics-results/beta/{type}_{column}_significance.qzv'
+        qzv             = 'reads/qiime/{name}-core-metrics-results-dn-{similarity}/beta/{type}_{column}_significance.qzv'
     params:
         tmp_dir         = method_config['tmp_dir'] if method_config.get('tmp_dir', '') != '' else '/tmp'
     shell:

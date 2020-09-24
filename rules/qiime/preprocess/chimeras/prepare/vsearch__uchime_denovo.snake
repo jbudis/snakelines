@@ -1,8 +1,8 @@
 rule qiime__vsearch__uchime_denovo:
     """
     Finds chimeric and nonchimeric seqeunces
-    :input table: qiime artifact of type FeatureTable[Frequency], e.g. reads/qiime/joined-table-w-chimeras.qza
-    :input rep_seqs: qiime artifact of type FeatureData[Sequence], e.g. reads/qiime/joined-rep-w-chimeras-seqs.qza
+    :input table: qiime artifact of type FeatureTable[Frequency], e.g. reads/qiime/joined-table_filtered-dn-99.qza
+    :input rep_seqs: qiime artifact of type FeatureData[Sequence], e.g. reads/qiime/joined-rep_seqs_filtered-dn-99.qza
     :params dn: [FLOAT] No vote pseudo-count, corresponding to the parameter n in the chimera scoring function. [default: 1.4]
     :params mindiffs: [INTEGER RANGE] Minimum number of differences per segment. [default: 3]
     :params mindiv: [FLOAT] Minimum divergence from closest parent. [default: 0.8]
@@ -11,18 +11,18 @@ rule qiime__vsearch__uchime_denovo:
     :params uchime_out: DO NOT CHANGE! output directory for chimeras.qza and nonchimeras.qza
     """
     input:
-        table     = 'reads/qiime/{name}-table-w-chimeras.qza',
-        rep_seqs  = 'reads/qiime/{name}-rep-w-chimeras-seqs.qza'
+        table     = 'reads/qiime/{name}-table_filtered-dn-{similarity}.qza',
+        rep_seqs  = 'reads/qiime/{name}-rep_seqs_filtered-dn-{similarity}.qza'
     output:
-        chimeras    = 'reads/qiime/{name}-uchime-dn-out/chimeras.qza',
-        nonchimeras = 'reads/qiime/{name}-uchime-dn-out/nonchimeras.qza'
+        chimeras    = 'reads/qiime/{name}-uchime-dn-out-{similarity}/chimeras.qza',
+        nonchimeras = 'reads/qiime/{name}-uchime-dn-out-{similarity}/nonchimeras.qza'
     params:
         dn        = '--p-dn {}'.format(method_config['dn']) if method_config.get('dn', '') != '' else '',
         mindiffs  = '--p-mindiffs {}'.format(method_config['mindiffs']) if method_config.get('mindiffs', '') != '' else '',
         mindiv    = '--p-mindiv {}'.format(method_config['mindiv']) if method_config.get('mindiv', '') != '' else '',
         minh      = '--p-minh {}'.format(method_config['minh']) if method_config.get('minh', '') != '' else '',
         xn        = '--p-xn {}'.format(method_config['xn']) if method_config.get('xn', '') != '' else '',
-        uchime_out   = 'reads/qiime/{name}-uchime-dn-out',
+        uchime_out   = 'reads/qiime/{name}-uchime-dn-out-{similarity}',
         tmp_dir   = method_config['tmp_dir'] if method_config.get('tmp_dir', '') != '' else '/tmp'
     shell:
         '''

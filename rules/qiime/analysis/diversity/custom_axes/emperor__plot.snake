@@ -4,17 +4,17 @@ rule qiime__emperor__plot:
 
     Calls 'qiime emperor plot'.
 
-    :input pcoa_results: principal coordinates, qiime artifact of type PCoAResults, e.g. reads/qiime/joined-core-metrics-results/bray_curtis_pcoa_results.qza
+    :input pcoa_results: principal coordinates, qiime artifact of type PCoAResults, e.g. reads/qiime/joined-core-metrics-results-dn-99/bray_curtis_pcoa_results.qza
     :input metadata: samples' metadata filepath in TSV format (tab-separated value), e.g. description/joined-sample-metadata.tsv
-    :output qzv: qiime visualization, e.g. reads/qiime/joined-core-metrics-results/custom_axes/bray_curtis_emperor_days.qzv
+    :output qzv: qiime visualization, e.g. reads/qiime/joined-core-metrics-results-dn-99/custom_axes/bray_curtis_emperor_days.qzv
 
     Note: column used for custom axes must be numerical, not categorical.
     """
     input:
-        pcoa_results    = 'reads/qiime/{name}-core-metrics-results/{type}_pcoa_results.qza',
+        pcoa_results    = 'reads/qiime/{name}-core-metrics-results-dn-{similarity}/{type}_pcoa_results.qza',
         metadata        = 'description/{name}-sample-metadata.tsv'
     output:
-        qzv             = 'reads/qiime/{name}-core-metrics-results/custom_axes/{type}_emperor_{column}.qzv'
+        qzv             = 'reads/qiime/{name}-core-metrics-results-dn-{similarity}/custom_axes/{type}_emperor_{column}.qzv'
     shell:
         '''
         qiime emperor plot \

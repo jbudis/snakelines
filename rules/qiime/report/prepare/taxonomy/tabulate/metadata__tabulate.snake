@@ -5,9 +5,9 @@ rule qiime__metadata__tabulate:
     :output qzv: qiime visualization file, can be exported to HTML, e.g. reads/qiime/joined-taxonomy-dn-99.qzv
     """
     input:
-        qza     = 'reads/qiime/{name}-taxonomy{file_suffix}.qza'
+        qza     = 'reads/qiime/{name}-taxonomy-dn-{similarity}.qza'
     output:
-        qzv     = 'reads/qiime/{name}-taxonomy{file_suffix}.qzv'
+        qzv     = 'reads/qiime/{name}-taxonomy-dn-{similarity}.qzv'
     shell:
         '''
         qiime metadata tabulate \

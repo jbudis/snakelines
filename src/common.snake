@@ -77,8 +77,8 @@ qiime_reference = extract_from_config(config, ['qiime', 'analysis', 'taxonomy', 
 confidence = extract_from_config(config, ['qiime', 'analysis', 'taxonomy', 'classify', 'confidence'], '')
 qiime_confidence_suffix = '-confidence-{}'.format(confidence) if confidence != '' else ''
 
-similarity = extract_from_config(config, ['qiime', 'preprocess', 'clustered', 'similarity'], '')
-qiime_file_suffix = '-dn-{}'.format(similarity) if similarity != '' else ''
+similarity = extract_from_config(config, ['qiime', 'preprocess', 'clustered', 'similarity'], '100')
+#qiime_file_suffix = '-dn-{}'.format(similarity) if similarity != '' else ''
 
 chimeric = extract_from_config(config, ['qiime', 'preprocess', 'chimeras', 'filter', 'method'], '')
 qiime_chimeras_list = ['chimeras', 'nonchimeras'] if chimeric != '' else []

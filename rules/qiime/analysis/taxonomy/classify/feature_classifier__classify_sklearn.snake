@@ -12,10 +12,10 @@ rule qiime__feature_classifier__classify_sklearn:
     :params tmp_dir: path to temporary directory, because job requires temporary a lot of free disk space, default /tmp might not be enough and path to mounted storage might be used instead
     """
     input:
-        rep_seqs  = 'reads/qiime/{name}-rep-seqs{file_suffix}.qza',
+        rep_seqs  = 'reads/qiime/{name}-rep-seqs-dn-{similarity}.qza',
         classifier   = expand('reference/{reference}/qiime2_index/{reference}-classifier.qza', reference=method_config['reference'])
     output:
-        taxonomy  = 'reads/qiime/{name}-taxonomy{file_suffix}.qza' # TODO how about {reference} in output file?
+        taxonomy  = 'reads/qiime/{name}-taxonomy-dn-{similarity}.qza'
     params:
         tmp_dir   = method_config['tmp_dir'] if method_config.get('tmp_dir', '') != '' else '/tmp',
         confidence = method_config['confidence'] if method_config.get('confidence', '') != '' else '0.7',

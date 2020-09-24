@@ -43,6 +43,18 @@ qiime:
             data_type: JoinedSequencesWithQuality
         dereplicated:
             method: vsearch_dereplicate_sequences
+        clustered:
+            method: vsearch_cluster_features_de_novo
+            similarity: 99
+        filter:
+            features:
+                method: feature_table_filter_features
+                min_frequency: 2
+                min_samples: 2
+#                tmp_dir: /data/tmp
+            sequences:
+                method: feature_table_filter_seqs
+#                tmp_dir: /data/tmp
         chimeras:
             prepare:
                 method: vsearch__uchime_denovo
@@ -53,9 +65,6 @@ qiime:
                 xn       : 8.0
             filter:
                 method: nonchimeric_wo_borderline
-        clustered:
-            method: vsearch_cluster_features_de_novo
-            similarity: 99
 
     report:
         prepare:

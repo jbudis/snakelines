@@ -7,11 +7,11 @@ rule qiime__taxa__barplot:
     :output qzv: qiime visualization file, can be exported to HTML, e.g. reads/qiime/joined-taxa-barplots-dn-99.qzv
     """
     input:
-        table           = 'reads/qiime/{name}-table{file_suffix}.qza',
-        taxonomy_qza    = 'reads/qiime/{name}-taxonomy{file_suffix}.qza',
+        table           = 'reads/qiime/{name}-table-dn-{similarity}.qza',
+        taxonomy_qza    = 'reads/qiime/{name}-taxonomy-dn-{similarity}.qza',
         metadata        = 'description/{name}-sample-metadata.tsv'
     output:
-        qzv             = 'reads/qiime/{name}-taxa-barplots{file_suffix}.qzv'
+        qzv             = 'reads/qiime/{name}-taxa-barplots-dn-{similarity}.qzv'
     shell:
         '''
             qiime taxa barplot \

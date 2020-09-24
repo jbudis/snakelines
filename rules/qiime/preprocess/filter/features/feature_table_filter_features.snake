@@ -1,0 +1,30 @@
+rule qiime__feature_table_filter_features:
+    """
+    Filters features in table.
+    Removes features in sample when their count is lower than min_frequency.
+    Removes features when it is present less than in min_samples samples.
+
+    Calls 'qiime feature-table filter-features'.
+
+    :input table: qiime artifact of type FeatureTable[Frequency], e.g. reads/qiime/joined-table_clustered-dn-99.qza
+    :output table: qiime artifact of type FeatureTable[Frequency] with similarity, e.g. reads/qiime/joined-table_filtered-dn-99.qza
+    """
+    input:
+        table     = 'reads/qiime/{name}-table_clustered-dn-{similarity}.qza'
+    output:
+        table     = 'reads/qiime/{name}-table_filtered-dn-{similarity}.qza'
+    params:
+        min_frequency   = method_config['min_frequency'] if method_config.get('min_frequency', '') != '' else '0',
+        min_samples     = method_config['min_samples'] if method_config.get('min_samples', '') != '' else '0',
+        tmp_dir         = method_config['tmp_dir'] if method_config.get('tmp_dir', '') != '' else '/tmp'
+    threads:
+        int(config['threads'])
+    shell:
+        '''
+        export TMPDIR={params.tmp_dir}; \
+        qiime feature-table filter-features \
+            --i-table {input.table} \
+            --p-min-frequency {params.min_frequency} \
+            --p-min-samples {params.min_samples} \
+            --o-filtered-table {output.table}
+        '''

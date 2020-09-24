@@ -1,0 +1,28 @@
+rule qiime__feature_table_filter_seqs:
+    """
+    Filters sequences by feature table.
+    When feature was removed, also sequence is removed.
+
+    Calls 'qiime feature-table filter-seqs'.
+
+    :input rep_seqs: qiime artifact of type FeatureData[Sequence], e.g. reads/qiime/joined-rep_seqs_clustered-dn-99.qza
+    :input table: qiime artifact of type FeatureTable[Frequency], e.g. reads/qiime/joined-table_filtered-dn-99.qza
+    :output rep_seqs: qiime artifact of type FeatureData[Sequence] with similarity, e.g. reads/qiime/joined-rep_seqs_filtered-dn-99.qza
+    """
+    input:
+        rep_seqs = 'reads/qiime/{name}-rep_seqs_clustered-dn-{similarity}.qza',
+        table    = 'reads/qiime/{name}-table_filtered-dn-{similarity}.qza'
+    output:
+        rep_seqs  = 'reads/qiime/{name}-rep_seqs_filtered-dn-{similarity}.qza'
+    params:
+        tmp_dir         = method_config['tmp_dir'] if method_config.get('tmp_dir', '') != '' else '/tmp'
+    threads:
+        int(config['threads'])
+    shell:
+        '''
+        export TMPDIR={params.tmp_dir}; \
+        qiime feature-table filter-seqs \
+        			--i-data {input.rep_seqs} \
+        			--i-table {input.table} \
+        			--o-filtered-data {output.rep_seqs}
+        '''

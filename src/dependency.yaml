@@ -206,80 +206,112 @@ assembly:
 qiime:
     alignment:
         output:
-            alignment: expand('reads/qiime/{name}-rep-aligned-seqs{file_suffix}.qza', name=qiime_reference, file_suffix=qiime_file_suffix)
-            masked_alignment: expand('reads/qiime/{name}-rep-masked-aligned-seqs{file_suffix}.qza', name=qiime_reference, file_suffix=qiime_file_suffix)
-            unrooted_tree: expand('reads/qiime/{name}-unrooted-tree{file_suffix}.qza', name=qiime_reference, file_suffix=qiime_file_suffix)
-            rooted_tree: expand('reads/qiime/{name}-rooted-tree{file_suffix}.qza', name=qiime_reference, file_suffix=qiime_file_suffix)
+            alignment: expand('reads/qiime/{name}-rep-aligned-seqs-dn-{similarity}.qza', name=qiime_reference, similarity=config['qiime']['preprocess']['clustered']['similarity'])
+            masked_alignment: expand('reads/qiime/{name}-rep-masked-aligned-seqs-dn-{similarity}.qza', name=qiime_reference, similarity=config['qiime']['preprocess']['clustered']['similarity'])
+            unrooted_tree: expand('reads/qiime/{name}-unrooted-tree-dn-{similarity}.qza', name=qiime_reference, similarity=config['qiime']['preprocess']['clustered']['similarity'])
+            rooted_tree: expand('reads/qiime/{name}-rooted-tree-dn-{similarity}.qza', name=qiime_reference, similarity=config['qiime']['preprocess']['clustered']['similarity'])
     analysis:
         core_metrics:
             output:
-                rarefield_table : expand('reads/qiime/{name}-core-metrics-results/rarefied_table.qza', name=qiime_reference)
-                vector          : expand('reads/qiime/{name}-core-metrics-results/{alpha_types}_vector.qza', name=qiime_reference, alpha_types=qiime_alpha_types)
-                distance_matrix : expand('reads/qiime/{name}-core-metrics-results/{beta_types}_distance_matrix.qza', name=qiime_reference, beta_types=qiime_beta_types)
-                emperor_plots   : expand('reads/qiime/{name}-core-metrics-results/{emperor_types}_emperor.qzv', name=qiime_reference, emperor_types=qiime_emperor_types)
-                pcoa_results    : expand('reads/qiime/{name}-core-metrics-results/{beta_types}_pcoa_results.qza', name=qiime_reference, beta_types=qiime_beta_types)
+                rarefield_table : expand('reads/qiime/{name}-core-metrics-results-dn-{similarity}/rarefied_table.qza',
+                                                        name=qiime_reference,
+                                                        similarity=config['qiime']['preprocess']['clustered']['similarity'])
+                vector          : expand('reads/qiime/{name}-core-metrics-results-dn-{similarity}/{alpha_types}_vector.qza',
+                                                        name=qiime_reference,
+                                                        alpha_types=qiime_alpha_types,
+                                                        similarity=config['qiime']['preprocess']['clustered']['similarity'])
+                distance_matrix : expand('reads/qiime/{name}-core-metrics-results-dn-{similarity}/{beta_types}_distance_matrix.qza',
+                                                        name=qiime_reference,
+                                                        beta_types=qiime_beta_types,
+                                                        similarity=config['qiime']['preprocess']['clustered']['similarity'])
+                emperor_plots   : expand('reads/qiime/{name}-core-metrics-results-dn-{similarity}/{emperor_types}_emperor.qzv',
+                                                        name=qiime_reference,
+                                                        emperor_types=qiime_emperor_types,
+                                                        similarity=config['qiime']['preprocess']['clustered']['similarity'])
+                pcoa_results    : expand('reads/qiime/{name}-core-metrics-results-dn-{similarity}/{beta_types}_pcoa_results.qza',
+                                                        name=qiime_reference,
+                                                        beta_types=qiime_beta_types,
+                                                        similarity=config['qiime']['preprocess']['clustered']['similarity'])
         diversity:
             alpha:
                 output:
-                    qzv         : expand('reads/qiime/{name}-core-metrics-results/alpha/{type}_group_significance.qzv', name=qiime_reference, type=qiime_alpha_types)
+                    qzv         : expand('reads/qiime/{name}-core-metrics-results-dn-{similarity}/alpha/{type}_group_significance.qzv',
+                                                        name=qiime_reference,
+                                                        type=qiime_alpha_types,
+                                                        similarity=config['qiime']['preprocess']['clustered']['similarity'])
             beta:
                 output:
-                    qzv         : expand('reads/qiime/{name}-core-metrics-results/beta/{type}_{column}_significance.qzv', name=qiime_reference, type=qiime_beta_types, column=config['qiime_beta_significance_columns'])
+                    qzv         : expand('reads/qiime/{name}-core-metrics-results-dn-{similarity}/beta/{type}_{column}_significance.qzv',
+                                                        name=qiime_reference,
+                                                        type=qiime_beta_types,
+                                                        column=config['qiime_beta_significance_columns'],
+                                                        similarity=config['qiime']['preprocess']['clustered']['similarity'])
             custom_axes:
                 output:
-                    qzv         : expand('reads/qiime/{name}-core-metrics-results/custom_axes/{type}_emperor_{column}.qzv', name=qiime_reference, type=qiime_beta_types, column=config['qiime_custom_axes_columns'])
+                    qzv         : expand('reads/qiime/{name}-core-metrics-results-dn-{similarity}/custom_axes/{type}_emperor_{column}.qzv',
+                                                        name=qiime_reference,
+                                                        type=qiime_beta_types,
+                                                        column=config['qiime_custom_axes_columns'],
+                                                        similarity=config['qiime']['preprocess']['clustered']['similarity'])
         taxonomy:
             classify:
                 output:
-                    taxonomy    : expand('reads/qiime/{name}-taxonomy{file_suffix}.qza', name=qiime_reference, file_suffix=qiime_file_suffix)
+                    taxonomy    : expand('reads/qiime/{name}-taxonomy-dn-{similarity}.qza', name=qiime_reference, similarity=config['qiime']['preprocess']['clustered']['similarity'])
             index:
                 output:
                     classifier  : expand('reference/{reference}/qiime2_index/{reference}-classifier.qza', reference=qiime_reference)
 
     preprocess:
-        chimeras:
-            filter:
-                output      :
-                    table   : expand('reads/qiime/{name}-table.qza', name=qiime_reference)
-                    rep_seqs: expand('reads/qiime/{name}-rep-seqs.qza', name=qiime_reference)
-            prepare:
-                output      :
-                    qza     : expand('reads/qiime/{name}-uchime-dn-out/{type}.qza', name=qiime_reference, type=qiime_chimeras_list)
-        clustered:
-            output:
-                table       : expand('reads/qiime/{name}-table-dn-{similarity}.qza', name=qiime_reference, similarity=config['qiime']['preprocess']['clustered']['similarity'])
-                rep_seqs    : expand('reads/qiime/{name}-rep-seqs-dn-{similarity}.qza', name=qiime_reference, similarity=config['qiime']['preprocess']['clustered']['similarity'])
-        dereplicated:
-            output:
-                table       : expand('reads/qiime/{name}-table.qza', name=qiime_reference)
-                rep_seqs    : expand('reads/qiime/{name}-rep-seqs.qza', name=qiime_reference)
-        imported:
-            output:
-                qza         : expand('reads/qiime/{name}-imported.qza', name=qiime_reference)
         manifest:
             output:
                 manifest    : expand('reads/qiime/{name}.manifest', name=qiime_reference)
         metadata:
             output:
                 metadata    : expand('description/{name}-sample-metadata.tsv', name=qiime_reference)
+        imported:
+            output:
+                qza         : expand('reads/qiime/{name}-imported.qza', name=qiime_reference)
+        dereplicated:
+            output:
+                table       : expand('reads/qiime/{name}-table_imported.qza', name=qiime_reference)
+                rep_seqs    : expand('reads/qiime/{name}-rep_seqs_imported.qza', name=qiime_reference)
+        clustered:
+            output:
+                table       : expand('reads/qiime/{name}-table_clustered-dn-{similarity}.qza', name=qiime_reference, similarity=config['qiime']['preprocess']['clustered']['similarity'])
+                rep_seqs    : expand('reads/qiime/{name}-rep_seqs_clustered-dn-{similarity}.qza', name=qiime_reference, similarity=config['qiime']['preprocess']['clustered']['similarity'])
+        filter:
+            features:
+                output:
+                    table   : expand('reads/qiime/{name}-table_filtered-dn-{similarity}.qza', name=qiime_reference, similarity=config['qiime']['preprocess']['clustered']['similarity'])
+            sequences:
+                output:
+                    rep_seqs: expand('reads/qiime/{name}-rep_seqs_filtered-dn-{similarity}.qza', name=qiime_reference, similarity=config['qiime']['preprocess']['clustered']['similarity']) 
+        chimeras:
+            prepare:
+                output      :
+                    qza     : expand('reads/qiime/{name}-uchime-dn-out-{similarity}/{type}.qza', name=qiime_reference, type=qiime_chimeras_list, similarity=config['qiime']['preprocess']['clustered']['similarity'])
+            filter:
+                output      :
+                    table   : expand('reads/qiime/{name}-table-dn-{similarity}.qza', name=qiime_reference, similarity=config['qiime']['preprocess']['clustered']['similarity'])
+                    rep_seqs: expand('reads/qiime/{name}-rep-seqs-dn-{similarity}.qza', name=qiime_reference, similarity=config['qiime']['preprocess']['clustered']['similarity'])
     report:
         prepare:
             cluster_feature_table:
                 output:
-                    qzv: expand('reads/qiime/{name}-table-dn-{perc_identity}.qzv', name=qiime_reference, perc_identity=config['qiime']['preprocess']['clustered']['similarity'])
+                    qzv: expand('reads/qiime/{name}-table-dn-{similarity}.qzv', name=qiime_reference, similarity=config['qiime']['preprocess']['clustered']['similarity'])
             cluster_rep_seqs:
                 output:
-                    qzv: expand('reads/qiime/{name}-rep-seqs-dn-{perc_identity}.qzv', name=qiime_reference, perc_identity=config['qiime']['preprocess']['clustered']['similarity'])
+                    qzv: expand('reads/qiime/{name}-rep-seqs-dn-{similarity}.qzv', name=qiime_reference, similarity=config['qiime']['preprocess']['clustered']['similarity'])
             quality_report:
                 output:
                     qzv: expand('reads/qiime/{name}-imported.qzv', name=qiime_reference)
             taxonomy:
                 barplot:
                     output:
-                        qzv: expand('reads/qiime/{name}-taxa-barplots{file_suffix}.qzv', name=qiime_reference, file_suffix=qiime_file_suffix)
+                        qzv: expand('reads/qiime/{name}-taxa-barplots-dn-{similarity}.qzv', name=qiime_reference, similarity=config['qiime']['preprocess']['clustered']['similarity'])
                 tabulate:
                     output:
-                        qzv: expand('reads/qiime/{name}-taxonomy{file_suffix}.qzv', name=qiime_reference, file_suffix=qiime_file_suffix)
+                        qzv: expand('reads/qiime/{name}-taxonomy-dn-{similarity}.qzv', name=qiime_reference, similarity=config['qiime']['preprocess']['clustered']['similarity'])
 
         export:
             output:
@@ -311,19 +343,21 @@ qiime:
                                                 similarity=config['qiime']['analysis']['core_metrics']['similarity'])
 
                 alpha_group_significance_reports:
-                    from:   expand('reads/qiime/{name}-core-metrics-results/alpha/{type}_group_significance/',
+                    from:   expand('reads/qiime/{name}-core-metrics-results-dn-{similarity}/alpha/{type}_group_significance/',
                                                 name=qiime_reference,
-                                                type=config['qiime']['analysis']['core_metrics']['alpha_types'])
+                                                type=config['qiime']['analysis']['core_metrics']['alpha_types'],
+                                                similarity=config['qiime']['preprocess']['clustered']['similarity'])
                     to:     expand('{report}/04_alpha_group_significance_reports/{name}-core-metrics-results/alpha/{type}_group_significance/',
                                                 report=config['report_dir'],
                                                 name=qiime_reference,
                                                 type=config['qiime']['analysis']['core_metrics']['alpha_types'])
 
                 beta_group_significance_reports:
-                    from:   expand('reads/qiime/{name}-core-metrics-results/beta/{type}_{column}_significance/',
+                    from:   expand('reads/qiime/{name}-core-metrics-results-dn-{similarity}/beta/{type}_{column}_significance/',
                                                 name=qiime_reference,
                                                 type=['bray_curtis', 'jaccard', 'unweighted_unifrac', 'weighted_unifrac'],
-                                                column=config['qiime_beta_significance_columns'])
+                                                column=config['qiime_beta_significance_columns'],
+                                                similarity=config['qiime']['preprocess']['clustered']['similarity'])
                     to:     expand('{report}/05_beta_group_significance_reports/{name}-core-metrics-results/beta/{type}_{column}_significance/',
                                                 report=config['report_dir'],
                                                 name=qiime_reference,
@@ -331,19 +365,21 @@ qiime:
                                                 column=config['qiime_beta_significance_columns'])
 
                 emperor_plot_reports:
-                    from:   expand('reads/qiime/{name}-core-metrics-results/{type}_emperor/',
+                    from:   expand('reads/qiime/{name}-core-metrics-results-dn-{similarity}/{type}_emperor/',
                                                 name=qiime_reference,
-                                                type=config['qiime']['analysis']['core_metrics']['emperor_types'])
+                                                type=config['qiime']['analysis']['core_metrics']['emperor_types'],
+                                                similarity=config['qiime']['preprocess']['clustered']['similarity'])
                     to:     expand('{report}/06_emperor_plot_reports/{name}-core-metrics-results/{type}_emperor/',
                                                 report=config['report_dir'],
                                                 name=qiime_reference,
                                                 type=config['qiime']['analysis']['core_metrics']['emperor_types'])
 
                 custom_axes_reports:
-                    from:   expand('reads/qiime/{name}-core-metrics-results/custom_axes/{type}_emperor_{column}/',
+                    from:   expand('reads/qiime/{name}-core-metrics-results-dn-{similarity}/custom_axes/{type}_emperor_{column}/',
                                                 name=qiime_reference,
                                                 type=qiime_beta_types,
-                                                column=config['qiime_custom_axes_columns'])
+                                                column=config['qiime_custom_axes_columns'],
+                                                similarity=config['qiime']['preprocess']['clustered']['similarity'])
                     to:     expand('{report}/07_custom_axes_reports/{type}_emperor_{column}/',
                                                 report=config['report_dir'],
                                                 type=qiime_beta_types,

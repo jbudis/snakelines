@@ -12,12 +12,12 @@ rule qiime__phylogeny_align_to_tree_mafft_fasttree:
     :output rooted_tree: rooted tree, qiime artifact of type Phylogeny[Rooted], e.g. reads/qiime/joined-rooted-tree-dn-99.qza
     """
     input:
-        rep_seqs  = 'reads/qiime/{name}-rep-seqs{file_suffix}.qza'
+        rep_seqs  = 'reads/qiime/{name}-rep-seqs-dn-{similarity}.qza'
     output:
-        alignment = 'reads/qiime/{name}-rep-aligned-seqs{file_suffix}.qza',
-        masked_alignment = 'reads/qiime/{name}-rep-masked-aligned-seqs{file_suffix}.qza',
-        unrooted_tree = 'reads/qiime/{name}-unrooted-tree{file_suffix}.qza',
-        rooted_tree = 'reads/qiime/{name}-rooted-tree{file_suffix}.qza'
+        alignment = 'reads/qiime/{name}-rep-aligned-seqs-dn-{similarity}.qza',
+        masked_alignment = 'reads/qiime/{name}-rep-masked-aligned-seqs-dn-{similarity}.qza',
+        unrooted_tree = 'reads/qiime/{name}-unrooted-tree-dn-{similarity}.qza',
+        rooted_tree = 'reads/qiime/{name}-rooted-tree-dn-{similarity}.qza'
     threads:
         int(config['threads'])
     shell:

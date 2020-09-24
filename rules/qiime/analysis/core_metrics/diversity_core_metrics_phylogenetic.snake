@@ -23,34 +23,34 @@ rule qiime__diversity_core_metrics_phylogenetic:
     Note:
     Because most diversity metrics are sensitive to different sampling depths across different samples, this script will randomly subsample the counts from each sample to the value provided for this parameter. For example, if you provide --p-sampling-depth 500, this step will subsample the counts in each sample without replacement so that each sample in the resulting table has a total count of 500. If the total count for any sample(s) are smaller than this value, those samples will be dropped from the diversity analysis. Choosing this value is tricky.
 
-    :input html: html export of imported.qza file, e.g. reads/qiime/joined-imported/index.html
+    :input html: html export of joined-table-dn-99.qza file, e.g. reads/qiime/joined-table-dn-99/index.html
     :input rooted_tree: rooted tree, qiime artifact of type Phylogeny[Rooted], e.g. reads/qiime/joined-rooted-tree-dn-99.qza
-    :input table: qiime artifact of type FeatureTable[Frequency], e.g. reads/qiime/joined-table.qza
+    :input table: qiime artifact of type FeatureTable[Frequency], e.g. reads/qiime/joined-table-dn-99.qza
     :input metadata: samples' metadata filepath in TSV format (tab-separated value), e.g. description/joined-sample-metadata.tsv
 
-    :output rarefield_table: qiime artifact of type FeatureTable[Frequency], e.g. reads/qiime/joined-core-metrics-results/rarefied_table.qza
-    :output vector: sample data for alpha diversity, qiime artifact of type SampleData[AlphaDiversity], e.g. reads/qiime/joined-core-metrics-results/shannon_vector.qza
-    :output distance_matrix: distance matrix for beta diversity, qiime artifact of type DistanceMatrix, e.g. reads/qiime/joined-core-metrics-results/bray_curtis_distance_matrix.qza
-    :output emperor_plots: Emperor visualization of distance matrix, e.g reads/qiime/joined-core-metrics-results/bray_curtis_emperor.qzv
+    :output rarefield_table: qiime artifact of type FeatureTable[Frequency], e.g. reads/qiime/joined-core-metrics-results-dn-99/rarefied_table.qza
+    :output vector: sample data for alpha diversity, qiime artifact of type SampleData[AlphaDiversity], e.g. reads/qiime/joined-core-metrics-results-dn-99/shannon_vector.qza
+    :output distance_matrix: distance matrix for beta diversity, qiime artifact of type DistanceMatrix, e.g. reads/qiime/joined-core-metrics-results-dn-99/bray_curtis_distance_matrix.qza
+    :output emperor_plots: Emperor visualization of distance matrix, e.g reads/qiime/joined-core-metrics-results-dn-99/bray_curtis_emperor.qzv
 
     :params output_dir: DO NOT CHANGE, dirpath to core-metrics-results directory
     :params report_dir: DO NOT CHANGE, dirpath to overview.html
     """
     input:
-        html        = 'reads/qiime/{name}-imported/index.html',
-        rooted_tree = expand('reads/qiime/{{name}}-rooted-tree{params_file_suffix}.qza', params_file_suffix = '-dn-{}'.format(method_config['similarity']) if method_config.get('similarity', '') != '' else ''),
-        table       = expand('reads/qiime/{{name}}-table{params_file_suffix}.qza', params_file_suffix = '-dn-{}'.format(method_config['similarity']) if method_config.get('similarity', '') != '' else ''),
+        html        = 'reads/qiime/{name}-table-dn-{similarity}/index.html',
+        rooted_tree = expand('reads/qiime/{{name}}-rooted-tree-dn-{similarity}.qza', params_file_suffix = '-dn-{}'.format(method_config['similarity']) if method_config.get('similarity', '') != '' else ''),
+        table       = expand('reads/qiime/{{name}}-table-dn-{similarity}.qza', params_file_suffix = '-dn-{}'.format(method_config['similarity']) if method_config.get('similarity', '') != '' else ''),
         metadata    = 'description/{name}-sample-metadata.tsv'
     output:
-        rarefield_table = 'reads/qiime/{name}-core-metrics-results/rarefied_table.qza',
-        vector          = expand('reads/qiime/{{name}}-core-metrics-results/{alpha_types}_vector.qza', alpha_types=['evenness', 'faith_pd', 'observed_otus', 'shannon']),
-        distance_matrix = expand('reads/qiime/{{name}}-core-metrics-results/{beta_types}_distance_matrix.qza', beta_types=['bray_curtis', 'jaccard', 'unweighted_unifrac', 'weighted_unifrac']),
-        emperor_plots   = expand('reads/qiime/{{name}}-core-metrics-results/{emperor_types}_emperor.qzv', emperor_types=['bray_curtis', 'jaccard', 'unweighted_unifrac', 'weighted_unifrac']),
-        pcoa_results    = expand('reads/qiime/{{name}}-core-metrics-results/{beta_types}_pcoa_results.qza', beta_types=['bray_curtis', 'jaccard', 'unweighted_unifrac', 'weighted_unifrac'])
+        rarefield_table = 'reads/qiime/{name}-core-metrics-results-dn-{similarity}/rarefied_table.qza',
+        vector          = expand('reads/qiime/{{name}}-core-metrics-results-dn-{similarity}/{alpha_types}_vector.qza', alpha_types=['evenness', 'faith_pd', 'observed_otus', 'shannon']),
+        distance_matrix = expand('reads/qiime/{{name}}-core-metrics-results-dn-{similarity}/{beta_types}_distance_matrix.qza', beta_types=['bray_curtis', 'jaccard', 'unweighted_unifrac', 'weighted_unifrac']),
+        emperor_plots   = expand('reads/qiime/{{name}}-core-metrics-results-dn-{similarity}/{emperor_types}_emperor.qzv', emperor_types=['bray_curtis', 'jaccard', 'unweighted_unifrac', 'weighted_unifrac']),
+        pcoa_results    = expand('reads/qiime/{{name}}-core-metrics-results-dn-{similarity}/{beta_types}_pcoa_results.qza', beta_types=['bray_curtis', 'jaccard', 'unweighted_unifrac', 'weighted_unifrac'])
     params:
         tmp_dir     = method_config['tmp_dir'] if method_config.get('tmp_dir', '') != '' else '/tmp',
-        output_dir  = 'reads/qiime/{name}-core-metrics-results',
-        report_dir  = expand('reads/qiime/{{name}}-table{params_file_suffix}', params_file_suffix = '-dn-{}'.format(method_config['similarity']) if method_config.get('similarity', '') != '' else '')
+        output_dir  = 'reads/qiime/{name}-core-metrics-results-dn-{similarity}',
+        report_dir  = 'reads/qiime/{name}-table-dn-{similarity}'
     threads:
         int(config['threads'])
     shell:
