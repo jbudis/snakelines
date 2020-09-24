@@ -50,13 +50,13 @@ rule qiime__diversity_core_metrics_phylogenetic:
     params:
         tmp_dir     = method_config['tmp_dir'] if method_config.get('tmp_dir', '') != '' else '/tmp',
         output_dir  = 'reads/qiime/{name}-core-metrics-results',
-        report_dir  = 'reads/qiime/{name}-imported'
+        report_dir  = expand('reads/qiime/{{name}}-table{params_file_suffix}', params_file_suffix = '-dn-{}'.format(method_config['similarity']) if method_config.get('similarity', '') != '' else '')
     threads:
         int(config['threads'])
     shell:
         '''
         rm -rf {params.output_dir}
-        min="cat {params.report_dir}/overview.html | egrep 'Minimum' | sed -E 's/[^0-9]*([0-9]*)[^0-9]*/\\1/'"
+        min="tail {params.report_dir}/sample-frequency-detail.csv -n 1 | sed -E 's/.*,([0-9]*)\\..*/\\1/'"
         min=$(eval $min)
         export TMPDIR={params.tmp_dir};
         qiime diversity core-metrics-phylogenetic \
