@@ -1,10 +1,10 @@
 rule qiime__taxa__barplot:
     """
     Create qiime barplot visualization of taxonomy data, calls 'qiime taxa barplot'
-    :input table: qiime artifact of type FeatureTable[Frequency], e.g. reads/qiime/joined-table-dn-99.qza
-    :input taxonomy_qza: qiime artifact of type FeatureData[Taxonomy], e.g. reads/qiime/joined-taxonomy-dn-99.qza
-    :input metadata: TSV metadata filepath, e.g. description/joined-sample-metadata.tsv
-    :output qzv: qiime visualization file, can be exported to HTML, e.g. reads/qiime/joined-taxa-barplots-dn-99.qzv
+    :input table: qiime artifact of type FeatureTable[Frequency], e.g. reads/qiime/silva16S-table-dn-99.qza
+    :input taxonomy_qza: qiime artifact of type FeatureData[Taxonomy], e.g. reads/qiime/silva16S-taxonomy-dn-99.qza
+    :input metadata: TSV metadata filepath, e.g. description/silva16S-sample-metadata.tsv
+    :output qzv: qiime visualization file, can be exported to HTML, e.g. reads/qiime/silva16S-taxa-barplots-dn-99.qzv
     """
     input:
         table           = 'reads/qiime/{name}-table-dn-{similarity}.qza',

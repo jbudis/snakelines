@@ -11,7 +11,7 @@ rule qiime__create_metadata_file:
     Note: for several analysis, mainly for emporer plotting, it is better to create your own metadata file manually
 
     :input rm: relative path to (preprocessed) joined fastQ samples, e.g. reads/joined/*_RM.fastq.gz
-    :output metadata: samples' metadata filepath in TSV format (tab-separated value), e.g. description/joined-sample-metadata.tsv
+    :output metadata: samples' metadata filepath in TSV format (tab-separated value), e.g. description/silva16S-sample-metadata.tsv; prefix (silva16S) equals to reference name
     :params sep: filename metadata separator, e.g. '-'
     """
     input:

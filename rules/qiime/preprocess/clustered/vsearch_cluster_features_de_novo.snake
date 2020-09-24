@@ -4,10 +4,10 @@ rule qiime__vsearch_cluster_features_de_novo:
 
     Calls 'qiime vsearch cluster-features-de-novo'.
 
-    :input table: qiime artifact of type FeatureTable[Frequency], e.g. reads/qiime/joined-table_imported.qza
-    :input rep_seqs: qiime artifact of type FeatureData[Sequence], e.g. reads/qiime/joined-rep_seqs_imported.qza
-    :output table: qiime artifact of type FeatureTable[Frequency] with similarity, e.g. reads/qiime/joined-table_clustered-dn-99.qza
-    :output rep_seqs: qiime artifact of type FeatureData[Sequence] with similarity, e.g. reads/qiime/joined-rep_seqs_clustered-dn-99.qza
+    :input table: qiime artifact of type FeatureTable[Frequency], e.g. reads/qiime/silva16S-table_imported.qza
+    :input rep_seqs: qiime artifact of type FeatureData[Sequence], e.g. reads/qiime/silva16S-rep_seqs_imported.qza
+    :output table: qiime artifact of type FeatureTable[Frequency] with similarity, e.g. reads/qiime/silva16S-table_clustered-dn-99.qza
+    :output rep_seqs: qiime artifact of type FeatureData[Sequence] with similarity, e.g. reads/qiime/silva16S-rep_seqs_clustered-dn-99.qza
     :params similarity: *REQUIRED - similarity of sequences within cluster, values from 1 to 99 [%]
     """
     input:

@@ -5,9 +5,9 @@ rule qiime__feature_table_filter_seqs:
 
     Calls 'qiime feature-table filter-seqs'.
 
-    :input rep_seqs: qiime artifact of type FeatureData[Sequence], e.g. reads/qiime/joined-rep_seqs_clustered-dn-99.qza
-    :input table: qiime artifact of type FeatureTable[Frequency], e.g. reads/qiime/joined-table_filtered-dn-99.qza
-    :output rep_seqs: qiime artifact of type FeatureData[Sequence] with similarity, e.g. reads/qiime/joined-rep_seqs_filtered-dn-99.qza
+    :input rep_seqs: qiime artifact of type FeatureData[Sequence], e.g. reads/qiime/silva16S-rep_seqs_clustered-dn-99.qza
+    :input table: qiime artifact of type FeatureTable[Frequency], e.g. reads/qiime/silva16S-table_filtered-dn-99.qza
+    :output rep_seqs: qiime artifact of type FeatureData[Sequence] with similarity, e.g. reads/qiime/silva16S-rep_seqs_filtered-dn-99.qza
     """
     input:
         rep_seqs = 'reads/qiime/{name}-rep_seqs_clustered-dn-{similarity}.qza',

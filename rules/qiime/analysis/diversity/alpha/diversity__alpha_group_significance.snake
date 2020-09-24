@@ -4,9 +4,9 @@ rule qiime__diversity__alpha_group_significance:
 
     Calls 'qiime diversity alpha-group-significance'.
 
-    :input vector: sample data for alpha diversity, qiime artifact of type SampleData[AlphaDiversity], e.g. reads/qiime/joined-core-metrics-results-dn-99/shannon_vector.qza
-    :input metadata: samples' metadata filepath in TSV format (tab-separated value), e.g. description/joined-sample-metadata.tsv
-    :output qzv: qiime visualization, e.g. reads/qiime/joined-core-metrics-results-dn-99/alpha/shannon_group_significance.qzv
+    :input vector: sample data for alpha diversity, qiime artifact of type SampleData[AlphaDiversity], e.g. reads/qiime/silva16S-core-metrics-results-dn-99/shannon_vector.qza
+    :input metadata: samples' metadata filepath in TSV format (tab-separated value), e.g. description/silva16S-sample-metadata.tsv
+    :output qzv: qiime visualization, e.g. reads/qiime/silva16S-core-metrics-results-dn-99/alpha/shannon_group_significance.qzv
     """
     input:
         vector      = 'reads/qiime/{name}-core-metrics-results-dn-{similarity}/{type}_vector.qza',

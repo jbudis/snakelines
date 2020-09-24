@@ -18,20 +18,20 @@ rule qiime__diversity_core_metrics_phylogenetic:
         * unweighted UniFrac distance (a qualitative measure of community dissimilarity that incorporates phylogenetic relationships between the features)
         * weighted UniFrac distance (a quantitative measure of community dissimilarity that incorporates phylogenetic relationships between the features)
 
-    An important parameter for this script is --p-sampling-depth, which is the even sampling (i.e. rarefaction) depth. In this pipeline, sampling depth is set as Minimum of sequences count (e.g. we have 3 samples, first with 3500 sequences, 2nd with 3000 sequences and 3rd with 4500 sequences). Minimum is 3000. Value is taken from exported qzv file, exactly from reads/qiime/joined-imported/overview.html.
+    An important parameter for this script is --p-sampling-depth, which is the even sampling (i.e. rarefaction) depth. In this pipeline, sampling depth is set as Minimum of sequences count (e.g. we have 3 samples, first with 3500 sequences, 2nd with 3000 sequences and 3rd with 4500 sequences). Minimum is 3000. Value is taken from exported qzv file, exactly from reads/qiime/silva16S-imported/overview.html.
 
     Note:
     Because most diversity metrics are sensitive to different sampling depths across different samples, this script will randomly subsample the counts from each sample to the value provided for this parameter. For example, if you provide --p-sampling-depth 500, this step will subsample the counts in each sample without replacement so that each sample in the resulting table has a total count of 500. If the total count for any sample(s) are smaller than this value, those samples will be dropped from the diversity analysis. Choosing this value is tricky.
 
-    :input html: html export of joined-table-dn-99.qza file, e.g. reads/qiime/joined-table-dn-99/index.html
-    :input rooted_tree: rooted tree, qiime artifact of type Phylogeny[Rooted], e.g. reads/qiime/joined-rooted-tree-dn-99.qza
-    :input table: qiime artifact of type FeatureTable[Frequency], e.g. reads/qiime/joined-table-dn-99.qza
-    :input metadata: samples' metadata filepath in TSV format (tab-separated value), e.g. description/joined-sample-metadata.tsv
+    :input html: html export of silva16S-table-dn-99.qza file, e.g. reads/qiime/silva16S-table-dn-99/index.html
+    :input rooted_tree: rooted tree, qiime artifact of type Phylogeny[Rooted], e.g. reads/qiime/silva16S-rooted-tree-dn-99.qza
+    :input table: qiime artifact of type FeatureTable[Frequency], e.g. reads/qiime/silva16S-table-dn-99.qza
+    :input metadata: samples' metadata filepath in TSV format (tab-separated value), e.g. description/silva16S-sample-metadata.tsv
 
-    :output rarefield_table: qiime artifact of type FeatureTable[Frequency], e.g. reads/qiime/joined-core-metrics-results-dn-99/rarefied_table.qza
-    :output vector: sample data for alpha diversity, qiime artifact of type SampleData[AlphaDiversity], e.g. reads/qiime/joined-core-metrics-results-dn-99/shannon_vector.qza
-    :output distance_matrix: distance matrix for beta diversity, qiime artifact of type DistanceMatrix, e.g. reads/qiime/joined-core-metrics-results-dn-99/bray_curtis_distance_matrix.qza
-    :output emperor_plots: Emperor visualization of distance matrix, e.g reads/qiime/joined-core-metrics-results-dn-99/bray_curtis_emperor.qzv
+    :output rarefield_table: qiime artifact of type FeatureTable[Frequency], e.g. reads/qiime/silva16S-core-metrics-results-dn-99/rarefied_table.qza
+    :output vector: sample data for alpha diversity, qiime artifact of type SampleData[AlphaDiversity], e.g. reads/qiime/silva16S-core-metrics-results-dn-99/shannon_vector.qza
+    :output distance_matrix: distance matrix for beta diversity, qiime artifact of type DistanceMatrix, e.g. reads/qiime/silva16S-core-metrics-results-dn-99/bray_curtis_distance_matrix.qza
+    :output emperor_plots: Emperor visualization of distance matrix, e.g reads/qiime/silva16S-core-metrics-results-dn-99/bray_curtis_emperor.qzv
 
     :params output_dir: DO NOT CHANGE, dirpath to core-metrics-results directory
     :params report_dir: DO NOT CHANGE, dirpath to overview.html

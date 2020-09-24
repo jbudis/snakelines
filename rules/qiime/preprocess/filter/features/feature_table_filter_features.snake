@@ -6,8 +6,8 @@ rule qiime__feature_table_filter_features:
 
     Calls 'qiime feature-table filter-features'.
 
-    :input table: qiime artifact of type FeatureTable[Frequency], e.g. reads/qiime/joined-table_clustered-dn-99.qza
-    :output table: qiime artifact of type FeatureTable[Frequency] with similarity, e.g. reads/qiime/joined-table_filtered-dn-99.qza
+    :input table: qiime artifact of type FeatureTable[Frequency], e.g. reads/qiime/silva16S-table_clustered-dn-99.qza
+    :output table: qiime artifact of type FeatureTable[Frequency] with similarity, e.g. reads/qiime/silva16S-table_filtered-dn-99.qza
     """
     input:
         table     = 'reads/qiime/{name}-table_clustered-dn-{similarity}.qza'

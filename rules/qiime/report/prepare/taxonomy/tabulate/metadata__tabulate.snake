@@ -1,8 +1,8 @@
 rule qiime__metadata__tabulate:
     """
     Create qiime visualization of taxonomy data, calls 'qiime metadata tabulate'
-    :input qza: qiime artifact of type FeatureData[Taxonomy], e.g. reads/qiime/joined-taxonomy-dn-99.qza
-    :output qzv: qiime visualization file, can be exported to HTML, e.g. reads/qiime/joined-taxonomy-dn-99.qzv
+    :input qza: qiime artifact of type FeatureData[Taxonomy], e.g. reads/qiime/silva16S-taxonomy-dn-99.qza
+    :output qzv: qiime visualization file, can be exported to HTML, e.g. reads/qiime/silva16S-taxonomy-dn-99.qzv
     """
     input:
         qza     = 'reads/qiime/{name}-taxonomy-dn-{similarity}.qza'

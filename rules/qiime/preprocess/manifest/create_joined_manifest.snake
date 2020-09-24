@@ -4,7 +4,7 @@ rule qiime__create_joined_manifest:
     """
     Creates manifest file for joined samples, that it required later for importing those samples into qiime.
     :input rm: relative path to (preprocessed) joined fastQ samples, e.g. reads/joined/*_RM.fastq.gz
-    :output manifest: TSV manifest file in format 'sample-id,absolute-filepath,direction', e.g. reads/qiime/joined.manifest
+    :output manifest: TSV manifest file in format 'sample-id,absolute-filepath,direction', e.g. reads/qiime/silva16S.manifest
     """
     input:
         rm    = expand('reads/{read_type}/{sample}_RM.fastq.gz',

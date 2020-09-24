@@ -6,7 +6,7 @@ rule qiime__feature_classifier__classify_sklearn:
 
     Calls 'qiime feature-classifier classify-sklearn'.
 
-    :input rep_seqs: representative sequences, qiime artifact of type FeatureData[Sequence], e.g. reads/qiime/joined-rep-seqs-dn-99.qza
+    :input rep_seqs: representative sequences, qiime artifact of type FeatureData[Sequence], e.g. reads/qiime/silva16S-rep-seqs-dn-99.qza
     :input classifier: path to pre-trained classifier. e.g. reference/silva-16S/qiime2_index/silva-16S-classifier.qza
     :output taxonomy: taxonomy of OTUs in samples, qiime artifact of type FeatureData[Taxonomy]
     :params tmp_dir: path to temporary directory, because job requires temporary a lot of free disk space, default /tmp might not be enough and path to mounted storage might be used instead

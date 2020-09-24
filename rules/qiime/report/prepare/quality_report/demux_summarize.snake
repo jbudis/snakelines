@@ -1,8 +1,8 @@
 rule qiime__demux_summarize:
     """
     Create qiime visualization of imported data, calls 'qiime demux summarize'
-    :input qza: qiime artifact of type SampleData[PairedEndSequencesWithQuality], e.g. reads/qiime/joined-imported.qza
-    :output qzv: qiime visualization file, can be exported to HTML, e.g. reads/qiime/joined-imported.qzv
+    :input qza: qiime artifact of type SampleData[PairedEndSequencesWithQuality], e.g. reads/qiime/silva16S-imported.qza
+    :output qzv: qiime visualization file, can be exported to HTML, e.g. reads/qiime/silva16S-imported.qzv
     """
     input:
         qza     = 'reads/qiime/{name}-imported.qza'

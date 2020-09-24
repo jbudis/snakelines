@@ -4,11 +4,11 @@ rule qiime__nonchimeric_w_borderline:
 
     Calls 'qiime feature-table filter-features'.
 
-    :input table: qiime artifact of type FeatureTable[Frequency], e.g. reads/qiime/joined-table_filtered-dn-99.qza
-    :input rep_seqs: qiime artifact of type FeatureData[Sequence], e.g. reads/qiime/joined-rep_seqs_filtered-dn-99.qza
-    :input chimeras: list of chimeric sequences, e.g. reads/qiime/joined-uchime-dn-out-99/chimeras.qza
-    :output table: qiime artifact of type FeatureTable[Frequency] without chimeras and WITH borlerline chimeras, e.g. reads/qiime/joined-table-dn-99.qza
-    :output rep_seqs: qiime artifact of type FeatureData[Sequence] without chimeras and WITH borlerline chimeras, e.g. reads/qiime/joined-rep-seqs-dn-99.qza
+    :input table: qiime artifact of type FeatureTable[Frequency], e.g. reads/qiime/silva16S-table_filtered-dn-99.qza
+    :input rep_seqs: qiime artifact of type FeatureData[Sequence], e.g. reads/qiime/silva16S-rep_seqs_filtered-dn-99.qza
+    :input chimeras: list of chimeric sequences, e.g. reads/qiime/silva16S-uchime-dn-out-99/chimeras.qza
+    :output table: qiime artifact of type FeatureTable[Frequency] without chimeras and WITH borlerline chimeras, e.g. reads/qiime/silva16S-table-dn-99.qza
+    :output rep_seqs: qiime artifact of type FeatureData[Sequence] without chimeras and WITH borlerline chimeras, e.g. reads/qiime/silva16S-rep-seqs-dn-99.qza
     """
     input:
         table       = 'reads/qiime/{name}-table_filtered-dn-{similarity}.qza',
