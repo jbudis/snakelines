@@ -9,7 +9,7 @@ rule sambamba__bam_index:
     output:
         '{path}/{sample}.bam.bai'
     benchmark:
-        '{path}/log/{sample}.index.benchmark'
+        '{path}/log/{sample}.bai.benchmark'
     threads:
         int(config['threads'])
     shell:
