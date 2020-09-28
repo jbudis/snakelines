@@ -1,6 +1,7 @@
 rule vep__annotate_vcf:
     """
         Annotate VCF file using selected dbNSFP features.
+        See https://www.ensembl.org/info/docs/tools/vep/script/vep_options.html
     """
     input:
         vcf   = 'variant/{reference}-{panel}/%s/{sample}.vcf' % method_config['input_variant_type'],
@@ -22,7 +23,7 @@ rule vep__annotate_vcf:
         """
         DBNSFP=''
         if [ ! -z {params.dbnsfp} ]; then
-            DBNSFP='--plugin dbNSFP,reference/{wildcards.reference}/variants/dbnsfp/dbNSFP4.0c.gz,{params.dbnsfp}'
+            DBNSFP='--plugin dbNSFP,reference/{wildcards.reference}/variants/dbnsfp/dbNSFP4.1c.gz,{params.dbnsfp}'
         fi
 
         vep \
@@ -38,6 +39,32 @@ rule vep__annotate_vcf:
             --assembly {params.assembly} \
             --vcf \
             --force_overwrite \
+            \
+            --flag_pick_allele \
+            --canonical \
+            --variant_class \
+            --gene_phenotype \
+            --regulatory \
+            --hgvs \
+            --hgvsg \
+            --shift_hgvs 1 \
+            --transcript_version \
+            --protein \
+            --symbol \
+            --ccds \
+            --uniprot \
+            --mane \
+            --biotype \
+            --domains \
+            --check_existing \
+            --exclude_null_alleles \
+            --clin_sig_allele 1 \
+            --pubmed \
+            --var_synonyms \
+            --lookup_ref \
+            --minimal \
+            --allele_number \
+            --offline \
             $DBNSFP \
         1> {log.out} \
         2> {log.err}
@@ -46,6 +73,7 @@ rule vep__annotate_vcf:
 rule vep__annotate_tsv:
     """
         Annotate VCF file using selected dbNSFP features and save it in TSV format.
+        See https://www.ensembl.org/info/docs/tools/vep/script/vep_options.html
     """
     input:
         vcf   = 'variant/{reference}-{panel}/%s/{sample}.vcf' % method_config['input_variant_type'],
@@ -66,7 +94,7 @@ rule vep__annotate_tsv:
         """
         DBNSFP=''
         if [ ! -z {params.dbnsfp} ]; then
-            DBNSFP='--plugin dbNSFP,reference/{wildcards.reference}/variants/dbnsfp/dbNSFP4.0c.gz,{params.dbnsfp}'
+            DBNSFP='--plugin dbNSFP,reference/{wildcards.reference}/variants/dbnsfp/dbNSFP4.1c.gz,{params.dbnsfp}'
         fi
 
         vep \
@@ -82,6 +110,32 @@ rule vep__annotate_tsv:
             --assembly {params.assembly} \
             --tab \
             --force_overwrite \
+            \
+            --flag_pick_allele \
+            --canonical \
+            --variant_class \
+            --gene_phenotype \
+            --regulatory \
+            --hgvs \
+            --hgvsg \
+            --shift_hgvs 1 \
+            --transcript_version \
+            --protein \
+            --symbol \
+            --ccds \
+            --uniprot \
+            --mane \
+            --biotype \
+            --domains \
+            --check_existing \
+            --exclude_null_alleles \
+            --clin_sig_allele 1 \
+            --pubmed \
+            --var_synonyms \
+            --lookup_ref \
+            --minimal \
+            --allele_number \
+            --offline \
             $DBNSFP \
         1> {log.out} \
         2> {log.err}
