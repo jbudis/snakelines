@@ -1,0 +1,18 @@
+rule tabix__vcf_index:
+    """
+    Indexes bgzipped VCF file (filename.vcf.gz) with index file (filename.vcf.gz.tbi)
+    """
+    input:
+        '{path}/{sample}.vcf.gz'
+    output:
+        '{path}/{sample}.vcf.gz.tbi'
+    benchmark:
+        '{path}/log/{sample}.vcf.gz.tbi.benchmark'
+    shell:
+        """
+        tabix \
+            --preset vcf \
+            --force \
+            {input} \
+            &> /dev/null
+        """
