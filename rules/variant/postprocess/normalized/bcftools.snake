@@ -1,0 +1,44 @@
+#include: config['snakelines_dir'] + '/rules/reference/annotation/regions.snake'
+#include: config['snakelines_dir'] + '/rules/reference/index/fai/samtools.snake'
+#include: config['snakelines_dir'] + '/rules/reference/index/dict/picard.snake'
+
+
+rule bcftools__normalize_vcf:
+    """
+      Left-align and normalize indels, check if REF alleles match the reference,
+      split multiallelic sites into multiple rows; recover multiallelics from multiple rows.
+      Left-alignment and normalization will only be applied if the --fasta-ref option is supplied.
+      See: http://samtools.github.io/bcftools/bcftools.html#norm
+    """
+    input:
+        vcf   = 'variant/{reference}-{panel}/%s/{sample}.vcf' % method_config['input_variant_type'],
+        fasta = 'reference/{reference}/{reference}.fa',
+        fai   = 'reference/{reference}/{reference}.fa.fai',
+    output:
+        vcf   = 'variant/{reference}-{panel}/normalized/{sample}.vcf',
+    params:
+        multiallelic = '-any' if method_config.get('multiallelic', False) == False else '+any',
+    log:
+        out = 'variant/{reference}-{panel}/normalized/log/{sample}.vcf.out',
+        err = 'variant/{reference}-{panel}/normalized/log/{sample}.vcf.err'
+    threads:
+        int(config['threads'])
+    benchmark:
+          'variant/{reference}-{panel}/normalized/log/{sample}.vcf.benchmark',
+    shell:
+        """
+        bcftools norm \
+            {input.vcf} \
+            --multiallelics {params.multiallelic} \
+            --check-ref w \
+            --fasta-ref {input.fasta} \
+            --threads {threads} \
+            --output-type u \
+            | \
+        bcftools annotate \
+            --set-id '%CHROM:%POS:%REF:%ALT' \
+            --output-type v \
+            --output {output.vcf} \
+        1> {log.out} \
+        2> {log.err}
+        """

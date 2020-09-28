@@ -223,6 +223,11 @@ variant:
                         expand('{report_dir}/{sr.sample}/recalibrated-{sr.reference}-{sr.panel}.vcf',
                                report_dir=config['report_dir'], sr=pipeline.sample_references)
 
+        normalized:
+            output:
+                vcf: expand('variant/{sr.reference}-{sr.panel}/normalized/{sr.sample}.vcf',
+                              sr=pipeline.sample_references)
+
         annotated:
             output:
                 vcf:
