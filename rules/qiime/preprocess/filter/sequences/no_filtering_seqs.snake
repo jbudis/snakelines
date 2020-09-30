@@ -1,0 +1,17 @@
+rule qiime__no_filtering_seqs:
+    """
+    Skips filtering of sequences, copy input to output.
+
+    :input rep_seqs: qiime artifact of type FeatureData[Sequence], e.g. reads/qiime/silva16S-rep_seqs_clustered-dn-99.qza
+    :output rep_seqs: qiime artifact of type FeatureData[Sequence] with similarity, e.g. reads/qiime/silva16S-rep_seqs_filtered-dn-99.qza
+    """
+    input:
+        rep_seqs = 'reads/qiime/{name}-rep_seqs_clustered-dn-{similarity}.qza',
+    output:
+        rep_seqs  = 'reads/qiime/{name}-rep_seqs_filtered-dn-{similarity}.qza'
+    threads:
+        int(config['threads'])
+    shell:
+        '''
+        cp {input.rep_seqs} {output.rep_seqs}
+        '''

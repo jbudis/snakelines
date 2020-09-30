@@ -1,0 +1,17 @@
+rule qiime__no_filtering_features:
+    """
+    Skips filtering of features, copy input to output.
+
+    :input table: qiime artifact of type FeatureTable[Frequency], e.g. reads/qiime/silva16S-table_clustered-dn-99.qza
+    :output table: qiime artifact of type FeatureTable[Frequency] with similarity, e.g. reads/qiime/silva16S-table_filtered-dn-99.qza
+    """
+    input:
+        table     = 'reads/qiime/{name}-table_clustered-dn-{similarity}.qza'
+    output:
+        table     = 'reads/qiime/{name}-table_filtered-dn-{similarity}.qza'
+    threads:
+        int(config['threads'])
+    shell:
+        '''
+        cp {input.table} {output.table}
+        '''
