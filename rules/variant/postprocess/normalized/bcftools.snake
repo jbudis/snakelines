@@ -34,6 +34,7 @@ rule bcftools__normalize_vcf:
             --fasta-ref {input.fasta} \
             --threads {threads} \
             --output-type u \
+            2> {log.err} \
             | \
         bcftools annotate \
             --set-id '%CHROM:%POS:%REF:%ALT' \
