@@ -62,7 +62,7 @@ How to run example:
 
 .. code-block:: bash
 
-   cd /usr/local/snakelines/example/genomic
+   cd /usr/local/snakelines/example/rnaseq
 
    snakemake \
       --snakefile ../../snakelines.snake \
