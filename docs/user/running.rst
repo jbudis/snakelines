@@ -93,7 +93,7 @@ All SnakeLines pipelines are defined only by their configuration file in human-r
 We recommend to copy the configuration file into the project directory.
 This way, configuration for the pipeline is project specific, and therefore would not be shared between different projects.
 
-Example project structure with configuration file copied from the <snakelines_dir>/example/mhv/
+Example project structure with configuration file copied from the <snakelines_dir>/example/genomic/
 ::
 
    |-- reads/original
@@ -101,10 +101,8 @@ Example project structure with configuration file copied from the <snakelines_di
            |-- example_A_R2.fastq.gz
            |-- example_B_R1.fastq.gz
            |-- example_B_R2.fastq.gz
-   |-- reference/hg38
-           |-- hg38.fa
-           |-- annotation/sureselect6
-                   |-- regions.bed
+   |-- reference/mhv
+           |-- mhv.fa
    |-- config_variant_calling.yaml
 
 Edit config_variant_calling.yaml file according to your preference.

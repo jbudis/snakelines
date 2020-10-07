@@ -62,13 +62,16 @@ How to run example:
 
 .. code-block:: bash
 
-   cd /usr/local/snakelines/example/mhv
+   cd /usr/local/snakelines/example/genomic
 
    snakemake \
       --snakefile ../../snakelines.snake \
       --configfile config_transcriptomics.yaml
 
-Example configuration not ready yet.
+Example configuration:
+
+.. literalinclude:: ../../example/rnaseq/config_transcriptomics.yaml
+   :language: yaml
 
 Planned improvements
 --------------------
