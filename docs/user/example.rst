@@ -31,7 +31,7 @@ Assuming, that sources are downloaded in /usr/local/snakelines, `variant_calling
 
 .. code-block:: bash
 
-   cd /usr/local/snakelines/example/mhv
+   cd /usr/local/snakelines/example/genomic
 
    snakemake \
       --snakefile ../../snakelines.snake \

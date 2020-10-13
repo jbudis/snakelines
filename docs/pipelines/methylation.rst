@@ -43,7 +43,7 @@ How to run example:
 
 .. code-block:: bash
 
-   cd /usr/local/snakelines/example/mhv
+   cd /usr/local/snakelines/example/genomic
 
    snakemake \
       --snakefile ../../snakelines.snake \
