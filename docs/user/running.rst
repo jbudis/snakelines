@@ -12,28 +12,21 @@ Software requirements
 
 Minimal software requirements are:
 
-* Linux (tested on Ubuntu 18.04)
-* `SnakeMake <https://snakemake.readthedocs.io/en/stable/>`_ (tested on 5.13.0)
+* Linux (tested on Ubuntu 20.04)
 * Miniconda (tested on 4.8.3)
+   
+Installation
+---------------
 
-Python3 module dependencies
----------------------------
+There are two ways for SnakeLines to be installed: as Conda package and by cloning the Github repository. We recommend the first option.
 
-Snakelines requires several Python3 modules to be installed prior to Snakelines. All of these modules can be installed via Conda package manager or via Pip3 with the exception of Tkinter that can be obtained via e.g. apt-get.
-
-Note that Snakelines requires specific versions of these modules. These modules can be installed with this command (including snakemake):
-
-Snakelines will be later shipped as a Conda package in Anaconda repository.
-.. code:: bash
-    pip install numpy oyaml pandas biopython seaborn bs4 weasyprint pysam openpyxl scikit-learn scikit-bio jinja2 snakemake
-
-Conda channel dependencies
---------------------------
-
-In order for Snakelines Conda virtual enviroments to work, user has to add several Anaconda repository channels to Anaconda using these commands:
+Installation as a Conda package
+--------------------------------
 
 .. code:: bash
-
+   
+   # In order for SnakeLines Conda virtual enviroments to work, user has to add several Anaconda repository channels to Conda.
+   
    conda config --add channels bioconda
    conda config --add channels g2554711
    conda config --add channels g2554711/label/bioconda
@@ -41,11 +34,19 @@ In order for Snakelines Conda virtual enviroments to work, user has to add sever
    conda config --add channels agbiome
    conda config --add channels rsmulktis
    conda config --add channels moustik
+  
+   conda create --name snakelines-env -c bioconda snakelines
+   conda activate snakelines-env
    
-``--use-conda`` option in ``Snakemake`` command will enable use of predefined virtual enviroments in Snakelines.
-   
-Installation
----------------
+
+Installation from Github repository
+------------------------------------
+
+Snakelines requires several Python3 modules to be installed prior to Snakelines. All of these modules can be installed via Conda package manager or via Pip3 with the exception of Tkinter that can be obtained via e.g. apt-get.
+
+.. code:: bash
+
+    pip install numpy==1.19.2 oyaml==0.9 pandas==1.1.3 biopython==1.78 seaborn==0.11.0 bs4==4.9.3 weasyprint==51 pysam==0.16.0.1 openpyxl==3.0.5 scikit-bio==0.5.6 jinja2==2.11.2 snakemake==5.13.0
 
 Sources codes for SnakeLines pipelines are stored at `GitHub repository <https://github.com/jbudis/snakelines>`_.
 You may download them directly or clone them using git.
@@ -60,6 +61,8 @@ You may download them directly or clone them using git.
    git clone https://github.com/jbudis/snakelines
 
 Compiling is not required, scripts are ready for use right after download.
+
+Note that GATK3 has to be installed separately (if the user intends to use it) as the license prohibits GATK3 to be distributed via Conda repository.
 
 Directory structure of input files
 ----------------------------------
@@ -110,7 +113,15 @@ Each configured attribute is explained by a comment in the file.
 
 Now you may run SnakeLines pipeline using Snakemake.
 You need to specify one additional attribute, to tell Snakemake, where are SnakeLines sources located.
-For example, if SnakeLines sources has been downloaded to the /usr/local/snakelines directory, use:
+If SnakeLines was installed as a Conda package, the resulting command will be:
+
+.. code:: bash
+
+   snakemake \
+      --snakefile `snakelines.snake` \
+      --configfile config_variant_calling.yaml
+
+In case of installation from Github repository, if SnakeLines sources have been downloaded to the /usr/local/snakelines directory, use:
 
 .. code:: bash
 
