@@ -113,13 +113,13 @@ Each configured attribute is explained by a comment in the file.
 
 Now you may run SnakeLines pipeline using Snakemake.
 You need to specify one additional attribute, to tell Snakemake, where are SnakeLines sources located.
-If SnakeLines was installed as a Conda package, the resulting command will be:
+If SnakeLines was installed as a Conda package, there is a wrapper script available, so the resulting command will be:
 
 .. code:: bash
 
-   snakemake \
-      --snakefile `snakelines.snake` \
-      --configfile config_variant_calling.yaml
+   snakelines --configfile config_variant_calling.yaml
+
+You can set all parameters from ``snakemake`` in ``snakelines`` wrapper.
 
 In case of installation from Github repository, if SnakeLines sources have been downloaded to the /usr/local/snakelines directory, use:
 
