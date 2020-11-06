@@ -15,7 +15,6 @@ rule deepvariant__call_germline_variants:
         fai   = 'reference/{reference}/{reference}.fa.fai',
     output:
         vcf  = 'variant/{reference}-{panel}/original/{sample}.deepvariant.vcf',
-        gvcf = 'variant/{reference}-{panel}/original/{sample}.deepvariant.gvcf'
     params:
         model = lambda wildcards: 'WGS' if wildcards.panel == 'wgs' else 'WES'
     threads:
@@ -24,7 +23,7 @@ rule deepvariant__call_germline_variants:
         out = 'variant/{reference}-{panel}/original/log/{sample}.vcf.out',
         err = 'variant/{reference}-{panel}/original/log/{sample}.vcf.err'
     benchmark:
-          'variant/{reference}-{panel}/original/log/{sample}.vcf.benchmark',
+        'variant/{reference}-{panel}/original/log/{sample}.vcf.benchmark',
     singularity:
         'docker://google/deepvariant:0.10.0'
     shell:
