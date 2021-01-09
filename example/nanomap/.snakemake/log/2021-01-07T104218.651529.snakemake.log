@@ -1,0 +1,3 @@
+SyntaxError in line 62 of /home/adog/snakelines/src/common.snake:
+invalid syntax
+  File "/home/adog/snakelines/snakelines.snake", line 22, in <module>

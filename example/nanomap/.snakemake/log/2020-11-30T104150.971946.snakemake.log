@@ -1,0 +1,105 @@
+Building DAG of jobs...
+Creating conda environment /home/adog/snakelines/enviroments/clair.yaml...
+Downloading and installing remote packages.
+CreateCondaEnvironmentException:
+Could not create conda environment from /home/adog/snakelines/enviroments/clair.yaml:
+Collecting package metadata (repodata.json): ...working... done
+Solving environment: ...working... Building graph of deps:   0%|          | 0/9 [00:00<?, ?it/s]Examining matplotlib==3.1.2:   0%|          | 0/9 [00:00<?, ?it/s]Examining blosc==1.20.1:  11%|█         | 1/9 [00:00<00:03,  2.57it/s]Examining blosc==1.20.1:  22%|██▏       | 2/9 [00:00<00:01,  5.13it/s]Examining @/linux-64::__archspec==1=x86_64:  22%|██▏       | 2/9 [00:00<00:01,  5.13it/s]Examining @/linux-64::__unix==0=0:  33%|███▎      | 3/9 [00:00<00:01,  5.13it/s]         Examining @/linux-64::__glibc==2.31=0:  44%|████▍     | 4/9 [00:00<00:00,  5.13it/s]Examining pysam==0.15.3:  56%|█████▌    | 5/9 [00:00<00:00,  5.13it/s]              Examining intervaltree==3.0.2:  67%|██████▋   | 6/9 [00:00<00:00,  5.13it/s]Examining intervaltree==3.0.2:  78%|███████▊  | 7/9 [00:00<00:00,  6.91it/s]Examining tensorflow==1.13.2:  78%|███████▊  | 7/9 [00:00<00:00,  6.91it/s] Examining numpy==1.19.2:  89%|████████▉ | 8/9 [00:00<00:00,  6.91it/s]     Examining numpy==1.19.2: 100%|██████████| 9/9 [00:00<00:00,  8.22it/s]                                                                      Determining conflicts:   0%|          | 0/9 [00:00<?, ?it/s]Examining conflict for numpy matplotlib pysam intervaltree:   0%|          | 0/9 [00:00<?, ?it/s]Examining conflict for matplotlib numpy:  11%|█         | 1/9 [00:02<00:17,  2.24s/it]           Examining conflict for matplotlib numpy:  22%|██▏       | 2/9 [00:02<00:07,  1.12s/it]Examining conflict for matplotlib blosc pysam intervaltree numpy:  22%|██▏       | 2/9 [00:04<00:07,  1.12s/it]Examining conflict for matplotlib blosc pysam intervaltree numpy:  33%|███▎      | 3/9 [00:04<00:09,  1.53s/it]Examining conflict for matplotlib blosc pysam tensorflow numpy:  33%|███▎      | 3/9 [00:05<00:09,  1.53s/it]  Examining conflict for matplotlib blosc pysam tensorflow numpy:  44%|████▍     | 4/9 [00:05<00:06,  1.21s/it]Examining conflict for matplotlib blosc pysam intervaltree tensorflow numpy:  44%|████▍     | 4/9 [00:05<00:06,  1.21s/it]Examining conflict for matplotlib blosc pysam intervaltree tensorflow numpy:  56%|█████▌    | 5/9 [00:05<00:04,  1.05s/it]Examining conflict for matplotlib pysam intervaltree tensorflow numpy:  56%|█████▌    | 5/9 [00:06<00:04,  1.05s/it]      Examining conflict for matplotlib pysam intervaltree tensorflow numpy:  67%|██████▋   | 6/9 [00:06<00:02,  1.01it/s]Examining conflict for matplotlib tensorflow:  67%|██████▋   | 6/9 [00:07<00:02,  1.01it/s]                         Examining conflict for matplotlib tensorflow:  78%|███████▊  | 7/9 [00:07<00:01,  1.12it/s]Examining conflict for matplotlib tensorflow numpy:  78%|███████▊  | 7/9 [00:07<00:01,  1.12it/s]Examining conflict for matplotlib tensorflow numpy:  89%|████████▉ | 8/9 [00:07<00:00,  1.35it/s]Examining conflict for tensorflow pysam:  89%|████████▉ | 8/9 [00:07<00:00,  1.35it/s]           Examining conflict for pysam intervaltree: 100%|██████████| 9/9 [00:07<00:00,  1.35it/s]Examining conflict for numpy intervaltree: : 10it [00:07,  1.35it/s]                    Examining conflict for numpy intervaltree: : 11it [00:07,  1.87it/s]                                                                    
+Found conflicts! Looking for incompatible packages.
+This can take several minutes.  Press CTRL-C to abort.
+failed
+Solving environment: ...working... Building graph of deps:   0%|          | 0/9 [00:00<?, ?it/s]Examining matplotlib==3.1.2:   0%|          | 0/9 [00:00<?, ?it/s]Examining blosc==1.20.1:  11%|█         | 1/9 [00:00<00:03,  2.52it/s]Examining blosc==1.20.1:  22%|██▏       | 2/9 [00:00<00:01,  5.03it/s]Examining @/linux-64::__archspec==1=x86_64:  22%|██▏       | 2/9 [00:00<00:01,  5.03it/s]Examining @/linux-64::__unix==0=0:  33%|███▎      | 3/9 [00:00<00:01,  5.03it/s]         Examining @/linux-64::__glibc==2.31=0:  44%|████▍     | 4/9 [00:00<00:00,  5.03it/s]Examining pysam==0.15.3:  56%|█████▌    | 5/9 [00:00<00:00,  5.03it/s]              Examining intervaltree==3.0.2:  67%|██████▋   | 6/9 [00:00<00:00,  5.03it/s]Examining intervaltree==3.0.2:  78%|███████▊  | 7/9 [00:00<00:00,  6.77it/s]Examining tensorflow==1.13.2:  78%|███████▊  | 7/9 [00:00<00:00,  6.77it/s] Examining numpy==1.19.2:  89%|████████▉ | 8/9 [00:00<00:00,  6.77it/s]     Examining numpy==1.19.2: 100%|██████████| 9/9 [00:00<00:00,  8.03it/s]                                                                      Determining conflicts:   0%|          | 0/9 [00:00<?, ?it/s]Examining conflict for numpy matplotlib pysam intervaltree:   0%|          | 0/9 [00:00<?, ?it/s]Examining conflict for matplotlib numpy:  11%|█         | 1/9 [00:02<00:18,  2.33s/it]           Examining conflict for matplotlib numpy:  22%|██▏       | 2/9 [00:02<00:08,  1.17s/it]Examining conflict for matplotlib blosc pysam intervaltree numpy:  22%|██▏       | 2/9 [00:04<00:08,  1.17s/it]Examining conflict for matplotlib blosc pysam intervaltree numpy:  33%|███▎      | 3/9 [00:04<00:09,  1.59s/it]Examining conflict for matplotlib blosc pysam tensorflow numpy:  33%|███▎      | 3/9 [00:05<00:09,  1.59s/it]  Examining conflict for matplotlib blosc pysam tensorflow numpy:  44%|████▍     | 4/9 [00:05<00:06,  1.26s/it]Examining conflict for matplotlib blosc pysam intervaltree tensorflow numpy:  44%|████▍     | 4/9 [00:06<00:06,  1.26s/it]Examining conflict for matplotlib blosc pysam intervaltree tensorflow numpy:  56%|█████▌    | 5/9 [00:06<00:04,  1.09s/it]Examining conflict for matplotlib pysam intervaltree tensorflow numpy:  56%|█████▌    | 5/9 [00:06<00:04,  1.09s/it]      Examining conflict for matplotlib pysam intervaltree tensorflow numpy:  67%|██████▋   | 6/9 [00:06<00:03,  1.03s/it]Examining conflict for matplotlib tensorflow:  67%|██████▋   | 6/9 [00:07<00:03,  1.03s/it]                         Examining conflict for matplotlib tensorflow:  78%|███████▊  | 7/9 [00:07<00:01,  1.08it/s]Examining conflict for matplotlib tensorflow numpy:  78%|███████▊  | 7/9 [00:08<00:01,  1.08it/s]Examining conflict for matplotlib tensorflow numpy:  89%|████████▉ | 8/9 [00:08<00:00,  1.30it/s]Examining conflict for tensorflow pysam:  89%|████████▉ | 8/9 [00:08<00:00,  1.30it/s]           Examining conflict for pysam intervaltree: 100%|██████████| 9/9 [00:08<00:00,  1.30it/s]Examining conflict for numpy intervaltree: : 10it [00:08,  1.30it/s]                    Examining conflict for numpy intervaltree: : 11it [00:08,  1.79it/s]                                                                    
+Found conflicts! Looking for incompatible packages.
+This can take several minutes.  Press CTRL-C to abort.
+failed
+
+UnsatisfiableError: The following specifications were found to be incompatible with each other:
+
+Output in format: Requested package -> Available versions
+
+Package numpy-base conflicts for:
+numpy==1.19.2 -> mkl_fft -> numpy-base[version='>=1.0.14,<2.0a0|>=1.0.6,<2.0a0|>=1.0.2,<2.0a0|>=1.0.4,<2.0a0']
+numpy==1.19.2 -> numpy-base==1.19.2[build='py37hfa32c7d_0|py38h75fe3a5_0|py36h75fe3a5_0|py36hfa32c7d_0|py38hfa32c7d_0|py37h75fe3a5_0']
+matplotlib==3.1.2 -> numpy[version='>=1.14.6,<2.0a0'] -> numpy-base[version='1.14.6|1.14.6|1.14.6|1.14.6|1.14.6|1.14.6|1.14.6|1.14.6|1.14.6|1.14.6|1.14.6|1.14.6|1.14.6|1.14.6|1.14.6|1.14.6|1.15.0|1.15.0|1.15.0|1.15.0|1.15.0|1.15.0|1.15.0|1.15.0|1.15.1|1.15.1|1.15.1|1.15.1|1.15.1|1.15.1|1.15.1|1.15.1|1.15.1|1.15.1|1.15.1|1.15.1|1.15.2|1.15.2|1.15.2|1.15.2|1.15.2|1.15.2|1.15.2|1.15.2|1.15.2|1.15.2|1.15.2|1.15.2|1.15.2|1.15.2|1.15.3|1.15.3|1.15.3|1.15.3|1.15.3|1.15.3|1.15.4|1.15.4|1.15.4|1.15.4|1.15.4|1.15.4|1.15.4|1.15.4|1.15.4|1.16.0|1.16.0|1.16.0|1.16.0|1.16.0|1.16.0|1.16.0|1.16.0|1.16.0|1.16.0|1.16.0|1.16.0|1.16.1|1.16.1|1.16.1|1.16.1|1.16.1|1.16.1|1.16.1|1.16.1|1.16.1|1.16.1|1.16.1|1.16.1|1.16.2|1.16.2|1.16.2|1.16.2|1.16.2|1.16.2|1.16.3|1.16.3|1.16.3|1.16.3|1.16.3|1.16.3|1.16.4|1.16.4|1.16.4|1.16.4|1.16.4|1.16.4|1.16.5|1.16.5|1.16.5|1.16.5|1.16.5|1.16.5|1.16.6|1.16.6|1.16.6|1.16.6|1.16.6|1.16.6|1.16.6|1.16.6|1.17.2.*|1.17.3.*|1.17.4.*|1.18.1.*|1.18.5.*|1.19.1|1.19.1|1.19.1|1.19.1|1.19.1|1.19.1|1.19.2|1.17.0|1.17.0|1.17.0|1.17.0',build='py37h2f8d375_0|py37hde5b4d6_0|py35h2f8d375_4|py27h81de0dd_4|py35h81de0dd_4|py37h81de0dd_4|py38hde5b4d6_4|py36h2f8d375_5|py36hde5b4d6_5|py36h7cdd4dd_0|py37h7cdd4dd_0|py35h7cdd4dd_0|py27h3dfced4_0|py37h3dfced4_0|py35h74e8950_0|py27h74e8950_0|py36h74e8950_0|py37h74e8950_0|py36h81de0dd_0|py27h81de0dd_0|py37h81de0dd_0|py35h81de0dd_0|py37h2f8d375_0|py27h81de0dd_0|py36h81de0dd_0|py36h2f8d375_1|py27h2f8d375_1|py27h81de0dd_1|py37h81de0dd_1|py37h2f8d375_1|py37h2f8d375_0|py27h81de0dd_0|py36h81de0dd_0|py37h2f8d375_0|py27h2f8d375_0|py36h81de0dd_0|py27h81de0dd_0|py27hde5b4d6_0|py37hde5b4d6_0|py37h2f8d375_0|py27hde5b4d6_0|py37h2f8d375_1|py27hde5b4d6_1|py36hde5b4d6_1|py37h2f8d375_0|py27h2f8d375_0|py37hde5b4d6_0|py27hde5b4d6_0|py27h2f8d375_1|py37h2f8d375_1|py36h2f8d375_1|py27hde5b4d6_1|py37h2f8d375_0|py27h2f8d375_0|py37hde5b4d6_0|py27hde5b4d6_0|py37h2f8d375_0|py37hde5b4d6_0|py27hde5b4d6_0|py37h2f8d375_0|py37hde5b4d6_0|py27hde5b4d6_0|py37h2f8d375_0|py27hde5b4d6_0|py37hde5b4d6_0|py27hde5b4d6_0|py36h75fe3a5_0|py37h75fe3a5_0|py37hfa32c7d_0|py38h75fe3a5_0|py36h75fe3a5_0|py36hfa32c7d_0|py38hfa32c7d_0|py37h75fe3a5_0|py36hfa32c7d_0|py38hfa32c7d_0|py38h75fe3a5_0|py37hfa32c7d_0|py27h2f8d375_0|py38hde5b4d6_0|py38h2f8d375_0|py36hde5b4d6_0|py36h2f8d375_0|py37h2f8d375_0|py36hde5b4d6_0|py37hde5b4d6_0|py27h2f8d375_0|py36h2f8d375_0|py36hde5b4d6_0|py36h2f8d375_0|py27h2f8d375_0|py36hde5b4d6_0|py36h2f8d375_0|py27h2f8d375_0|py36hde5b4d6_0|py36h2f8d375_0|py36hde5b4d6_1|py37hde5b4d6_1|py36hde5b4d6_0|py36h2f8d375_0|py37hde5b4d6_1|py36h2f8d375_1|py27h2f8d375_1|py36hde5b4d6_0|py36h2f8d375_0|py37hde5b4d6_0|py27h2f8d375_0|py36hde5b4d6_0|py37h81de0dd_0|py36h2f8d375_0|py37h81de0dd_0|py36h2f8d375_0|py27h2f8d375_0|py36h81de0dd_1|py36h2f8d375_0|py35h2f8d375_0|py35h81de0dd_0|py37h81de0dd_0|py27h2f8d375_0|py37h2f8d375_0|py36h2f8d375_0|py27h2f8d375_0|py35h2f8d375_0|py35h3dfced4_0|py36h3dfced4_0|py27h7cdd4dd_0|py37hde5b4d6_5|py27hde5b4d6_5|py27h2f8d375_5|py37h2f8d375_5|py38h2f8d375_4|py36h81de0dd_4|py27h2f8d375_4|py36h2f8d375_4|py37h2f8d375_4|py36hde5b4d6_0|py36h2f8d375_0']
+
+Package _openmp_mutex conflicts for:
+numpy==1.19.2 -> libgcc-ng[version='>=7.5.0'] -> _openmp_mutex[version='*|>=4.5',build=*_llvm]
+blosc==1.20.1 -> libgcc-ng[version='>=7.5.0'] -> _openmp_mutex[version='>=4.5']
+pysam==0.15.3 -> libgcc-ng[version='>=7.3.0'] -> _openmp_mutex[version='>=4.5']
+tensorflow==1.13.2 -> libgcc-ng[version='>=5.4.0'] -> _openmp_mutex[version='>=4.5']
+matplotlib==3.1.2 -> libgcc-ng[version='>=7.3.0'] -> _openmp_mutex[version='>=4.5']
+
+Package libstdcxx-ng conflicts for:
+matplotlib==3.1.2 -> pyqt -> libstdcxx-ng[version='>=4.9|>=7.5.0|>=7.2.0|>=9.3.0']
+matplotlib==3.1.2 -> libstdcxx-ng[version='>=7.3.0']
+
+Package zlib conflicts for:
+pysam==0.15.3 -> zlib[version='>=1.2.11,<1.3.0a0']
+tensorflow==1.13.2 -> zlib[version='>=1.2.11,<1.3.0a0']
+pysam==0.15.3 -> curl -> zlib[version='1.2.*|1.2.11|1.2.11.*|1.2.8']
+matplotlib==3.1.2 -> python[version='>=3.8,<3.9.0a0'] -> zlib[version='1.2.*|1.2.11|>=1.2.11,<1.3.0a0|1.2.8']
+intervaltree==3.0.2 -> python -> zlib[version='1.2.*|1.2.11|>=1.2.11,<1.3.0a0|1.2.8|1.2.11.*']
+numpy==1.19.2 -> pypy3.6[version='>=7.3.2'] -> zlib[version='1.2.*|1.2.11|>=1.2.11,<1.3.0a0|1.2.8']
+blosc==1.20.1 -> zlib[version='>=1.2.11,<1.3.0a0']
+
+Package libpng conflicts for:
+matplotlib==3.1.2 -> libpng[version='>=1.6.37,<1.7.0a0']
+matplotlib==3.1.2 -> freetype[version='>=2.9.1,<3.0a0'] -> libpng[version='>=1.6.34,<1.7.0a0|>=1.6.35,<1.7.0a0']
+
+Package enum34 conflicts for:
+tensorflow==1.13.2 -> tensorflow-base==1.13.2=py27h76b4ce7_0 -> enum34[version='>=1.1.6']
+matplotlib==3.1.2 -> pyqt -> enum34
+
+Package numpy conflicts for:
+matplotlib==3.1.2 -> numpy[version='>=1.14.6,<2.0a0']
+numpy==1.19.2
+tensorflow==1.13.2 -> tensorflow-base==1.13.2=py27h76b4ce7_0 -> numpy[version='>=1.16.1,<2.0a0']
+
+Package tzdata conflicts for:
+numpy==1.19.2 -> python[version='>=3.9,<3.10.0a0'] -> tzdata
+intervaltree==3.0.2 -> python -> tzdata
+
+Package openssl conflicts for:
+intervaltree==3.0.2 -> python -> openssl[version='1.0.*|>=1.0.2o,<1.0.3a|>=1.0.2p,<1.0.3a|>=1.1.1a,<1.1.2a|>=1.1.1d,<1.1.2a|>=1.1.1e,<1.1.2a|>=1.1.1f,<1.1.2a|>=1.1.1g,<1.1.2a|>=1.1.1h,<1.1.2a|>=1.1.1c,<1.1.2a|>=1.1.1b,<1.1.2a|>=1.0.2n,<1.0.3a|>=1.0.2m,<1.0.3a|>=1.0.2l,<1.0.3a']
+tensorflow==1.13.2 -> libcurl[version='>=7.64.1,<8.0a0'] -> openssl[version='>=1.1.1a,<1.1.2a|>=1.1.1f,<1.1.2a|>=1.1.1g,<1.1.2a|>=1.1.1h,<1.1.2a|>=1.1.1d,<1.1.2a|>=1.1.1c,<1.1.2a|>=1.1.1b,<1.1.2a']
+matplotlib==3.1.2 -> python[version='>=3.8,<3.9.0a0'] -> openssl[version='1.0.*|>=1.0.2o,<1.0.3a|>=1.0.2p,<1.0.3a|>=1.1.1a,<1.1.2a|>=1.1.1d,<1.1.2a|>=1.1.1e,<1.1.2a|>=1.1.1f,<1.1.2a|>=1.1.1g,<1.1.2a|>=1.1.1h,<1.1.2a|>=1.1.1c,<1.1.2a|>=1.1.1b,<1.1.2a|>=1.0.2n,<1.0.3a|>=1.0.2m,<1.0.3a|>=1.0.2l,<1.0.3a']
+numpy==1.19.2 -> pypy3.6[version='>=7.3.2'] -> openssl[version='1.0.*|>=1.0.2o,<1.0.3a|>=1.0.2p,<1.0.3a|>=1.1.1a,<1.1.2a|>=1.1.1d,<1.1.2a|>=1.1.1f,<1.1.2a|>=1.1.1g,<1.1.2a|>=1.1.1h,<1.1.2a|>=1.1.1e,<1.1.2a|>=1.1.1c,<1.1.2a|>=1.0.2n,<1.0.3a|>=1.0.2m,<1.0.3a|>=1.0.2l,<1.0.3a|>=1.1.1b,<1.1.2a']
+pysam==0.15.3 -> curl -> openssl[version='1.0.*|>=1.0.2o,<1.0.3a|>=1.0.2p,<1.0.3a|>=1.0.2m,<1.0.3a|>=1.1.1a,<1.1.2a|>=1.1.1d,<1.1.2a|>=1.1.1c,<1.1.2a|>=1.1.1b,<1.1.2a|>=1.0.2n,<1.0.3a|>=1.0.2l,<1.0.3a|>=1.1.1h,<1.1.2a|>=1.1.1g,<1.1.2a|>=1.1.1f,<1.1.2a|>=1.1.1e,<1.1.2a|>=1.0.2r,<1.0.3a']
+
+Package xz conflicts for:
+blosc==1.20.1 -> zstd[version='>=1.4.5,<1.4.6.0a0'] -> xz[version='>=5.2.5,<5.3.0a0|>=5.2.5,<6.0a0']
+pysam==0.15.3 -> xz[version='>=5.2.4,<5.3.0a0']
+numpy==1.19.2 -> pypy3.6[version='>=7.3.2'] -> xz[version='5.2.*|>=5.2.3,<5.3.0a0|>=5.2.4,<5.3.0a0|>=5.2.5,<5.3.0a0|>=5.2.5,<6.0a0|>=5.2.4,<6.0a0|>=5.2.3,<6.0a0']
+matplotlib==3.1.2 -> python[version='>=3.8,<3.9.0a0'] -> xz[version='5.2.*|>=5.2.3,<5.3.0a0|>=5.2.4,<5.3.0a0|>=5.2.5,<5.3.0a0|>=5.2.5,<6.0a0|>=5.2.4,<6.0a0|>=5.2.3,<6.0a0']
+intervaltree==3.0.2 -> python -> xz[version='5.0.*|5.2.*|>=5.2.3,<5.3.0a0|>=5.2.4,<5.3.0a0|>=5.2.5,<5.3.0a0|>=5.2.5,<6.0a0|>=5.2.4,<6.0a0|>=5.2.3,<6.0a0']
+pysam==0.15.3 -> python[version='>=3.6,<3.7.0a0'] -> xz[version='5.2.*|>=5.2.3,<5.3.0a0|>=5.2.5,<5.3.0a0|>=5.2.5,<6.0a0|>=5.2.4,<6.0a0|>=5.2.3,<6.0a0']
+
+Package libcurl conflicts for:
+tensorflow==1.13.2 -> libcurl[version='>=7.64.1,<8.0a0']
+pysam==0.15.3 -> curl -> libcurl[version='7.57.0|7.58.0|7.59.0|7.60.0|7.61.0|7.61.1|7.61.1|7.61.1|7.62.0|7.62.0|7.63.0|7.63.0|7.64.0|7.64.0|7.64.0|7.64.0|7.64.1|7.64.1|7.65.2|7.65.3|7.68.0|7.68.0|7.69.1|7.71.0|7.71.1|7.71.1|7.71.0|7.69.1|7.68.0|7.67.0|7.65.3|7.65.2|7.64.1|7.64.0|7.63.0|7.63.0|7.62.0',build='h1ad7b7a_0|h1ad7b7a_0|h20c2e04_0|h20c2e04_0|h20c2e04_0|h20c2e04_1000|h20c2e04_2|h20c2e04_0|h20c2e04_0|h20c2e04_0|h20c2e04_0|h20c2e04_0|h01ee5af_1002|h01ee5af_1000|h01ee5af_0|hda55be3_4|hda55be3_0|hf7181ac_1|hda55be3_0|hda55be3_0|hda55be3_0|hf7181ac_0|hcdd3856_0|hcdd3856_0|hcdd3856_3|hcdd3856_5|hcdd3856_8|hcdd3856_6|hcdd3856_4|hcdd3856_2|hcdd3856_1|hf7181ac_1|hf7181ac_5|h541490c_2|hbdb9355_0|h01ee5af_1000|hbdb9355_0|hbdb9355_2|h20c2e04_1|h20c2e04_0|h20c2e04_0|h1ad7b7a_0|h1ad7b7a_0|h1ad7b7a_0']
+
+Package ca-certificates conflicts for:
+pysam==0.15.3 -> python[version='>=2.7,<2.8.0a0'] -> ca-certificates
+intervaltree==3.0.2 -> python -> ca-certificates
+
+Package tk conflicts for:
+numpy==1.19.2 -> pypy3.6[version='>=7.3.2'] -> tk[version='8.5.*|8.6.*|>=8.6.10,<8.7.0a0|>=8.6.9,<8.7.0a0|>=8.6.8,<8.7.0a0|>=8.6.7,<8.7.0a0']
+matplotlib==3.1.2 -> tk[version='8.6.*|>=8.6.8,<8.7.0a0']
+matplotlib==3.1.2 -> matplotlib-base==3.1.2=py38h250f245_1 -> tk[version='8.5.*|>=8.6.10,<8.7.0a0|>=8.6.9,<8.7.0a0|>=8.6.7,<8.7.0a0']
+pysam==0.15.3 -> python[version='>=2.7,<2.8.0a0'] -> tk[version='8.5.*|8.6.*|>=8.6.10,<8.7.0a0|>=8.6.9,<8.7.0a0|>=8.6.8,<8.7.0a0|>=8.6.7,<8.7.0a0']
+intervaltree==3.0.2 -> python -> tk[version='8.5.*|8.6.*|>=8.6.10,<8.7.0a0|>=8.6.9,<8.7.0a0|>=8.6.8,<8.7.0a0|>=8.6.7,<8.7.0a0']
+
+Package libgcc-ng conflicts for:
+matplotlib==3.1.2 -> pyqt -> libgcc-ng[version='>=4.9|>=7.5.0|>=7.2.0|>=9.3.0']
+matplotlib==3.1.2 -> libgcc-ng[version='>=7.3.0']
+
+Package python conflicts for:
+matplotlib==3.1.2 -> pyqt -> python[version='2.7.*|3.5.*|3.6.*|>=2.7,<2.8.0a0|>=3.9,<3.10.0a0|>=3.5,<3.6.0a0|3.4.*']
+matplotlib==3.1.2 -> python[version='>=3.6,<3.7.0a0|>=3.7,<3.8.0a0|>=3.8,<3.9.0a0']
+
+Package pypy3.6 conflicts for:
+numpy==1.19.2 -> python[version='>=3.6,<3.7.0a0'] -> pypy3.6[version='7.3.*|7.3.0.*|7.3.1.*|7.3.2.*']
+numpy==1.19.2 -> pypy3.6[version='>=7.3.2']
+
+
+  File "/usr/lib/python3/dist-packages/snakemake/deployment/conda.py", line 312, in create

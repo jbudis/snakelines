@@ -1,0 +1,53 @@
+Multiple include of /home/adog/snakelines/rules/mapping/index/samtools.snake ignored
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 1 (use --cores to define parallelism)
+Rules claiming more threads will be scaled down.
+Job counts:
+	count	jobs
+	2	clair__variant_call_mapped_reads
+	1	pipeline
+	3
+
+[Sun Nov 29 15:07:09 2020]
+rule clair__variant_call_mapped_reads:
+    input: mapping/sars_cov_2/original/example_1_sorted.bam, reference/sars_cov_2/sars_cov_2.fa, reference/sars_cov_2/sars_cov_2.fa.fai
+    output: variant/sars_cov_2/original/example_1/
+    log: variant/sars_cov_2/original/log/example_1.log, variant/sars_cov_2/original/log/example_1.err
+    jobid: 9
+    reason: Missing output files: variant/sars_cov_2/original/example_1/
+    wildcards: reference=sars_cov_2, map_type=original, sample=example_1
+
+
+        python3 $CLAIR callVarBamParallel             --chkpnt_fn ~/Clair/models/ont/model/model             --ref_fn reference/sars_cov_2/sars_cov_2.fa             --bam_fn mapping/sars_cov_2/original/example_1_sorted.bam             --includingAllContigs             --output_prefix variant/sars_cov_2/original/example_1/var > command.sh
+
+        cat command.sh | parallel -j1 --will-cite
+
+        for i in variant/sars_cov_2/original/example_1/*.vcf
+        do
+            if ! [ -z "$(tail -c 1 "$i")" ]; then echo "$i"; fi
+        done | grep -f - command.sh | sh
+        
+[Sun Nov 29 15:07:10 2020]
+Error in rule clair__variant_call_mapped_reads:
+    jobid: 9
+    output: variant/sars_cov_2/original/example_1/
+    log: variant/sars_cov_2/original/log/example_1.log, variant/sars_cov_2/original/log/example_1.err (check log file(s) for error message)
+    shell:
+        
+        python3 $CLAIR callVarBamParallel             --chkpnt_fn ~/Clair/models/ont/model/model             --ref_fn reference/sars_cov_2/sars_cov_2.fa             --bam_fn mapping/sars_cov_2/original/example_1_sorted.bam             --includingAllContigs             --output_prefix variant/sars_cov_2/original/example_1/var > command.sh
+
+        cat command.sh | parallel -j1 --will-cite
+
+        for i in variant/sars_cov_2/original/example_1/*.vcf
+        do
+            if ! [ -z "$(tail -c 1 "$i")" ]; then echo "$i"; fi
+        done | grep -f - command.sh | sh
+        
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Removing output files of failed job clair__variant_call_mapped_reads since they might be corrupted:
+variant/sars_cov_2/original/example_1/
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look above for error message
+Complete log: /home/adog/snakelines/example/nanomap/.snakemake/log/2020-11-29T150707.927039.snakemake.log

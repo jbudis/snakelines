@@ -1,0 +1,137 @@
+Multiple include of /home/adog/snakelines/rules/mapping/index/samtools.snake ignored
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 1 (use --cores to define parallelism)
+Rules claiming more threads will be scaled down.
+Job counts:
+	count	jobs
+	2	clair__variant_call_mapped_reads
+	2	minimap2__map_reads_to_reference
+	1	pipeline
+	2	qualimap__mapping_quality_report_across_reference
+	1	qualimap__summarize_quality_reports
+	2	samtools__bam_index
+	2	samtools__convert_sam_to_bam
+	4	samtools__sort_bam_by_position
+	16
+
+[Wed Nov 25 19:05:20 2020]
+rule minimap2__map_reads_to_reference:
+    input: reads/original/example_1.fastq, reference/sars_cov_2/sars_cov_2.fa
+    output: mapping/sars_cov_2/original/example_1.sam
+    log: mapping/sars_cov_2/sorted/log/example_1.log, mapping/sars_cov_2/sorted/log/example_1.err
+    jobid: 4
+    reason: Missing output files: mapping/sars_cov_2/original/example_1.sam
+    wildcards: reference=sars_cov_2, sample=example_1
+
+
+            minimap2                 -ax map-ont                 reference/sars_cov_2/sars_cov_2.fa                 reads/original/example_1.fastq                 > mapping/sars_cov_2/original/example_1.sam
+        
+[Wed Nov 25 19:05:20 2020]
+Finished job 4.
+1 of 16 steps (6%) done
+
+[Wed Nov 25 19:05:20 2020]
+rule samtools__convert_sam_to_bam:
+    input: mapping/sars_cov_2/original/example_1.sam
+    output: mapping/sars_cov_2/original/example_1.bam
+    jobid: 15
+    reason: Missing output files: mapping/sars_cov_2/original/example_1.bam; Input files updated by another job: mapping/sars_cov_2/original/example_1.sam
+    wildcards: path=mapping/sars_cov_2/original, sample=example_1
+
+
+        samtools view -S -b mapping/sars_cov_2/original/example_1.sam > mapping/sars_cov_2/original/example_1.bam
+        
+[Wed Nov 25 19:05:20 2020]
+Finished job 15.
+2 of 16 steps (12%) done
+
+[Wed Nov 25 19:05:20 2020]
+rule minimap2__map_reads_to_reference:
+    input: reads/original/example_2.fastq, reference/sars_cov_2/sars_cov_2.fa
+    output: mapping/sars_cov_2/original/example_2.sam
+    log: mapping/sars_cov_2/sorted/log/example_2.log, mapping/sars_cov_2/sorted/log/example_2.err
+    jobid: 5
+    reason: Missing output files: mapping/sars_cov_2/original/example_2.sam
+    wildcards: reference=sars_cov_2, sample=example_2
+
+
+            minimap2                 -ax map-ont                 reference/sars_cov_2/sars_cov_2.fa                 reads/original/example_2.fastq                 > mapping/sars_cov_2/original/example_2.sam
+        
+[Wed Nov 25 19:05:20 2020]
+Finished job 5.
+3 of 16 steps (19%) done
+
+[Wed Nov 25 19:05:20 2020]
+rule samtools__convert_sam_to_bam:
+    input: mapping/sars_cov_2/original/example_2.sam
+    output: mapping/sars_cov_2/original/example_2.bam
+    jobid: 17
+    reason: Missing output files: mapping/sars_cov_2/original/example_2.bam; Input files updated by another job: mapping/sars_cov_2/original/example_2.sam
+    wildcards: path=mapping/sars_cov_2/original, sample=example_2
+
+
+        samtools view -S -b mapping/sars_cov_2/original/example_2.sam > mapping/sars_cov_2/original/example_2.bam
+        
+[Wed Nov 25 19:05:20 2020]
+Finished job 17.
+4 of 16 steps (25%) done
+
+[Wed Nov 25 19:05:20 2020]
+rule samtools__sort_bam_by_position:
+    input: mapping/sars_cov_2/original/example_1.bam
+    output: mapping/sars_cov_2/original/example_1_sorted.bam
+    jobid: 11
+    reason: Missing output files: mapping/sars_cov_2/original/example_1_sorted.bam; Input files updated by another job: mapping/sars_cov_2/original/example_1.bam
+    wildcards: path=mapping/sars_cov_2/original, sample=example_1
+
+
+        samtools sort mapping/sars_cov_2/original/example_1.bam > mapping/sars_cov_2/original/example_1_sorted.bam
+        
+[Wed Nov 25 19:05:20 2020]
+Finished job 11.
+5 of 16 steps (31%) done
+
+[Wed Nov 25 19:05:20 2020]
+rule clair__variant_call_mapped_reads:
+    input: mapping/sars_cov_2/original/example_1_sorted.bam, reference/sars_cov_2/sars_cov_2.fa, reference/sars_cov_2/sars_cov_2.fa.fai
+    output: variant/sars_cov_2/original/example_1/
+    log: variant/sars_cov_2/original/log/example_1.log, variant/sars_cov_2/original/log/example_1.err
+    jobid: 9
+    reason: Missing output files: variant/sars_cov_2/original/example_1/; Input files updated by another job: mapping/sars_cov_2/original/example_1_sorted.bam
+    wildcards: reference=sars_cov_2, map_type=original, sample=example_1
+
+
+        python3 $CLAIR callVarBamParallel             --chkpnt_fn ~/Clair/models/ont/model/model             --ref_fn reference/sars_cov_2/sars_cov_2.fa             --bam_fn mapping/sars_cov_2/original/example_1_sorted.bam             --threshold 0.2             --includingAllContigs             --output_prefix variant/sars_cov_2/original/example_1/var > command.sh
+
+        cat command.sh | parallel -j2 --will-cite
+
+        for i in variant/sars_cov_2/original/example_1/*.vcf
+        do
+            if ! [ -z "$(tail -c 1 "$i")" ]; then echo "$i"; fi
+        done | grep -f - command.sh | sh
+        
+[Wed Nov 25 19:05:49 2020]
+Error in rule clair__variant_call_mapped_reads:
+    jobid: 9
+    output: variant/sars_cov_2/original/example_1/
+    log: variant/sars_cov_2/original/log/example_1.log, variant/sars_cov_2/original/log/example_1.err (check log file(s) for error message)
+    shell:
+        
+        python3 $CLAIR callVarBamParallel             --chkpnt_fn ~/Clair/models/ont/model/model             --ref_fn reference/sars_cov_2/sars_cov_2.fa             --bam_fn mapping/sars_cov_2/original/example_1_sorted.bam             --threshold 0.2             --includingAllContigs             --output_prefix variant/sars_cov_2/original/example_1/var > command.sh
+
+        cat command.sh | parallel -j2 --will-cite
+
+        for i in variant/sars_cov_2/original/example_1/*.vcf
+        do
+            if ! [ -z "$(tail -c 1 "$i")" ]; then echo "$i"; fi
+        done | grep -f - command.sh | sh
+        
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Removing output files of failed job clair__variant_call_mapped_reads since they might be corrupted:
+variant/sars_cov_2/original/example_1/
+Skipped removing non-empty directory variant/sars_cov_2/original/example_1/
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look above for error message
+Complete log: /home/adog/snakelines/example/nanomap/.snakemake/log/2020-11-25T190520.154205.snakemake.log

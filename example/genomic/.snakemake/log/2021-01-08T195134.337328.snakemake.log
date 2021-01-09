@@ -1,0 +1,7 @@
+Multiple include of /home/adog/snakelines/rules/illumina/mapping/mapper/indices/bowtie2_index.snake ignored
+Multiple include of /home/adog/snakelines/rules/shared/mapping/index/samtools.snake ignored
+WorkflowError in line 1 of /home/adog/snakelines/rules/shared/mapping/report/quality_report/qualimap.snake:
+Failed to open /home/adog/snakelines/rules/mapping/index/samtools.snake.
+  File "/home/adog/snakelines/snakelines.snake", line 24, in <module>
+  File "/home/adog/snakelines/src/common.snake", line 66, in <module>
+  File "/home/adog/snakelines/rules/shared/mapping/report/quality_report/qualimap.snake", line 1, in <module>

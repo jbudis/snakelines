@@ -1,0 +1,61 @@
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 10
+Rules claiming more threads will be scaled down.
+Job counts:
+	count	jobs
+	2	clair__variant_call_mapped_reads
+	1	pipeline
+	3
+
+[Mon Nov 30 10:12:43 2020]
+rule clair__variant_call_mapped_reads:
+    input: mapping/sars_cov_2/original/example_1_sorted.bam, reference/sars_cov_2/sars_cov_2.fa, reference/sars_cov_2/sars_cov_2.fa.fai
+    output: variant/sars_cov_2/original/example_1/
+    log: variant/sars_cov_2/original/log/example_1.log, variant/sars_cov_2/original/log/example_1.err
+    jobid: 6
+    reason: Updated input files: mapping/sars_cov_2/original/example_1_sorted.bam
+    wildcards: reference=sars_cov_2, map_type=original, sample=example_1
+    threads: 10
+
+
+        python3 $CLAIR callVarBamParallel             --chkpnt_fn ~/Clair/models/ont/model/model             --ref_fn reference/sars_cov_2/sars_cov_2.fa             --bam_fn mapping/sars_cov_2/original/example_1_sorted.bam             --includingAllContigs             --output_prefix variant/sars_cov_2/original/example_1/var > command.sh
+
+        cat command.sh | parallel -j10 --will-cite
+
+        for i in variant/sars_cov_2/original/example_1/*.vcf
+        do
+            if ! [ -z "$(tail -c 1 "$i")" ]; then echo "$i"; fi
+        done | grep -f - command.sh | sh
+        
+        vcfcat variant/sars_cov_2/original/example_1//*.vcf | bcftools sort | bgziptabix variant/sars_cov_2/original/example_1//all.vcf
+        
+Skipped removing non-empty directory variant/sars_cov_2/original/example_1/
+Activating conda environment: /home/adog/snakelines/example/nanomap/1d042689
+[Mon Nov 30 10:13:12 2020]
+Error in rule clair__variant_call_mapped_reads:
+    jobid: 6
+    output: variant/sars_cov_2/original/example_1/
+    log: variant/sars_cov_2/original/log/example_1.log, variant/sars_cov_2/original/log/example_1.err (check log file(s) for error message)
+    conda-env: /home/adog/snakelines/example/nanomap/1d042689
+    shell:
+        
+        python3 $CLAIR callVarBamParallel             --chkpnt_fn ~/Clair/models/ont/model/model             --ref_fn reference/sars_cov_2/sars_cov_2.fa             --bam_fn mapping/sars_cov_2/original/example_1_sorted.bam             --includingAllContigs             --output_prefix variant/sars_cov_2/original/example_1/var > command.sh
+
+        cat command.sh | parallel -j10 --will-cite
+
+        for i in variant/sars_cov_2/original/example_1/*.vcf
+        do
+            if ! [ -z "$(tail -c 1 "$i")" ]; then echo "$i"; fi
+        done | grep -f - command.sh | sh
+        
+        vcfcat variant/sars_cov_2/original/example_1//*.vcf | bcftools sort | bgziptabix variant/sars_cov_2/original/example_1//all.vcf
+        
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Removing output files of failed job clair__variant_call_mapped_reads since they might be corrupted:
+variant/sars_cov_2/original/example_1/
+Skipped removing non-empty directory variant/sars_cov_2/original/example_1/
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look above for error message
+Complete log: /home/adog/snakelines/example/nanomap/.snakemake/log/2020-11-30T101243.742467.snakemake.log

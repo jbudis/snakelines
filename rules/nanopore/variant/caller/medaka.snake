@@ -1,0 +1,29 @@
+include: config['snakelines_dir'] + '/rules/nanopore/mapping/index/samtools.snake'
+
+rule medaka__variant_call_mapped_reads:
+    """
+    Identify small variants from reads mapped to a reference.
+    :input ref: Reference genomic sequences in fasta format
+    :input bam: Unordered mapped reads in bam format
+    :output bam: Ordered mapped reads according to their location on reference genome
+    """
+    input:
+        bam = 'mapping/{reference}/{map_type}/{sample}_sorted.bam',
+        reffasta = 'reference/{reference}/{reference}.fa',
+        reffaidx = 'reference/{reference}/{reference}.fa.fai'
+    output:
+        vcf = 'variant/{reference}/{map_type}/{sample}.vcf',
+    log:
+        out = 'variant/{reference}/{map_type}/log/{sample}.log',
+        err = 'variant/{reference}/{map_type}/log/{sample}.err'
+    threads:
+        int(config['threads'])
+    conda:
+        config['snakelines_dir'] + '/enviroments/medaka.yaml'
+    shell:
+        """
+        medaka_variant -f {input.reffasta} -i {input.bam}
+        vcfcat medaka_variant/round_1.vcf | bcftools sort > {output.vcf}
+        rm -r medaka_variant
+        """
+

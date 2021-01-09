@@ -1,0 +1,4 @@
+KeyError in line 24 of /home/adog/snakelines/src/common.snake:
+'platform'
+  File "/home/adog/snakelines/snakelines.snake", line 28, in <module>
+  File "/home/adog/snakelines/src/common.snake", line 24, in <module>

@@ -1,0 +1,41 @@
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 1 (use --cores to define parallelism)
+Rules claiming more threads will be scaled down.
+Job counts:
+	count	jobs
+	1	pipeline
+	2	qualimap__mapping_quality_report_across_reference
+	1	qualimap__summarize_quality_reports
+	1	samtools__bam_index
+	1	samtools__sort_bam_by_position
+	6
+
+[Tue Nov 17 12:28:46 2020]
+rule qualimap__mapping_quality_report_across_reference:
+    input: mapping/sars_cov_2/original/example_1.bam, mapping/sars_cov_2/original/example_1.bam.bai
+    output: mapping/sars_cov_2/original/stats-wgs/samples/example_1/qualimapReport.html, mapping/sars_cov_2/original/stats-wgs/samples/example_1/report.pdf, mapping/sars_cov_2/original/stats-wgs/samples/example_1/genome_results.txt
+    log: mapping/sars_cov_2/original/stats-wgs/samples/example_1/log/analysis.log, mapping/sars_cov_2/original/stats-wgs/samples/example_1/log/analysis.err
+    jobid: 6
+    reason: Missing output files: mapping/sars_cov_2/original/stats-wgs/samples/example_1/report.pdf
+    wildcards: bamdir=mapping/sars_cov_2/original, sample=example_1
+
+
+        unset DISPLAY
+        qualimap bamqc             --java-mem-size=1G             -bam mapping/sars_cov_2/original/example_1.bam             --paint-chromosome-limits             -outdir mapping/sars_cov_2/original/stats-wgs/samples/example_1             -outformat PDF:HTML             -nt 1         >  mapping/sars_cov_2/original/stats-wgs/samples/example_1/log/analysis.log         2> mapping/sars_cov_2/original/stats-wgs/samples/example_1/log/analysis.err
+        
+[Tue Nov 17 12:28:47 2020]
+Error in rule qualimap__mapping_quality_report_across_reference:
+    jobid: 6
+    output: mapping/sars_cov_2/original/stats-wgs/samples/example_1/qualimapReport.html, mapping/sars_cov_2/original/stats-wgs/samples/example_1/report.pdf, mapping/sars_cov_2/original/stats-wgs/samples/example_1/genome_results.txt
+    log: mapping/sars_cov_2/original/stats-wgs/samples/example_1/log/analysis.log, mapping/sars_cov_2/original/stats-wgs/samples/example_1/log/analysis.err (check log file(s) for error message)
+    shell:
+        
+        unset DISPLAY
+        qualimap bamqc             --java-mem-size=1G             -bam mapping/sars_cov_2/original/example_1.bam             --paint-chromosome-limits             -outdir mapping/sars_cov_2/original/stats-wgs/samples/example_1             -outformat PDF:HTML             -nt 1         >  mapping/sars_cov_2/original/stats-wgs/samples/example_1/log/analysis.log         2> mapping/sars_cov_2/original/stats-wgs/samples/example_1/log/analysis.err
+        
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look above for error message
+Complete log: /home/adog/snakelines/example/nanomap/.snakemake/log/2020-11-17T122845.279845.snakemake.log

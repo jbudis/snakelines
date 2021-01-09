@@ -1,0 +1,157 @@
+Multiple include of /home/adog/snakelines/rules/nanopore/mapping/index/samtools.snake ignored
+Building DAG of jobs...
+Creating conda environment /home/adog/snakelines/enviroments/samtools.yaml...
+Downloading and installing remote packages.
+Environment for ../../enviroments/samtools.yaml created (location: aef0721a)
+Using shell: /bin/bash
+Provided cores: 3
+Rules claiming more threads will be scaled down.
+Job counts:
+	count	jobs
+	2	minimap2__map_reads_to_reference
+	1	pipeline
+	2	samtools__bam_index
+	2	samtools__convert_sam_to_bam
+	2	samtools__sort_bam_by_position
+	9
+
+[Thu Jan  7 13:31:38 2021]
+rule minimap2__map_reads_to_reference:
+    input: reads/original/example_1.fastq, reference/sars_cov_2/sars_cov_2.fa
+    output: mapping/sars_cov_2/original/example_1.sam
+    log: mapping/sars_cov_2/sorted/log/example_1.log, mapping/sars_cov_2/sorted/log/example_1.err
+    jobid: 5
+    reason: Missing output files: mapping/sars_cov_2/original/example_1.sam
+    wildcards: reference=sars_cov_2, sample=example_1
+    threads: 3
+
+
+            minimap2                 -ax map-ont                 reference/sars_cov_2/sars_cov_2.fa                 reads/original/example_1.fastq                 -t 3                 > mapping/sars_cov_2/original/example_1.sam
+        
+[Thu Jan  7 13:31:38 2021]
+Finished job 5.
+1 of 9 steps (11%) done
+
+[Thu Jan  7 13:31:38 2021]
+rule samtools__convert_sam_to_bam:
+    input: mapping/sars_cov_2/original/example_1.sam
+    output: mapping/sars_cov_2/original/example_1.bam
+    jobid: 1
+    reason: Missing output files: mapping/sars_cov_2/original/example_1.bam; Input files updated by another job: mapping/sars_cov_2/original/example_1.sam
+    wildcards: path=mapping/sars_cov_2/original, sample=example_1
+
+
+        samtools view -S -b mapping/sars_cov_2/original/example_1.sam > mapping/sars_cov_2/original/example_1.bam
+        
+Activating conda environment: /home/adog/snakelines/example/nanomap/aef0721a
+[Thu Jan  7 13:31:42 2021]
+Finished job 1.
+2 of 9 steps (22%) done
+
+[Thu Jan  7 13:31:42 2021]
+rule minimap2__map_reads_to_reference:
+    input: reads/original/example_2.fastq, reference/sars_cov_2/sars_cov_2.fa
+    output: mapping/sars_cov_2/original/example_2.sam
+    log: mapping/sars_cov_2/sorted/log/example_2.log, mapping/sars_cov_2/sorted/log/example_2.err
+    jobid: 6
+    reason: Missing output files: mapping/sars_cov_2/original/example_2.sam
+    wildcards: reference=sars_cov_2, sample=example_2
+    threads: 3
+
+
+            minimap2                 -ax map-ont                 reference/sars_cov_2/sars_cov_2.fa                 reads/original/example_2.fastq                 -t 3                 > mapping/sars_cov_2/original/example_2.sam
+        
+[Thu Jan  7 13:31:43 2021]
+Finished job 6.
+3 of 9 steps (33%) done
+
+[Thu Jan  7 13:31:43 2021]
+rule samtools__convert_sam_to_bam:
+    input: mapping/sars_cov_2/original/example_2.sam
+    output: mapping/sars_cov_2/original/example_2.bam
+    jobid: 2
+    reason: Missing output files: mapping/sars_cov_2/original/example_2.bam; Input files updated by another job: mapping/sars_cov_2/original/example_2.sam
+    wildcards: path=mapping/sars_cov_2/original, sample=example_2
+
+
+        samtools view -S -b mapping/sars_cov_2/original/example_2.sam > mapping/sars_cov_2/original/example_2.bam
+        
+
+[Thu Jan  7 13:31:43 2021]
+rule samtools__sort_bam_by_position:
+    input: mapping/sars_cov_2/original/example_1.bam
+    output: mapping/sars_cov_2/original/example_1_sorted.bam
+    jobid: 7
+    reason: Missing output files: mapping/sars_cov_2/original/example_1_sorted.bam; Input files updated by another job: mapping/sars_cov_2/original/example_1.bam
+    wildcards: path=mapping/sars_cov_2/original, sample=example_1
+
+
+        samtools sort mapping/sars_cov_2/original/example_1.bam > mapping/sars_cov_2/original/example_1_sorted.bam
+        
+Activating conda environment: /home/adog/snakelines/example/nanomap/aef0721a
+Activating conda environment: /home/adog/snakelines/example/nanomap/aef0721a
+[Thu Jan  7 13:31:46 2021]
+Finished job 7.
+4 of 9 steps (44%) done
+
+[Thu Jan  7 13:31:46 2021]
+rule samtools__bam_index:
+    input: mapping/sars_cov_2/original/example_1_sorted.bam
+    output: mapping/sars_cov_2/original/example_1.bam.bai
+    jobid: 3
+    reason: Missing output files: mapping/sars_cov_2/original/example_1.bam.bai; Input files updated by another job: mapping/sars_cov_2/original/example_1_sorted.bam
+    wildcards: path=mapping/sars_cov_2/original, sample=example_1
+
+
+        samtools index mapping/sars_cov_2/original/example_1_sorted.bam > mapping/sars_cov_2/original/example_1.bam.bai
+        
+[Thu Jan  7 13:31:46 2021]
+Finished job 2.
+5 of 9 steps (56%) done
+
+[Thu Jan  7 13:31:46 2021]
+rule samtools__sort_bam_by_position:
+    input: mapping/sars_cov_2/original/example_2.bam
+    output: mapping/sars_cov_2/original/example_2_sorted.bam
+    jobid: 8
+    reason: Missing output files: mapping/sars_cov_2/original/example_2_sorted.bam; Input files updated by another job: mapping/sars_cov_2/original/example_2.bam
+    wildcards: path=mapping/sars_cov_2/original, sample=example_2
+
+
+        samtools sort mapping/sars_cov_2/original/example_2.bam > mapping/sars_cov_2/original/example_2_sorted.bam
+        
+Activating conda environment: /home/adog/snakelines/example/nanomap/aef0721a
+Activating conda environment: /home/adog/snakelines/example/nanomap/aef0721a
+[Thu Jan  7 13:31:50 2021]
+Finished job 3.
+6 of 9 steps (67%) done
+[Thu Jan  7 13:31:50 2021]
+Finished job 8.
+7 of 9 steps (78%) done
+
+[Thu Jan  7 13:31:50 2021]
+rule samtools__bam_index:
+    input: mapping/sars_cov_2/original/example_2_sorted.bam
+    output: mapping/sars_cov_2/original/example_2.bam.bai
+    jobid: 4
+    reason: Missing output files: mapping/sars_cov_2/original/example_2.bam.bai; Input files updated by another job: mapping/sars_cov_2/original/example_2_sorted.bam
+    wildcards: path=mapping/sars_cov_2/original, sample=example_2
+
+
+        samtools index mapping/sars_cov_2/original/example_2_sorted.bam > mapping/sars_cov_2/original/example_2.bam.bai
+        
+Activating conda environment: /home/adog/snakelines/example/nanomap/aef0721a
+[Thu Jan  7 13:31:53 2021]
+Finished job 4.
+8 of 9 steps (89%) done
+
+[Thu Jan  7 13:31:53 2021]
+localrule pipeline:
+    input: mapping/sars_cov_2/original/example_1.bam, mapping/sars_cov_2/original/example_2.bam, mapping/sars_cov_2/original/example_1.bam.bai, mapping/sars_cov_2/original/example_2.bam.bai
+    jobid: 0
+    reason: Input files updated by another job: mapping/sars_cov_2/original/example_2.bam.bai, mapping/sars_cov_2/original/example_2.bam, mapping/sars_cov_2/original/example_1.bam, mapping/sars_cov_2/original/example_1.bam.bai
+
+[Thu Jan  7 13:31:53 2021]
+Finished job 0.
+9 of 9 steps (100%) done
+Complete log: /home/adog/snakelines/example/nanomap/.snakemake/log/2021-01-07T132928.261544.snakemake.log

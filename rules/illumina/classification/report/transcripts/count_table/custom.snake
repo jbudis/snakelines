@@ -1,0 +1,35 @@
+def individual_krn_files(wildcards):
+    """
+    Return list of krona files that should be generated for the reference defined in wildcards
+    :param wildcards: wildcards that are automatically added in the input section of a rule
+    """
+    return expand('{analysis_dir}/{reference}/report/krona/individual/{sample}.krn',
+                    analysis_dir=wildcards.analysis_dir,
+                    reference=wildcards.reference,
+                    sample=pipeline.samples_for(wildcards.reference))
+
+
+rule custom__summarize_transcriptomic_counts_into_tsv_table:
+    """
+    Take transcriptomic counts from several samples and merge them together into a single table.
+    :input krns: Count files for each analysed sample in standardised format suitable for Krona graph generation
+    :output summary_xlsx: Aggregated counts for each transcript in Excel format
+    :output summary_tsv: Aggregated counts for each transcript in tabular format
+    """
+    input:
+        krns  = individual_krn_files
+    output:
+        summary_xlsx = '{analysis_dir}/{reference}/report/tsv/summary.xlsx',
+        summary_tsv  = '{analysis_dir}/{reference}/report/tsv/summary.tsv'
+    run:
+        # Load stored transcriptomic counts
+        def load_counts(krn):
+            sid = os.path.splitext(os.path.basename(krn))[0]
+            counts = pd.read_csv(krn, sep='\t', index_col=1, header=None)
+            counts.columns = [[sid]]
+            return counts[sid]
+
+        counts = pd.DataFrame([load_counts(krn) for krn in input.krns]).transpose()
+        counts.index.name = 'name'
+        counts.to_csv(output.summary_tsv, sep='\t')
+        counts.to_excel(output.summary_xlsx)

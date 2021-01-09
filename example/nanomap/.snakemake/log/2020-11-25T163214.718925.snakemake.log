@@ -1,0 +1,15 @@
+KeyboardInterrupt in line 3 of /home/adog/snakelines/rules/nanopore/mapping/report/quality_report/qualimap.snake.
+  File "/home/adog/snakelines/snakelines.snake", line 22, in <module>
+  File "/home/adog/snakelines/src/common.snake", line 61, in <module>
+  File "/home/adog/snakelines/rules/nanopore/mapping/report/quality_report/qualimap.snake", line 3, in <module>
+  File "/usr/lib/python3/dist-packages/pandas/__init__.py", line 30, in <module>
+  File "/usr/lib/python3/dist-packages/pandas/_libs/__init__.py", line 3, in <module>
+  File "/usr/lib/python3/dist-packages/pandas/_libs/tslibs/__init__.py", line 3, in <module>
+  File "pandas/_libs/tslibs/c_timestamp.pxd", line 7, in init pandas._libs.tslibs.conversion
+  File "pandas/_libs/tslibs/c_timestamp.pyx", line 1, in init pandas._libs.tslibs.c_timestamp
+  File "pandas/_libs/tslibs/tzconversion.pyx", line 1, in init pandas._libs.tslibs.tzconversion
+  File "pandas/_libs/tslibs/timedeltas.pyx", line 1, in init pandas._libs.tslibs.timedeltas
+  File "pandas/_libs/tslibs/offsets.pyx", line 1, in init pandas._libs.tslibs.offsets
+  File "<frozen importlib._bootstrap>", line 988, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 148, in __enter__
+  File "<frozen importlib._bootstrap>", line 176, in _get_module_lock

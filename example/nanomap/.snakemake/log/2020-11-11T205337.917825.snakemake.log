@@ -1,0 +1,23 @@
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 1 (use --cores to define parallelism)
+Rules claiming more threads will be scaled down.
+Job counts:
+	count	jobs
+	1	pipeline
+	2	qualimap__mapping_quality_report_across_reference
+	1	qualimap__summarize_quality_reports
+	2	samtools__bam_index
+	2	samtools__sort_bam_by_position
+	8
+
+[Wed Nov 11 20:53:39 2020]
+rule samtools__sort_bam_by_position:
+    input: mapping/sars_cov_2/original/example_1.bam
+    output: mapping/sars_cov_2/original/example_1_sorted.bam
+    jobid: 13
+    reason: Missing output files: mapping/sars_cov_2/original/example_1_sorted.bam
+    wildcards: path=mapping/sars_cov_2/original, sample=example_1
+
+RuleException in line 19 of /home/adog/snakelines/rules/mapping/index/samtools.snake:
+'InputFiles' object has no attribute 'sam'

@@ -1,4 +1,4 @@
 channels:
 - bioconda
 dependencies:
-- qualimap=2.2.2c
+- qualimap=2.2.2a

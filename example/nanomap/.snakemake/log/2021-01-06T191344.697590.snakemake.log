@@ -1,0 +1,46 @@
+Building DAG of jobs...
+Creating conda environment /home/adog/snakelines/enviroments/medaka.yaml...
+Downloading and installing remote packages.
+Environment for ../../enviroments/medaka.yaml created (location: 10f6d008)
+Using shell: /bin/bash
+Provided cores: 3
+Rules claiming more threads will be scaled down.
+Job counts:
+	count	jobs
+	2	medaka__variant_call_mapped_reads
+	1	pipeline
+	3
+
+[Wed Jan  6 19:14:11 2021]
+rule medaka__variant_call_mapped_reads:
+    input: mapping/sars_cov_2/original/example_1_sorted.bam, reference/sars_cov_2/sars_cov_2.fa, reference/sars_cov_2/sars_cov_2.fa.fai
+    output: variant/sars_cov_2/original/example_1.vcf
+    log: variant/sars_cov_2/original/log/example_1.log, variant/sars_cov_2/original/log/example_1.err
+    jobid: 3
+    reason: Missing output files: variant/sars_cov_2/original/example_1.vcf
+    wildcards: reference=sars_cov_2, map_type=original, sample=example_1
+    threads: 3
+
+
+        medaka_variant -f reference/sars_cov_2/sars_cov_2.fa -b mapping/sars_cov_2/original/example_1_sorted.bam
+
+
+        
+Activating conda environment: /home/adog/snakelines/example/nanomap/10f6d008
+[Wed Jan  6 19:14:14 2021]
+Error in rule medaka__variant_call_mapped_reads:
+    jobid: 3
+    output: variant/sars_cov_2/original/example_1.vcf
+    log: variant/sars_cov_2/original/log/example_1.log, variant/sars_cov_2/original/log/example_1.err (check log file(s) for error message)
+    conda-env: /home/adog/snakelines/example/nanomap/10f6d008
+    shell:
+        
+        medaka_variant -f reference/sars_cov_2/sars_cov_2.fa -b mapping/sars_cov_2/original/example_1_sorted.bam
+
+
+        
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look above for error message
+Complete log: /home/adog/snakelines/example/nanomap/.snakemake/log/2021-01-06T191344.697590.snakemake.log

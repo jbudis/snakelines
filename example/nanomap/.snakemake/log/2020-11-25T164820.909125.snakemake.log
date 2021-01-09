@@ -1,0 +1,23 @@
+KeyboardInterrupt in line 3 of /home/adog/snakelines/rules/nanopore/mapping/report/quality_report/qualimap.snake.
+  File "/home/adog/snakelines/snakelines.snake", line 22, in <module>
+  File "/home/adog/snakelines/src/common.snake", line 61, in <module>
+  File "/home/adog/snakelines/rules/nanopore/mapping/report/quality_report/qualimap.snake", line 3, in <module>
+  File "/usr/lib/python3/dist-packages/pandas/__init__.py", line 55, in <module>
+  File "/usr/lib/python3/dist-packages/pandas/core/api.py", line 24, in <module>
+  File "/usr/lib/python3/dist-packages/pandas/core/groupby/__init__.py", line 1, in <module>
+  File "/usr/lib/python3/dist-packages/pandas/core/groupby/generic.py", line 44, in <module>
+  File "/usr/lib/python3/dist-packages/pandas/core/frame.py", line 115, in <module>
+  File "/usr/lib/python3/dist-packages/pandas/core/series.py", line 84, in <module>
+  File "/usr/lib/python3/dist-packages/pandas/plotting/__init__.py", line 59, in <module>
+  File "/usr/lib/python3/dist-packages/pandas/plotting/_core.py", line 17, in <module>
+  File "/usr/lib/python3/dist-packages/pandas/plotting/_matplotlib/__init__.py", line 3, in <module>
+  File "/usr/lib/python3/dist-packages/pandas/plotting/_matplotlib/boxplot.py", line 14, in <module>
+  File "/usr/lib/python3/dist-packages/pandas/plotting/_matplotlib/core.py", line 33, in <module>
+  File "/usr/lib/python3/dist-packages/pandas/plotting/_matplotlib/style.py", line 4, in <module>
+  File "/home/adog/.local/lib/python3.8/site-packages/matplotlib/cm.py", line 28, in <module>
+  File "<frozen importlib._bootstrap>", line 991, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 975, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 671, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 779, in exec_module
+  File "<frozen importlib._bootstrap_external>", line 874, in get_code
+  File "<frozen importlib._bootstrap_external>", line 972, in get_data

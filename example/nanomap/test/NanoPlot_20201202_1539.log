@@ -1,0 +1,64 @@
+2020-12-02 15:39:49,595 NanoPlot 1.32.1 started with arguments Namespace(N50=False, alength=False, bam=None, barcoded=False, color='#4CB391', colormap='Greens', cram=None, downsample=None, dpi=100, drop_outliers=False, fasta=None, fastq=['reads/original/example_1.fastq'], fastq_minimal=None, fastq_rich=None, feather=None, font_scale=1, format='png', hide_stats=False, huge=False, listcolormaps=False, listcolors=False, loglength=False, maxlength=None, minlength=None, minqual=None, no_N50=False, no_supplementary=False, outdir='test', path='test/', percentqual=False, pickle=None, plots=['hex', 'dot'], prefix='', raw=False, readtype='1D', runtime_until=None, store=False, summary=None, threads=2, title=None, tsv_stats=False, ubam=None, verbose=False)
+2020-12-02 15:39:49,596 Python version is: 3.7.8 | packaged by conda-forge | (default, Nov 27 2020, 19:24:58)  [GCC 9.3.0]
+2020-12-02 15:39:49,598 NanoPlot:  valid output format png
+2020-12-02 15:39:49,648 Nanoget: Starting to collect statistics from plain fastq file.
+2020-12-02 15:39:49,832 Reduced DataFrame memory usage from 0.002288818359375Mb to 0.00133514404296875Mb
+2020-12-02 15:39:49,857 Nanoget: Gathered all metrics of 100 reads
+2020-12-02 15:39:49,894 Calculated statistics
+2020-12-02 15:39:49,896 Using sequenced read lengths for plotting.
+2020-12-02 15:39:49,901 NanoPlot:  Valid color #4CB391.
+2020-12-02 15:39:49,906 NanoPlot:  Valid colormap Greens.
+2020-12-02 15:39:49,909 NanoPlot:  Creating length plots for Read length.
+2020-12-02 15:39:49,910 NanoPlot:  Using 100 reads maximum of 3493bp.
+2020-12-02 15:39:53,888 Nanoplotter: orca not found, not creating static image of html. See https://github.com/plotly/orca
+2020-12-02 15:39:53,889 Image generation requires the psutil package.
+
+Install using pip:
+    $ pip install psutil
+
+Install using conda:
+    $ conda install psutil
+Traceback (most recent call last):
+  File "/home/adog/snakelines/example/nanomap/bedc66e1/lib/python3.7/site-packages/nanoplotter/plot.py", line 60, in save_static
+    pio.write_image(self.fig, self.path.replace('html', 'png'))
+  File "/home/adog/snakelines/example/nanomap/bedc66e1/lib/python3.7/site-packages/plotly/io/_kaleido.py", line 252, in write_image
+    engine=engine,
+  File "/home/adog/snakelines/example/nanomap/bedc66e1/lib/python3.7/site-packages/plotly/io/_kaleido.py", line 109, in to_image
+    validate=validate,
+  File "/home/adog/snakelines/example/nanomap/bedc66e1/lib/python3.7/site-packages/plotly/io/_orca.py", line 1535, in to_image
+    ensure_server()
+  File "/home/adog/snakelines/example/nanomap/bedc66e1/lib/python3.7/site-packages/plotly/io/_orca.py", line 1370, in ensure_server
+    """
+ValueError: Image generation requires the psutil package.
+
+Install using pip:
+    $ pip install psutil
+
+Install using conda:
+    $ conda install psutil
+
+2020-12-02 15:39:54,448 Created length plots
+2020-12-02 15:39:54,451 NanoPlot:  Creating Read lengths vs Average read quality plots using statistics from 100 reads.
+2020-12-02 15:39:54,834 'PolyCollection' object has no property 'stat_func'
+Traceback (most recent call last):
+  File "/home/adog/snakelines/example/nanomap/bedc66e1/lib/python3.7/site-packages/nanoplot/NanoPlot.py", line 101, in main
+    plots = make_plots(datadf, settings)
+  File "/home/adog/snakelines/example/nanomap/bedc66e1/lib/python3.7/site-packages/nanoplot/NanoPlot.py", line 169, in make_plots
+    plot_settings=plot_settings)
+  File "/home/adog/snakelines/example/nanomap/bedc66e1/lib/python3.7/site-packages/nanoplotter/nanoplotter_main.py", line 135, in scatter
+    height=10)
+  File "/home/adog/snakelines/example/nanomap/bedc66e1/lib/python3.7/site-packages/seaborn/_decorators.py", line 46, in inner_f
+    return f(**kwargs)
+  File "/home/adog/snakelines/example/nanomap/bedc66e1/lib/python3.7/site-packages/seaborn/axisgrid.py", line 2124, in jointplot
+    grid.plot_joint(plt.hexbin, **joint_kws)
+  File "/home/adog/snakelines/example/nanomap/bedc66e1/lib/python3.7/site-packages/seaborn/axisgrid.py", line 1694, in plot_joint
+    func(self.x, self.y, **kwargs)
+  File "/home/adog/snakelines/example/nanomap/bedc66e1/lib/python3.7/site-packages/matplotlib/pyplot.py", line 2673, in hexbin
+    **({"data": data} if data is not None else {}), **kwargs)
+  File "/home/adog/snakelines/example/nanomap/bedc66e1/lib/python3.7/site-packages/matplotlib/__init__.py", line 1447, in inner
+    return func(ax, *map(sanitize_sequence, args), **kwargs)
+  File "/home/adog/snakelines/example/nanomap/bedc66e1/lib/python3.7/site-packages/matplotlib/axes/_axes.py", line 4853, in hexbin
+    collection.update(kwargs)
+  File "/home/adog/snakelines/example/nanomap/bedc66e1/lib/python3.7/site-packages/matplotlib/artist.py", line 996, in update
+    raise AttributeError(f"{type(self).__name__!r} object "
+AttributeError: 'PolyCollection' object has no property 'stat_func'

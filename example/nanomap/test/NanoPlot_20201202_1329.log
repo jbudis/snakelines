@@ -1,0 +1,24 @@
+2020-12-02 13:29:28,419 NanoPlot 1.33.1 started with arguments Namespace(N50=False, alength=False, bam=None, barcoded=False, color='#4CB391', colormap='Greens', cram=None, downsample=None, dpi=100, drop_outliers=False, fasta=None, fastq=['../reads/original/example_*.fastq'], fastq_minimal=None, fastq_rich=None, feather=None, font_scale=1, format='png', hide_stats=False, huge=False, listcolormaps=False, listcolors=False, loglength=False, maxlength=None, minlength=None, minqual=None, no_N50=False, no_supplementary=False, outdir='test', path='test/', percentqual=False, pickle=None, plots=['hex', 'dot'], prefix='', raw=False, readtype='1D', runtime_until=None, store=False, summary=None, threads=2, title=None, tsv_stats=False, ubam=None, verbose=False)
+2020-12-02 13:29:28,419 Python version is: 3.8.5 (default, Jul 28 2020, 12:59:40)  [GCC 9.3.0]
+2020-12-02 13:29:28,421 NanoPlot:  valid output format png
+2020-12-02 13:29:28,449 Nanoget: Starting to collect statistics from plain fastq file.
+2020-12-02 13:29:28,452 Nanoget: File provided doesn't exist or the path is incorrect: ../reads/original/example_*.fastq
+2020-12-02 13:29:45,443 NanoPlot 1.33.1 started with arguments Namespace(N50=False, alength=False, bam=None, barcoded=False, color='#4CB391', colormap='Greens', cram=None, downsample=None, dpi=100, drop_outliers=False, fasta=None, fastq=['reads/original/example_1.fastq', 'reads/original/example_2.fastq'], fastq_minimal=None, fastq_rich=None, feather=None, font_scale=1, format='png', hide_stats=False, huge=False, listcolormaps=False, listcolors=False, loglength=False, maxlength=None, minlength=None, minqual=None, no_N50=False, no_supplementary=False, outdir='test', path='test/', percentqual=False, pickle=None, plots=['hex', 'dot'], prefix='', raw=False, readtype='1D', runtime_until=None, store=False, summary=None, threads=2, title=None, tsv_stats=False, ubam=None, verbose=False)
+2020-12-02 13:29:45,443 Python version is: 3.8.5 (default, Jul 28 2020, 12:59:40)  [GCC 9.3.0]
+2020-12-02 13:29:45,445 NanoPlot:  valid output format png
+2020-12-02 13:29:45,481 Nanoget: Starting to collect statistics from plain fastq file.
+2020-12-02 13:29:45,481 Nanoget: Starting to collect statistics from plain fastq file.
+2020-12-02 13:29:45,670 Reduced DataFrame memory usage from 0.002288818359375Mb to 0.00133514404296875Mb
+2020-12-02 13:29:45,670 Reduced DataFrame memory usage from 0.002288818359375Mb to 0.00133514404296875Mb
+2020-12-02 13:29:45,729 Nanoget: Gathered all metrics of 200 reads
+2020-12-02 13:29:45,789 Calculated statistics
+2020-12-02 13:29:45,791 Using sequenced read lengths for plotting.
+2020-12-02 13:29:45,796 NanoPlot:  Valid color #4CB391.
+2020-12-02 13:29:45,797 NanoPlot:  Valid colormap Greens.
+2020-12-02 13:29:45,799 NanoPlot:  Creating length plots for Read length.
+2020-12-02 13:29:45,801 NanoPlot:  Using 200 reads maximum of 3493bp.
+2020-12-02 13:29:55,719 Created length plots
+2020-12-02 13:29:55,724 NanoPlot:  Creating Read lengths vs Average read quality plots using statistics from 200 reads.
+2020-12-02 13:29:57,944 Created LengthvsQual plot
+2020-12-02 13:29:57,946 Writing html report.
+2020-12-02 13:30:01,753 Finished!

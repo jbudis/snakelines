@@ -1,0 +1,9 @@
+Multiple include of /home/adog/snakelines/rules/mapping/mapper/indices/bowtie2_index.snake ignored
+Multiple include of /home/adog/snakelines/rules/mapping/index/samtools.snake ignored
+Multiple include of /home/adog/snakelines/rules/mapping/index/samtools.snake ignored
+ModuleNotFoundError in line 6 of /home/adog/snakelines/rules/variant/report/summary/custom.py:
+No module named 'weasyprint'
+  File "/home/adog/snakelines/snakelines.snake", line 22, in <module>
+  File "/home/adog/snakelines/src/common.snake", line 59, in <module>
+  File "/home/adog/snakelines/rules/variant/report/summary/custom.snake", line 1, in <module>
+  File "/home/adog/snakelines/rules/variant/report/summary/custom.py", line 6, in <module>

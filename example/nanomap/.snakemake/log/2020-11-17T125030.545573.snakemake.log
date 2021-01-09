@@ -1,0 +1,48 @@
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 1 (use --cores to define parallelism)
+Rules claiming more threads will be scaled down.
+Job counts:
+	count	jobs
+	1	pipeline
+	1	qualimap__summarize_quality_reports
+	2
+
+[Tue Nov 17 12:50:32 2020]
+rule qualimap__summarize_quality_reports:
+    input: mapping/sars_cov_2/original/stats-wgs/samples/example_1/report.pdf, mapping/sars_cov_2/original/stats-wgs/samples/example_2/report.pdf
+    output: mapping/sars_cov_2/original/stats-wgs/summary/multisampleBamQcReport.html, mapping/sars_cov_2/original/stats-wgs/summary/report.pdf
+    log: mapping/sars_cov_2/original/stats-wgs/summary/log/analysis.log, mapping/sars_cov_2/original/stats-wgs/summary/log/analysis.err
+    jobid: 8
+    reason: Missing output files: mapping/sars_cov_2/original/stats-wgs/summary/report.pdf
+    wildcards: mapper=mapping, reference=sars_cov_2, map_type=original, panel=wgs
+
+
+        unset DISPLAY
+        # Prepare sample list file for the qualimap
+        ## Column1: Sample name
+        ## Column2: Path to precomputed bamqc report
+
+        for REPORT in mapping/sars_cov_2/original/stats-wgs/samples/example_1/report.pdf mapping/sars_cov_2/original/stats-wgs/samples/example_2/report.pdf; do
+            REPORT_DIR=`dirname $REPORT`
+            SAMPLE=`basename $REPORT_DIR`
+            echo -e "$SAMPLE	$REPORT_DIR" >> mapping/sars_cov_2/original/stats-wgs/summary/samples.list
+        done
+
+        # Run qualimap on samples specified in sample list
+        qualimap multi-bamqc             -d mapping/sars_cov_2/original/stats-wgs/summary/samples.list             -outdir mapping/sars_cov_2/original/stats-wgs/summary             -outformat PDF:HTML         >  mapping/sars_cov_2/original/stats-wgs/summary/log/analysis.log         2> mapping/sars_cov_2/original/stats-wgs/summary/log/analysis.err
+        
+[Tue Nov 17 12:50:54 2020]
+Finished job 8.
+1 of 2 steps (50%) done
+
+[Tue Nov 17 12:50:54 2020]
+localrule pipeline:
+    input: reads/original/stats/example_1_fastqc.html, reads/original/stats/example_2_fastqc.html, reads/original/stats/summary.html, mapping/sars_cov_2/original/example_1.sam, mapping/sars_cov_2/original/example_2.sam, mapping/sars_cov_2/original/stats-wgs/samples/example_1/report.pdf, mapping/sars_cov_2/original/stats-wgs/samples/example_2/report.pdf, mapping/sars_cov_2/original/stats-wgs/summary/report.pdf
+    jobid: 0
+    reason: Input files updated by another job: mapping/sars_cov_2/original/stats-wgs/summary/report.pdf
+
+[Tue Nov 17 12:50:54 2020]
+Finished job 0.
+2 of 2 steps (100%) done
+Complete log: /home/adog/snakelines/example/nanomap/.snakemake/log/2020-11-17T125030.545573.snakemake.log

@@ -1,0 +1,64 @@
+import re
+import pandas as pd
+import tempfile
+from collections import OrderedDict
+
+rule krona__single_sample_pieplot:
+    """
+    Generate interactive hierarchical multilevel pie-plot with taxonomic counts for a single sample.
+    :input krn: Taxonomic counts of a single sample in format suitable for Krona graph generation
+    :output krona: HTML interactive hierarchical visualization of taxonomic counts
+    """
+    input:
+        krn   = '{path}/report/krona/individual/{sample}.krn'
+    output:
+        krona = '{path}/report/krona/individual/{sample}.html'
+    log:
+        out   = '{path}/report/krona/individual/log/{sample}.log',
+        err   = '{path}/report/krona/individual/log/{sample}.err'
+    conda:
+        config['snakelines_dir'] + '/enviroments/krona.yaml'
+    shell:
+        """
+        ktImportText \
+            -o {output.krona} \
+            {input.krn} \
+        >  {log.out} \
+        2> {log.err}
+        """
+
+
+def individual_krn_files(wildcards):
+    """
+    Return list of krona files that should be generated for the reference defined in wildcards
+    :param wildcards: wildcards that are automatically added in the input section of a rule
+    """
+    return expand('{analysis_dir}/{reference}/report/krona/individual/{sample}.krn',
+                    analysis_dir=wildcards.analysis_dir,
+                    reference=wildcards.reference,
+                    sample=pipeline.samples_for(wildcards.reference))
+
+
+rule krona__multi_sample_pieplot:
+    """
+    Generate interactive hierarchical multilevel pie-plot with taxonomic counts for multiple samples.
+    :input krn: Taxonomic counts of multiple samples in format suitable for Krona graph generation
+    :output krona: HTML interactive hierarchical visualization of taxonomic counts
+    """
+    input:
+        krns  = individual_krn_files
+    output:
+        krona = '{analysis_dir}/{reference}/report/krona/taxonomic_counts.html'
+    log:
+        out   = '{analysis_dir}/{reference}/report/krona/log/krona.log',
+        err   = '{analysis_dir}/{reference}/report/krona/log/krona.err'
+    conda:
+        config['snakelines_dir'] + '/enviroments/krona.yaml'
+    shell:
+        """
+        ktImportText \
+            -o {output.krona} \
+            {input.krns} \
+        >  {log.out} \
+        2> {log.err}
+        """

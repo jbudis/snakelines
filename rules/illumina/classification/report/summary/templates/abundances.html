@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <style>
+      a {{
+          color: #000000;
+      }}
+  </style>
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/jq-2.2.3/dt-1.10.12/fh-3.1.2/sc-1.4.2/datatables.min.css"/>
+  <script type="text/javascript" src="https://cdn.datatables.net/v/dt/jq-2.2.3/dt-1.10.12/fh-3.1.2/sc-1.4.2/datatables.min.js"></script>
+
+  <script type="text/javascript">
+    $(document).ready(function() {{
+        $('#data').DataTable( {{
+            "pageLength": {seqs_per_page},
+            "order": [[{sort_index}, "{sort_how}"]]
+        }} );
+    }});
+  </script>
+  <title>Sequence summary</title>
+</head>
+<body>
+    <h1>Sequence summary</h1>
+    <p>
+        <a href="{seq_fasta}">Download all contigs</a>
+    </p>
+    <p>
+        {attrs}
+    </p>
+</body>
+</html>

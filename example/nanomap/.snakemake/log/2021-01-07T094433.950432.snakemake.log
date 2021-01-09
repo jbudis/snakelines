@@ -1,0 +1,4 @@
+AssertionError in line 27 of /home/adog/snakelines/snakelines.snake:
+ERROR: missing values in dependency config file: nanopore/nanopore/reads/report/quality_report
+  File "/home/adog/snakelines/snakelines.snake", line 27, in <module>
+  File "/home/adog/snakelines/src/config/dependency_load.py", line 79, in check_dependency

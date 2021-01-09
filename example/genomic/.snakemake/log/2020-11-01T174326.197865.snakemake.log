@@ -1,0 +1,19 @@
+Multiple include of /home/adog/snakelines/rules/mapping/mapper/indices/bowtie2_index.snake ignored
+Multiple include of /home/adog/snakelines/rules/mapping/index/samtools.snake ignored
+Multiple include of /home/adog/snakelines/rules/mapping/index/samtools.snake ignored
+Multiple include of /home/adog/snakelines/rules/mapping/index/samtools.snake ignored
+The flag 'temp' used in rule pipeline is only valid for outputs, not inputs.
+The flag 'temp' used in rule pipeline is only valid for outputs, not inputs.
+The flag 'temp' used in rule pipeline is only valid for outputs, not inputs.
+The flag 'temp' used in rule pipeline is only valid for outputs, not inputs.
+The flag 'temp' used in rule pipeline is only valid for outputs, not inputs.
+The flag 'temp' used in rule pipeline is only valid for outputs, not inputs.
+The flag 'temp' used in rule pipeline is only valid for outputs, not inputs.
+The flag 'temp' used in rule pipeline is only valid for outputs, not inputs.
+The flag 'temp' used in rule pipeline is only valid for outputs, not inputs.
+The flag 'temp' used in rule pipeline is only valid for outputs, not inputs.
+The flag 'temp' used in rule pipeline is only valid for outputs, not inputs.
+The flag 'temp' used in rule pipeline is only valid for outputs, not inputs.
+The flag 'temp' used in rule pipeline is only valid for outputs, not inputs.
+The flag 'temp' used in rule pipeline is only valid for outputs, not inputs.
+Building DAG of jobs...

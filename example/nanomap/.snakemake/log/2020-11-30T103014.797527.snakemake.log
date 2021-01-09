@@ -1,0 +1,5 @@
+Building DAG of jobs...
+ChildIOException:
+File/directory is a child to another output:
+/home/adog/snakelines/example/nanomap/variant/sars_cov_2/original/example_1
+/home/adog/snakelines/example/nanomap/variant/sars_cov_2/original/example_1/all.vcf

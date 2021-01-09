@@ -1,0 +1,5 @@
+Multiple include of /home/adog/snakelines/rules/mapping/index/samtools.snake ignored
+Building DAG of jobs...
+WildcardError in line 4 of /home/adog/snakelines/rules/nanopore/variant/caller/clair.snake:
+Wildcards in input files cannot be determined from output files:
+'map_type'

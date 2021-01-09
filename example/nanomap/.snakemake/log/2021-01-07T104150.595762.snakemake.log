@@ -1,0 +1,4 @@
+TokenError in line 22 of /home/adog/snakelines/snakelines.snake:
+('EOF in multi-line statement', (93, 0))
+  File "/home/adog/snakelines/snakelines.snake", line 22, in <module>
+  File "/usr/lib/python3.8/tokenize.py", line 521, in _tokenize

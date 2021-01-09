@@ -1,0 +1,5 @@
+Building DAG of jobs...
+MissingInputException in line 46 of /home/adog/snakelines/snakelines.snake:
+Missing input files for rule pipeline:
+reads/original/example_2.fastq.gz
+reads/original/example_1.fastq.gz

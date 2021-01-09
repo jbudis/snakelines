@@ -1,0 +1,8 @@
+Multiple include of /home/adog/snakelines/rules/mapping/mapper/indices/bowtie2_index.snake ignored
+Multiple include of /home/adog/snakelines/rules/mapping/index/samtools.snake ignored
+Multiple include of /home/adog/snakelines/rules/mapping/index/samtools.snake ignored
+Multiple include of /home/adog/snakelines/rules/mapping/index/samtools.snake ignored
+AssertionError in line 25 of /home/adog/snakelines/snakelines.snake:
+ERROR: missing values in dependency config file: reads/preprocess/trimmed
+  File "/home/adog/snakelines/snakelines.snake", line 25, in <module>
+  File "/home/adog/snakelines/src/config/dependency_load.py", line 79, in check_dependency

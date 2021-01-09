@@ -1,0 +1,102 @@
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 1 (use --cores to define parallelism)
+Rules claiming more threads will be scaled down.
+Job counts:
+	count	jobs
+	1	pipeline
+	2	qualimap__mapping_quality_report_across_reference
+	1	qualimap__summarize_quality_reports
+	2	samtools__bam_index
+	2	samtools__convert_sam_to_bam
+	2	samtools__sort_bam_by_position
+	10
+
+[Tue Nov 17 10:50:59 2020]
+rule samtools__convert_sam_to_bam:
+    input: mapping/sars_cov_2/original/example_1.sam
+    output: mapping/sars_cov_2/original/example_1.bam
+    jobid: 9
+    reason: Missing output files: mapping/sars_cov_2/original/example_1.bam
+    wildcards: path=mapping/sars_cov_2/original, sample=example_1
+
+
+        samtools view -S -b mapping/sars_cov_2/original/example_1.sam > mapping/sars_cov_2/original/example_1.bam
+        
+[Tue Nov 17 10:50:59 2020]
+Finished job 9.
+1 of 10 steps (10%) done
+
+[Tue Nov 17 10:50:59 2020]
+rule samtools__convert_sam_to_bam:
+    input: mapping/sars_cov_2/original/example_2.sam
+    output: mapping/sars_cov_2/original/example_2.bam
+    jobid: 11
+    reason: Missing output files: mapping/sars_cov_2/original/example_2.bam
+    wildcards: path=mapping/sars_cov_2/original, sample=example_2
+
+
+        samtools view -S -b mapping/sars_cov_2/original/example_2.sam > mapping/sars_cov_2/original/example_2.bam
+        
+[Tue Nov 17 10:50:59 2020]
+Finished job 11.
+2 of 10 steps (20%) done
+
+[Tue Nov 17 10:50:59 2020]
+rule samtools__sort_bam_by_position:
+    input: mapping/sars_cov_2/original/example_1.bam
+    output: mapping/sars_cov_2/original/example_1_sorted.bam
+    jobid: 13
+    reason: Missing output files: mapping/sars_cov_2/original/example_1_sorted.bam; Input files updated by another job: mapping/sars_cov_2/original/example_1.bam
+    wildcards: path=mapping/sars_cov_2/original, sample=example_1
+
+
+        samtools sort mapping/sars_cov_2/original/example_1.bam > mapping/sars_cov_2/original/example_1_sorted.bam
+        
+[Tue Nov 17 10:50:59 2020]
+Finished job 13.
+3 of 10 steps (30%) done
+
+[Tue Nov 17 10:50:59 2020]
+rule samtools__bam_index:
+    input: mapping/sars_cov_2/original/example_1_sorted.bam
+    output: mapping/sars_cov_2/original/example_1.bam.bai
+    jobid: 10
+    reason: Missing output files: mapping/sars_cov_2/original/example_1.bam.bai; Input files updated by another job: mapping/sars_cov_2/original/example_1_sorted.bam
+    wildcards: path=mapping/sars_cov_2/original, sample=example_1
+
+
+        samtools index mapping/sars_cov_2/original/example_1_sorted.bam > mapping/sars_cov_2/original/example_1.bam.bai
+        
+[Tue Nov 17 10:50:59 2020]
+Finished job 10.
+4 of 10 steps (40%) done
+
+[Tue Nov 17 10:50:59 2020]
+rule qualimap__mapping_quality_report_across_reference:
+    input: mapping/sars_cov_2/original/example_1.bam, mapping/sars_cov_2/original/example_1.bam.bai
+    output: mapping/sars_cov_2/original/stats-wgs/samples/example_1/qualimapReport.html, mapping/sars_cov_2/original/stats-wgs/samples/example_1/report.pdf, mapping/sars_cov_2/original/stats-wgs/samples/example_1/genome_results.txt
+    log: mapping/sars_cov_2/original/stats-wgs/samples/example_1/log/analysis.log, mapping/sars_cov_2/original/stats-wgs/samples/example_1/log/analysis.err
+    jobid: 6
+    reason: Missing output files: mapping/sars_cov_2/original/stats-wgs/samples/example_1/report.pdf; Input files updated by another job: mapping/sars_cov_2/original/example_1.bam.bai, mapping/sars_cov_2/original/example_1.bam
+    wildcards: bamdir=mapping/sars_cov_2/original, sample=example_1
+
+
+        unset DISPLAY
+        qualimap bamqc             --java-mem-size=100G             -bam mapping/sars_cov_2/original/example_1.bam             --paint-chromosome-limits             -outdir mapping/sars_cov_2/original/stats-wgs/samples/example_1             -outformat PDF:HTML             -nt 1         >  mapping/sars_cov_2/original/stats-wgs/samples/example_1/log/analysis.log         2> mapping/sars_cov_2/original/stats-wgs/samples/example_1/log/analysis.err
+        
+[Tue Nov 17 10:51:01 2020]
+Error in rule qualimap__mapping_quality_report_across_reference:
+    jobid: 6
+    output: mapping/sars_cov_2/original/stats-wgs/samples/example_1/qualimapReport.html, mapping/sars_cov_2/original/stats-wgs/samples/example_1/report.pdf, mapping/sars_cov_2/original/stats-wgs/samples/example_1/genome_results.txt
+    log: mapping/sars_cov_2/original/stats-wgs/samples/example_1/log/analysis.log, mapping/sars_cov_2/original/stats-wgs/samples/example_1/log/analysis.err (check log file(s) for error message)
+    shell:
+        
+        unset DISPLAY
+        qualimap bamqc             --java-mem-size=100G             -bam mapping/sars_cov_2/original/example_1.bam             --paint-chromosome-limits             -outdir mapping/sars_cov_2/original/stats-wgs/samples/example_1             -outformat PDF:HTML             -nt 1         >  mapping/sars_cov_2/original/stats-wgs/samples/example_1/log/analysis.log         2> mapping/sars_cov_2/original/stats-wgs/samples/example_1/log/analysis.err
+        
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look above for error message
+Complete log: /home/adog/snakelines/example/nanomap/.snakemake/log/2020-11-17T105057.543665.snakemake.log

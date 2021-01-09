@@ -1,0 +1,63 @@
+Building DAG of jobs...
+Creating conda environment /home/adog/snakelines/enviroments/medaka.yaml...
+Downloading and installing remote packages.
+Environment for ../../enviroments/medaka.yaml created (location: e6cd2d34)
+Using shell: /bin/bash
+Provided cores: 3
+Rules claiming more threads will be scaled down.
+Job counts:
+	count	jobs
+	2	medaka__variant_call_mapped_reads
+	1	pipeline
+	3
+
+[Wed Jan  6 22:51:20 2021]
+rule medaka__variant_call_mapped_reads:
+    input: mapping/sars_cov_2/original/example_1_sorted.bam, reference/sars_cov_2/sars_cov_2.fa, reference/sars_cov_2/sars_cov_2.fa.fai
+    output: variant/sars_cov_2/original/example_1.vcf
+    log: variant/sars_cov_2/original/log/example_1.log, variant/sars_cov_2/original/log/example_1.err
+    jobid: 3
+    reason: Missing output files: variant/sars_cov_2/original/example_1.vcf
+    wildcards: reference=sars_cov_2, map_type=original, sample=example_1
+    threads: 3
+
+
+        medaka_variant -f reference/sars_cov_2/sars_cov_2.fa -i mapping/sars_cov_2/original/example_1_sorted.bam
+        vcfcat medaka_variant/round_1.vcf | bcftools sort > variant/sars_cov_2/original/example_1.vcf
+        rm -r medaka_variant
+        
+Activating conda environment: /home/adog/snakelines/example/nanomap/e6cd2d34
+[Wed Jan  6 22:57:16 2021]
+Finished job 3.
+1 of 3 steps (33%) done
+
+[Wed Jan  6 22:57:16 2021]
+rule medaka__variant_call_mapped_reads:
+    input: mapping/sars_cov_2/original/example_2_sorted.bam, reference/sars_cov_2/sars_cov_2.fa, reference/sars_cov_2/sars_cov_2.fa.fai
+    output: variant/sars_cov_2/original/example_2.vcf
+    log: variant/sars_cov_2/original/log/example_2.log, variant/sars_cov_2/original/log/example_2.err
+    jobid: 4
+    reason: Missing output files: variant/sars_cov_2/original/example_2.vcf
+    wildcards: reference=sars_cov_2, map_type=original, sample=example_2
+    threads: 3
+
+
+        medaka_variant -f reference/sars_cov_2/sars_cov_2.fa -i mapping/sars_cov_2/original/example_2_sorted.bam
+        vcfcat medaka_variant/round_1.vcf | bcftools sort > variant/sars_cov_2/original/example_2.vcf
+        rm -r medaka_variant
+        
+Activating conda environment: /home/adog/snakelines/example/nanomap/e6cd2d34
+[Wed Jan  6 23:02:48 2021]
+Finished job 4.
+2 of 3 steps (67%) done
+
+[Wed Jan  6 23:02:48 2021]
+localrule pipeline:
+    input: mapping/sars_cov_2/original/example_1.sam, mapping/sars_cov_2/original/example_2.sam, variant/sars_cov_2/original/example_1.vcf, variant/sars_cov_2/original/example_2.vcf
+    jobid: 0
+    reason: Input files updated by another job: variant/sars_cov_2/original/example_1.vcf, variant/sars_cov_2/original/example_2.vcf
+
+[Wed Jan  6 23:02:48 2021]
+Finished job 0.
+3 of 3 steps (100%) done
+Complete log: /home/adog/snakelines/example/nanomap/.snakemake/log/2021-01-06T221211.520478.snakemake.log

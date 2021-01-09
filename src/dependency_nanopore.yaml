@@ -1,0 +1,40 @@
+reads:
+    preprocess:
+        original:
+            output:
+                reads: expand('reads/original/{sample}.fastq.gz', sample=pipeline.samples)
+        trimmed:
+            output:
+                reads: expand('reads/trimmed/{sample}.fastq.gz', sample=pipeline.samples)
+        decontaminated:
+            output:
+                reads: expand('reads/decontaminated/{sample}.fastq.gz', sample=pipeline.samples)
+        deduplicated:
+            output:
+                reads: expand('reads/deduplicated/{sample}.fastq.gz', sample=pipeline.samples)
+        joined:
+            output:
+                reads: expand('reads/joined/{sample}.fastq.gz', sample=pipeline.samples)
+        subsampled:
+            output:
+                reads: expand('reads/subsampled/{sample}.fastq.gz', sample=pipeline.samples)
+
+    report:
+        quality_report:
+            output:
+                fastqcs:
+                    from: expand('reads/{read_type}/stats/{sample}_fastqc.html',
+                                sample=pipeline.samples, read_type=read_types_with_quality_report)
+
+                    to:   expand('{report_dir}/{sample}/read_quality/{read_type}.html',
+                                report_dir=config['report_dir'],
+                                sample=pipeline.samples, read_type=read_types_with_quality_report)
+
+                reports:
+                    from: expand('reads/{read_type}/stats/summary.html',
+                                read_type=read_types_with_quality_report)
+
+                    to:   expand('{report_dir}/_summary/read_quality/{read_type}.html',
+                                report_dir=config['report_dir'],
+                                read_type=read_types_with_quality_report)
+

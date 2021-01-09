@@ -1,0 +1,20 @@
+KeyboardInterrupt in line 2 of /home/adog/snakelines/rules/classification/report/transcripts/pca/sklearn.snake.
+  File "/home/adog/snakelines/snakelines.snake", line 22, in <module>
+  File "/home/adog/snakelines/src/common.snake", line 59, in <module>
+  File "/home/adog/snakelines/rules/classification/report/transcripts/pca/sklearn.snake", line 2, in <module>
+  File "/home/adog/.local/lib/python3.8/site-packages/sklearn/decomposition/__init__.py", line 17, in <module>
+  File "/home/adog/.local/lib/python3.8/site-packages/sklearn/decomposition/dict_learning.py", line 5, in <module>
+  File "/home/adog/.local/lib/python3.8/site-packages/sklearn/decomposition/_dict_learning.py", line 21, in <module>
+  File "/home/adog/.local/lib/python3.8/site-packages/sklearn/linear_model/__init__.py", line 11, in <module>
+  File "/home/adog/.local/lib/python3.8/site-packages/sklearn/linear_model/_least_angle.py", line 25, in <module>
+  File "/home/adog/.local/lib/python3.8/site-packages/sklearn/model_selection/__init__.py", line 19, in <module>
+  File "/home/adog/.local/lib/python3.8/site-packages/sklearn/model_selection/_validation.py", line 30, in <module>
+  File "/home/adog/.local/lib/python3.8/site-packages/sklearn/metrics/__init__.py", line 37, in <module>
+  File "/home/adog/.local/lib/python3.8/site-packages/sklearn/metrics/cluster/__init__.py", line 8, in <module>
+  File "<frozen importlib._bootstrap>", line 991, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 971, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 914, in _find_spec
+  File "<frozen importlib._bootstrap_external>", line 1342, in find_spec
+  File "<frozen importlib._bootstrap_external>", line 1314, in _get_spec
+  File "<frozen importlib._bootstrap_external>", line 1443, in find_spec
+  File "<frozen importlib._bootstrap_external>", line 1483, in _fill_cache

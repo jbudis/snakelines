@@ -1,0 +1,22 @@
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 10
+Rules claiming more threads will be scaled down.
+Job counts:
+	count	jobs
+	2	clair__variant_call_mapped_reads
+	1	pipeline
+	3
+
+[Mon Nov 30 09:30:54 2020]
+rule clair__variant_call_mapped_reads:
+    input: mapping/sars_cov_2/original/example_1_sorted.bam, reference/sars_cov_2/sars_cov_2.fa, reference/sars_cov_2/sars_cov_2.fa.fai
+    output: variant/sars_cov_2/original/example_1/
+    log: variant/sars_cov_2/original/log/example_1.log, variant/sars_cov_2/original/log/example_1.err
+    jobid: 6
+    reason: Missing output files: variant/sars_cov_2/original/example_1/
+    wildcards: reference=sars_cov_2, map_type=original, sample=example_1
+    threads: 10
+
+RuleException in line 3 of /home/adog/snakelines/rules/nanopore/variant/caller/clair.snake:
+'OutputFiles' object has no attribute 'finalvcf'

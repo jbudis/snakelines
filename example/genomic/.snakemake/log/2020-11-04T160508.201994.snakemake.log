@@ -1,0 +1,6 @@
+CreateRuleException in line 1 of /home/adog/snakelines/rules/illumina/mapping/mapper/indices/bowtie2_index.snake:
+The name bowtie2__prepare_index is already used by another rule
+  File "/home/adog/snakelines/snakelines.snake", line 22, in <module>
+  File "/home/adog/snakelines/src/common.snake", line 61, in <module>
+  File "/home/adog/snakelines/rules/illumina/mapping/mapper/bowtie2.snake", line 1, in <module>
+  File "/home/adog/snakelines/rules/illumina/mapping/mapper/indices/bowtie2_index.snake", line 1, in <module>

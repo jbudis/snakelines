@@ -1,0 +1,41 @@
+Multiple include of /home/adog/snakelines/rules/mapping/index/samtools.snake ignored
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 1 (use --cores to define parallelism)
+Rules claiming more threads will be scaled down.
+Job counts:
+	count	jobs
+	2	clair__variant_call_mapped_reads
+	1	pipeline
+	3
+
+[Wed Nov 25 13:33:12 2020]
+rule clair__variant_call_mapped_reads:
+    input: mapping/sars_cov_2/original/example_1_sorted.bam, reference/sars_cov_2/sars_cov_2.fa, reference/sars_cov_2/sars_cov_2.fa.fai
+    output: variant/sars_cov_2/original/example_1.vcf
+    log: variant/sars_cov_2/original/log/example_1.log, variant/sars_cov_2/original/log/example_1.err
+    jobid: 9
+    reason: Missing output files: variant/sars_cov_2/original/example_1.vcf
+    wildcards: reference=sars_cov_2, map_type=original, sample=example_1
+
+
+        python3 $CLAIR             exmpl1             -- chkpnt_fn ~/Clair/models/ont/model/model             reference/sars_cov_2/sars_cov_2.fa             mapping/sars_cov_2/original/example_1_sorted.bam
+        2> variant/sars_cov_2/original/log/example_1.err
+        > variant/sars_cov_2/original/example_1.vcf
+        
+[Wed Nov 25 13:33:12 2020]
+Error in rule clair__variant_call_mapped_reads:
+    jobid: 9
+    output: variant/sars_cov_2/original/example_1.vcf
+    log: variant/sars_cov_2/original/log/example_1.log, variant/sars_cov_2/original/log/example_1.err (check log file(s) for error message)
+    shell:
+        
+        python3 $CLAIR             exmpl1             -- chkpnt_fn ~/Clair/models/ont/model/model             reference/sars_cov_2/sars_cov_2.fa             mapping/sars_cov_2/original/example_1_sorted.bam
+        2> variant/sars_cov_2/original/log/example_1.err
+        > variant/sars_cov_2/original/example_1.vcf
+        
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look above for error message
+Complete log: /home/adog/snakelines/example/nanomap/.snakemake/log/2020-11-25T133310.974993.snakemake.log

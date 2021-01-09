@@ -1,0 +1,216 @@
+import os
+import pandas as pd
+import csv
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+tax_ranks = ['kingdom', 'phylum', 'class', 'order', 'family',
+             'genus', 'species', 'subspecies', 'subsubspecies', 'variety', 'form']
+
+def individual_krn_files(wildcards):
+    """
+    Return list of krona files that should be generated for the reference defined in wildcards
+    :param wildcards: wildcards that are automatically added in the input section of a rule
+    """
+    return expand('{analysis_dir}/{reference}/report/krona/individual/{sample}.krn',
+                    analysis_dir=wildcards.analysis_dir,
+                    reference=wildcards.reference,
+                    sample=pipeline.samples_for(wildcards.reference))
+
+# TODO: new rule for tsv -> xlsx format conversion
+rule custom__summarize_taxonomic_counts_into_tsv_table:
+    """
+    Take taxonomic counts and proportions from several samples and merge them together into a single table.
+    Also calculate number of reads per sample for each taxonomic unit.
+    :input krns: Taxonomy files for each analysed sample in standardised format suitable for Krona graph generation
+    :output summary_xlsx: Aggregated counts for each discovered taxonomy in Excel format
+    :output summary_tsv: Aggregated counts for each discovered taxonomy in tabular format
+    :output subtax_xlsx: Aggregated counts for each discovered taxonomy and its subtaxes in Excel format
+    :output subtax_tsv: Aggregated counts for each discovered taxonomy and its subtaxes in tabular format
+    :output subtax_xlsx: Normalised (counts for sample sum to 1) aggregated counts for each discovered taxonomy and its subtaxes in Excel format
+    :output subtax_tsv: Normalised (counts for sample sum to 1) aggregated counts for each discovered taxonomy and its subtaxes in tabular format
+    """
+    input:
+        krns  = individual_krn_files
+    output:
+        summary_xlsx = '{analysis_dir}/{reference}/report/tsv/summary.xlsx',
+        summary_tsv  = '{analysis_dir}/{reference}/report/tsv/summary.tsv',
+        subtax_xlsx  = '{analysis_dir}/{reference}/report/tsv/alltaxes.counts.xlsx',
+        subtax_tsv   = '{analysis_dir}/{reference}/report/tsv/alltaxes.counts.tsv',
+        normed_xlsx  = '{analysis_dir}/{reference}/report/tsv/alltaxes.ratios.xlsx',
+        normed_tsv   = '{analysis_dir}/{reference}/report/tsv/alltaxes.ratios.tsv'
+    run:
+        # Load stored taxonomic abundances from Emirge analysis step
+
+        global tax_ranks
+
+        def load_abundances(sample_file):
+            taxes = {}
+            with open(sample_file) as sf:
+                for line in sf:
+                    tax, count = line[line.find('\t')+1:].strip(), float(line.split('\t')[0])
+                    taxes[tax] = taxes.get(tax, 0) + count
+            return taxes
+
+        samples = [af.split('/')[-1][:-4] for af in input]
+        abundances = list(map(load_abundances, input))
+
+        # Aggregate abundances into summary table
+
+        dupl_taxonomies = [sample_abundance.keys() for sample_abundance in abundances]
+        taxonomies = set()
+        for sample_taxes in dupl_taxonomies:
+            taxonomies = taxonomies | set(sample_taxes)
+        taxonomies = sorted(list(taxonomies))
+
+        # Convert into vectors
+
+        max_tax = -1
+        for tax in taxonomies:
+            max_tax = max(max_tax, tax.count('\t') + 1)
+        tax_ranks = tax_ranks[:max_tax]
+
+
+        def split_tax(taxonomy):
+            taxes = taxonomy.split('\t')
+            taxes.extend([np.nan]*(len(tax_ranks) - len(taxes)))
+            return taxes
+
+        split_taxonomies = [split_tax(tax) for tax in taxonomies]
+
+        # Store into summary table
+
+        tax_table = pd.DataFrame(split_taxonomies, columns=tax_ranks)
+        tax_table.dropna(axis=1, how='all', inplace=True)
+        tax_ranks = [tr for tr in tax_ranks if tr in tax_table.columns]
+
+        for sample, sample_abundance in zip(samples, abundances):
+            tax_table[sample] = [sample_abundance.get(tax, 0) for tax in taxonomies]
+            tax_table[sample] = tax_table[sample].apply(pd.to_numeric)
+
+        tax_table.sort_values(tax_ranks, ascending=True, na_position='first', inplace=True)
+
+        tax_table.to_excel(output.summary_xlsx, index=False)
+        tax_table.to_csv(output.summary_tsv, sep='\t', index=False)
+
+        # Generate rows for aggregated taxes, for example all Bacteria, all Actinobacteria ...
+
+        next_index = max(tax_table.index + 1)
+        sub_tables = []
+
+        for i, tax_rank in enumerate(tax_ranks[:-1]):
+            sub_ranks = tax_ranks[:i+1]
+            sub_counts = tax_table.groupby(sub_ranks).sum()
+            sub_indices = range(next_index, next_index + len(sub_counts))
+            next_index = sub_indices[-1] + 1
+            sub_counts.reset_index(inplace=True)
+            sub_counts['i'] = sub_indices
+            sub_counts.set_index('i', inplace=True)
+            sub_tables.append(sub_counts)
+
+        # Add last taxonomic level, that is not aggregated, e.g. species
+        sub_tables.append(tax_table[~tax_table[tax_ranks[-1]].isnull()])
+
+
+        # Join all partial tables into single joined table that would be stored
+        join_table = pd.concat(sub_tables)
+        for tax_rank in tax_ranks:
+            if tax_rank not in join_table.columns:
+                join_table[tax_rank] = np.nan
+
+        join_table = join_table[tax_ranks + samples]
+        join_table.sort_values(tax_ranks, ascending=True, na_position='first', inplace=True)
+
+        # Remove marginal taxes, e.g Bacteria from 28S samples
+        if 'report' in config and 'tsv' in config['report'] and 'remove_marginal_taxes' in config['report']['tsv'] and config['report']['tsv']['remove_marginal_taxes']:
+            tax_sums = list(join_table.sum(axis=1))
+            root_counts = join_table.iloc[np.argmax(tax_sums)]
+            domain = tax_ranks[0]
+            join_table = join_table[join_table[domain] == root_counts[domain]]
+        else:
+            root_counts = tax_table.sum()
+
+        # Add root taxonomic level with number of reads per sample
+        root_row = tax_table[samples].sum(axis=0)
+        for tax_rank in tax_ranks:
+#            print(dir(root_row))
+#            print(tax_rank)
+#            print(root_row)
+            root_row._set_value(tax_rank, np.nan)
+
+        join_table = join_table[join_table[tax_ranks[0]] != '']
+        join_table = join_table.append(root_row, ignore_index=True)
+        join_table.sort_values(tax_ranks, ascending=True, na_position='first', inplace=True)
+
+        # Store table
+        join_table.to_excel(output.subtax_xlsx, index=False)
+        join_table.to_csv(output.subtax_tsv, sep='\t', index=False)
+
+        # Normalise join table
+        normed = join_table[tax_ranks]
+        for sample in samples:
+            root_count = root_counts[sample]
+            normed[sample] = join_table[sample].apply(lambda x: x / root_count)
+
+        # Store normalised table
+        normed.to_excel(output.normed_xlsx, index=False)
+        normed.to_csv(output.normed_tsv, sep='\t', index=False)
+
+
+rule custom__extract_taxonomic_level_from_taxonomic_table:
+    """
+    Extract read counts for organisms at selected taxonomic level, such as genus, species.
+    :input subtax_tsv: Aggregated counts for each discovered taxonomy and its subtaxes in tabular format
+    :output tax_level_abs: Aggregated counts for single taxonomic level, e.g. species, order
+    :output tax_level_rel: Normalised (counts for a sample sum to 1) aggregated counts for single taxonomic level, e.g. species, order
+    """
+    input:
+        subtax_tsv    = '{analysis_dir}/{reference}/report/tsv/alltaxes.counts.tsv'
+    output:
+        tax_level_abs = '{analysis_dir}/{reference}/report/tsv/{tax_level, %s}.counts.tsv' % ('|'.join(tax_ranks[:-1])),
+        tax_level_rel = '{analysis_dir}/{reference}/report/tsv/{tax_level, %s}.ratios.tsv' % ('|'.join(tax_ranks[:-1]))
+    run:
+        global tax_ranks
+
+        # Load subtax table
+        join_table = pd.read_csv(input.subtax_tsv, sep='\t')
+
+        # Find location of desired tax_level in table columns
+        target_level = wildcards.tax_level
+        target_level_loc = tax_ranks.index(target_level)
+        next_level = tax_ranks[target_level_loc + 1]
+
+        if target_level not in join_table.columns:
+            with open(output.tax_level_abs, 'w') as out:
+                out.write('')
+        
+        # Select rows from table with the classification up to desired tax_level
+#        print(target_level)
+#        print(join_table)
+        tax_counts = join_table[~join_table[target_level].isnull()]
+        if next_level in join_table.columns:
+            tax_counts = tax_counts[tax_counts[next_level].isnull()]
+
+        # Remove unnecessary taxonomic levels that would be null otherwise
+        samples = [tc for tc in tax_counts.columns if tc not in tax_ranks]
+        used_ranks = tax_ranks[:target_level_loc+1]
+        tax_counts = tax_counts[used_ranks + samples]
+
+        # Normalize counts
+        tax_ratios = tax_counts[used_ranks]
+        for sid, sample_counts in tax_counts[samples].iteritems():
+            tax_ratios[sid] = sample_counts / sample_counts.sum()
+
+        # Append additional row with the number of unclassified reads
+        classified_reads = tax_counts[samples].sum(axis=0)
+        total_reads = join_table.iloc[0]
+        assert np.isnan(total_reads[tax_ranks[0]]), 'The first row of the taxonomic counts represents number of reads per sample, and so should not have assigned taxonomy'
+        unclassified_reads = total_reads[samples] - classified_reads
+        unclassified_reads[tax_ranks[0]] = 'Unclassified'
+        tax_counts = tax_counts.append(unclassified_reads, ignore_index=True)
+
+        # Store tables
+        tax_counts.to_csv(output.tax_level_abs, sep='\t', index=None)
+        tax_ratios.to_csv(output.tax_level_rel, sep='\t', index=None)
+

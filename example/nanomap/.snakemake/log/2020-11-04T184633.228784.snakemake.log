@@ -1,0 +1,4 @@
+AssertionError in line 35 of /home/adog/snakelines/src/common.snake:
+No samples in reads/original/{sample, b02}.fasta.gz match configured pattern b02
+  File "/home/adog/snakelines/snakelines.snake", line 22, in <module>
+  File "/home/adog/snakelines/src/common.snake", line 35, in <module>

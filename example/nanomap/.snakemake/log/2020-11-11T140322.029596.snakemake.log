@@ -1,0 +1,101 @@
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 1 (use --cores to define parallelism)
+Rules claiming more threads will be scaled down.
+Job counts:
+	count	jobs
+	1	fastqc__html_summary_for_paired_reads
+	2	fastqc__quality_report
+	2	minimap2__map_reads_to_reference
+	1	pipeline
+	6
+
+[Wed Nov 11 14:03:22 2020]
+rule minimap2__map_reads_to_reference:
+    input: reads/original/example_1.fastq, reference/sars_cov_2/sars_cov_2.fa
+    output: mapping/sars_cov_2/original/example_1.bam
+    log: mapping/sars_cov_2/sorted/log/example_1.log, mapping/sars_cov_2/sorted/log/example_1.err
+    jobid: 1
+    reason: Missing output files: mapping/sars_cov_2/original/example_1.bam
+    wildcards: reference=sars_cov_2, sample=example_1
+
+
+            minimap2                 -ax map-ont                 reference/sars_cov_2/sars_cov_2.fa                 reads/original/example_1.fastq                 > mapping/sars_cov_2/original/example_1.bam
+        
+[Wed Nov 11 14:03:22 2020]
+Finished job 1.
+1 of 6 steps (17%) done
+
+[Wed Nov 11 14:03:22 2020]
+rule minimap2__map_reads_to_reference:
+    input: reads/original/example_2.fastq, reference/sars_cov_2/sars_cov_2.fa
+    output: mapping/sars_cov_2/original/example_2.bam
+    log: mapping/sars_cov_2/sorted/log/example_2.log, mapping/sars_cov_2/sorted/log/example_2.err
+    jobid: 2
+    reason: Missing output files: mapping/sars_cov_2/original/example_2.bam
+    wildcards: reference=sars_cov_2, sample=example_2
+
+
+            minimap2                 -ax map-ont                 reference/sars_cov_2/sars_cov_2.fa                 reads/original/example_2.fastq                 > mapping/sars_cov_2/original/example_2.bam
+        
+[Wed Nov 11 14:03:22 2020]
+Finished job 2.
+2 of 6 steps (33%) done
+
+[Wed Nov 11 14:03:22 2020]
+rule fastqc__quality_report:
+    input: reads/original/example_1.fastq
+    output: reads/original/stats/example_1_fastqc.html, reads/original/stats/example_1_fastqc/summary.txt
+    log: reads/original/stats/log/example_1.log, reads/original/stats/log/example_1.err
+    jobid: 3
+    reason: Missing output files: reads/original/stats/example_1_fastqc.html
+    wildcards: read_type=original, stats_type=s, fastq=example_1
+
+
+        fastqc             -o reads/original/stats             --extract             --threads 1             reads/original/example_1.fastq         >  reads/original/stats/log/example_1.log         2> reads/original/stats/log/example_1.err
+        
+[Wed Nov 11 14:03:37 2020]
+Finished job 3.
+3 of 6 steps (50%) done
+
+[Wed Nov 11 14:03:37 2020]
+rule fastqc__quality_report:
+    input: reads/original/example_2.fastq
+    output: reads/original/stats/example_2_fastqc.html, reads/original/stats/example_2_fastqc/summary.txt
+    log: reads/original/stats/log/example_2.log, reads/original/stats/log/example_2.err
+    jobid: 4
+    reason: Missing output files: reads/original/stats/example_2_fastqc.html
+    wildcards: read_type=original, stats_type=s, fastq=example_2
+
+
+        fastqc             -o reads/original/stats             --extract             --threads 1             reads/original/example_2.fastq         >  reads/original/stats/log/example_2.log         2> reads/original/stats/log/example_2.err
+        
+[Wed Nov 11 14:03:43 2020]
+Finished job 4.
+4 of 6 steps (67%) done
+
+[Wed Nov 11 14:03:43 2020]
+rule fastqc__html_summary_for_paired_reads:
+    input: reads/original/stats/example_1_fastqc.html, reads/original/stats/example_2_fastqc.html
+    output: reads/original/stats/summary.html
+    jobid: 5
+    reason: Missing output files: reads/original/stats/summary.html; Input files updated by another job: reads/original/stats/example_1_fastqc.html, reads/original/stats/example_2_fastqc.html
+    wildcards: read_type=original
+
+
+        python /home/adog/snakelines/rules/nanopore/reads/report/quality_report/scripts/fastqc-summary.py             reads/original/stats/summary.html             reads/original/stats/example_1_fastqc.html reads/original/stats/example_2_fastqc.html
+        
+[Wed Nov 11 14:03:43 2020]
+Finished job 5.
+5 of 6 steps (83%) done
+
+[Wed Nov 11 14:03:43 2020]
+localrule pipeline:
+    input: mapping/sars_cov_2/original/example_1.bam, mapping/sars_cov_2/original/example_2.bam, reads/original/stats/example_1_fastqc.html, reads/original/stats/example_2_fastqc.html, reads/original/stats/summary.html
+    jobid: 0
+    reason: Input files updated by another job: mapping/sars_cov_2/original/example_1.bam, reads/original/stats/summary.html, mapping/sars_cov_2/original/example_2.bam, reads/original/stats/example_1_fastqc.html, reads/original/stats/example_2_fastqc.html
+
+[Wed Nov 11 14:03:43 2020]
+Finished job 0.
+6 of 6 steps (100%) done
+Complete log: /home/adog/snakelines/example/nanomap/.snakemake/log/2020-11-11T140322.029596.snakemake.log

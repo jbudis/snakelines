@@ -1,0 +1,28 @@
+platform: nanopore
+samples:
+      - name: example_.*
+        reference: sars_cov_2
+
+report_dir: report/example
+threads: 2
+
+#reads:
+#    report:
+#        quality_report:
+#            method: qualimap
+#        read_types:
+#            - original
+mapping:
+    mapper:
+        method: minimap2
+    index:
+        method: samtools
+    report:
+        quality_report:
+            method: qualimap
+        map_types:
+            - original
+#variant:
+#    caller:
+#        method: medaka
+

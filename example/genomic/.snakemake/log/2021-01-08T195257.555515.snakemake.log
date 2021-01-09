@@ -1,0 +1,30 @@
+Multiple include of /home/adog/snakelines/rules/illumina/mapping/mapper/indices/bowtie2_index.snake ignored
+Multiple include of /home/adog/snakelines/rules/shared/mapping/index/samtools.snake ignored
+Multiple include of /home/adog/snakelines/rules/shared/mapping/index/samtools.snake ignored
+Multiple include of /home/adog/snakelines/rules/shared/mapping/index/samtools.snake ignored
+The flag 'temp' used in rule pipeline is only valid for outputs, not inputs.
+The flag 'temp' used in rule pipeline is only valid for outputs, not inputs.
+The flag 'temp' used in rule pipeline is only valid for outputs, not inputs.
+The flag 'temp' used in rule pipeline is only valid for outputs, not inputs.
+The flag 'temp' used in rule pipeline is only valid for outputs, not inputs.
+The flag 'temp' used in rule pipeline is only valid for outputs, not inputs.
+The flag 'temp' used in rule pipeline is only valid for outputs, not inputs.
+The flag 'temp' used in rule pipeline is only valid for outputs, not inputs.
+The flag 'temp' used in rule pipeline is only valid for outputs, not inputs.
+The flag 'temp' used in rule pipeline is only valid for outputs, not inputs.
+The flag 'temp' used in rule pipeline is only valid for outputs, not inputs.
+The flag 'temp' used in rule pipeline is only valid for outputs, not inputs.
+The flag 'temp' used in rule pipeline is only valid for outputs, not inputs.
+The flag 'temp' used in rule pipeline is only valid for outputs, not inputs.
+Building DAG of jobs...
+AmbiguousRuleException:
+Rules samtools__sort_bam_by_position and samtools__sort_mapped_reads are ambiguous for the file mapping/mhv/sorted/example_A_sorted.bam.
+Consider starting rule output with a unique prefix, constrain your wildcards, or use the ruleorder directive.
+Wildcards:
+	samtools__sort_bam_by_position: path=mapping/mhv/sorted,sample=example_A
+	samtools__sort_mapped_reads: reference=mhv,sample=example_A_sorted
+Expected input files:
+	samtools__sort_bam_by_position: mapping/mhv/sorted/example_A.bam
+	samtools__sort_mapped_reads: reference/mhv/mhv.fa mapping/mhv/original/example_A_sorted.bamExpected output files:
+	samtools__sort_bam_by_position: mapping/mhv/sorted/example_A_sorted.bam
+	samtools__sort_mapped_reads: mapping/mhv/sorted/example_A_sorted.bam

@@ -1,0 +1,4 @@
+Building DAG of jobs...
+MissingInputException in line 1 of /home/adog/snakelines/rules/nanopore/mapping/mapper/minimap2.snake:
+Missing input files for rule minimap2__map_reads_to_reference:
+reference/sars_cov_2-wgs/sars_cov_2-wgs.fa

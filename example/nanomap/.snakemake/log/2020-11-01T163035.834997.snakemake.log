@@ -1,0 +1,4 @@
+TypeError in line 25 of /home/adog/snakelines/snakelines.snake:
+'NoneType' object is not iterable
+  File "/home/adog/snakelines/snakelines.snake", line 25, in <module>
+  File "/home/adog/snakelines/src/config/dependency_load.py", line 83, in check_dependency

@@ -1,0 +1,22 @@
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 26
+Rules claiming more threads will be scaled down.
+Job counts:
+	count	jobs
+	2	nanoplot__quality_report
+	1	pipeline
+	3
+
+[Wed Dec  2 15:32:21 2020]
+rule nanoplot__quality_report:
+    input: reads/original/example_1.fastq
+    output: reads/original/stats/example_1_fastqc.html, reads/original/stats/example_1_fastqc/summary.txt
+    log: reads/original/stats/log/example_1.log, reads/original/stats/log/example_1.err
+    jobid: 1
+    reason: Missing output files: reads/original/stats/example_1_fastqc.html
+    wildcards: read_type=original, stats_type=s, fastq=example_1
+    threads: 26
+
+RuleException in line 27 of /home/adog/snakelines/rules/nanopore/reads/report/quality_report/nanoplot.snake:
+NameError: The name 'stats_type' is unknown in this context. Please make sure that you defined that variable. Also note that braces not used for variable access have to be escaped by repeating them, i.e. {{print $1}}

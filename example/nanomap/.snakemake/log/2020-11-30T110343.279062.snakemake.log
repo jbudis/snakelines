@@ -1,0 +1,74 @@
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 10
+Rules claiming more threads will be scaled down.
+Job counts:
+	count	jobs
+	2	clair__variant_call_mapped_reads
+	1	pipeline
+	3
+
+[Mon Nov 30 11:03:43 2020]
+rule clair__variant_call_mapped_reads:
+    input: mapping/sars_cov_2/original/example_1_sorted.bam, reference/sars_cov_2/sars_cov_2.fa, reference/sars_cov_2/sars_cov_2.fa.fai
+    output: variant/sars_cov_2/original/example_1/
+    log: variant/sars_cov_2/original/log/example_1.log, variant/sars_cov_2/original/log/example_1.err
+    jobid: 6
+    reason: Missing output files: variant/sars_cov_2/original/example_1/
+    wildcards: reference=sars_cov_2, map_type=original, sample=example_1
+    threads: 10
+
+
+        python3 $CLAIR callVarBamParallel             --chkpnt_fn ~/Clair/models/ont/model/model             --ref_fn reference/sars_cov_2/sars_cov_2.fa             --bam_fn mapping/sars_cov_2/original/example_1_sorted.bam             --includingAllContigs             --output_prefix variant/sars_cov_2/original/example_1/var > command.sh
+
+        cat command.sh | parallel -j10 --will-cite
+
+        #for i in variant/sars_cov_2/original/example_1/*.vcf
+        #do
+        #    if ! [ -z "$(tail -c 1 "$i")" ]; then echo "$i"; fi
+        #done | grep -f - command.sh | sh
+        
+        #vcfcat variant/sars_cov_2/original/example_1//*.vcf | bcftools sort | bgziptabix variant/sars_cov_2/original/example_1/all.vcf
+        
+Activating conda environment: /home/adog/snakelines/example/nanomap/1d042689
+[Mon Nov 30 11:03:51 2020]
+Finished job 6.
+1 of 3 steps (33%) done
+
+[Mon Nov 30 11:03:51 2020]
+rule clair__variant_call_mapped_reads:
+    input: mapping/sars_cov_2/original/example_2_sorted.bam, reference/sars_cov_2/sars_cov_2.fa, reference/sars_cov_2/sars_cov_2.fa.fai
+    output: variant/sars_cov_2/original/example_2/
+    log: variant/sars_cov_2/original/log/example_2.log, variant/sars_cov_2/original/log/example_2.err
+    jobid: 7
+    reason: Missing output files: variant/sars_cov_2/original/example_2/
+    wildcards: reference=sars_cov_2, map_type=original, sample=example_2
+    threads: 10
+
+
+        python3 $CLAIR callVarBamParallel             --chkpnt_fn ~/Clair/models/ont/model/model             --ref_fn reference/sars_cov_2/sars_cov_2.fa             --bam_fn mapping/sars_cov_2/original/example_2_sorted.bam             --includingAllContigs             --output_prefix variant/sars_cov_2/original/example_2/var > command.sh
+
+        cat command.sh | parallel -j10 --will-cite
+
+        #for i in variant/sars_cov_2/original/example_2/*.vcf
+        #do
+        #    if ! [ -z "$(tail -c 1 "$i")" ]; then echo "$i"; fi
+        #done | grep -f - command.sh | sh
+        
+        #vcfcat variant/sars_cov_2/original/example_2//*.vcf | bcftools sort | bgziptabix variant/sars_cov_2/original/example_2/all.vcf
+        
+Activating conda environment: /home/adog/snakelines/example/nanomap/1d042689
+[Mon Nov 30 11:03:54 2020]
+Finished job 7.
+2 of 3 steps (67%) done
+
+[Mon Nov 30 11:03:54 2020]
+localrule pipeline:
+    input: reads/original/stats/example_1_fastqc.html, reads/original/stats/example_2_fastqc.html, reads/original/stats/summary.html, mapping/sars_cov_2/original/example_1.sam, mapping/sars_cov_2/original/example_2.sam, variant/sars_cov_2/original/example_1/, variant/sars_cov_2/original/example_2/
+    jobid: 0
+    reason: Input files updated by another job: variant/sars_cov_2/original/example_1/, variant/sars_cov_2/original/example_2/
+
+[Mon Nov 30 11:03:54 2020]
+Finished job 0.
+3 of 3 steps (100%) done
+Complete log: /home/adog/snakelines/example/nanomap/.snakemake/log/2020-11-30T110343.279062.snakemake.log

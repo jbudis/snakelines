@@ -1,0 +1,8 @@
+Multiple include of /home/adog/snakelines/rules/mapping/index/samtools.snake ignored
+Building DAG of jobs...
+WorkflowError:
+Conda env file does not exist: /home/adog/snakelines/environments/clair.yml
+  File "/usr/lib/python3/dist-packages/snakemake/deployment/conda.py", line 202, in create
+  File "/usr/lib/python3/dist-packages/snakemake/deployment/conda.py", line 85, in hash
+  File "/usr/lib/python3/dist-packages/snakemake/deployment/conda.py", line 70, in content
+  File "/usr/lib/python3/dist-packages/snakemake/deployment/conda.py", line 41, in content

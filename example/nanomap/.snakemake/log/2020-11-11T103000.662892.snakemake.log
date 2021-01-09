@@ -1,0 +1,52 @@
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 1 (use --cores to define parallelism)
+Rules claiming more threads will be scaled down.
+Job counts:
+	count	jobs
+	2	minimap2__map_reads_to_reference
+	1	pipeline
+	3
+
+[Wed Nov 11 10:30:00 2020]
+rule minimap2__map_reads_to_reference:
+    input: reads/original/example_1.fastq, reference/sars_cov_2/sars_cov_2.fa
+    output: mapping/sars_cov_2/original/example_1.bam
+    log: mapping/sars_cov_2/sorted/log/example_1.log, mapping/sars_cov_2/sorted/log/example_1.err
+    jobid: 1
+    reason: Missing output files: mapping/sars_cov_2/original/example_1.bam
+    wildcards: reference=sars_cov_2, sample=example_1
+
+
+            minimap2                 -ax map-ont                 reference/sars_cov_2/sars_cov_2.fa                 reads/original/example_1.fastq                 > mapping/sars_cov_2/original/example_1.bam
+        
+[Wed Nov 11 10:30:01 2020]
+Finished job 1.
+1 of 3 steps (33%) done
+
+[Wed Nov 11 10:30:01 2020]
+rule minimap2__map_reads_to_reference:
+    input: reads/original/example_2.fastq, reference/sars_cov_2/sars_cov_2.fa
+    output: mapping/sars_cov_2/original/example_2.bam
+    log: mapping/sars_cov_2/sorted/log/example_2.log, mapping/sars_cov_2/sorted/log/example_2.err
+    jobid: 2
+    reason: Missing output files: mapping/sars_cov_2/original/example_2.bam
+    wildcards: reference=sars_cov_2, sample=example_2
+
+
+            minimap2                 -ax map-ont                 reference/sars_cov_2/sars_cov_2.fa                 reads/original/example_2.fastq                 > mapping/sars_cov_2/original/example_2.bam
+        
+[Wed Nov 11 10:30:01 2020]
+Finished job 2.
+2 of 3 steps (67%) done
+
+[Wed Nov 11 10:30:01 2020]
+localrule pipeline:
+    input: mapping/sars_cov_2/original/example_1.bam, mapping/sars_cov_2/original/example_2.bam
+    jobid: 0
+    reason: Input files updated by another job: mapping/sars_cov_2/original/example_1.bam, mapping/sars_cov_2/original/example_2.bam
+
+[Wed Nov 11 10:30:01 2020]
+Finished job 0.
+3 of 3 steps (100%) done
+Complete log: /home/adog/snakelines/example/nanomap/.snakemake/log/2020-11-11T103000.662892.snakemake.log

@@ -1,0 +1,120 @@
+Building DAG of jobs...
+Removing incomplete Conda environment /home/adog/snakelines/enviroments/fastqc.yaml...
+Creating conda environment /home/adog/snakelines/enviroments/fastqc.yaml...
+Downloading and installing remote packages.
+Environment for ../../enviroments/fastqc.yaml created (location: dba9c005)
+Using shell: /bin/bash
+Provided cores: 3
+Rules claiming more threads will be scaled down.
+Job counts:
+	count	jobs
+	2	clair__variant_call_mapped_reads
+	1	fastqc__html_summary_for_paired_reads
+	2	fastqc__quality_report
+	1	pipeline
+	6
+
+[Tue Dec 15 10:31:19 2020]
+rule fastqc__quality_report:
+    input: reads/original/example_1.fastq
+    output: reads/original/stats/example_1_fastqc.html, reads/original/stats/example_1_fastqc/summary.txt
+    log: reads/original/stats/log/example_1.log, reads/original/stats/log/example_1.err
+    jobid: 1
+    reason: Missing output files: reads/original/stats/example_1_fastqc.html
+    wildcards: read_type=original, stats_type=s, fastq=example_1
+    threads: 3
+
+
+        fastqc             -o reads/original/stats             --extract             --threads 3             reads/original/example_1.fastq         >  reads/original/stats/log/example_1.log         2> reads/original/stats/log/example_1.err
+        
+Activating conda environment: /home/adog/snakelines/example/nanomap/dba9c005
+[Tue Dec 15 10:31:48 2020]
+Finished job 1.
+1 of 6 steps (17%) done
+
+[Tue Dec 15 10:31:48 2020]
+rule fastqc__quality_report:
+    input: reads/original/example_2.fastq
+    output: reads/original/stats/example_2_fastqc.html, reads/original/stats/example_2_fastqc/summary.txt
+    log: reads/original/stats/log/example_2.log, reads/original/stats/log/example_2.err
+    jobid: 2
+    reason: Missing output files: reads/original/stats/example_2_fastqc.html
+    wildcards: read_type=original, stats_type=s, fastq=example_2
+    threads: 3
+
+
+        fastqc             -o reads/original/stats             --extract             --threads 3             reads/original/example_2.fastq         >  reads/original/stats/log/example_2.log         2> reads/original/stats/log/example_2.err
+        
+Activating conda environment: /home/adog/snakelines/example/nanomap/dba9c005
+[Tue Dec 15 10:31:57 2020]
+Finished job 2.
+2 of 6 steps (33%) done
+
+[Tue Dec 15 10:31:57 2020]
+rule fastqc__html_summary_for_paired_reads:
+    input: reads/original/stats/example_1_fastqc.html, reads/original/stats/example_2_fastqc.html
+    output: reads/original/stats/summary.html
+    jobid: 3
+    reason: Input files updated by another job: reads/original/stats/example_2_fastqc.html, reads/original/stats/example_1_fastqc.html
+    wildcards: read_type=original
+
+
+        python /home/adog/snakelines/rules/nanopore/reads/report/quality_report/scripts/fastqc-summary.py             reads/original/stats/summary.html             reads/original/stats/example_1_fastqc.html reads/original/stats/example_2_fastqc.html
+        
+[Tue Dec 15 10:31:58 2020]
+Finished job 3.
+3 of 6 steps (50%) done
+
+[Tue Dec 15 10:31:58 2020]
+rule clair__variant_call_mapped_reads:
+    input: mapping/sars_cov_2/original/example_1_sorted.bam, reference/sars_cov_2/sars_cov_2.fa, reference/sars_cov_2/sars_cov_2.fa.fai
+    output: variant/sars_cov_2/original/example_1.vcf
+    log: variant/sars_cov_2/original/log/example_1.log, variant/sars_cov_2/original/log/example_1.err
+    jobid: 6
+    reason: Missing output files: variant/sars_cov_2/original/example_1.vcf
+    wildcards: reference=sars_cov_2, map_type=original, sample=example_1
+    threads: 3
+
+
+        if [ -d variant/tmp ]; then rm -r variant/tmp; fi
+        mkdir variant/tmp
+        python3 $CLAIR callVarBamParallel             --chkpnt_fn ~/Clair/models/ont/model/model             --ref_fn reference/sars_cov_2/sars_cov_2.fa             --bam_fn mapping/sars_cov_2/original/example_1_sorted.bam             --includingAllContigs             --output_prefix "variant/tmp/a" > command.sh
+
+        cat command.sh | parallel -j3 --will-cite
+
+        #for i in variant/tmp/*.vcf
+        #do
+        #    if ! [ -z "$(tail -c 1 "$i")" ]; then echo "$i"; fi
+        #done | grep -f - command.sh | sh
+        
+        vcfcat variant/tmp/*.vcf | bcftools sort > variant/sars_cov_2/original/example_1.vcf
+        rm -r variant/tmp
+        
+Activating conda environment: /home/adog/snakelines/example/nanomap/d445cf3f
+[Tue Dec 15 10:32:11 2020]
+Error in rule clair__variant_call_mapped_reads:
+    jobid: 6
+    output: variant/sars_cov_2/original/example_1.vcf
+    log: variant/sars_cov_2/original/log/example_1.log, variant/sars_cov_2/original/log/example_1.err (check log file(s) for error message)
+    conda-env: /home/adog/snakelines/example/nanomap/d445cf3f
+    shell:
+        
+        if [ -d variant/tmp ]; then rm -r variant/tmp; fi
+        mkdir variant/tmp
+        python3 $CLAIR callVarBamParallel             --chkpnt_fn ~/Clair/models/ont/model/model             --ref_fn reference/sars_cov_2/sars_cov_2.fa             --bam_fn mapping/sars_cov_2/original/example_1_sorted.bam             --includingAllContigs             --output_prefix "variant/tmp/a" > command.sh
+
+        cat command.sh | parallel -j3 --will-cite
+
+        #for i in variant/tmp/*.vcf
+        #do
+        #    if ! [ -z "$(tail -c 1 "$i")" ]; then echo "$i"; fi
+        #done | grep -f - command.sh | sh
+        
+        vcfcat variant/tmp/*.vcf | bcftools sort > variant/sars_cov_2/original/example_1.vcf
+        rm -r variant/tmp
+        
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look above for error message
+Complete log: /home/adog/snakelines/example/nanomap/.snakemake/log/2020-12-15T103003.532036.snakemake.log

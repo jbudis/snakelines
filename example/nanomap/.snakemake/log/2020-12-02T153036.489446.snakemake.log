@@ -1,0 +1,44 @@
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 26
+Rules claiming more threads will be scaled down.
+Job counts:
+	count	jobs
+	2	nanoplot__quality_report
+	1	nanoplot_summary_report
+	1	pipeline
+	4
+
+[Wed Dec  2 15:30:36 2020]
+rule nanoplot_summary_report:
+    input: reads/original/example_1.fastq, reads/original/example_2.fastq
+    output: reads/original/stats/summary.html
+    jobid: 3
+    reason: Missing output files: reads/original/stats/summary.html
+    wildcards: read_type=original
+    threads: 26
+
+
+        mkdir reads/original/stats/tmp
+
+        NanoPlot             --outdir reads/original/stats/tmp             --threads 26             --fastq reads/original/example_1.fastq reads/original/example_2.fastq             --plots hex dot
+
+        mv reads/original/stats/tmp/NanoPlot-report.html reads/original/stats/summary.html
+        rm -r reads/original/stats/tmp
+        
+[Wed Dec  2 15:30:57 2020]
+Finished job 3.
+1 of 4 steps (25%) done
+
+[Wed Dec  2 15:30:57 2020]
+rule nanoplot__quality_report:
+    input: reads/original/example_1.fastq
+    output: reads/original/stats/example_1_fastqc.html, reads/original/stats/example_1_fastqc/summary.txt
+    log: reads/original/stats/log/example_1.log, reads/original/stats/log/example_1.err
+    jobid: 1
+    reason: Missing output files: reads/original/stats/example_1_fastqc.html
+    wildcards: read_type=original, stats_type=s, fastq=example_1
+    threads: 26
+
+RuleException in line 27 of /home/adog/snakelines/rules/nanopore/reads/report/quality_report/nanoplot.snake:
+NameError: The name 'read_type' is unknown in this context. Please make sure that you defined that variable. Also note that braces not used for variable access have to be escaped by repeating them, i.e. {{print $1}}

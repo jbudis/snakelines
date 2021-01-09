@@ -1,0 +1,6 @@
+CreateRuleException in line 1 of /home/adog/snakelines/rules/nanopore/mapping/index/samtools.snake:
+The name samtools__convert_sam_to_bam is already used by another rule
+  File "/home/adog/snakelines/snakelines.snake", line 22, in <module>
+  File "/home/adog/snakelines/src/common.snake", line 61, in <module>
+  File "/home/adog/snakelines/rules/nanopore/variant/caller/clair.snake", line 1, in <module>
+  File "/home/adog/snakelines/rules/nanopore/mapping/index/samtools.snake", line 1, in <module>

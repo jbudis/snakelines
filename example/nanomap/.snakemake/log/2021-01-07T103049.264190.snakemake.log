@@ -1,0 +1,4 @@
+IndexError in line 57 of /home/adog/snakelines/src/common.snake:
+Replacement index 1 out of range for positional args tuple
+  File "/home/adog/snakelines/snakelines.snake", line 22, in <module>
+  File "/home/adog/snakelines/src/common.snake", line 57, in <module>

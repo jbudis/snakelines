@@ -1,0 +1,6 @@
+Multiple include of /home/adog/snakelines/rules/mapping/index/samtools.snake ignored
+KeyError in line 13 of /home/adog/snakelines/rules/nanopore/variant/caller/clair.snake:
+'input_map_type'
+  File "/home/adog/snakelines/snakelines.snake", line 22, in <module>
+  File "/home/adog/snakelines/src/common.snake", line 61, in <module>
+  File "/home/adog/snakelines/rules/nanopore/variant/caller/clair.snake", line 13, in <module>

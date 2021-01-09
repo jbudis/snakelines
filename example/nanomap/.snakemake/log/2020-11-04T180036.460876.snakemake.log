@@ -1,0 +1,4 @@
+Building DAG of jobs...
+MissingInputException in line 46 of /home/adog/snakelines/snakelines.snake:
+Missing input files for rule pipeline:
+mapping/sars_cov_2/original/b01.fastq

@@ -1,0 +1,47 @@
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 1 (use --cores to define parallelism)
+Rules claiming more threads will be scaled down.
+Job counts:
+	count	jobs
+	1	pipeline
+	2	qualimap__mapping_quality_report_across_reference
+	1	qualimap__summarize_quality_reports
+	2	samtools__bam_index
+	2	samtools__sort_bam_by_position
+	8
+
+[Wed Nov 11 20:54:03 2020]
+rule samtools__sort_bam_by_position:
+    input: mapping/sars_cov_2/original/example_1.bam
+    output: mapping/sars_cov_2/original/example_1_sorted.bam
+    jobid: 13
+    reason: Missing output files: mapping/sars_cov_2/original/example_1_sorted.bam
+    wildcards: path=mapping/sars_cov_2/original, sample=example_1
+
+
+        samtools sort mapping/sars_cov_2/original/example_1.bam > mapping/sars_cov_2/original/example_1_sorted.bam
+        
+[Wed Nov 11 20:54:04 2020]
+Finished job 13.
+1 of 8 steps (12%) done
+
+[Wed Nov 11 20:54:04 2020]
+rule samtools__bam_index:
+    input: mapping/sars_cov_2/original/example_1_sorted.bam
+    output: mapping/sars_cov_2/original/example_1.bam.bai
+    jobid: 10
+    reason: Missing output files: mapping/sars_cov_2/original/example_1.bam.bai; Input files updated by another job: mapping/sars_cov_2/original/example_1_sorted.bam
+    wildcards: path=mapping/sars_cov_2/original, sample=example_1
+
+
+        samtools index mapping/sars_cov_2/original/example_1_sorted.bam
+        
+Waiting at most 5 seconds for missing files.
+MissingOutputException in line 37 of /home/adog/snakelines/rules/mapping/index/samtools.snake:
+Missing files after 5 seconds:
+mapping/sars_cov_2/original/example_1.bam.bai
+This might be due to filesystem latency. If that is the case, consider to increase the wait time with --latency-wait.
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look above for error message
+Complete log: /home/adog/snakelines/example/nanomap/.snakemake/log/2020-11-11T205402.452317.snakemake.log

@@ -1,0 +1,84 @@
+import pandas as pd
+
+# TODO Input read sequences may be deduplicated at first to speed up analysis - https://github.com/rdpstaff/classifier
+
+RDP_REFERENCES = '16srrna|fungallsu|fungalits_unite|fungalits_warcup'
+RDP_DEFAULT_CONFIDENCE = 0.8
+
+rule rdp__classify_reads:
+    """
+    Find closest homologue sequence for each sequenced fragment
+    :input reads: Joined sequenced fragments in fasta format
+    :output readtax: Individual taxonomy for each analysed fragment
+    :output taxonomy: Summary taxonomies of classified sequenced fragments
+    :params confidence: Minimal confidence threshold for taxonomy to be reported
+    :params database: Name of pre-built RDP database
+    """
+    input:
+        reads    = 'reads/%s/{sample}_RC.fastq.gz' % pipeline.preprocessed_read_type,
+    output:
+        readtax  = 'classification/{reference,%s}/samples/{sample}/readtax.tsv'  % RDP_REFERENCES,
+        taxonomy = 'classification/{reference,%s}/samples/{sample}/taxonomy.tsv' % RDP_REFERENCES
+    params:
+        confidence = method_config.get('confidence', RDP_DEFAULT_CONFIDENCE)
+    conda:
+        config['snakelines_dir'] + '/enviroments/rdptools.yaml'
+    shell:
+        '''
+        rdp_classifier classify \
+            --format fixrank \
+            --gene {wildcards.reference} \
+            --conf {params.confidence} \
+            --hier_outfile {output.taxonomy} \
+            --outputFile {output.readtax} \
+            {input.reads}
+        '''
+
+rule rdp__prepare_for_krona:
+    """
+    Convert RDP classification files into standardised format suitable for generation of Krona reports
+    :input classification: Summarized classification from RDP classifier
+    :output krona: Tabular format suitable for Krona report generation
+    """
+    input:
+        taxonomy  = 'classification/{reference}/samples/{sample}/taxonomy.tsv'
+    output:
+        krona    = 'classification/{reference}/report/krona/individual/{sample}.krn'
+    run:
+        TAX_RANKS = ['domain', 'phylum', 'class', 'subclass', 'order', 'suborder', 'family', 'genus']
+
+        # Load RDP classifier read counts per taxon
+        rdp = pd.read_csv(input.taxonomy, sep='\t', index_col=0)
+        rdp.columns = ['lineage', 'name', 'rank', 'readcount']
+        rdp = rdp[~pd.isnull(rdp['rank'])]
+        rdp = rdp[rdp.name != 'Root']
+
+        # Transform RDP tax into more readable syntax
+        def parse_tax(code):
+            items = code.split(';')[:-1]
+            items = [item.strip().strip('"') for item in items]
+            item_dict = {rank: taxname for rank, taxname in zip(items[1::2], items[0::2])}
+            max_rank = max([TAX_RANKS.index(rank) if rank in TAX_RANKS else -1 for rank in item_dict])
+
+            tax = ''
+            for rank in TAX_RANKS[:max_rank+1]:
+                rank_tax = item_dict.get(rank, 'Unknown')
+                tax = '%s;%s' % (tax, rank_tax)
+            tax = tax.strip(';')
+            return tax
+
+        rdp['tax'] = rdp.lineage.apply(parse_tax)
+        rdp.sort_values(by='tax', inplace=True)
+
+        # Calculate read counts per taxon
+        krona = rdp[['tax', 'readcount']].copy()
+
+        krona['taxlevel'] = krona.tax.apply(lambda x: x.count(';') + bool(len(x)))
+        for rowid, row in krona.iterrows():
+            subtaxes = krona[krona.tax.str.contains('^%s;+[^;]+$' % row.tax, regex=True)]
+            krona.set_value(rowid, 'readcount', row.readcount - subtaxes.readcount.sum())
+
+        # Store results into Krona ready file
+        with open(output.krona, 'w') as out:
+            for _, row in krona.iterrows():
+                out.write('%d\t%s\n' % (row.readcount, row.tax.replace(';', '\t')))

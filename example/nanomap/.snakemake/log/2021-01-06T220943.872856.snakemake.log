@@ -1,0 +1,13 @@
+Building DAG of jobs...
+Creating conda environment /home/adog/snakelines/enviroments/medaka.yaml...
+Downloading and installing remote packages.
+CreateCondaEnvironmentException:
+Could not create conda environment from /home/adog/snakelines/enviroments/medaka.yaml:
+Collecting package metadata (repodata.json): ...working... done
+Solving environment: ...working... failed
+
+ResolvePackageNotFound: 
+  - vcfcat
+
+
+  File "/usr/lib/python3/dist-packages/snakemake/deployment/conda.py", line 312, in create

@@ -1,0 +1,4 @@
+Building DAG of jobs...
+MissingInputException in line 1 of /home/adog/snakelines/rules/mapping/index/samtools.snake:
+Missing input files for rule samtools__convert_sam_to_bam:
+mapping/sars_cov_2/mapped/example_1.sam

@@ -35,6 +35,8 @@ def impute_read_types(pipeline, config):
     """
     # Impute read types into the read preprocess steps
     ORIGINAL_READS = 'original'
+    #print('IMPUTING READ TYPES')
+    #print(config)
 
     # TODO preprocessed should be called processed to unite with mapping
     setattr(pipeline, 'preprocessed_read_type', ORIGINAL_READS)

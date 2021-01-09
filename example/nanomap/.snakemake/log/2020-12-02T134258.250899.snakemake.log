@@ -1,0 +1,4 @@
+SyntaxError in line 2 of /home/adog/snakelines/rules/nanopore/reads/report/quality_report/nanoplot.snake:
+Unexpected keyword return in rule definition (nanoplot.snake, line 2)
+  File "/home/adog/snakelines/snakelines.snake", line 22, in <module>
+  File "/home/adog/snakelines/src/common.snake", line 61, in <module>

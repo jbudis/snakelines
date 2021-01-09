@@ -1,0 +1,4 @@
+Multiple include of /home/adog/snakelines/rules/mapping/index/samtools.snake ignored
+Building DAG of jobs...
+Nothing to be done.
+Complete log: /home/adog/snakelines/example/nanomap/.snakemake/log/2020-11-29T150450.686190.snakemake.log

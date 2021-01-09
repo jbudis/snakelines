@@ -1,0 +1,5 @@
+Building DAG of jobs...
+InputFunctionException in line 5 of /home/adog/snakelines/rules/nanopore/reads/report/quality_report/nanoplot.snake:
+KeyError: 'sample'
+Wildcards:
+read_type=original

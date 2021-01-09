@@ -1,0 +1,49 @@
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 26
+Rules claiming more threads will be scaled down.
+Job counts:
+	count	jobs
+	2	nanoplot__quality_report
+	1	pipeline
+	3
+
+[Wed Dec  2 15:32:46 2020]
+rule nanoplot__quality_report:
+    input: reads/original/example_1.fastq
+    output: reads/original/stats/example_1_fastqc.html, reads/original/stats/example_1_fastqc/summary.txt
+    log: reads/original/stats/log/example_1.log, reads/original/stats/log/example_1.err
+    jobid: 1
+    reason: Missing output files: reads/original/stats/example_1_fastqc.html
+    wildcards: read_type=original, stats_type=s, fastq=example_1
+    threads: 26
+
+
+        NanoPlot             --outdir reads/original/stats
+            --threads 26             --fastq reads/original/example_1.fastq             --plots hex dot
+
+        cd reads/original/stats
+        mv NanoStats.txt reads/original/stats/example_1_fastqc/summary.txt
+        mv NanoPlot-report.html reads/original/stats/example_1_fastqc.html
+        
+Activating conda environment: /home/adog/snakelines/example/nanomap/bedc66e1
+[Wed Dec  2 15:33:06 2020]
+Error in rule nanoplot__quality_report:
+    jobid: 1
+    output: reads/original/stats/example_1_fastqc.html, reads/original/stats/example_1_fastqc/summary.txt
+    log: reads/original/stats/log/example_1.log, reads/original/stats/log/example_1.err (check log file(s) for error message)
+    conda-env: /home/adog/snakelines/example/nanomap/bedc66e1
+    shell:
+        
+        NanoPlot             --outdir reads/original/stats
+            --threads 26             --fastq reads/original/example_1.fastq             --plots hex dot
+
+        cd reads/original/stats
+        mv NanoStats.txt reads/original/stats/example_1_fastqc/summary.txt
+        mv NanoPlot-report.html reads/original/stats/example_1_fastqc.html
+        
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look above for error message
+Complete log: /home/adog/snakelines/example/nanomap/.snakemake/log/2020-12-02T153246.191940.snakemake.log

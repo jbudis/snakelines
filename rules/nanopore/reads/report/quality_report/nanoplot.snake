@@ -1,0 +1,57 @@
+def all_fastq_files(read_type):
+    return expand('reads/%s/{sample}.fastq' % read_type, sample=pipeline.samples)
+
+
+rule nanoplot_summary_report:
+    input:
+        reads = all_fastq_files
+    output:
+        html = 'reads/{read_type}/stats/summary.html'
+    threads:
+        int(config['threads'])
+    shell:
+        """
+        mkdir reads/{wildcards.read_type}/stats/tmp
+
+        NanoPlot \
+            --outdir reads/{wildcards.read_type}/stats/tmp \
+            --threads {threads} \
+            --fastq {input.reads} \
+            --plots hex dot
+
+        mv reads/{wildcards.read_type}/stats/tmp/NanoPlot-report.html {output.html}
+        rm -r reads/{wildcards.read_type}/stats/tmp
+        """
+
+
+rule nanoplot__quality_report:
+    """
+    Generate HTML report with plots assessing various quality control aspects of ONT reads
+    :input reads: Sequenced reads in fastq format
+    :output html: Quality report in HTML format
+    :output txt: Quality report in text format suitable for automated processing
+    """
+    input:
+        reads = 'reads/{read_type}/{fastq}.fastq'
+    output:
+        html = 'reads/{read_type}/stat{stats_type}/{fastq}_fastqc.html',
+        txt = 'reads/{read_type}/stat{stats_type}/{fastq}_fastqc/summary.txt'
+    threads:
+        int(config['threads'])
+    log:
+        out = 'reads/{read_type}/stat{stats_type}/log/{fastq}.log',
+        err = 'reads/{read_type}/stat{stats_type}/log/{fastq}.err',
+    conda:
+        config['snakelines_dir'] + '/enviroments/nanoplot.yaml'
+    shell:
+        """
+        NanoPlot \
+            --outdir reads/{wildcards.read_type}/stat{wildcards.stats_type} \
+            --threads {threads} \
+            --fastq {input.reads} \
+            --plots hex dot
+
+        cd reads/{wildcards.read_type}/stat{wildcards.stats_type}
+        mv NanoStats.txt {output.txt}
+        mv NanoPlot-report.html {output.html}
+        """

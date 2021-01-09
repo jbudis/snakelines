@@ -35,5 +35,3 @@ rule fastuniq__deduplicate_reads:
         gzip --keep {output.unzipped_r2}
         """
 
-
-    

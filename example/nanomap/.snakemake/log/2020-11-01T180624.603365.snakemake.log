@@ -1,0 +1,4 @@
+AssertionError in line 25 of /home/adog/snakelines/snakelines.snake:
+ERROR: missing values in dependency config file: nanopore/mapping/mapper
+  File "/home/adog/snakelines/snakelines.snake", line 25, in <module>
+  File "/home/adog/snakelines/src/config/dependency_load.py", line 79, in check_dependency

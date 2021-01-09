@@ -1,0 +1,56 @@
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 1 (use --cores to define parallelism)
+Rules claiming more threads will be scaled down.
+Job counts:
+	count	jobs
+	2	minimap2__map_reads_to_reference
+	1	pipeline
+	2	qualimap__mapping_quality_report_across_reference
+	1	qualimap__summarize_quality_reports
+	2	samtools__bam_index
+	2	samtools__convert_sam_to_bam
+	10
+
+[Wed Nov 11 16:57:49 2020]
+rule minimap2__map_reads_to_reference:
+    input: reads/original/example_1.fastq, reference/sars_cov_2/sars_cov_2.fa
+    output: mapping/sars_cov_2/original/example_1.sam
+    log: mapping/sars_cov_2/sorted/log/example_1.log, mapping/sars_cov_2/sorted/log/example_1.err
+    jobid: 4
+    reason: Missing output files: mapping/sars_cov_2/original/example_1.sam
+    wildcards: reference=sars_cov_2, sample=example_1
+
+
+            minimap2                 -ax map-ont                 reference/sars_cov_2/sars_cov_2.fa                 reads/original/example_1.fastq                 > mapping/sars_cov_2/original/example_1.sam
+        
+[Wed Nov 11 16:57:49 2020]
+Finished job 4.
+1 of 10 steps (10%) done
+
+[Wed Nov 11 16:57:49 2020]
+rule samtools__convert_sam_to_bam:
+    input: mapping/sars_cov_2/original/example_1.sam
+    output: mapping/sars_cov_2/original/example_1.bam
+    jobid: 9
+    reason: Missing output files: mapping/sars_cov_2/original/example_1.bam; Input files updated by another job: mapping/sars_cov_2/original/example_1.sam
+    wildcards: path=mapping/sars_cov_2/original, sample=example_1
+
+
+        samtools vie -S -b mapping/sars_cov_2/original/example_1.sam > mapping/sars_cov_2/original/example_1.bam
+        
+[Wed Nov 11 16:57:49 2020]
+Error in rule samtools__convert_sam_to_bam:
+    jobid: 9
+    output: mapping/sars_cov_2/original/example_1.bam
+    shell:
+        
+        samtools vie -S -b mapping/sars_cov_2/original/example_1.sam > mapping/sars_cov_2/original/example_1.bam
+        
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Removing output files of failed job samtools__convert_sam_to_bam since they might be corrupted:
+mapping/sars_cov_2/original/example_1.bam
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look above for error message
+Complete log: /home/adog/snakelines/example/nanomap/.snakemake/log/2020-11-11T165747.685608.snakemake.log

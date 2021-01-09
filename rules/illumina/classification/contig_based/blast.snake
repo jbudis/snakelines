@@ -1,0 +1,199 @@
+import pickle
+import pandas as pd
+from glob import glob
+from Bio import SeqIO
+
+blast_binaries = {
+    ('nucleotide', 'nucleotide'): 'blastn',
+    ('nucleotide', 'protein'):    'blastx',
+    ('protein',    'nucleotide'): 'tblastn',
+    ('protein',    'protein'):    'blastp'
+}
+
+blast_db_suffices = {
+    'nucleotide': 'nsq',
+    'protein':    'psq'
+}
+
+reference_config = method_config['reference']
+
+def find_blast_db(wildcards):
+    """
+    Determine path to the blast index files according to reference name and type of sequences (nucleotide/protein)
+    """
+    target_type = reference_config[wildcards.reference]['target_type']
+
+    db_suffix = blast_db_suffices[target_type]
+    indices = glob('reference/{reference}/blast_index/{reference}.*{db_suffix}' \
+                        .format(reference=wildcards.reference, db_suffix=db_suffix))
+    if indices:
+        return indices
+
+    return 'reference/{reference}/blast_index/{reference}.{db_suffix}' \
+                        .format(reference=wildcards.reference, db_suffix=db_suffix)
+
+rule blast__find_homologues:
+    """
+    Find homologues for input sequences stored in fasta file in query reference database.
+    :input blast_db: Blast index of reference sequences, made by makeblastdb command
+    :input fasta: Genomic sequences to be classified
+    :output tsv: Homologues for input sequences in tabular format
+    :param nohead: Auxiliary file for immediate results
+    :param header: Auxiliary file for immediate results
+    :param max_target_seqs: Maximal number of homologue sequences to be reported for each query sequence
+    :param blast_binary: Blast tool to use - this differ in types of input files (nucleotide/protein)
+    :param blast_database: Prefix name of the input blast database files
+    """
+    input:
+        blast_db = find_blast_db,
+        fasta   = '{indir}/{name}.fa'
+    output:
+        tsv     = '{indir}/blast/{reference}/{name}.blast.tsv'
+    log:
+        out     = '{indir}/blast/{reference}/log/{name}.log',
+        err     = '{indir}/blast/{reference}/log/{name}.err'
+    params:
+        nohead  = '{indir}/blast/{reference}/{name}.blast.tsv.tmp',
+        header  = '{indir}/blast/{reference}/{name}.blast.tsv.tmp.header',
+        max_target_seqs = lambda wc: reference_config[wc.reference]['max_target_seqs'],
+        blast_binary    = lambda wc: blast_binaries[(reference_config[wc.reference]['query_type'],
+                                                     reference_config[wc.reference]['target_type'])],
+        blast_database  = 'reference/{reference}/blast_index/{reference}'
+    threads:
+        int(config['threads'])
+    conda:
+        config['snakelines_dir'] + '/enviroments/blast.yaml'
+    shell:
+        """
+        set +e pipefail
+        HEADER="qseqid \
+                sacc staxid stitle \
+                pident evalue length mismatch \
+                gapopen qstart qend \
+                sstart send \
+                qlen slen"
+
+        # TODO really ugly way to get header to the blast table, find better way
+        HEADER=`echo "$HEADER" | sed -E -e  's/[[:blank:]]+/\t/g'`
+        echo $HEADER  > {params.header}
+        sed -i 's/\s/\t/g' {params.header}
+
+        {params.blast_binary} \
+            -db {params.blast_database} \
+            -query {input.fasta} \
+            -out {params.nohead} \
+            -outfmt "6 `echo $HEADER`" \
+            -num_threads {threads} \
+            -max_target_seqs {params.max_target_seqs} \
+        >  {log.out} \
+        2> {log.err}
+
+        cat {params.header} {params.nohead} > {output}
+        rm {params.header} {params.nohead}
+        """
+
+# TODO this works for NCBI databases only find a way to load taxonomy directly from blast indices
+# TODO absolute path
+rule blast__annotate_with_taxonomy:
+    """
+    Append additional column to the blast tabular output with the taxonomy of homology sequence
+    :input blast: Blast tabular output
+    :input taxes: Preprocessed taxonomies in .pickle
+    :output blast: Blast tabular output with additional column with the taxonomy of homology sequence
+    """
+    input:
+        blast = '{indir}/blast/{name}.blast.tsv',
+        taxes = '/data/genome/metagenome/blast/nt/17-01-17/taxonomy/code_taxonomy.pickle'
+    output:
+        blast = '{indir}/blast/{name}.blast.tax.tsv'
+    run:
+        taxes = pickle.load(open(input.taxes, 'rb'))
+
+        def get_tax(taxid):
+            if not taxid or taxid == 'N/A':
+                return 'Unknown'
+            taxid = int(taxid)
+            return ';'.join(taxes.get(taxid, ''))
+
+        with open(input.blast) as in_blast, open(output.blast, 'w') as out_blast:
+            for i, line in enumerate(in_blast):
+                items = line.strip().split("\t")
+                if i == 0:
+                    tax_col = items.index('staxid')
+                    to_insert = 'taxonomy'
+                else:
+                    tax = get_tax(items[tax_col])
+                    to_insert = tax
+
+                items = items[:tax_col] + [to_insert] + items[tax_col:]
+                out_blast.write('\t'.join(items))
+                out_blast.write('\n')
+
+
+rule blast__prepare_reference_index_for_nucleotide:
+    """
+    Creates blast indices from genomic sequences.
+    :input fa: Genomic nucleotide sequences in fasta format
+    :output nhr: Part of blast index
+    :output nin: Part of blast index
+    :output nsq: Part of blast index
+    :params index_prefix: Prefix name of output blast database files
+    """
+    input:
+        fa  = 'reference/{reference}/{reference}.fa'
+    output:
+        nhr = protected('reference/{reference}/blast_index/{reference}.nhr'),
+        nin = protected('reference/{reference}/blast_index/{reference}.nin'),
+        nsq = protected('reference/{reference}/blast_index/{reference}.nsq')
+    log:
+        out = 'reference/{reference}/blast_index/log/{reference}.log',
+        err = 'reference/{reference}/blast_index/log/{reference}.err'
+    params:
+        index_prefix = 'reference/{reference}/blast_index/{reference}'
+    conda:
+        config['snakelines_dir'] + '/enviroments/blast.yaml'
+    shell:
+        """
+        makeblastdb \
+            -in {input.fa} \
+            -input_type fasta \
+            -dbtype nucl \
+            -title {wildcards.reference} \
+            -out {params.index_prefix} \
+        >  {log.out} \
+        2> {log.err}
+        """
+
+rule blast__prepare_reference_index_for_protein:
+    """
+    Creates blast indices from protein sequences.
+    :input fa: Genomic protein sequences in fasta format
+    :output phr: Part of blast index
+    :output pin: Part of blast index
+    :output psq: Part of blast index
+    :params index_prefix: Prefix name of output blast database files
+    """
+    input:
+        fa  = 'reference/{reference}/{reference}.fa'
+    output:
+        phr = protected('reference/{reference}/blast_index/{reference}.phr'),
+        pin = protected('reference/{reference}/blast_index/{reference}.pin'),
+        psq = protected('reference/{reference}/blast_index/{reference}.psq')
+    log:
+        out = 'reference/{reference}/blast_index/log/{reference}.log',
+        err = 'reference/{reference}/blast_index/log/{reference}.err'
+    params:
+        index_prefix = 'reference/{reference}/blast_index/{reference}'
+    conda:
+        config['snakelines_dir'] + '/enviroments/blast.yaml'
+    shell:
+        """
+        makeblastdb \
+            -in {input.fa} \
+            -input_type fasta \
+            -dbtype prot \
+            -title {wildcards.reference} \
+            -out {params.index_prefix} \
+        >  {log.out} \
+        2> {log.err}
+        """

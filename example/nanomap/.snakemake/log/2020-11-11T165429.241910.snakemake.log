@@ -1,0 +1,47 @@
+Building DAG of jobs...
+Job counts:
+	count	jobs
+	2	minimap2__map_reads_to_reference
+	1	pipeline
+	2	qualimap__mapping_quality_report_across_reference
+	1	qualimap__summarize_quality_reports
+	2	samtools__bam_index
+	2	samtools__convert_sam_to_bam
+	10
+
+[Wed Nov 11 16:54:30 2020]
+rule minimap2__map_reads_to_reference:
+    input: reads/original/example_1.fastq, reference/sars_cov_2/sars_cov_2.fa
+    output: mapping/sars_cov_2/original/example_1.sam
+    log: mapping/sars_cov_2/sorted/log/example_1.log, mapping/sars_cov_2/sorted/log/example_1.err
+    jobid: 4
+    reason: Missing output files: mapping/sars_cov_2/original/example_1.sam
+    wildcards: reference=sars_cov_2, sample=example_1
+
+
+            minimap2                 -ax map-ont                 reference/sars_cov_2/sars_cov_2.fa                 reads/original/example_1.fastq                 > mapping/sars_cov_2/original/example_1.sam
+        
+
+[Wed Nov 11 16:54:30 2020]
+rule minimap2__map_reads_to_reference:
+    input: reads/original/example_2.fastq, reference/sars_cov_2/sars_cov_2.fa
+    output: mapping/sars_cov_2/original/example_2.sam
+    log: mapping/sars_cov_2/sorted/log/example_2.log, mapping/sars_cov_2/sorted/log/example_2.err
+    jobid: 5
+    reason: Missing output files: mapping/sars_cov_2/original/example_2.sam
+    wildcards: reference=sars_cov_2, sample=example_2
+
+
+            minimap2                 -ax map-ont                 reference/sars_cov_2/sars_cov_2.fa                 reads/original/example_2.fastq                 > mapping/sars_cov_2/original/example_2.sam
+        
+
+[Wed Nov 11 16:54:30 2020]
+rule samtools__convert_sam_to_bam:
+    input: mapping/sars_cov_2/original/example_2.sam
+    output: mapping/sars_cov_2/original/example_2.bam
+    jobid: 11
+    reason: Missing output files: mapping/sars_cov_2/original/example_2.bam; Input files updated by another job: mapping/sars_cov_2/original/example_2.sam
+    wildcards: path=mapping/sars_cov_2/original, sample=example_2
+
+RuleException in line 18 of /home/adog/snakelines/rules/mapping/index/samtools.snake:
+'InputFiles' object has no attribute 'sam'

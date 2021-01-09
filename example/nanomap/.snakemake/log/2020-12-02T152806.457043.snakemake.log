@@ -1,0 +1,46 @@
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 26
+Rules claiming more threads will be scaled down.
+Job counts:
+	count	jobs
+	2	nanoplot__quality_report
+	1	nanoplot_summary_report
+	1	pipeline
+	4
+
+[Wed Dec  2 15:28:06 2020]
+rule nanoplot_summary_report:
+    input: reads/original/example_1.fastq, reads/original/example_2.fastq
+    output: reads/original/stats/summary.html
+    jobid: 3
+    reason: Missing output files: reads/original/stats/summary.html
+    wildcards: read_type=original
+    threads: 26
+
+
+        mkdir reads/original/stats/tmp
+
+        NanoPlot             --outdir reads/original/stats/tmp             --threads 26             --fastq reads/original/example_1.fastq reads/original/example_2.fastq             --plots hex dot
+
+        mv reads/original/stats/tmp/NanoPlot-report.html reads/original/stats/summary.html
+        rm -r reads/original/stats/tmp
+        
+[Wed Dec  2 15:28:06 2020]
+Error in rule nanoplot_summary_report:
+    jobid: 3
+    output: reads/original/stats/summary.html
+    shell:
+        
+        mkdir reads/original/stats/tmp
+
+        NanoPlot             --outdir reads/original/stats/tmp             --threads 26             --fastq reads/original/example_1.fastq reads/original/example_2.fastq             --plots hex dot
+
+        mv reads/original/stats/tmp/NanoPlot-report.html reads/original/stats/summary.html
+        rm -r reads/original/stats/tmp
+        
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look above for error message
+Complete log: /home/adog/snakelines/example/nanomap/.snakemake/log/2020-12-02T152806.457043.snakemake.log

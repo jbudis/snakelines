@@ -1,0 +1,40 @@
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 10
+Rules claiming more threads will be scaled down.
+Job counts:
+	count	jobs
+	2	clair__variant_call_mapped_reads
+	1	pipeline
+	3
+
+[Mon Nov 30 09:25:27 2020]
+rule clair__variant_call_mapped_reads:
+    input: mapping/sars_cov_2/original/example_1_sorted.bam, reference/sars_cov_2/sars_cov_2.fa, reference/sars_cov_2/sars_cov_2.fa.fai
+    output: variant/sars_cov_2/original/example_1/
+    log: variant/sars_cov_2/original/log/example_1.log, variant/sars_cov_2/original/log/example_1.err
+    jobid: 6
+    reason: Missing output files: variant/sars_cov_2/original/example_1/
+    wildcards: reference=sars_cov_2, map_type=original, sample=example_1
+    threads: 10
+
+
+        python3 $CLAIR callVarBamParallel             --chkpnt_fn ~/Clair/models/ont/model/model             --ref_fn reference/sars_cov_2/sars_cov_2.fa             --bam_fn mapping/sars_cov_2/original/example_1_sorted.bam             --includingAllContigs             --output_prefix variant/sars_cov_2/original/example_1/var > command.sh
+
+        cat command.sh | parallel -j10 --will-cite
+
+        #for i in variant/sars_cov_2/original/example_1/*.vcf
+        #do
+        #    if ! [ -z "$(tail -c 1 "$i")" ]; then echo "$i"; fi
+        #done | grep -f - command.sh | sh
+        
+Activating conda environment: /home/adog/snakelines/example/nanomap/1d042689
+ImproperOutputException in line 3 of /home/adog/snakelines/rules/nanopore/variant/caller/clair.snake:
+Outputs of incorrect type (directories when expecting files or vice versa). Output directories must be flagged with directory(). for rule clair__variant_call_mapped_reads:
+variant/sars_cov_2/original/example_1/
+Removing output files of failed job clair__variant_call_mapped_reads since they might be corrupted:
+variant/sars_cov_2/original/example_1/
+Skipped removing non-empty directory variant/sars_cov_2/original/example_1/
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look above for error message
+Complete log: /home/adog/snakelines/example/nanomap/.snakemake/log/2020-11-30T092527.590260.snakemake.log

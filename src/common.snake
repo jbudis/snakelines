@@ -15,11 +15,13 @@ def configured_temp(output_file):
     """
     return temp(output_file) if method_config.get('temporary', False) else output_file
 
+
 # create pipeline
 pipeline = Pipeline()
 
 DEFAULT_SAMPLE_CONFIGURATION = [{'name': '.*'}]
-DEFAULT_SAMPLE_LOCATION = 'reads/original/{}_R1.fastq.gz'
+read_names = {'nanopore': '{}.fastq', 'illumina': '{}_R1.fastq.gz'}
+DEFAULT_SAMPLE_LOCATION = 'reads/original/' + read_names[config['platform']]
 sample_configurations = config.get('samples', DEFAULT_SAMPLE_CONFIGURATION)
 for sample_configuration in sample_configurations:
 
@@ -52,11 +54,18 @@ if not 'tmp_dir' in config:
     config['tmp_dir'] = tempfile.gettempdir()
 
 # load imports
-rules_dir = '{}/rules'.format(config['snakelines_dir'])
+rules_dir = '{}/rules'.format(config['snakelines_dir']) +'/{}'
 for import_file, method_config in import_files_in_config(config, rules_dir):
-    assert os.path.isfile(import_file), 'Configured snake file {} does not exist'.format(import_file)
-    print('Importing snakefile:', import_file, file=sys.stderr)
-    include: import_file
+    rule_platform = import_file.format(config['platform'])
+    rule_shared = import_file.format('shared')
+    if os.path.isfile(rule_platform):
+        print('Importing snakefile:', rule_platform, file=sys.stderr)
+        include: rule_platform
+    elif os.path.isfile(rule_shared):
+        print('Importing snakefile:', rule_shared, file=sys.stderr)
+        include: rule_shared
+    else:
+        assert os.path.isfile(import_file), 'Configured snake file {} does not exist'.format(import_file)
 
 # Find in configuration map post-process types for which should be report generated
 map_types_with_quality_report = extract_from_config(config, ['mapping', 'report', 'quality_report', 'map_types'], [])

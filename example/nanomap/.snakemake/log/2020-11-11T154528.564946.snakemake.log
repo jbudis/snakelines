@@ -1,0 +1,4 @@
+Building DAG of jobs...
+MissingInputException in line 61 of /home/adog/snakelines/rules/nanopore/reads/report/quality_report/fastqc.snake:
+Missing input files for rule fastqc__quality_report:
+reads/mapper/example_1.fastq

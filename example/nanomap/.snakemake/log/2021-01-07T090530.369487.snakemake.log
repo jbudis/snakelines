@@ -1,0 +1,61 @@
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 3
+Rules claiming more threads will be scaled down.
+Job counts:
+	count	jobs
+	2	clair__variant_call_mapped_reads
+	1	pipeline
+	3
+
+[Thu Jan  7 09:05:31 2021]
+rule clair__variant_call_mapped_reads:
+    input: mapping/sars_cov_2/original/example_1_sorted.bam, reference/sars_cov_2/sars_cov_2.fa, reference/sars_cov_2/sars_cov_2.fa.fai
+    output: variant/sars_cov_2/original/example_1.vcf
+    log: variant/sars_cov_2/original/log/example_1.log, variant/sars_cov_2/original/log/example_1.err
+    jobid: 3
+    reason: Missing output files: variant/sars_cov_2/original/example_1.vcf
+    wildcards: reference=sars_cov_2, map_type=original, sample=example_1
+    threads: 3
+
+
+        if [ -d variant/tmp ]; then rm -r variant/tmp; fi
+        mkdir variant/tmp
+        python3 $CLAIR callVarBamParallel             --chkpnt_fn ~/Clair/models/ont/model/model             --ref_fn reference/sars_cov_2/sars_cov_2.fa             --bam_fn mapping/sars_cov_2/original/example_1_sorted.bam             --includingAllContigs             --output_prefix "variant/tmp/a" > command.sh
+
+        cat command.sh | parallel -j3 --will-cite
+
+        #for i in variant/tmp/*.vcf
+        #do
+        #    if ! [ -z "$(tail -c 1 "$i")" ]; then echo "$i"; fi
+        #done | grep -f - command.sh | sh
+        
+        vcfcat variant/tmp/*.vcf | bcftools sort > variant/sars_cov_2/original/example_1.vcf
+        rm -r variant/tmp
+        
+Terminating processes on user request, this might take some time.
+[Thu Jan  7 09:05:36 2021]
+Error in rule clair__variant_call_mapped_reads:
+    jobid: 3
+    output: variant/sars_cov_2/original/example_1.vcf
+    log: variant/sars_cov_2/original/log/example_1.log, variant/sars_cov_2/original/log/example_1.err (check log file(s) for error message)
+    conda-env: /home/adog/snakelines/example/nanomap/9c740d0d
+    shell:
+        
+        if [ -d variant/tmp ]; then rm -r variant/tmp; fi
+        mkdir variant/tmp
+        python3 $CLAIR callVarBamParallel             --chkpnt_fn ~/Clair/models/ont/model/model             --ref_fn reference/sars_cov_2/sars_cov_2.fa             --bam_fn mapping/sars_cov_2/original/example_1_sorted.bam             --includingAllContigs             --output_prefix "variant/tmp/a" > command.sh
+
+        cat command.sh | parallel -j3 --will-cite
+
+        #for i in variant/tmp/*.vcf
+        #do
+        #    if ! [ -z "$(tail -c 1 "$i")" ]; then echo "$i"; fi
+        #done | grep -f - command.sh | sh
+        
+        vcfcat variant/tmp/*.vcf | bcftools sort > variant/sars_cov_2/original/example_1.vcf
+        rm -r variant/tmp
+        
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Complete log: /home/adog/snakelines/example/nanomap/.snakemake/log/2021-01-07T090530.369487.snakemake.log

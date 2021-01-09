@@ -1,0 +1,63 @@
+Multiple include of /home/adog/snakelines/rules/mapping/index/samtools.snake ignored
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 1 (use --cores to define parallelism)
+Rules claiming more threads will be scaled down.
+Job counts:
+	count	jobs
+	1	clair__variant_call_mapped_reads
+	1	pipeline
+	2
+
+[Wed Nov 25 16:48:25 2020]
+rule clair__variant_call_mapped_reads:
+    input: mapping/sars_cov_2/original/example_2_sorted.bam, reference/sars_cov_2/sars_cov_2.fa, reference/sars_cov_2/sars_cov_2.fa.fai
+    output: variant/sars_cov_2/original/example_2/
+    log: variant/sars_cov_2/original/log/example_2.log, variant/sars_cov_2/original/log/example_2.err
+    jobid: 10
+    reason: Missing output files: variant/sars_cov_2/original/example_2/
+    wildcards: reference=sars_cov_2, map_type=original, sample=example_2
+
+
+        python3 $CLAIR callVarBamParallel             --chkpnt_fn ~/Clair/models/ont/model/model             --ref_fn reference/sars_cov_2/sars_cov_2.fa             --bam_fn mapping/sars_cov_2/original/example_2_sorted.bam             --threshold 0.2             --includingAllContigs             --output_prefix variant/sars_cov_2/original/example_2/ > command.sh
+
+        cat command.sh | parallel -j2 --will-cite
+
+        for i in variant/sars_cov_2/original/example_2/*.vcf
+        do
+            if ! [ -z "$(tail -c 1 "$i")" ]; then echo "$i"; fi
+        done | grep -f - command.sh | sh
+
+
+        vcfcat variant/sars_cov_2/original/example_2/*.vcf | bcftools sort -m 2G | bgziptabix snp_and_indel.vcf.gz
+
+        rm command.sh
+        
+Terminating processes on user request, this might take some time.
+[Wed Nov 25 16:49:29 2020]
+Error in rule clair__variant_call_mapped_reads:
+    jobid: 10
+    output: variant/sars_cov_2/original/example_2/
+    log: variant/sars_cov_2/original/log/example_2.log, variant/sars_cov_2/original/log/example_2.err (check log file(s) for error message)
+    shell:
+        
+        python3 $CLAIR callVarBamParallel             --chkpnt_fn ~/Clair/models/ont/model/model             --ref_fn reference/sars_cov_2/sars_cov_2.fa             --bam_fn mapping/sars_cov_2/original/example_2_sorted.bam             --threshold 0.2             --includingAllContigs             --output_prefix variant/sars_cov_2/original/example_2/ > command.sh
+
+        cat command.sh | parallel -j2 --will-cite
+
+        for i in variant/sars_cov_2/original/example_2/*.vcf
+        do
+            if ! [ -z "$(tail -c 1 "$i")" ]; then echo "$i"; fi
+        done | grep -f - command.sh | sh
+
+
+        vcfcat variant/sars_cov_2/original/example_2/*.vcf | bcftools sort -m 2G | bgziptabix snp_and_indel.vcf.gz
+
+        rm command.sh
+        
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Removing output files of failed job clair__variant_call_mapped_reads since they might be corrupted:
+variant/sars_cov_2/original/example_2/
+Skipped removing non-empty directory variant/sars_cov_2/original/example_2/
+Complete log: /home/adog/snakelines/example/nanomap/.snakemake/log/2020-11-25T164824.388338.snakemake.log

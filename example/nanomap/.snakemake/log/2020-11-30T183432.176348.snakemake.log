@@ -1,0 +1,61 @@
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 26
+Rules claiming more threads will be scaled down.
+Job counts:
+	count	jobs
+	2	clair__variant_call_mapped_reads
+	1	pipeline
+	3
+
+[Mon Nov 30 18:34:32 2020]
+rule clair__variant_call_mapped_reads:
+    input: mapping/sars_cov_2/original/example_1_sorted.bam, reference/sars_cov_2/sars_cov_2.fa, reference/sars_cov_2/sars_cov_2.fa.fai
+    output: variant/sars_cov_2/original/example_1.vcf
+    log: variant/sars_cov_2/original/log/example_1.log, variant/sars_cov_2/original/log/example_1.err
+    jobid: 6
+    reason: Missing output files: variant/sars_cov_2/original/example_1.vcf
+    wildcards: reference=sars_cov_2, map_type=original, sample=example_1
+    threads: 26
+
+
+        mkdir variant/tmp
+        python3 $CLAIR callVarBamParallel             --chkpnt_fn ~/Clair/models/ont/model/model             --ref_fn reference/sars_cov_2/sars_cov_2.fa             --bam_fn mapping/sars_cov_2/original/example_1_sorted.bam             --includingAllContigs             --output_prefix "variant/tmp/a" > command.sh
+
+        cat command.sh | parallel -j26 --will-cite
+
+        for i in variant/tmp/
+        do
+            if ! [ -z "$(tail -c 1 "$i")" ]; then echo "$i"; fi
+        done | grep -f - command.sh | sh
+        
+        vcfcat variant/tmp/.* | bcftools sort | bgziptabix variant/sars_cov_2/original/example_1.vcf
+        rm -r variant/tmp
+        
+Activating conda environment: /home/adog/snakelines/example/nanomap/1d042689
+[Mon Nov 30 18:34:55 2020]
+Error in rule clair__variant_call_mapped_reads:
+    jobid: 6
+    output: variant/sars_cov_2/original/example_1.vcf
+    log: variant/sars_cov_2/original/log/example_1.log, variant/sars_cov_2/original/log/example_1.err (check log file(s) for error message)
+    conda-env: /home/adog/snakelines/example/nanomap/1d042689
+    shell:
+        
+        mkdir variant/tmp
+        python3 $CLAIR callVarBamParallel             --chkpnt_fn ~/Clair/models/ont/model/model             --ref_fn reference/sars_cov_2/sars_cov_2.fa             --bam_fn mapping/sars_cov_2/original/example_1_sorted.bam             --includingAllContigs             --output_prefix "variant/tmp/a" > command.sh
+
+        cat command.sh | parallel -j26 --will-cite
+
+        for i in variant/tmp/
+        do
+            if ! [ -z "$(tail -c 1 "$i")" ]; then echo "$i"; fi
+        done | grep -f - command.sh | sh
+        
+        vcfcat variant/tmp/.* | bcftools sort | bgziptabix variant/sars_cov_2/original/example_1.vcf
+        rm -r variant/tmp
+        
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look above for error message
+Complete log: /home/adog/snakelines/example/nanomap/.snakemake/log/2020-11-30T183432.176348.snakemake.log

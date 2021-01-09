@@ -1,0 +1,5 @@
+FileNotFoundError in line 25 of /home/adog/snakelines/snakelines.snake:
+[Errno 2] No such file or directory: '/home/adog/snakelines/src/dependency_shared.yaml'
+  File "/home/adog/snakelines/snakelines.snake", line 25, in <module>
+  File "/home/adog/snakelines/src/config/dependency_load.py", line 70, in check_dependency
+  File "/home/adog/snakelines/src/config/dependency_load.py", line 14, in load_yaml

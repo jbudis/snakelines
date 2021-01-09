@@ -18,11 +18,17 @@ if 'threads' not in config:
 if 'snakelines_dir' not in config:
     config['snakelines_dir'] = os.path.dirname(os.path.realpath(workflow.snakefile))
 
+if 'platform' in config:
+    if config['platform'] not in ['nanopore', 'illumina']:
+        print('Invalid platform')
+else:
+    print('Platform not defined')
+
 # Run startup scripts that automatically loads imports from src/ and load helper methods
 include: config['snakelines_dir'] + '/src/common.snake'
 
 # check dependencies and asses inputs and outputs
-outputs, copy_where = check_dependency(config['snakelines_dir'] + '/src/dependency.yaml', config)
+outputs, copy_where = check_dependency(config['snakelines_dir'] + '/src/dependency_{}.yaml', config)
 
 # function to evaluate output directories from dependency.yaml
 def get_files(source_dict):
@@ -42,6 +48,7 @@ def get_files(source_dict):
     return files_dict
 
 # "pipeline" rule that generates all of the required files
+#print(get_files(outputs))
 rule pipeline:
     input:
         **get_files(outputs)

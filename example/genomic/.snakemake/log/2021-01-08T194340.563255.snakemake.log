@@ -1,0 +1,5 @@
+WorkflowError in line 1 of /home/adog/snakelines/rules/illumina/reads/preprocess/decontaminated/bowtie2.snake:
+Failed to open /home/adog/snakelines/rules/mapping/mapper/indices/bowtie2_index.snake.
+  File "/home/adog/snakelines/snakelines.snake", line 24, in <module>
+  File "/home/adog/snakelines/src/common.snake", line 63, in <module>
+  File "/home/adog/snakelines/rules/illumina/reads/preprocess/decontaminated/bowtie2.snake", line 1, in <module>

@@ -1,0 +1,6 @@
+Multiple include of /home/adog/snakelines/rules/mapping/index/samtools.snake ignored
+Building DAG of jobs...
+MissingInputException in line 46 of /home/adog/snakelines/snakelines.snake:
+Missing input files for rule pipeline:
+variant/sars_cov_2/original/example_2/.vcf
+variant/sars_cov_2/original/example_1/.vcf

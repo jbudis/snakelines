@@ -1,0 +1,89 @@
+def fastq_files_joined(read_type):
+    """
+    All joined read files from the reads/{read_type}/ directory
+    """
+    return expand('reads/%s/stats-joined/{sample}_RM_fastqc.html' % read_type, sample=pipeline.samples)
+
+def fastq_files(read_type):
+    """
+    All read files from the reads/{read_type}/ directory
+    """
+    return expand('reads/%s/stats/{sample}_fastqc.html' % read_type, sample=pipeline.samples)
+
+
+# TODO change calling python script from shell to calling script from snakemake directly
+# This should be replaced with multiqc/allqc
+rule fastqc__html_summary_for_joined_reads:
+    """
+    Aggregate quality control results from all FastQC reports and generate summary HTML table with
+    PASS/WARN/FAIL icons
+    :input fastq_files: All joined Fastq files to quality report
+    :output summary: HTML report with summary statistics of multiple fastq files
+    :params summary_script: Script that generates summary report
+    """
+    input:
+        fastq_files = fastq_files_joined
+    output:
+        summary = 'reads/{read_type}/stats-joined/summary.html'
+    params:
+        summary_script = srcdir("scripts/fastqc-summary.py")
+    conda:
+        config['snakelines_dir'] + '/enviroments/fastqc.yaml'
+    shell:
+        """
+        python {params.summary_script} \
+            {output.summary} \
+            {input.fastq_files}
+        """
+
+# TODO change calling python script from shell to calling script from snakemake directly
+rule fastqc__html_summary_for_paired_reads:
+    """
+    Aggregate quality control results from all FastQC reports and generate summary HTML table with
+    PASS/WARN/FAIL icons
+    :input fastq_files: All Fastq files to quality report
+    :output summary: HTML report with summary statistics of multiple fastq files
+    :params summary_script: Script that generates summary report
+    """
+    input:
+        fastq_files = fastq_files
+    output:
+        summary = 'reads/{read_type}/stats/summary.html'
+    params:
+        summary_script = srcdir("scripts/fastqc-summary.py")
+    shell:
+        """
+        python {params.summary_script} \
+            {output} \
+            {input}
+        """
+
+rule fastqc__quality_report:
+    """
+    Generate HTML report with plots assessing various quality control aspects of NGS reads
+    :input reads: Sequenced reads in fastq format
+    :output html: Quality report in HTML format
+    :output txt: Quality report in text format suitable for automated processing
+    """
+    input:
+        reads = 'reads/{read_type}/{fastq}.fastq'
+    output:
+        html = 'reads/{read_type}/stat{stats_type}/{fastq}_fastqc.html',
+        txt = 'reads/{read_type}/stat{stats_type}/{fastq}_fastqc/summary.txt'
+    threads:
+        int(config['threads'])
+    log:
+        out = 'reads/{read_type}/stat{stats_type}/log/{fastq}.log',
+        err = 'reads/{read_type}/stat{stats_type}/log/{fastq}.err',
+    conda:
+        config['snakelines_dir'] + '/enviroments/fastqc.yaml'
+    shell:
+        """
+        fastqc \
+            -o reads/{wildcards.read_type}/stat{wildcards.stats_type} \
+            --extract \
+            --threads {threads} \
+            {input.reads} \
+        >  {log.out} \
+        2> {log.err}
+        """
