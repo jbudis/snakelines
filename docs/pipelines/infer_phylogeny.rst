@@ -38,7 +38,8 @@ How to run example:
 
    snakemake \
       --snakefile ../../snakelines.snake \
-      --configfile config_infer_phylogeny.yaml
+      --configfile config_infer_phylogeny.yaml \
+      -- use-conda
 
 Example configuration:
 

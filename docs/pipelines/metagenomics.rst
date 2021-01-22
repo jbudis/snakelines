@@ -81,7 +81,8 @@ Sequences of the ITS gene (store them as reference/unite/unite.fa) may be downlo
 
    snakemake \
       --snakefile ../../snakelines.snake \
-      --configfile config_metagenomics.yaml
+      --configfile config_metagenomics.yaml \
+      -- use-conda
 
 Example configuration:
 

@@ -53,7 +53,8 @@ How to run example:
 
    snakemake \
       --snakefile ../../snakelines.snake \
-      --configfile config_quality_report.yaml
+      --configfile config_quality_report.yaml \
+      -- use-conda
 
 Example configuration:
 

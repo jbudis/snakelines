@@ -33,7 +33,8 @@ How to run example:
 
    snakemake \
       --snakefile ../../snakelines.snake \
-      --configfile config_download_reference.yaml
+      --configfile config_download_reference.yaml \
+      -- use-conda
 
 Example configuration:
 

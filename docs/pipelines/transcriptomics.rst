@@ -66,7 +66,8 @@ How to run example:
 
    snakemake \
       --snakefile ../../snakelines.snake \
-      --configfile config_transcriptomics.yaml
+      --configfile config_transcriptomics.yaml \
+      -- use-conda
 
 Example configuration:
 

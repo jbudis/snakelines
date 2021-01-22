@@ -46,7 +46,8 @@ How to run example:
 
    snakemake \
       --snakefile ../../snakelines.snake \
-      --configfile config_assembly.yaml
+      --configfile config_assembly.yaml \
+      -- use-conda
 
 Example configuration:
 

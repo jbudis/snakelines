@@ -54,7 +54,8 @@ How to run example:
 
    snakemake \
       --snakefile ../../snakelines.snake \
-      --configfile config_variant_calling.yaml
+      --configfile config_variant_calling.yaml \
+      -- use-conda
 
 Example configuration:
 
