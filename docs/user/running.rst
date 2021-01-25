@@ -229,6 +229,7 @@ The number of threads for each task may be specified in a Snakemake call as:
    snakemake \
       --snakefile /usr/local/snakelines/snakelines.snake \
       --configfile config_variant_calling.yaml \
+      --use-conda \
       --config threads=8
 
 Alternately, user may specify the number of threads directly in a configuration file:

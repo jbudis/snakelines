@@ -39,7 +39,7 @@ How to run example:
    snakemake \
       --snakefile ../../snakelines.snake \
       --configfile config_infer_phylogeny.yaml \
-      -- use-conda
+      --use-conda
 
 Example configuration:
 

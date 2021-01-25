@@ -54,7 +54,7 @@ How to run example:
    snakemake \
       --snakefile ../../snakelines.snake \
       --configfile config_quality_report.yaml \
-      -- use-conda
+      --use-conda
 
 Example configuration:
 

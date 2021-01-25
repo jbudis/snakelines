@@ -48,7 +48,7 @@ How to run example:
    snakemake \
       --snakefile ../../snakelines.snake \
       --configfile config_methylseq.yaml \
-      -- use-conda
+      --use-conda
 
 Example configuration:
 

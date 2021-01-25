@@ -60,7 +60,7 @@ How to run example:
    snakemake \
       --snakefile ../../snakelines.snake \
       --configfile config_download_reference_and_mapping.yaml \
-      -- use-conda
+      --use-conda
 
 Example configuration:
 

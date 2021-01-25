@@ -47,7 +47,7 @@ How to run example:
    snakemake \
       --snakefile ../../snakelines.snake \
       --configfile config_viral_identification.yaml \
-      -- use-conda
+      --use-conda
 
 Example configuration:
 
