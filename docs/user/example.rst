@@ -36,4 +36,4 @@ Assuming, that sources are downloaded in /usr/local/snakelines, `variant_calling
    snakemake \
       --snakefile ../../snakelines.snake \
       --configfile config_variant_calling.yaml \
-      -- use-conda
+      --use-conda
