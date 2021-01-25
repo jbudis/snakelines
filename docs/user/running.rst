@@ -117,7 +117,7 @@ If SnakeLines was installed as a Conda package, there is a wrapper script availa
 
 .. code:: bash
 
-   snakelines --configfile config_variant_calling.yaml
+   snakelines --configfile config_variant_calling.yaml --use-conda
 
 You can set all parameters from ``snakemake`` in ``snakelines`` wrapper.
 
