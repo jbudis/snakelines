@@ -1,3 +1,4 @@
+platform: paired_end
 samples:                                   # List of sample categories to be analysed
     - reference: lacto_supplied            # Reference genome for reads in the category (reference/lacto_supplied/lacto_supplied.fa)
 

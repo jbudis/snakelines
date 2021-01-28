@@ -18,11 +18,19 @@ if 'threads' not in config:
 if 'snakelines_dir' not in config:
     config['snakelines_dir'] = os.path.dirname(os.path.realpath(workflow.snakefile))
 
+if 'platform' in config:
+    if config['platform'] not in ['single_end', 'pair_end']:
+        print('ERROR: Invalid platform')
+        sys.exit(1)
+else:
+    print('ERROR: Platform not defined')
+    sys.exit(1)
+
 # Run startup scripts that automatically loads imports from src/ and load helper methods
 include: config['snakelines_dir'] + '/src/common.snake'
 
 # check dependencies and asses inputs and outputs
-outputs, copy_where = check_dependency(config['snakelines_dir'] + '/src/dependency.yaml', config)
+outputs, copy_where = check_dependency(config['snakelines_dir'] + '/src/dependency_{}.yaml', config)
 
 # function to evaluate output directories from dependency.yaml
 def get_files(source_dict):

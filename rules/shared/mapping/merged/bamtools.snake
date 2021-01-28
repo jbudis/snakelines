@@ -1,0 +1,33 @@
+include: config['snakelines_dir'] + '/rules/shared/mapping/index/samtools.snake'
+
+def all_bams(wildcards):
+    return expand('mapping/{reference}/{map_type}/{sample}.bam',
+                   sample=pipeline.samples_for(wildcards.reference), reference=wildcards.reference,
+                   map_type=pipeline.postprocessed_map_type)
+
+rule bamtools__merge_bams_into_single_bam_file:
+    """
+    Merge mapped reads in BAM files into a single BAM file
+    :input bams: BAM files with mapped reads
+    :output bam: single BAM file with all reads from input BAM files
+    :output list: List of files that were used for merging (one line per file)
+    """
+    input:
+        bams = all_bams
+    output:
+        bam   = 'mapping/{reference}/merged/merged.bam',
+        list  = 'mapping/{reference}/merged/merged.list'
+    log:
+        err   = 'mapping/{reference}/merged/log/merged.err'
+    conda:
+        config['snakelines_dir'] + '/enviroments/bamtools.yaml'
+    shell:
+        """
+        echo {input.bams} | tr ' ' '\n' > {output.list}
+
+        bamtools merge \
+             -list {output.list} \
+             -forceCompression \
+        >  {output.bam} \
+        2> {log.err}
+        """

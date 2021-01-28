@@ -1,0 +1,30 @@
+rule minimap2__map_reads_to_reference:
+    """
+    Align reads to the reference genome.
+    :input ref: Reference genomic sequences in fasta format
+    :input sam: Unordered mapped reads in sam format
+    :output sam: Ordered mapped reads according to their location on reference genome
+    """
+    input:
+        reads = 'reads/original/{sample}.fastq' ,
+        ref = 'reference/{reference}/{reference}.fa'
+    output:
+        sam = configured_temp('mapping/{reference}/original/{sample}.sam')
+    log:
+        err = 'mapping/{reference}/sorted/log/{sample}.err'
+    params:
+        extra="-ax map-ont"
+    threads:
+        int(config['threads'])
+    conda:
+        config['snakelines_dir'] + '/enviroments/minimap2.yaml'
+    shell:
+        """
+            minimap2 \
+                {params.extra} \
+                {input.ref} \
+                {input.reads} \
+                -t {threads} \
+                > {output.sam} \
+                2> {log.err}
+        """

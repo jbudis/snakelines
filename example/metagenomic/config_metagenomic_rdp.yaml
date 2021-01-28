@@ -1,3 +1,4 @@
+platform: paired_end
 samples:                            # List of sample categories to be analysed
     - name: .*-16S                  # Regex expression of sample names to be analysed (reads/original/.*-16S_R1.fastq.gz)
       reference: 16srrna            # RDP classifier Supported values: 16srrna, fungallsu, fungalits_unite, fungalits_warcup

@@ -1,0 +1,37 @@
+platform: nanopore
+samples:
+      - name: example_.*
+        reference: sars_cov_2
+
+report_dir: report/example
+threads: 2
+
+reference:
+    index:
+        fai:
+            method: samtools
+
+reads:
+    report:
+        quality_report:
+            method: fastqc
+            read_types:
+                - original
+mapping:
+    mapper:
+        method: minimap2
+    index:
+        method: samtools
+    postprocess:
+        sorted:
+            method: samtools
+    report:
+        quality_report:
+            method: qualimap
+            map_types:
+                - original
+
+variant:
+    caller:
+        method: clair
+
