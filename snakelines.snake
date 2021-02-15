@@ -19,7 +19,7 @@ if 'snakelines_dir' not in config:
     config['snakelines_dir'] = os.path.dirname(os.path.realpath(workflow.snakefile))
 
 if 'platform' in config:
-    if config['platform'] not in ['single_end', 'pair_end']:
+    if config['platform'] not in ['single_end', 'paired_end']:
         print('ERROR: Invalid platform')
         sys.exit(1)
 else:

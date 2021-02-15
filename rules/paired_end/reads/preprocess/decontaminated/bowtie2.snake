@@ -1,4 +1,4 @@
-include: config['snakelines_dir'] + '/rules/illumina/mapping/mapper/indices/bowtie2_index.snake'
+include: config['snakelines_dir'] + '/rules/paired_end/mapping/mapper/indices/bowtie2_index.snake'
 
 rule bowtie2__filter_reads_from_reference:
     """

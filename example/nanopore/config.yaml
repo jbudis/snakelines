@@ -1,4 +1,4 @@
-platform: nanopore
+platform: single_end
 samples:
       - name: example_.*
         reference: sars_cov_2
@@ -12,6 +12,9 @@ reference:
             method: samtools
 
 reads:
+    preprocess:
+        trimmed:
+            method: trimmomatic
     report:
         quality_report:
             method: fastqc

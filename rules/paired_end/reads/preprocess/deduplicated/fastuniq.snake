@@ -1,4 +1,4 @@
-include: config['snakelines_dir'] + '/rules/shared/reads/conversion/unzip.snake'
+include: config['snakelines_dir'] + '/rules/shared/reads/preprocess/conversion/unzip.snake'
 
 rule fastuniq__deduplicate_reads:
     """

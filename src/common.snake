@@ -20,7 +20,7 @@ def configured_temp(output_file):
 pipeline = Pipeline()
 
 DEFAULT_SAMPLE_CONFIGURATION = [{'name': '.*'}]
-default_read_names = {'single_end': '{}.fastq', 'paired_end': '{}_R1.fastq.gz'}
+default_read_names = {'single_end': '{}.fastq.gz', 'paired_end': '{}_R1.fastq.gz'}
 DEFAULT_SAMPLE_LOCATION = 'reads/original/' + default_read_names[config['platform']]
 sample_configurations = config.get('samples', DEFAULT_SAMPLE_CONFIGURATION)
 for sample_configuration in sample_configurations:
