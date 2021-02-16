@@ -102,17 +102,8 @@ def copy_with_makedirs(src, dest, pipeline):
         dest = dest.replace('-{}.'.format(pipeline.references[0]), '.')  # from file names
         dest = dest.replace('-{}/'.format(pipeline.references[0]), '/')  # from directories
 
-    try:
-        copy(src, dest)
-    # except PermissionError:
-    #     print(f'permission error on copy from {src} to {dest}', file=sys.stderr)
-    except IOError as e:
-        # ENOENT(2): file does not exist, raised also on missing dest parent dir
-        if e.errno != errno.ENOENT:
-            raise
-        # try creating parent directories
-        os.makedirs(os.path.dirname(dest))
-        copy(src, dest)
+    os.makedirs(os.path.dirname(dest), exist_ok=True)
+    copy(src, dest)
 
 
 def copy_input_files_with_consisent_names_dict(input_dict, output_dict, pipeline):

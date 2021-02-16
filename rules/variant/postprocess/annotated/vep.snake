@@ -112,7 +112,6 @@ rule vep__annotate_vcf:
             --assembly {params.assembly} \
             --vcf \
             --force_overwrite \
-            \
             --flag_pick_allele \
             --canonical \
             --variant_class \

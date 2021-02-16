@@ -1,4 +1,4 @@
 channels:
 - bioconda
 dependencies:
-- freebayes=1.1.0
+- freebayes=1.3.4
