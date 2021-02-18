@@ -1,5 +1,5 @@
-include: config['snakelines_dir'] + '/rules/mapping/index/samtools.snake'
-include: config['snakelines_dir'] + '/rules/reference/index/fai/samtools.snake'
+include: config['snakelines_dir'] + '/rules/shared/mapping/index/samtools.snake'
+include: config['snakelines_dir'] + '/rules/shared/reference/index/fai/samtools.snake'
 
 rule vardict__create_wgs_bed_file:
     """
@@ -102,7 +102,7 @@ rule vardict__tsb_to_vcf:
     input:
         tsb = 'variant/{reference}-{panel}/{state}/{sample}.tsb'
     output:
-        vcf = temp('variant/{reference}-{panel}/{state}/{sample}.vardict.vcf')
+        vcf = 'variant/{reference}-{panel}/{state}/{sample}.vcf'
     params:
         min_mean_base_quality  = method_config.get('soft_filter', {}).get('min_mean_base_quality', 20),
         min_map_quality        = method_config.get('soft_filter', {}).get('min_map_quality', 20),
