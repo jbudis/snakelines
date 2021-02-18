@@ -1,0 +1,60 @@
+include: config['snakelines_dir'] + '/rules/single_end/mapping/mapper/indices/bowtie2_index.snake'
+
+rule bowtie2__filter_reads_from_reference:
+    """
+    Remove reads that do not map to the reference, and so may be caused by contamination in lab processing.
+    Alternatively, using keep: False configuration removes all fragments that belongs to reference, and so is suitable
+    to remove contamination caused by host with known genome, e.g. human fragments.
+    :input r1: Left side of sequenced fragments in gzipped fastq format
+    :input index_files: List of reference bowtie2 databases
+    :output r1: Left side of filtered fragments in gzipped fastq format
+    :params indices: Prefixes of reference bowtie2 databases
+    :params keep_param: Determine if keep or remove sequences aligned to reference databases
+    """
+    input:
+        r1 = 'reads/%s/{sample}.fastq.gz' % method_config['input_read_type'],
+        index_files = expand('reference/{ref}/bowtie2_index/{ref}.1.bt2', ref=method_config['references'])
+    output:
+        r1 = configured_temp('reads/decontaminated/{sample}.fastq.gz'),
+    params:
+        indices = expand('reference/{reference}/bowtie2_index/{reference}', reference=method_config['references']),
+        keep_param = '--al-gz' if method_config.get('keep', False) else '--un-gz',
+        tmp_dir = 'reads/decontaminated/tmp/{sample}'
+    threads:
+        int(config['threads'])
+    log:
+        prefix = 'reads/decontaminated/log/{sample}'
+    conda:
+        config['snakelines_dir'] + '/enviroments/bowtie2.yaml'
+    shell:
+        """
+        R1_IN={input.r1}
+
+        for INDEX in {params.indices}; do
+
+            REF=`basename $INDEX`
+            REF_DIR={params.tmp_dir}/$REF
+            mkdir -p $REF_DIR
+
+            R1_OUT=$REF_DIR/{wildcards.sample}.fastq.gz
+            echo $REF
+            echo $REF_DIR
+            echo $R1_IN
+            echo $R1_OUT
+
+            bowtie2 \
+                -x $INDEX \
+                -U $R1_IN \
+                --very-sensitive \
+                --threads {threads} \
+                {params.keep_param} $R1_OUT \
+            > /dev/null
+            2> {log.prefix}.$REF.log
+
+            R1_IN=$R1_OUT
+        done
+
+        mv $R1_OUT {output.r1}
+
+        rm -rf {params.tmp_dir}
+        """
