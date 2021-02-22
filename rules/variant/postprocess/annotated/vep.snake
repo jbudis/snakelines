@@ -172,7 +172,7 @@ rule vep__annotate_tsv:
 
         vep \
             --cache \
-            --dir {input.cache} \
+            --dir `dirname {input.cache}` \
             --species homo_sapiens \
             --fasta {input.fasta} \
             --input_file {input.vcf} \
