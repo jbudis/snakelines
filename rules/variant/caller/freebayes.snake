@@ -25,8 +25,8 @@ rule freebayes_call_germline_variants:
     threads:
         int(config['threads'])
     log:
-        out = 'variant/{reference}-{panel}/original/log/{sample}.vcf.out',
-        err = 'variant/{reference}-{panel}/original/log/{sample}.vcf.err'
+        out = 'variant/{reference}-{panel}/original/log/{sample}.freebayes.vcf.out',
+        err = 'variant/{reference}-{panel}/original/log/{sample}.freebayes.vcf.err'
     benchmark:
         'variant/{reference}-{panel}/original/log/{sample}.vcf.benchmark',
     conda:
