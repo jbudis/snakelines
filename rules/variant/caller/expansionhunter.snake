@@ -26,11 +26,12 @@ rule expansionhunter_call_germline_variants:
         config['snakelines_dir'] + '/enviroments/expansionhunter.yaml'
     shell:
         """
+        vcf={output.vcf}
         ExpansionHunter \
             --reads {input.bam} \
             --reference {input.fasta} \
             --variant-catalog {input.catalog} \
-            --output-prefix {wildcards.sample}.expansionhunter \
+            --output-prefix  ${{vcf%.*}} \
         1> {log.out} \
         2> {log.err}
         """
