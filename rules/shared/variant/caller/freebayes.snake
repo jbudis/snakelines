@@ -1,0 +1,25 @@
+rule freebayes__call_variants:
+    input:
+        bam = 'mapping/{reference}/deduplicated/{sample}.bam',
+        bai = 'mapping/{reference}/deduplicated/{sample}.bam.bai',
+        ref = 'reference/{reference}/{reference}.fa'
+    output:
+        vcf = 'variant/{reference}-wgs/original/{sample}.vcf'
+    params:
+        min_alternate_fraction = config['variant']['min_nonref_allele_freq'],
+        min_alternate_count = config['variant']['min_alternate_count'],
+        min_coverage = config['variant']['min_coverage'],
+        keep_indels = '' if config['variant']['keep_indels'] else '--no-indels'
+    shell:
+        '''
+        freebayes \
+            --pooled-continuous \
+            --fasta-reference {input.ref} \
+            --min-coverage {params.min_coverage} \
+            --min-alternate-fraction {params.min_alternate_fraction} \
+            --report-all-haplotype-alleles \
+            --min-alternate-count {params.min_alternate_count} \
+            {params.keep_indels} \
+            {input.bam} \
+        > {output.vcf}
+        '''
