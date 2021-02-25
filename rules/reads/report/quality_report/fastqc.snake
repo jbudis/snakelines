@@ -51,6 +51,8 @@ rule fastqc__html_summary_for_paired_reads:
         summary = 'reads/{read_type}/stats/summary.html'
     params:
         summary_script = srcdir("scripts/fastqc-summary.py")
+    conda:
+        config['snakelines_dir'] + '/enviroments/fastqc.yaml'
     shell:
         """
         python {params.summary_script} \
