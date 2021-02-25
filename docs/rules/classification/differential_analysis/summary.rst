@@ -24,3 +24,21 @@ Compare counts of selected groups of samples and find features with significant 
 - *group_by:* attribute (in the metadata file header) that would split samples into two categories
 - *batch:* attribute (in the metadata file header) that would split samples categories with similar batch bias effect (e.g. samples from same sequencing run)
 
+Edger - Convert Summary Tsv Table To Xlsx
+---------------------------------------------
+
+Convert summary.normed.tsv table to Excel format.
+
+**Location**
+
+- *Filepath:* <SnakeLines_dir>/rules/classification/differential_analysis/edger.snake
+- *Rule name:* edger__convert_summary_tsv_table_to_xlsx
+
+**Input(s):**
+
+- *tsv_table:* Table in tsv format
+
+**Output(s):**
+
+- *xlsx_table:* Table in Excel format
+

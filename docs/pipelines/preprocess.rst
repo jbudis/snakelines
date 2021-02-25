@@ -52,15 +52,16 @@ How to run example:
 
 .. code-block:: bash
 
-   cd /usr/local/snakelines/example/mhv
+   cd /usr/local/snakelines/example/genomic
 
    snakemake \
       --snakefile ../../snakelines.snake \
-      --configfile config_preprocess.yaml
+      --configfile config_preprocess.yaml \
+      --use-conda
 
 Example configuration:
 
-.. literalinclude:: ../../example/mhv/config_preprocess.yaml
+.. literalinclude:: ../../example/genomic/config_preprocess.yaml
    :language: yaml
 
 Planned improvements

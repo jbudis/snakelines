@@ -2,7 +2,7 @@ Quick start
 ===========
 
 This guide will show you the basic usage of SnakeLines pipelines on small toy example.
-We assume that you have Linux system installed (tested on Ubuntu 16.04.1).
+We assume that you have Linux system installed (tested on Ubuntu 20.04).
 
 Install required dependencies
 -----------------------------
@@ -31,8 +31,9 @@ Assuming, that sources are downloaded in /usr/local/snakelines, `variant_calling
 
 .. code-block:: bash
 
-   cd /usr/local/snakelines/example/mhv
+   cd /usr/local/snakelines/example/genomic
 
    snakemake \
       --snakefile ../../snakelines.snake \
-      --configfile config_variant_calling.yaml
+      --configfile config_variant_calling.yaml \
+      --use-conda

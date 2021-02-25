@@ -55,15 +55,16 @@ How to run example:
 
 .. code-block:: bash
 
-   cd /usr/local/snakelines/example/mhv
+   cd /usr/local/snakelines/example/genomic
 
    snakemake \
       --snakefile ../../snakelines.snake \
-      --configfile config_download_reference_and_mapping.yaml
+      --configfile config_download_reference_and_mapping.yaml \
+      --use-conda
 
 Example configuration:
 
-.. literalinclude:: ../../example/mhv/config_download_reference_and_mapping.yaml
+.. literalinclude:: ../../example/genomic/config_download_reference_and_mapping.yaml
    :language: yaml
 
 Planned improvements

@@ -2,12 +2,12 @@ Rules
 =====
 - Reference
 
-  - Attributes
+  - Alignment
 
-    - Desc
+    .. toctree::
+      reference/alignment/summary.rst
 
-      .. toctree::
-        reference/attributes/desc/summary.rst
+  - Report
 
     - Comparison
 
@@ -23,6 +23,13 @@ Rules
 
     .. toctree::
       reference/download/summary.rst
+
+  - Attributes
+
+    - Desc
+
+      .. toctree::
+        reference/attributes/desc/summary.rst
 
   - Index
 
@@ -48,16 +55,7 @@ Rules
     - Quality Report
 
       .. toctree::
-        classification/report/summary/summary.rst
-
-    - Taxonomic Counts
-
-      - Alpha Diversity
-
-        .. toctree::
-          classification/report/taxonomic_counts/alpha_diversity/summary.rst
-
-      - Barplot
+        assembly/report/quality_report/summary.rst
 
     - Assembly Graph
 
@@ -97,10 +95,35 @@ Rules
       .. toctree::
         mapping/postprocess/deduplicated/summary.rst
 
+    - Realigned
+
+      .. toctree::
+        mapping/postprocess/realigned/summary.rst
+
+    - Read Group
+
+      .. toctree::
+        mapping/postprocess/read_group/summary.rst
+
     - Sorted
 
       .. toctree::
         mapping/postprocess/sorted/summary.rst
+
+    - Deoverlapped
+
+      .. toctree::
+        mapping/postprocess/deoverlapped/summary.rst
+
+    - Filtered
+
+      .. toctree::
+        mapping/postprocess/filtered/summary.rst
+
+  - Merged
+
+    .. toctree::
+      mapping/merged/summary.rst
 
   - Mapper
 
@@ -195,6 +218,11 @@ Rules
 
         .. toctree::
           classification/report/taxonomic_counts/pieplot/summary.rst
+
+      - Alpha Diversity
+
+        .. toctree::
+          classification/report/taxonomic_counts/alpha_diversity/summary.rst
 
     - Transcripts
 

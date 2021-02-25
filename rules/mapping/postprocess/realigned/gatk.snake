@@ -24,11 +24,11 @@ rule gatk__identify_regions_to_realign:
         err = 'mapping/{reference}/realigned/log/{sample}.intervals.err'
     threads:
         int(config['threads'])
-#    conda:
-#        config['snakelines_dir'] + '/enviroments/gatk3.yaml'
+    conda:
+        config['snakelines_dir'] + '/enviroments/openjdk8.yaml'
     shell:
         '''
-        gatk3 RealignerTargetCreator \
+        gatk3 --analysis_type RealignerTargetCreator \
             -R {input.ref} \
             -nt {threads} \
             -I {input.bam} \
@@ -56,11 +56,11 @@ rule gatk__realign_regions:
         err = 'mapping/{reference}/realigned/log/{sample}.bam.err'
     threads:
         int(config['threads'])
-#    conda:
-#        config['snakelines_dir'] + '/enviroments/gatk3.yaml'
+    conda:
+        config['snakelines_dir'] + '/enviroments/openjdk8.yaml'
     shell:
         '''
-        gatk3 IndelRealigner \
+        gatk3 --analysis_type IndelRealigner \
             -R {input.ref} \
             -I {input.bam} \
             -targetIntervals {input.intervals} \

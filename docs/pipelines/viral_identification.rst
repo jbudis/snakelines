@@ -42,15 +42,16 @@ How to run example:
 
 .. code-block:: bash
 
-   cd /usr/local/snakelines/example/mhv
+   cd /usr/local/snakelines/example/genomic
 
    snakemake \
       --snakefile ../../snakelines.snake \
-      --configfile config_viral_identification.yaml
+      --configfile config_viral_identification.yaml \
+      --use-conda
 
 Example configuration:
 
-.. literalinclude:: ../../example/mhv/config_viral_identification.yaml
+.. literalinclude:: ../../example/genomic/config_viral_identification.yaml
    :language: yaml
 
 Planned improvements

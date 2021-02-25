@@ -12,40 +12,21 @@ Software requirements
 
 Minimal software requirements are:
 
-* Linux (tested on Ubuntu 16.04.1)
-* `SnakeMake <https://snakemake.readthedocs.io/en/stable/>`_ (tested on 5.2.2)
-* Miniconda (tested on 4.5.11)
+* Linux (tested on Ubuntu 20.04)
+* Miniconda (tested on 4.8.3)
+   
+Installation
+---------------
 
-Python3 module dependencies
----------------------------
+There are two ways for SnakeLines to be installed: as Conda package and by cloning the Github repository. We recommend the first option.
 
-Snakelines requires several Python3 modules to be installed prior to Snakelines. All of these modules can be installed via Conda package manager or via Pip3 with the exception of Tkinter that can be obtained via e.g. apt-get.
-
-Note that Snakelines requires specific versions of these modules.
-List of required Python3 modules:
-
-* oyaml==0.7
-* pandas==0.19.2
-* biopython==1.72
-* seaborn==0.9.0
-* bs4==0.0.1
-* weasyprint==0.3
-* pysam==0.15.1
-* openpyxl==2.5.12
-* scikit-learn==0.18
-* scikit-bio==0.5.1
-* tk==3.6.7-1
-
-
-Snakelines will be later shipped as a Conda package in Anaconda repository.
-
-Conda channel dependencies
---------------------------
-
-In order for Snakelines Conda virtual enviroments to work, user has to add several Anaconda repository channels to Anaconda using these commands:
+Installation as a Conda package
+--------------------------------
 
 .. code:: bash
-
+   
+   # In order for SnakeLines Conda virtual enviroments to work, user has to add several Anaconda repository channels to Conda.
+   
    conda config --add channels bioconda
    conda config --add channels g2554711
    conda config --add channels g2554711/label/bioconda
@@ -53,11 +34,19 @@ In order for Snakelines Conda virtual enviroments to work, user has to add sever
    conda config --add channels agbiome
    conda config --add channels rsmulktis
    conda config --add channels moustik
+  
+   conda create --name snakelines-env -c bioconda snakelines
+   conda activate snakelines-env
    
-``--use-conda`` option in ``Snakemake`` command will enable use of predefined virtual enviroments in Snakelines.
-   
-Installation
----------------
+
+Installation from Github repository
+------------------------------------
+
+Snakelines requires several Python3 modules to be installed prior to Snakelines. All of these modules can be installed via Conda package manager or via Pip3 with the exception of Tkinter that can be obtained via e.g. apt-get.
+
+.. code:: bash
+
+    pip install numpy==1.19.2 oyaml==0.9 pandas==1.1.3 biopython==1.78 seaborn==0.11.0 bs4==4.9.3 weasyprint==51 pysam==0.16.0.1 openpyxl==3.0.5 scikit-bio==0.5.6 jinja2==2.11.2 snakemake==5.13.0
 
 Sources codes for SnakeLines pipelines are stored at `GitHub repository <https://github.com/jbudis/snakelines>`_.
 You may download them directly or clone them using git.
@@ -72,6 +61,8 @@ You may download them directly or clone them using git.
    git clone https://github.com/jbudis/snakelines
 
 Compiling is not required, scripts are ready for use right after download.
+
+Note that GATK3 has to be installed separately (if the user intends to use it) as the license prohibits GATK3 to be distributed via Conda repository.
 
 Directory structure of input files
 ----------------------------------
@@ -105,7 +96,7 @@ All SnakeLines pipelines are defined only by their configuration file in human-r
 We recommend to copy the configuration file into the project directory.
 This way, configuration for the pipeline is project specific, and therefore would not be shared between different projects.
 
-Example project structure with configuration file copied from the <snakelines_dir>/example/mhv/
+Example project structure with configuration file copied from the <snakelines_dir>/example/genomic/
 ::
 
    |-- reads/original
@@ -113,10 +104,8 @@ Example project structure with configuration file copied from the <snakelines_di
            |-- example_A_R2.fastq.gz
            |-- example_B_R1.fastq.gz
            |-- example_B_R2.fastq.gz
-   |-- reference/hg38
-           |-- hg38.fa
-           |-- annotation/sureselect6
-                   |-- regions.bed
+   |-- reference/mhv
+           |-- mhv.fa
    |-- config_variant_calling.yaml
 
 Edit config_variant_calling.yaml file according to your preference.
@@ -124,13 +113,22 @@ Each configured attribute is explained by a comment in the file.
 
 Now you may run SnakeLines pipeline using Snakemake.
 You need to specify one additional attribute, to tell Snakemake, where are SnakeLines sources located.
-For example, if SnakeLines sources has been downloaded to the /usr/local/snakelines directory, use:
+If SnakeLines was installed as a Conda package, there is a wrapper script available, so the resulting command will be:
+
+.. code:: bash
+
+   snakelines --configfile config_variant_calling.yaml --use-conda
+
+You can set all parameters from ``snakemake`` in ``snakelines`` wrapper.
+
+In case of installation from Github repository, if SnakeLines sources have been downloaded to the /usr/local/snakelines directory, use:
 
 .. code:: bash
 
    snakemake \
       --snakefile /usr/local/snakelines/snakelines.snake \
-      --configfile config_variant_calling.yaml
+      --configfile config_variant_calling.yaml \
+      --use-conda
 
 Snakemake is very flexible in workflow execution, see `detailed documentation <https://snakemake.readthedocs.io/en/stable/executable.html#all-options>`_ and `useful bash aliases for SnakeLines <./aliases.html>`_.
 
@@ -231,6 +229,7 @@ The number of threads for each task may be specified in a Snakemake call as:
    snakemake \
       --snakefile /usr/local/snakelines/snakelines.snake \
       --configfile config_variant_calling.yaml \
+      --use-conda \
       --config threads=8
 
 Alternately, user may specify the number of threads directly in a configuration file:

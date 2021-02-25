@@ -134,7 +134,10 @@ rule custom__summarize_taxonomic_counts_into_tsv_table:
         # Add root taxonomic level with number of reads per sample
         root_row = tax_table[samples].sum(axis=0)
         for tax_rank in tax_ranks:
-            root_row.set_value(tax_rank, np.nan)
+#            print(dir(root_row))
+#            print(tax_rank)
+#            print(root_row)
+            root_row._set_value(tax_rank, np.nan)
 
         join_table = join_table[join_table[tax_ranks[0]] != '']
         join_table = join_table.append(root_row, ignore_index=True)
@@ -181,8 +184,10 @@ rule custom__extract_taxonomic_level_from_taxonomic_table:
         if target_level not in join_table.columns:
             with open(output.tax_level_abs, 'w') as out:
                 out.write('')
-
+        
         # Select rows from table with the classification up to desired tax_level
+#        print(target_level)
+#        print(join_table)
         tax_counts = join_table[~join_table[target_level].isnull()]
         if next_level in join_table.columns:
             tax_counts = tax_counts[tax_counts[next_level].isnull()]

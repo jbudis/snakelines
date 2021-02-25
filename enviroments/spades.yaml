@@ -1,4 +1,6 @@
 channels:
+- defaults
 - bioconda
 dependencies:
+- python=3.6.9
 - spades=3.10.1
