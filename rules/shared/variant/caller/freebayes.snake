@@ -1,4 +1,7 @@
 rule freebayes__call_variants:
+    """
+    Identify small variation (SNP and indels) from the mapped reads.
+    """
     input:
         bam = 'mapping/{reference}/deduplicated/{sample}.bam',
         bai = 'mapping/{reference}/deduplicated/{sample}.bam.bai',
@@ -10,6 +13,8 @@ rule freebayes__call_variants:
         min_alternate_count = config['variant']['min_alternate_count'],
         min_coverage = config['variant']['min_coverage'],
         keep_indels = '' if config['variant']['keep_indels'] else '--no-indels'
+    conda:
+       config['snakelines_dir'] + '/enviroments/freebayes.yaml'
     shell:
         '''
         freebayes \
