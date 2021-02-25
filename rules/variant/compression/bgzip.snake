@@ -1,4 +1,4 @@
-rule bgzip__vcf_index:
+rule bgzip__compress_vcf:
     """
     Compresses VCF file filename.vcf as filename.vcf.gz
     """

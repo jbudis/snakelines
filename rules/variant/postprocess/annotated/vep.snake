@@ -183,7 +183,6 @@ rule vep__annotate_tsv:
             --assembly {params.assembly} \
             --tab \
             --force_overwrite \
-            \
             --flag_pick_allele \
             --canonical \
             --variant_class \

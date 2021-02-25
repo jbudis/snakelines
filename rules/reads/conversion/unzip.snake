@@ -1,25 +1,25 @@
 # TODO do we need pipefail?
 
-rule pigz__unzip_file:
-    """
-    Decompress gzipped fastq or fasta file
-    :input gzipped: Zipped genomic file
-    :input unzipped: Unzipped genomic file
-    """
-    input:
-        gzipped  = '{file}.{type}.gz'
-    output:
-        unzipped = temp('{file}.{type, fa|fasta|fastq}')
-    threads:
-        int(config['threads'])
-    conda:
-        config['snakelines_dir'] + '/enviroments/pigz.yaml'
-    shell:
-        """
-        set +euo pipefail
-        pigz \
-            --decompress \
-            --keep \
-            --processes {threads} \
-            {input.gzipped}
-        """
+#rule pigz__unzip_file:
+#    """
+#    Decompress gzipped fastq or fasta file
+#    :input gzipped: Zipped genomic file
+#    :input unzipped: Unzipped genomic file
+#    """
+#    input:
+#        gzipped  = '{file}.{type}.gz'
+#    output:
+#        unzipped = temp('{file}.{type, fa|fasta|fastq}')
+#    threads:
+#        int(config['threads'])
+#    conda:
+#        config['snakelines_dir'] + '/enviroments/pigz.yaml'
+#    shell:
+#        """
+#        set +euo pipefail
+#        pigz \
+#            --decompress \
+#            --keep \
+#            --processes {threads} \
+#            {input.gzipped}
+#        """

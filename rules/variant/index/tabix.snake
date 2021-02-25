@@ -1,4 +1,4 @@
-rule tabix__vcf_index:
+rule tabix__index_vcf:
     """
     Indexes bgzipped VCF file (filename.vcf.gz) with index file (filename.vcf.gz.tbi)
     """

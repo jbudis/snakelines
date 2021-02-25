@@ -280,6 +280,17 @@ variant:
                 - reads/report/quality_report
                 - mapping/mapper
 
+consensus:
+    output:
+        fasta:
+            from: expand('consenus/{sr.reference}-{sr.panel}/{sr.sample}.fa',
+                          sr=pipeline.sample_references)
+
+            to: expand('{report_dir}/{sr.sample}/consensus-{sr.reference}-{sr.panel}.fa',
+                        report_dir=config['report_dir'], sr=pipeline.sample_references)
+    depends:
+        - variant/caller
+
 classification:
     read_based:
         output:

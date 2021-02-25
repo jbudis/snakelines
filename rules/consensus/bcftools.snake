@@ -1,0 +1,33 @@
+include: config['snakelines_dir'] + '/rules/variant/compression/bgzip.snake'
+include: config['snakelines_dir'] + '/rules/variant/index/tabix.snake'
+include: config['snakelines_dir'] + '/rules/reference/index/fai/samtools.snake'
+
+rule bcftools__create_consensus_fasta:
+    """
+        Create consensus sequence by applying VCF variants to a reference fasta file.
+        By default, the program will apply all ALT variants to the reference fasta to obtain the consensus sequence.
+        See http://samtools.github.io/bcftools/bcftools.html#consensus
+    """
+    input:
+        bcf   = 'variant/{reference}-{panel}/original/{sample}.vcf.gz',
+        tbi   = 'variant/{reference}-{panel}/original/{sample}.vcf.gz.tbi',
+        fasta = 'reference/{reference}/{reference}.fa',
+        fai   = 'reference/{reference}/{reference}.fa.fai',
+    output:
+        fasta = 'consensus/{reference}-{panel}/{sample}.fa',
+    log:
+        out = 'consensus/{reference}-{panel}/log/{sample}.fa.out',
+        err = 'consensus/{reference}-{panel}/log/{sample}.fa.err'
+    threads:
+        int(config['threads'])
+    conda:
+        config['snakelines_dir'] + '/enviroments/bcftools.yaml'
+    shell:
+        """
+          bcftools consensus \
+            --fasta-ref {input.fasta} \
+            --output {output.fasta} \
+            {input.bcf}
+
+          sed -i '1s/>.*/>${wildcards.sample}/' {output.fasta}
+        """

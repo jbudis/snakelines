@@ -31,24 +31,6 @@ rule gatk__prepare_vcf:
             2>{log.err}
         """
 
-rule vardict__create_wgs_bed_file:
-    """
-    Creates bed file with whole genomic regions in reference fasta file. Simple way to unite WGS and panel analysis.
-    """
-    input:
-        fai = 'reference/{reference}/{reference}.fa.fai'
-    output:
-        bed = 'reference/{reference}/annotation/wgs/regions.bed'
-    shell:
-          """
-        awk \
-            '{{print $1, 1, $2, $1}}' \
-      {input.fai} \
-              | sed \
-              's/ /\t/g' \
-              > {output.bed}
-              """
-
 rule vardict__prepare_bed_file:
     """
     Vardict throws error for bed files with more than 4 columns, rule therefore cut other columns
