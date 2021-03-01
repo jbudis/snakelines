@@ -284,13 +284,21 @@ consensus:
     fasta:
         output:
             fasta:
-                from: expand('consensus/{sr.reference}-{sr.panel}/{sr.sample}.fa',
-                              sr=pipeline.sample_references)
+                from: expand('consensus/{sr.reference}-{sr.panel}/{sr.sample}.fa', sr=pipeline.sample_references)
 
                 to: expand('{report_dir}/{sr.sample}/consensus-{sr.reference}-{sr.panel}.fa',
                             report_dir=config['report_dir'], sr=pipeline.sample_references)
         depends:
             - variant/caller
+
+    summary:
+        output:
+            fasta:
+              from: expand('consensus/{sr.reference}-{sr.panel}/consensus.fa',
+                report_dir=config['report_dir'], sr=pipeline.sample_references)
+
+              to: expand('{report_dir}/_summary/consensus-{sr.reference}-{sr.panel}.fa',
+                report_dir=config['report_dir'], sr=pipeline.sample_references)
 
 classification:
     read_based:

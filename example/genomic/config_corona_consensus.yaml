@@ -83,3 +83,5 @@ consensus:
     fasta:
         method: bcftools
 
+    summary:
+        method: cat
