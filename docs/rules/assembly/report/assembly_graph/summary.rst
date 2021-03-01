@@ -10,7 +10,7 @@ Plot overlap graph of contigs to visually inspect relationships between contigs.
 
 **Input(s):**
 
-- *gfa:* Assembly graph in .gfa format
+- *gfa:* Assembly graph in .fastg format
 
 **Output(s):**
 

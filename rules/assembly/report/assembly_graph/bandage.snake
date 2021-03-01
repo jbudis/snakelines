@@ -1,11 +1,11 @@
 rule bandage__visualise_contig_overlaps:
     """
     Plot overlap graph of contigs to visually inspect relationships between contigs.
-    :input gfa: Assembly graph in .gfa format
+    :input gfa: Assembly graph in .fastg format
     :output svg: Graphical visualisation of overlaps between contigs - graph representation
     """
     input:
-        gfa = '{path}/{sample}.gfa'
+        fastg = '{path}/{sample}.fastg'
     output:
         svg = '{path}/{sample}.svg'
     conda:
@@ -13,6 +13,6 @@ rule bandage__visualise_contig_overlaps:
     shell:
         """
         Bandage image \
-            {input.gfa} \
+            {input.fastg} \
             {output.svg}
         """

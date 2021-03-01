@@ -38,9 +38,10 @@ reads:                              # Prepare reads and quality reports for down
 
 assembly:                           # Join reads into longer sequences (contigs) based on their overlaps
     assembler:                      # Method for joining reads
-        method: spades              # Supported values: spades, unicycler, megahit
+        method: megahit             # Supported values: spades, unicycler, megahit
         mode: standard              # Supported values: standard, meta, plasmid, rna, iontorrent
         careful: True               # Can not be combined with the meta mode. Reduce number of mismatches and short indels, longer runtime
+        kmer: 21                    # Kmer size of assembled contigs for visualisation (see https://github.com/voutcn/megahit/wiki/Visualizing-MEGAHIT's-contig-graph)
 
     report:                         # Summary reports for assembly process and results
         quality_report:             # Quality of assembled contigs
