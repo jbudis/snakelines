@@ -9,7 +9,7 @@ rule bcftools__create_consensus_fasta:
         See http://samtools.github.io/bcftools/bcftools.html#consensus
     """
     input:
-        bcf   = 'variant/{reference}-{panel}/original/{sample}.vcf.gz',
+        vcf   = 'variant/{reference}-{panel}/original/{sample}.vcf.gz',
         tbi   = 'variant/{reference}-{panel}/original/{sample}.vcf.gz.tbi',
         fasta = 'reference/{reference}/{reference}.fa',
         fai   = 'reference/{reference}/{reference}.fa.fai',
@@ -27,7 +27,7 @@ rule bcftools__create_consensus_fasta:
           bcftools consensus \
             --fasta-ref {input.fasta} \
             --output {output.fasta} \
-            {input.bcf}
+            {input.vcf}
 
-          sed -i '1s/>.*/>${wildcards.sample}/' {output.fasta}
+          sed -i '1s/>.*/>{wildcards.sample}/' {output.fasta}
         """

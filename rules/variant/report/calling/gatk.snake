@@ -1,23 +1,4 @@
-rule tabix__index_vcf:
-    """
-    Create tabix intex on BGZF (bgzipped) VCF file.
-    :input: bgzipped vcf
-    :output: tabix index of bgzipped VCF file
-    """
-    input:
-        '{path}/{filename}.vcf.bgz'
-    output:
-        '{path}/{filename}.vcf.bgz.tbi'
-    log:
-        out = '{path}/log/{filename}_tabix.out',
-        err = '{path}/log/{filename}_tabix.err'
-    conda:
-        config['snakelines_dir'] + '/enviroments/samtools.yaml'
-    shell:
-        """
-        tabix -p vcf {input} 1>{log.out} 2>{log.err}
-        """
-
+include: config['snakelines_dir'] + '/rules/variant/index/tabix.snake'
 
 rule gatk__collect_variant_calling_metrics:
     """

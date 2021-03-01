@@ -1,12 +1,12 @@
 samples:                            # List of sample categories to be analysed
     - name: example.*               # Regex expression of sample names to be analysed (reads/original/example.*_R1.fastq.gz)
+      reference: mhv                 # Reference genome for reads in the category (reference/mhv/mhv.fa)
 
 report_dir: report/public/01-consensus  # Generated reports and essential output files would be stored there
 threads: 16                         # Number of threads to use in analysis
 
 reads:                              # Prepare reads and quality reports for downstream analysis
     preprocess:                     # Pre-process of reads, eliminate sequencing artifacts, contamination ...
-
         trimmed:                    # Remove low quality parts of reads
             method: trimmomatic     # Supported values: trimmomatic
             temporary: False        # If True, generated files would be removed after successful analysis
@@ -73,9 +73,13 @@ variant:                                    # Identify variation in reads given 
 
 
     report:
+        calling:
+            method: gatk
+
         summary:
             method: custom
 
 consensus:
-    method: bcftools
+    fasta:
+        method: bcftools
 
