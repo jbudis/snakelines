@@ -13,10 +13,18 @@ reads:                              # Prepare reads and quality reports for down
                 - original
 
 mapping:                            # Find the most similar genomic region to reads in reference (mapping process)
+    mapper:                         # Method for mapping
+        method: bwa                 # Supported values: bowtie2, bwa
+        temporary: True
+
     index:                          # Generate .bai index for mapped reads in .bam files
         method: sambamba            # Supported values: samtools, sambamba
 
     postprocess:                    # Successive steps to refine mapped reads
+        sorted:                     # Order reads according to their genomic position
+            method: samtools        # Supported values: samtools, sambamba (current version gives segmentation fault!!!)
+            temporary: True         # If True, generated files would be removed after successful analysis
+
         deduplicated:               # Mark duplicated reads (PCR duplicated)
             method: sambamba        # Supported values: picard, sambamba
             temporary: False        # If True, generated files would be removed after successful analysis
@@ -25,6 +33,7 @@ mapping:                            # Find the most similar genomic region to re
         quality_report:             # HTML summary with quality of mappings
             method: qualimap        # Supported values: qualimap
             map_types:              # List of post-process steps for quality reports
+                - sorted
                 - deduplicated
 
 
@@ -41,8 +50,8 @@ variant:                            # Identify variation in reads given referenc
 #                    - ALL           # list of dbNSFP columns, use "ALL" for every column
 
     report:
-#        calling:
-#            method: gatk
+        calling:
+            method: gatk
 
         summary:
             method: custom
