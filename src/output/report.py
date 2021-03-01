@@ -20,7 +20,8 @@ def runtime_report(outdir: str, snakefile: str, configfile: str):
 def write_output_filenames(out_filename: str, workflow):
     out_list = []
     for job in workflow.persistence.dag.jobs:
-        out_list.append(job.output.plainstrings())
+        # noinspection PyProtectedMember
+        out_list.append(job.output._plainstrings())
     
     with open(out_filename, 'w') as out_file:
         out_file.write('\n'.join(chain(*out_list)))

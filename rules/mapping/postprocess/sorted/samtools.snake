@@ -23,6 +23,7 @@ rule samtools__sort_mapped_reads:
         """
         samtools sort \
             -o {output.bam} \
+            -m 2G \
             --threads {threads} \
             --output-fmt BAM \
             --reference {input.ref} \
