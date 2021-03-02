@@ -21,7 +21,12 @@ rule medaka__variant_call_mapped_reads:
         config['snakelines_dir'] + '/enviroments/medaka.yaml'
     shell:
         """
-        medaka_variant -f {input.reffasta} -i {input.bam} 2> {log.err}
+        medaka_variant \
+            -f {input.reffasta} \
+            -i {input.bam} \
+            -t {threads}
+        2> {log.err}
+
         vcfcat medaka_variant/round_1.vcf | bcftools sort > {output.vcf} 2> {log.err}
         rm -r medaka_variant
         """
