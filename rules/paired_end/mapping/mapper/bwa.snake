@@ -1,4 +1,4 @@
-include: srcdir('indices/bwa_index.snake')
+include: config['snakelines_dir'] + '/rules/shared/mapping/mapper/indices/bwa_index.snake'
 
 rule bwa__map_reads_to_reference:
     """

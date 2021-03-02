@@ -1,4 +1,4 @@
-include: srcdir('indices/bismark_index.snake')
+include: config['snakelines_dir'] + '/rules/shared/mapping/mapper/indices/bismark_index.snake'
 
 rule bismark__map_methyl_seq_reads_to_reference:
     """

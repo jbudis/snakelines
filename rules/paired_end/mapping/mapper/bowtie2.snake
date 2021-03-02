@@ -1,4 +1,4 @@
-include: srcdir('indices/bowtie2_index.snake')
+include: config['snakelines_dir'] + '/rules/shared/mapping/mapper/indices/bowtie2_index.snake'
 
 rule bowtie2__map_reads_to_reference:
     """
