@@ -1,6 +1,7 @@
 include: config['snakelines_dir'] + '/rules/variant/compression/bgzip.snake'
 include: config['snakelines_dir'] + '/rules/variant/index/tabix.snake'
 include: config['snakelines_dir'] + '/rules/reference/index/fai/samtools.snake'
+include: config['snakelines_dir'] + '/rules/mapping/bed/bedtools.snake'
 
 rule bcftools__create_consensus_fasta:
     """
@@ -13,21 +14,28 @@ rule bcftools__create_consensus_fasta:
         tbi   = 'variant/{reference}-{panel}/original/{sample}.vcf.gz.tbi',
         fasta = 'reference/{reference}/{reference}.fa',
         fai   = 'reference/{reference}/{reference}.fa.fai',
+        mask  = 'mapping/{reference}/%s/bed/{sample}.complement.bed' % pipeline.postprocessed_map_type
     output:
         fasta = 'consensus/{reference}-{panel}/{sample}.fa',
     log:
         out = 'consensus/{reference}-{panel}/log/{sample}.fa.out',
         err = 'consensus/{reference}-{panel}/log/{sample}.fa.err'
-    threads:
-        int(config['threads'])
+    params:
+        mask = 'true' if method_config.get('mask') else 'false'
     conda:
         config['snakelines_dir'] + '/enviroments/bcftools.yaml'
     shell:
         """
-          bcftools consensus \
+        mask=''
+        if [ {params.mask} = true ]; then
+            mask='--mask {input.mask}'
+        fi
+
+        bcftools consensus \
             --fasta-ref {input.fasta} \
             --output {output.fasta} \
+            $mask \
             {input.vcf}
 
-          sed -i '1s/>.*/>{wildcards.sample}/' {output.fasta}
+        sed -i '1s/>.*/>{wildcards.sample}/' {output.fasta}
         """

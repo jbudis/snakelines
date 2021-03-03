@@ -82,6 +82,7 @@ variant:                                    # Identify variation in reads given 
 consensus:
     fasta:
         method: bcftools
+        mask: True
 
     summary:
         method: cat
