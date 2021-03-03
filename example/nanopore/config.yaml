@@ -1,4 +1,6 @@
 platform: single_end
+technology: nanopore
+
 samples:
       - name: example_.*
         reference: sars_cov_2
@@ -34,7 +36,7 @@ mapping:
             map_types:
                 - original
 
-variant:
-    caller:
-        method: clair
+#variant:
+#    caller:
+#        method: clair
 

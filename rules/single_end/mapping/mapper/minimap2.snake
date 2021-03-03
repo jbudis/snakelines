@@ -1,8 +1,8 @@
 rule minimap2__map_reads_to_reference:
     """
     Align reads to the reference genome.
+    :input reads: gzipped fastq file with reads, e.g. 'reads/%s/{sample}.fastq.gz'
     :input ref: Reference genomic sequences in fasta format
-    :input sam: Unordered mapped reads in sam format
     :output sam: Ordered mapped reads according to their location on reference genome
     """
     input:
@@ -13,7 +13,7 @@ rule minimap2__map_reads_to_reference:
     log:
         err = 'mapping/{reference}/sorted/log/{sample}.err'
     params:
-        extra="-ax map-ont"
+        extra = '-ax sr' if config['technology'] == 'illumina' else '-ax map-ont'
     threads:
         int(config['threads'])
     conda:
@@ -25,6 +25,6 @@ rule minimap2__map_reads_to_reference:
                 {input.ref} \
                 {input.reads} \
                 -t {threads} \
-                > {output.sam} \
-                2> {log.err}
+            > {output.sam} \
+            2> {log.err}
         """
