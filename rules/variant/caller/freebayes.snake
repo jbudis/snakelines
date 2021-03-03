@@ -1,0 +1,76 @@
+include: config['snakelines_dir'] + '/rules/reference/annotation/regions.snake'
+include: config['snakelines_dir'] + '/rules/reference/index/fai/samtools.snake'
+include: config['snakelines_dir'] + '/rules/reference/index/dict/picard.snake'
+
+rule freebayes_call_germline_variants:
+    """
+        FreeBayes (Garrison and Marth, 2012)is a popular haplotype-aware, genome-wide variant caller,
+        which allows for control over the minimum VAF and the minimum number of alternative-reads.
+        It is Suitable caller for mtDNA: https://www.biorxiv.org/content/10.1101/852210v1.full.pdf
+        with recommended settings: mapping quality (MQ≥30), and base quality (BQ≥24) filters
+    """
+    input:
+        bam   = 'mapping/{reference}/%s/{sample}.bam' % pipeline.postprocessed_map_type,
+        bai   = 'mapping/{reference}/%s/{sample}.bam.bai' % pipeline.postprocessed_map_type,
+        bed   = 'reference/{reference}/annotation/{panel}/regions.bed',
+        fasta = 'reference/{reference}/{reference}.fa',
+        fai   = 'reference/{reference}/{reference}.fa.fai'
+    output:
+        vcf  = 'variant/{reference}-{panel}/original/{sample}.freebayes.vcf'
+    params:
+        min_mapping_quality = method_config.get('min_mapping_quality', 1),
+        min_base_quality = method_config.get('min_base_quality', 0),
+        gvcf = '--gvcf --gvcf-dont-use-chunk true --report-all-haplotype-alleles --report-monomorphic' if method_config.get('gvcf', False) else '',
+        ploidy = method_config.get('ploidy', 2)
+    threads:
+        int(config['threads'])
+    log:
+        out = 'variant/{reference}-{panel}/original/log/{sample}.freebayes.vcf.out',
+        err = 'variant/{reference}-{panel}/original/log/{sample}.freebayes.vcf.err'
+    benchmark:
+        'variant/{reference}-{panel}/original/log/{sample}.vcf.benchmark',
+    conda:
+        config['snakelines_dir'] + '/enviroments/freebayes.yaml'
+    shell:
+        """
+        freebayes \
+            --bam {input.bam} \
+            --fasta-reference {input.fasta} \
+            --targets {input.bed} \
+            --min-mapping-quality {params.min_mapping_quality} \
+            --min-base-quality {params.min_base_quality} \
+            {params.gvcf} \
+            --vcf {output.vcf} \
+        1> {log.out} \
+        2> {log.err}
+        """
+
+rule gatk__prepare_vcf:
+    """
+    Adds missing sequence dictionary to VCF header. This job also generates VCF index (.idx).
+    :input vcf: Raw VCF from variant caller vardict.
+    :input fasta: Reference sequence.
+    :output vcf: Fixed VCF.
+    :output vcf_index: Fixed VCF index.
+    """
+    input:
+        vcf = 'variant/{reference}-{panel}/original/{sample}.freebayes.vcf',
+        fasta = 'reference/{reference}/{reference}.fa'
+    output:
+        vcf = 'variant/{reference}-{panel}/original/{sample}.vcf',
+        vcf_index = 'variant/{reference}-{panel}/original/{sample}.vcf.idx',
+    log:
+        out = 'variant/{reference}-{panel}/original/log/{sample}.out',
+        err = 'variant/{reference}-{panel}/original/log/{sample}.err',
+    conda:
+        config['snakelines_dir'] + '/enviroments/gatk4.yaml'
+    shell:
+        """
+        gatk SelectVariants \
+            -V {input.vcf} \
+            -R {input.fasta} \
+            -O {output.vcf} \
+            1>{log.out} \
+            2>{log.err}
+        """
+

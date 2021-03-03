@@ -17,6 +17,8 @@ rule picard__mark_duplicates:
         out  = '{mapper}/{reference}/deduplicated/log/{sample}.log',
         err  = '{mapper}/{reference}/deduplicated/log/{sample}.err',
         stat = '{mapper}/{reference}/deduplicated/log/{sample}.stats'
+    benchmark:
+            '{mapper}/{reference}/deduplicated/log/{sample}.benchmark'
     conda:
         config['snakelines_dir'] + '/enviroments/picard.yaml'
     shell:

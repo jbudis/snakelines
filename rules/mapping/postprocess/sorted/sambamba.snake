@@ -1,0 +1,29 @@
+rule sambamba__sort_mapped_reads:
+    """
+    Sort aligned reads according to mapped position on reference genome.
+    :input ref: Reference genomic sequences in fasta format
+    :input bam: Unordered mapped reads in bam format
+    :output bam: Ordered mapped reads according to their location on reference genome
+    """
+    input:
+        ref = 'reference/{reference}/{reference}.fa',
+        bam = 'mapping/{{reference}}/{map_type}/{{sample}}.bam'.format(map_type=method_config['input_map_type'])
+    output:
+        bam = configured_temp('mapping/{reference}/sorted/{sample}.bam')
+    log:
+        out = 'mapping/{reference}/sorted/log/{sample}.log',
+        err = 'mapping/{reference}/sorted/log/{sample}.err'
+    benchmark:
+        'mapping/{reference}/sorted/log/{sample}.benchmark'
+    threads:
+        int(config['threads'])
+    shell:
+        """
+        sambamba sort \
+            --out {output.bam} \
+            --nthreads {threads} \
+            --memory-limit 120GB \
+            {input.bam} \
+        1> {log.out} \
+        2> {log.err}
+        """

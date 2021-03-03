@@ -1,4 +1,4 @@
-SNAKELINES_VERSION = '0.10.0'
+SNAKELINES_VERSION = '0.11.0'
 
 import os
 import sys
@@ -7,6 +7,12 @@ from src.output.copy_files import copy_input_files_with_consisent_names_dict
 from src.output.copy_files import copy_config
 from src.output.copy_files import store_snakelines_version
 from src.output.send_email import send_email
+from src.output.report import runtime_report
+from src.output.report import multiqc_report
+from src.output.report import write_output_filenames
+from datetime import datetime
+
+from snakemake.io import OutputFiles
 
 # Load configuration file if not already loaded
 config = load_config(config)
@@ -42,18 +48,57 @@ def get_files(source_dict):
     return files_dict
 
 # "pipeline" rule that generates all of the required files
+
+
+
 rule pipeline:
     input:
         **get_files(outputs)
 
-# on success copy the files to report directory and send email(s)
+onstart:
+    pipeline_started = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+    print('pipeline run started at %s' % pipeline_started, file=sys.stderr)
+
 onsuccess:
+    pipeline_finished = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+    print('pipeline run finished at %s' % pipeline_finished, file=sys.stderr)
+
+    execution_dir = '%s/_execution/%s' % (config['report_dir'], pipeline_finished)
+    summary_dir = '%s/_summary' % config['report_dir']
+
+    if not os.path.exists(execution_dir):
+        os.makedirs(execution_dir)
+
+    if not os.path.exists(summary_dir):
+        os.makedirs(summary_dir)
+
+    # on success copy the files to report directory and send email(s)
     if 'report_dir' in config:
-        print("Copying and finalizing", file=sys.stderr)
+        print("Success - finalizing", file=sys.stderr)
+
         copied = copy_input_files_with_consisent_names_dict(get_files(outputs), get_files(copy_where), pipeline)
         print("Copied {} files to report dir '{}'".format(copied, config['report_dir']), file=sys.stderr)
-        copy_config(config['report_dir'], workflow, pipeline)
-        store_snakelines_version(config['report_dir'], SNAKELINES_VERSION)
+
+        copy_config(execution_dir, workflow, pipeline)
+        store_snakelines_version(execution_dir, SNAKELINES_VERSION)
+
+        print("Writing output filenames", file=sys.stderr)
+        out_list_filename = '%s/rules_output.txt' % execution_dir
+        write_output_filenames(out_list_filename, workflow)
+
+        print("Generating MultiQC report", file=sys.stderr)
+        multiqc_report(
+            outdir=summary_dir,
+            out_list_filename=out_list_filename
+        )
+
+        print("Generating runtime report", file=sys.stderr)
+        runtime_report(
+            outdir=execution_dir,
+            snakefile=workflow.snakefile,
+            configfile=workflow.overwrite_configfiles[0]
+        )
+
     send_email(config, get_files(outputs), get_files(copy_where), True)
 
 # on error send email(s)

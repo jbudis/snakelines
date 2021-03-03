@@ -133,7 +133,7 @@ class QualimapParser:
             else:
                 result = float(match_obj.group())
         else:
-            raise ValueError('percentage not found in text %s' % text)
+            raise ValueError('percentage not found in text "%s"' % text)
         
         return result
     
@@ -182,10 +182,10 @@ class QualimapParser:
         soup = BeautifulSoup(html, 'html.parser')
         element = soup.find('h3', text='Globals (inside of regions)')
         if element is not None:
-            element.find_next_sibling('table') \
+            value_el = element.find_next_sibling('table') \
                 .find('td', text='Mapped reads') \
                 .find_next_sibling()
-            result = cls._parse_value(element.text, True)
+            result = cls._parse_value(value_el.text, True)
         
         return result
     

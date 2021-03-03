@@ -13,6 +13,8 @@ rule samtools__sort_mapped_reads:
     log:
         out = 'mapping/{reference}/sorted/log/{sample}.log',
         err = 'mapping/{reference}/sorted/log/{sample}.err'
+    benchmark:
+        'mapping/{reference}/sorted/log/{sample}.benchmark'
     threads:
         int(config['threads'])
     conda:
@@ -21,6 +23,7 @@ rule samtools__sort_mapped_reads:
         """
         samtools sort \
             -o {output.bam} \
+            -m 2G \
             --threads {threads} \
             --output-fmt BAM \
             --reference {input.ref} \

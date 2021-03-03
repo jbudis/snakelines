@@ -51,6 +51,8 @@ rule fastqc__html_summary_for_paired_reads:
         summary = 'reads/{read_type}/stats/summary.html'
     params:
         summary_script = srcdir("scripts/fastqc-summary.py")
+    conda:
+        config['snakelines_dir'] + '/enviroments/fastqc.yaml'
     shell:
         """
         python {params.summary_script} \
@@ -69,6 +71,8 @@ rule fastqc__quality_report:
         reads = 'reads/{read_type}/{fastq}.fastq.gz'
     output:
         html = 'reads/{read_type}/stat{stats_type}/{fastq}_fastqc.html',
+        zip = 'reads/{read_type}/stat{stats_type}/{fastq}_fastqc.zip', # consumed by multiqc
+        data = 'reads/{read_type}/stat{stats_type}/{fastq}_fastqc/fastqc_data.txt', # consumed by multiqc
         txt = 'reads/{read_type}/stat{stats_type}/{fastq}_fastqc/summary.txt'
     threads:
         int(config['threads'])

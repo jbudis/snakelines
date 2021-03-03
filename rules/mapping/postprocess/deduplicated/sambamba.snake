@@ -1,0 +1,35 @@
+rule sambamba__mark_duplicates:
+    """
+    This tool locates and tags duplicate reads in a BAM or SAM file, where duplicate reads are defined as
+    originating from a single fragment of DNA.
+    :input bam: Mapped reads in bam format
+    :input bai: Index to mapped reads for enable fast read retrieval from desired genomic region
+    :output bam: Mapped reads with additional attribute that marks if read is PCR duplicate
+    """
+    input:
+        bam  = '{{mapper}}/{{reference}}/{map_type}/{{sample}}.bam'.format(map_type=method_config['input_map_type']),
+        bai  = '{{mapper}}/{{reference}}/{map_type}/{{sample}}.bam.bai'.format(map_type=method_config['input_map_type'])
+    output:
+        bam  = configured_temp('{mapper}/{reference}/deduplicated/{sample}.bam')
+    params:
+        tmp_dir = config['tmp_dir']
+    log:
+        out  = '{mapper}/{reference}/deduplicated/log/{sample}.log',
+        err  = '{mapper}/{reference}/deduplicated/log/{sample}.err',
+        stat = '{mapper}/{reference}/deduplicated/log/{sample}.stats'
+    benchmark:
+            '{mapper}/{reference}/deduplicated/log/{sample}.benchmark'
+    threads:
+        int(config['threads'])
+    shell:
+        """
+        export TMPDIR=/data/tmp
+        sambamba markdup \
+            --nthreads {threads} \
+            --overflow-list-size 2000000 \
+            --hash-table-size 2000000 \
+            {input.bam} \
+            {output.bam} \
+        1> {log.out} \
+        2> {log.err}
+        """

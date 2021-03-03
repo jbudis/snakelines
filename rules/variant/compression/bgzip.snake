@@ -1,0 +1,14 @@
+rule bgzip__compress_vcf:
+    """
+    Compresses VCF file filename.vcf as filename.vcf.gz
+    """
+    input:
+        '{path}/{sample}.vcf'
+    output:
+        '{path}/{sample}.vcf.gz'
+    benchmark:
+        '{path}/log/{sample}.vcf.gz.benchmark'
+    shell:
+        """
+        bgzip -c {input} > {output}
+        """

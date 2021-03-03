@@ -1,9 +1,10 @@
-import shutil
 import errno
 import os
-
-
+import shutil
 # TODO this should be renamed to matching or deleted - unused
+import sys
+
+
 def copy_input_files_with_consistent_output_names(input_files, output_files):
     """
     Compare names of the inputs and outputs of the rule. All items with the same name in inputs and outputs are copied,
@@ -26,7 +27,8 @@ def copy_input_files_with_consistent_output_names(input_files, output_files):
 
         # Check if items with the same name have also same data type, both should be list or str
         input_item, output_item = getattr(input_files, item_name), getattr(output_files, item_name)
-        assert type(input_item) == type(output_item), 'Output and input items with name {} for the rule have different data types {} and {}'.format(
+        assert type(input_item) == type(
+            output_item), 'Output and input items with name {} for the rule have different data types {} and {}'.format(
             item_name, type(input_item), type(output_item))
 
         # Check if items with the same name have also same length
@@ -50,11 +52,7 @@ def store_snakelines_version(report_dir, version):
     :param version: str - version of the SnakeLines
     :return: None
     """
-    execution_dir = '{}/_execution'.format(report_dir)
-    if not os.path.exists(execution_dir):
-        os.makedirs(execution_dir)
-
-    version_file = '{}/snakelines_version.txt'.format(execution_dir)
+    version_file = '{}/snakelines_version.txt'.format(report_dir)
     with open(version_file, 'w') as out:
         out.write(version)
 
@@ -62,13 +60,14 @@ def store_snakelines_version(report_dir, version):
 def copy_config(report_dir, workflow, pipeline):
     """
     Copy configuration file (snakemake --configfile argument) to the report directory
+    :param pipeline:
     :param report_dir: str - Directory for output files
     :param workflow: str - global snakemake variable
     :return: None
     """
     config_file = workflow.overwrite_configfiles[0]
     if config_file:
-        report_file = '{}/_execution/{}'.format(report_dir, os.path.basename(config_file))
+        report_file = report_dir + '/' + os.path.basename(config_file)
         copy_with_makedirs(config_file, report_file, pipeline)
 
 
@@ -103,15 +102,8 @@ def copy_with_makedirs(src, dest, pipeline):
         dest = dest.replace('-{}.'.format(pipeline.references[0]), '.')  # from file names
         dest = dest.replace('-{}/'.format(pipeline.references[0]), '/')  # from directories
 
-    try:
-        copy(src, dest)
-    except IOError as e:
-        # ENOENT(2): file does not exist, raised also on missing dest parent dir
-        if e.errno != errno.ENOENT:
-            raise
-        # try creating parent directories
-        os.makedirs(os.path.dirname(dest))
-        copy(src, dest)
+    os.makedirs(os.path.dirname(dest), exist_ok=True)
+    copy(src, dest)
 
 
 def copy_input_files_with_consisent_names_dict(input_dict, output_dict, pipeline):
@@ -138,12 +130,14 @@ def copy_input_files_with_consisent_names_dict(input_dict, output_dict, pipeline
 
             # Check if items with the same name have also same data type
             assert type(input_item) == type(output_item), 'Output and input items with name {} \
-                    for the rule have different data types {} and {}'.format(item_name, type(input_item), type(output_item))
+                    for the rule have different data types {} and {}'.format(item_name, type(input_item),
+                                                                             type(output_item))
 
             # Check if items with the same name have also same length
             if type(input_item) is list and type(output_item) is list:
                 assert len(input_item) == len(output_item), 'Output and input items with name {} \
-                        for the rule have different lengths {} and {}'.format(item_name, len(input_item), len(output_item))
+                        for the rule have different lengths {} and {}'.format(item_name, len(input_item),
+                                                                              len(output_item))
 
             # Single file items are directly copied
             if type(input_item) == str:

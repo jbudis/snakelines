@@ -1,0 +1,48 @@
+rule annotation__create_wgs_bed_file:
+    """
+    Creates bed file with whole genomic regions in reference fasta file. Simple way to unite WGS and panel analysis.
+    """
+    input:
+        fai = 'reference/{reference}/{reference}.fa.fai'
+    output:
+        bed = 'reference/{reference}/annotation/wgs/regions.bed'
+    shell:
+          """
+        awk \
+            '{{print $1, 1, $2, $1}}' \
+      {input.fai} \
+              | sed \
+              's/ /\t/g' \
+              > {output.bed}
+              """
+
+rule picard__bed_to_interval_list:
+    """
+    Conversion of BED file to GATK specific interval_list.
+    :input bed: BED file
+    :input seq_dict: sequence dictionary
+    :output intervals: interval list
+    """
+    input:
+        bed      = 'reference/{reference}/annotation/{panel}/regions.bed',
+        seq_dict = 'reference/{reference}/{reference}.dict'
+    output:
+        intervals = 'reference/{reference}/annotation/{panel}/regions.interval_list'
+    log:
+        out = 'reference/{reference}/annotation/{panel}/log/bed_to_interval_list.out',
+        err = 'reference/{reference}/annotation/{panel}/log/bed_to_interval_list.err',
+    conda:
+        config['snakelines_dir'] + '/enviroments/picard.yaml'
+    shell:
+        """
+        picard BedToIntervalList \
+            INPUT={input.bed} \
+            SEQUENCE_DICTIONARY={input.seq_dict} \
+            OUTPUT={output.intervals} \
+            SORT=true \
+            UNIQUE=true \
+            1> {log.out} \
+            2> {log.err}
+        """
+
+

@@ -121,28 +121,27 @@ mapping:
                                  sr=pipeline.sample_references, map_type=pipeline.postprocessed_map_type)
 
     postprocess:
-        original:
-            output:
-                original: expand('mapping/{sr.reference}/original/{sr.sample}.bam',
-                                  sr=pipeline.sample_references)
         sorted:
             output:
-                sorted: expand('mapping/{sr.reference}/sorted/{sr.sample}.bam', sr=pipeline.sample_references)
+                mapped_reads: expand('mapping/{sr.reference}/sorted/{sr.sample}.bam', sr=pipeline.sample_references)
         filtered:
             output:
-                read_group: expand('mapping/{sr.reference}/filtered/{sr.sample}.bam', sr=pipeline.sample_references)
+                mapped_reads: expand('mapping/{sr.reference}/filtered/{sr.sample}.bam', sr=pipeline.sample_references)
         read_group:
             output:
-                read_group: expand('mapping/{sr.reference}/read_group/{sr.sample}.bam', sr=pipeline.sample_references)
+                mapped_reads: expand('mapping/{sr.reference}/read_group/{sr.sample}.bam', sr=pipeline.sample_references)
         realigned:
             output:
-                read_group: expand('mapping/{sr.reference}/realigned/{sr.sample}.bam', sr=pipeline.sample_references)
+                mapped_reads: expand('mapping/{sr.reference}/realigned/{sr.sample}.bam', sr=pipeline.sample_references)
         deduplicated:
             output:
-                deduplicated: expand('mapping/{sr.reference}/deduplicated/{sr.sample}.bam', sr=pipeline.sample_references)
+                mapped_reads: expand('mapping/{sr.reference}/deduplicated/{sr.sample}.bam', sr=pipeline.sample_references)
         deoverlapped:
             output:
-                deoverlapped: expand('mapping/{sr.reference}/deoverlapped/{sr.sample}.bam', sr=pipeline.sample_references)
+                mapped_reads: expand('mapping/{sr.reference}/deoverlapped/{sr.sample}.bam', sr=pipeline.sample_references)
+        recalibrated:
+            output:
+                mapped_reads: expand('mapping/{sr.reference}/recalibrated/{sr.sample}.bam', sr=pipeline.sample_references)
 
     merged:
         output:
@@ -156,7 +155,7 @@ mapping:
         quality_report:
             output:
                 quality_reports:
-                    from: expand('mapping/{sr.reference}/{map_type}/stats-wgs/samples/{sr.sample}/report.pdf',
+                    from: expand('mapping/{sr.reference}/{map_type}/stats-{sr.panel}/samples/{sr.sample}/report.pdf',
                                   sr=pipeline.sample_references, map_type=map_types_with_quality_report)
 
                     to:   expand('{report_dir}/{sr.sample}/mapping_quality/{map_type}-{sr.reference}.pdf',
@@ -164,12 +163,12 @@ mapping:
                                   sr=pipeline.sample_references, map_type=map_types_with_quality_report)
 
                 summary_report:
-                    from: expand('mapping/{reference}/{map_type}/stats-wgs/summary/report.pdf',
-                                  reference=multisample_references, map_type=map_types_with_quality_report)
+                    from: expand('mapping/{sr.reference}/{map_type}/stats-{sr.panel}/summary/report.pdf',
+                                  sr=multisample_references, map_type=map_types_with_quality_report)
 
-                    to:   expand('{report_dir}/_summary/mapping_quality/{map_type}-{reference}.pdf',
+                    to:   expand('{report_dir}/_summary/mapping_quality/{map_type}-{sr.reference}.pdf',
                                   report_dir=config['report_dir'],
-                                  reference=multisample_references, map_type=map_types_with_quality_report)
+                                  sr=multisample_references, map_type=map_types_with_quality_report)
 
             depends:
                 - mapping/mapper
@@ -182,43 +181,124 @@ mapping:
 
                     to:   expand('{report_dir}/{sr.sample}/methylation_quality/{sr.reference}.html',
                                   report_dir=config['report_dir'],
-                                  sr=pipeline.sample_references, map_type='original')
+                                  sr=pipeline.sample_references)
 
             depends:
                 - mapping/mapper
 
+        recalibration:
+            output:
+                recalibration_reports:
+                    from: expand('mapping/{sr.reference}/recalibrated/qc-stats/samples/{sr.sample}/covariates.pdf',
+                                 sr=pipeline.sample_references)
+
+                    to:   expand('{report_dir}/{sr.sample}/recalibration/{sr.reference}.pdf',
+                                 report_dir=config['report_dir'],
+                                 sr=pipeline.sample_references)
+            depends:
+                - mapping/postprocess/recalibrated
+
 variant:
     caller:
         output:
-            variants:
-                from: expand('variant/{sr.reference}-wgs/original/{sr.sample}.vcf',
-                              sr=pipeline.sample_references, map_type=pipeline.postprocessed_map_type)
+            vcf:
+                from: expand('variant/{sr.reference}-{sr.panel}/original/{sr.sample}.vcf',
+                              sr=pipeline.sample_references)
 
-                to:   expand('{report_dir}/{sr.sample}/variants-{sr.reference}.vcf',
+                to:   expand('{report_dir}/{sr.sample}/original-{sr.reference}-{sr.panel}.vcf',
                               report_dir=config['report_dir'], sr=pipeline.sample_references)
         depends:
             - reads/preprocess
             - reads/report/quality_report
             - mapping/mapper
+
+    postprocess:
+        recalibrated:
+            output:
+                vcf:
+                    from:
+                        expand('variant/{sr.reference}-{sr.panel}/recalibrated/{sr.sample}.vcf',
+                                sr=pipeline.sample_references)
+                    to:
+                        expand('{report_dir}/{sr.sample}/recalibrated-{sr.reference}-{sr.panel}.vcf',
+                               report_dir=config['report_dir'], sr=pipeline.sample_references)
+
+        normalized:
+            output:
+                vcf: expand('variant/{sr.reference}-{sr.panel}/normalized/{sr.sample}.vcf',
+                              sr=pipeline.sample_references)
+
+        annotated:
+            output:
+                vcf:
+                    from:
+                        expand('variant/{sr.reference}-{sr.panel}/annotated/{sr.sample}.vcf',
+                            sr=pipeline.sample_references)
+                    to:
+                        expand('{report_dir}/{sr.sample}/annotated-{sr.reference}-{sr.panel}.vcf',
+                               report_dir=config['report_dir'], sr=pipeline.sample_references)
+
+                tsv:
+                    from: expand('variant/{sr.reference}-{sr.panel}/annotated/{sr.sample}.tsv',
+                                  sr=pipeline.sample_references)
+
+                    to: expand('{report_dir}/{sr.sample}/annotated-{sr.reference}-{sr.panel}.tsv',
+                        report_dir=config['report_dir'], sr=pipeline.sample_references)
+
+                html:
+                    from: expand('variant/{sr.reference}-{sr.panel}/annotated/{sr.sample}.report.html',
+                        sr=pipeline.sample_references)
+
+                    to: expand('{report_dir}/{sr.sample}/annotated-{sr.reference}-{sr.panel}.report.html',
+                        report_dir=config['report_dir'], sr=pipeline.sample_references)
+
     report:
         calling:
-            output: []
+            output:
+                metrics:
+                    from: expand('variant/{sr.reference}-{sr.panel}/original/calling_metrics/{sr.sample}.variant_calling_detail_metrics',
+                                  sr=pipeline.sample_references)
+
+                    to:   expand('{report_dir}/{sr.sample}/original-{sr.reference}-{sr.panel}.metrics.tsv',
+                                  report_dir=config['report_dir'], sr=pipeline.sample_references)
+
             depends:
                 - reads/preprocess
                 - reads/report/quality_report
                 - mapping/mapper
+
         summary:
             output:
-                report:
-                    from: expand('variant/{sr.reference}-wgs/original/report/{sr.sample}.pdf',
+                pdf:
+                    from: expand('variant/{sr.reference}-{sr.panel}/original/report/{sr.sample}.pdf',
                                   sr=pipeline.sample_references)
 
-                    to:   expand('{report_dir}/{sr.sample}/summary-{sr.reference}.pdf',
+                    to:   expand('{report_dir}/{sr.sample}/summary-{sr.reference}-{sr.panel}.pdf',
                                   report_dir=config['report_dir'], sr=pipeline.sample_references)
             depends:
                 - reads/preprocess
                 - reads/report/quality_report
                 - mapping/mapper
+
+consensus:
+    fasta:
+        output:
+            fasta:
+                from: expand('consensus/{sr.reference}-{sr.panel}/{sr.sample}.fa', sr=pipeline.sample_references)
+
+                to: expand('{report_dir}/{sr.sample}/consensus-{sr.reference}-{sr.panel}.fa',
+                            report_dir=config['report_dir'], sr=pipeline.sample_references)
+        depends:
+            - variant/caller
+
+    summary:
+        output:
+            fasta:
+              from: expand('consensus/{sr.reference}-{sr.panel}/consensus.fa',
+                report_dir=config['report_dir'], sr=pipeline.sample_references)
+
+              to: expand('{report_dir}/_summary/consensus-{sr.reference}-{sr.panel}.fa',
+                report_dir=config['report_dir'], sr=pipeline.sample_references)
 
 classification:
     read_based:

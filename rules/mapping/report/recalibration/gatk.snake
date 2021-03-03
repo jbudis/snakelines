@@ -1,0 +1,25 @@
+rule gatk__analyze_covariates:
+    """
+        Evaluate and compare base quality score recalibration (BQSR) tables.
+    """
+    input:
+        table1 = 'mapping/{reference}/recalibrated/{sample}.table.pass1',
+        table2 = 'mapping/{reference}/recalibrated/{sample}.table.pass2'
+    output:
+        pdf = 'mapping/{reference}/recalibrated/qc-stats/samples/{sample}/covariates.pdf',
+        csv = 'mapping/{reference}/recalibrated/qc-stats/samples/{sample}/covariates.csv'
+    log:
+        out = 'mapping/{reference}/recalibrated/qc-stats/samples/{sample}/log/covariates.out',
+        err = 'mapping/{reference}/recalibrated/qc-stats/samples/{sample}/log/covariates.err'
+    threads:
+        int(config['threads'])
+    shell:
+        """
+        gatk AnalyzeCovariates \
+            --before-report-file {input.table1} \
+            --after-report-file {input.table2} \
+            --intermediate-csv-file {output.csv} \
+            --plots-report-file {output.pdf} \
+        1> {log.out} \
+        2> {log.err}
+        """
