@@ -20,10 +20,10 @@ rule bedtools_merge_bam:
     output:
         bed = 'mapping/{reference}/%s/bed/{sample}.merge.bed' % pipeline.postprocessed_map_type
     conda:
-        config['snakelines_dir'] + '/enviroments/bedtools.yaml'
+        config['snakelines_dir'] + '/enviroments/bedtools_samtools.yaml'
     shell:
         """
-            bedtools merge -i {input.bam} > {output.bed}
+            bedtools merge -i <(samtools view -b -F 4 {input.bam}) > {output.bed}
         """
 
 rule bedtools_complement_bam:
