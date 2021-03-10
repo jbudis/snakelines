@@ -79,10 +79,10 @@ variant:                                    # Identify variation in reads given 
         summary:
             method: custom
 
-consensus:
-    fasta:
-        method: bcftools
-        mask: True
+consensus:                      # consesnus sequence
+    fasta:                      # create consesnus sequence based on vcf of a sample and reference fasta
+        method: bcftools        # bcftools is the only option
+        mask: True              # mask regions not covered by reads with N
 
     summary:
-        method: cat
+        method: cat             # concatenate consensus sequences from the samples into a single file
