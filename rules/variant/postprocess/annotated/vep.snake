@@ -86,7 +86,7 @@ rule vep__annotate_vcf:
         stats = 'variant/{reference}-{panel}/annotated/{sample}.report.html'
     params:
         assembly = method_config['assembly'],
-        dbnsfp = ','.join(method_config.get('plugins', {}).get('dbnsfp', [])),
+        dbnsfp   = ','.join(method_config.get('plugins', {}).get('dbnsfp', []))
     log:
         out = 'variant/{reference}-{panel}/annotated/log/{sample}.vcf.out',
         err = 'variant/{reference}-{panel}/annotated/log/{sample}.vcf.err'
