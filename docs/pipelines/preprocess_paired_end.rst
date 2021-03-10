@@ -1,5 +1,5 @@
-Preprocess sequencing reads
-===========================
+Preprocess sequencing paired-end reads
+======================================
 
 Remove parts or whole reads that are artifacts of laboratory sequencing process.
 They may blur a downstream analysis, and so lead to incorrect conclusions in their interpretations.
@@ -23,7 +23,7 @@ Purpose
 Required inputs
 ---------------
 
-* Sequenced reads in gzipped fastq format.
+* Sequenced paired-end reads from Illumina sequencer in gzipped fastq format.
 
   * each sample is represented by two gzipped fastq files
   * standard output files of paired-end sequencing

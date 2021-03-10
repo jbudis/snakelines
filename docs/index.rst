@@ -31,7 +31,7 @@ Contents
    :maxdepth: 2
 
    pipelines/quality_report
-   pipelines/preprocess
+   pipelines/preprocess_paired_end
    pipelines/mapping
    pipelines/download_reference_and_mapping
    pipelines/assembly
@@ -42,6 +42,7 @@ Contents
    pipelines/viral_identification
    pipelines/download_reference
    pipelines/infer_phylogeny
+   pipelines/illumina_single_end
 
 .. toctree::
    :caption: Documentation

@@ -51,20 +51,6 @@ How to run example:
 
 Example configuration:
 
-.. literalinclude:: ../../example/illumina_sinle_end/config.yaml
+.. literalinclude:: ../../example/illumina_single_end/config.yaml
    :language: yaml
 
-Planned improvements
---------------------
-
-
-
-Included pipelines
-------------------
-
-.. toctree::
-   :maxdepth: 2
-
-   /pipelines/quality_report
-   /pipelines/preprocess
-   /pipelines/mapping

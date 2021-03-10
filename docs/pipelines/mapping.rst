@@ -1,7 +1,7 @@
-Map reads to a reference genome
-===============================
+Map paired-end reads to a reference genome
+==========================================
 
-Align sequenced reads to a reference genome to find the most probable genomic positions of origin.
+Align sequenced paired-end reads to a reference genome to find the most probable genomic positions of origin.
 Reference genome may represent DNA of a single organism, multiple organisms, transcripts...
 
 Purpose
@@ -17,7 +17,7 @@ Purpose
 Required inputs
 ---------------
 
-* Sequenced reads in gzipped fastq format.
+* Sequenced paired-end reads from Illumina sequencer in gzipped fastq format.
 
   * each sample is represented by two gzipped fastq files
   * standard output files of paired-end sequencing
@@ -77,4 +77,4 @@ Included pipelines
    :maxdepth: 2
 
    /pipelines/quality_report
-   /pipelines/preprocess
+   /pipelines/preprocess_paired_end
