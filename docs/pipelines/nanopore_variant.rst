@@ -1,29 +1,27 @@
-Analyse single-end Illumina samples
-===================================
+Analyse variants from nanopore reads
+====================================
 
-Apply the variant calling pipeline to single-end reads from Illumina sequencer. 
+Apply the variant calling pipeline to reads from Nanopore sequencer. 
 
 Purpose
 -------
 
-* Sometimes we need to process Illumina reads as single-end
-* Single-end sequencing is cheaper than paired-end
+* Analyse variants in Nanopore reads
 
 Required inputs
 ---------------
 
-* Single-end reads from Illumina sequencer in gzipped fastq format
+* Single-end reads from Nanopore sequencer in gzipped fastq format
 
   * Each sample is represented by a single gzipped fastq file
-  * Half of the standard output files of paired-end sequencing
 
 * Reference genome in fasta format
 
 ::
 
    |-- reads/original
-           |-- <sample_1>_R1.fastq.gz
-           |-- <sample_2>_R1.fastq.gz
+           |-- <sample_1>.fastq.gz
+           |-- <sample_2>.fastq.gz
    |-- reference/<reference>
            |-- <reference>.fa
 
@@ -42,7 +40,7 @@ How to run example:
 
 .. code-block:: bash
 
-   cd /usr/local/snakelines/example/illumina_sinle_end
+   cd /usr/local/snakelines/example/nanopore
 
    snakemake \
       --snakefile ../../snakelines.snake \
@@ -51,6 +49,6 @@ How to run example:
 
 Example configuration:
 
-.. literalinclude:: ../../example/illumina_single_end/config.yaml
+.. literalinclude:: ../../example/nanopore/config.yaml
    :language: yaml
 

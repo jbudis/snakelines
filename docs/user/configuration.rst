@@ -12,7 +12,7 @@ See `example <#example-configuration>`_ at the end of this chapter.
 
 
 Define the set of samples
----------------------
+-------------------------
 
 Fastq files stored in the reads/original directory can be analysed together.
 To analyse only a subset of samples configuration must start with `samples:` attribute.
@@ -37,7 +37,9 @@ Specifying the mode of
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 SnakeLines can analyse sequencing reads both from Illumina and Nanopore sequencers, with the possibility to also analyse
-single end Illumina reads. To specify the wa
+single end Illumina reads. The configuration file has to contain the platform to specify the source of the reads, so
+that SnakeLines use appropriate rules. When analysing Illumina reads, further specification about the  has to be made in the
+technology entry.
 
 .. code-block:: yaml
     platform: illumina

@@ -43,6 +43,7 @@ Contents
    pipelines/download_reference
    pipelines/infer_phylogeny
    pipelines/illumina_single_end
+   pipelines/nanopore_variant
 
 .. toctree::
    :caption: Documentation

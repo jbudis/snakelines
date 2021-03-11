@@ -36,7 +36,7 @@ mapping:
             map_types:
                 - original
 
-#variant:
-#    caller:
-#        method: clair
+variant:
+    caller:
+        method: medaka
 
