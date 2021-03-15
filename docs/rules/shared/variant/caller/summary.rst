@@ -27,12 +27,28 @@ Vardict - Call Germline Variants
 
 Identify small variation (SNP and indels) from the mapped reads.
 
+Config parameters:
+    hard_filter:
+        min_nonref_allele_freq
+        min_alternate_count
+        min_map_quality
+
 **Location**
 
 - *Filepath:* <SnakeLines_dir>/rules/shared/variant/caller/vardict.snake
 - *Rule name:* vardict__call_germline_variants
 
 **Input(s):**
+
+- *bam:* Unordered mapped reads in bam format
+- *bai:* Ordered and indexed mapped reads in bam format
+- *bed:* Bed file containing whole genomic regions from the reference fasta
+- *reffasta:* Reference genomic sequences in fasta format
+- *reffaidx:* Indexed reference genomic sequences in fasta.fai format
+
+**Output(s):**
+
+- *vcf:* Variants in the Variant Call Format (VCF)
 
 Vardict - Test Strand Bias
 ------------------------------
@@ -63,6 +79,11 @@ Clair - Variant Call Mapped Reads
 
 Identify small variants from reads mapped to a reference.
 
+Config parameters:
+    hard_filter:
+        min_nonref_allele_freq
+        min_coverage
+
 **Location**
 
 - *Filepath:* <SnakeLines_dir>/rules/shared/variant/caller/clair.snake
@@ -70,12 +91,14 @@ Identify small variants from reads mapped to a reference.
 
 **Input(s):**
 
-- *ref:* Reference genomic sequences in fasta format
 - *bam:* Unordered mapped reads in bam format
+- *bai:* Ordered and indexed mapped reads in bam format
+- *reffasta:* Reference genomic sequences in fasta format
+- *reffaidx:* Indexed reference genomic sequences in fasta.fai format
 
 **Output(s):**
 
-- *bam:* Ordered mapped reads according to their location on reference genome
+- *vcf:* Variants in the Variant Call Format (VCF)
 
 Vcfcat - Merge Vcf Files
 ----------------------------
@@ -92,7 +115,7 @@ Concatente all vcf files into one
 Medaka - Variant Call Mapped Reads
 --------------------------------------
 
-Identify small variants from reads mapped to a reference.
+Identify small variants from reads mapped to a reference. Mainly for diploid samples.
 
 **Location**
 
@@ -101,22 +124,23 @@ Identify small variants from reads mapped to a reference.
 
 **Input(s):**
 
-- *ref:* Reference genomic sequences in fasta format
 - *bam:* Unordered mapped reads in bam format
+- *reffasta:* Reference genomic sequences in fasta format
+- *reffaidx:* Indexed reference genomic sequences in fasta.fai format
 
 **Output(s):**
 
-- *bam:* Ordered mapped reads according to their location on reference genome
+- *vcf:* Variants in the Variant Call Format (VCF)
 
-Freebayes - Call Mapped Reads
----------------------------------
+Freebayes - Variant Call Mapped Reads
+-----------------------------------------
 
 Identify small variation (SNP and indels) from the mapped reads.
 
 **Location**
 
 - *Filepath:* <SnakeLines_dir>/rules/shared/variant/caller/freebayes.snake
-- *Rule name:* freebayes__call_mapped_reads
+- *Rule name:* freebayes__variant_call_mapped_reads
 
 **Input(s):**
 
