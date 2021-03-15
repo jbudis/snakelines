@@ -26,6 +26,11 @@ else:
     print('ERROR: Platform not defined')
     sys.exit(1)
 
+if config['platform'] == 'single_end':
+    if 'technology' not in config:
+        print('Single-end mode requires a technology specification (technology: nanopore/illumina)')
+        sys.exit(1)
+
 # Run startup scripts that automatically loads imports from src/ and load helper methods
 include: config['snakelines_dir'] + '/src/common.snake'
 
