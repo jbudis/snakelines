@@ -13,7 +13,7 @@ rule minimap2__map_reads_to_reference:
     log:
         err = 'mapping/{reference}/sorted/log/{sample}.err'
     params:
-        extra = '-ax sr' if config['technology'] == 'illumina' else '-ax map-ont'
+        technology = '-ax sr' if config['technology'] == 'illumina' else '-ax map-ont'
     threads:
         int(config['threads'])
     conda:
@@ -21,7 +21,7 @@ rule minimap2__map_reads_to_reference:
     shell:
         """
             minimap2 \
-                {params.extra} \
+                {params.technology} \
                 {input.ref} \
                 {input.reads} \
                 -t {threads} \

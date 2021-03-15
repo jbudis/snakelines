@@ -1,3 +1,6 @@
+include: config['snakelines_dir'] + '/rules/shared/reads/preprocess/conversion/unzip.snake'
+
+
 def fastq_files_joined(read_type):
     """
     All joined read files from the reads/{read_type}/ directory
