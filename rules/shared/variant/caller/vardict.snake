@@ -36,6 +36,19 @@ rule vardict__prepare_bed_file:
 rule vardict__call_germline_variants:
     """
     Identify small variation (SNP and indels) from the mapped reads.
+
+    Config parameters:
+        hard_filter:
+            min_nonref_allele_freq
+            min_alternate_count
+            min_map_quality
+
+    :input bam: Unordered mapped reads in bam format
+    :input bai: Ordered and indexed mapped reads in bam format
+    :input bed: Bed file containing whole genomic regions from the reference fasta
+    :input reffasta: Reference genomic sequences in fasta format
+    :input reffaidx: Indexed reference genomic sequences in fasta.fai format
+    :output vcf: Variants in the Variant Call Format (VCF)
     """
     input:
         bam      = 'mapping/{reference}/deduplicated/{sample}.bam',

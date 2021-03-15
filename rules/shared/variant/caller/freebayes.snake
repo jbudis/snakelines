@@ -1,4 +1,4 @@
-rule freebayes__call_mapped_reads:
+rule freebayes__variant_call_mapped_reads:
     """
     Identify small variation (SNP and indels) from the mapped reads.
     """

@@ -3,6 +3,11 @@ include: config['snakelines_dir'] + '/rules/shared/mapping/index/samtools.snake'
 rule clair__variant_call_mapped_reads:
     """
     Identify small variants from reads mapped to a reference.
+    
+    Config parameters:
+        hard_filter:
+            min_nonref_allele_freq
+            min_coverage
 
     :input bam: Unordered mapped reads in bam format
     :input bai: Ordered and indexed mapped reads in bam format
