@@ -18,10 +18,14 @@ rule freebayes_call_germline_variants:
     output:
         vcf  = 'variant/{reference}-{panel}/original/{sample}.freebayes.vcf'
     params:
+        ploidy = method_config.get('ploidy', 2),
         min_mapping_quality = method_config.get('min_mapping_quality', 1),
         min_base_quality = method_config.get('min_base_quality', 0),
-        gvcf = '--gvcf --gvcf-dont-use-chunk true --report-all-haplotype-alleles --report-monomorphic' if method_config.get('gvcf', False) else '',
-        ploidy = method_config.get('ploidy', 2)
+        min_alternate_count = method_config.get('min_alternate_count', 2),
+        min_alternate_fraction = method_config.get('min_alternate_fraction', 0.05),
+        min_coverage = method_config.get('min_coverage', 0),
+        gvcf = '--gvcf --gvcf-dont-use-chunk true' if method_config.get('gvcf', False) else '',
+        all_alleles = '--report-all-haplotype-alleles --report-monomorphic' if method_config.get('all_alleles', False) else ''
     threads:
         int(config['threads'])
     log:
@@ -37,9 +41,14 @@ rule freebayes_call_germline_variants:
             --bam {input.bam} \
             --fasta-reference {input.fasta} \
             --targets {input.bed} \
+            --ploidy {params.ploidy} \
             --min-mapping-quality {params.min_mapping_quality} \
             --min-base-quality {params.min_base_quality} \
+            --min-alternate-count {params.min_alternate_count} \
+            --min-alternate-fraction {params.min_alternate_fraction} \
+            --min-coverage {params.min_coverage} \
             {params.gvcf} \
+            {params.all_alleles} \
             --vcf {output.vcf} \
         1> {log.out} \
         2> {log.err}

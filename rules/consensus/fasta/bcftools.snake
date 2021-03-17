@@ -35,9 +35,7 @@ rule bcftools__create_consensus_fasta:
             --fasta-ref {input.fasta} \
             --output {output.fasta} \
             $mask \
-            {input.vcf} \
-            || true
-
+            {input.vcf}
 
         sed -i '1s/>.*/>{wildcards.sample}/' {output.fasta}
         """
