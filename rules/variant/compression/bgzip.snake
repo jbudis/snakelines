@@ -8,6 +8,8 @@ rule bgzip__compress_vcf:
         '{path}/{sample}.vcf.gz'
     benchmark:
         '{path}/log/{sample}.vcf.gz.benchmark'
+    conda:
+        config['snakelines_dir'] + '/enviroments/tabix.yaml'
     shell:
         """
         bgzip -c {input} > {output}
