@@ -10,32 +10,38 @@ rule bcftools__create_consensus_fasta:
         See http://samtools.github.io/bcftools/bcftools.html#consensus
     """
     input:
-        vcf   = 'variant/{reference}-{panel}/original/{sample}.vcf.gz',
-        tbi   = 'variant/{reference}-{panel}/original/{sample}.vcf.gz.tbi',
-        fasta = 'reference/{reference}/{reference}.fa',
-        fai   = 'reference/{reference}/{reference}.fa.fai',
-        mask  = 'mapping/{reference}/%s/bed/{sample}.complement.bed' % pipeline.postprocessed_map_type
+        vcf      = 'variant/{reference}-{panel}/original/{sample}.vcf.gz',
+        tbi      = 'variant/{reference}-{panel}/original/{sample}.vcf.gz.tbi',
+        fasta    = 'reference/{reference}/{reference}.fa',
+        fai      = 'reference/{reference}/{reference}.fa.fai',
+        genome   = 'reference/{reference}/{reference}.genome',
+        bedgraph = 'mapping/{reference}/%s/bed/{sample}.bedgraph' % pipeline.postprocessed_map_type
     output:
         fasta = 'consensus/{reference}-{panel}/{sample}.fa',
     log:
         out = 'consensus/{reference}-{panel}/log/{sample}.fa.out',
         err = 'consensus/{reference}-{panel}/log/{sample}.fa.err'
     params:
-        mask = 'true' if method_config.get('mask') else 'false'
+        mask_lte_coverage = method_config.get('mask_lte_coverage', -1),
+        bed = 'consensus/{reference}-{panel}/{sample}.masked.bed',
     conda:
-        config['snakelines_dir'] + '/enviroments/bcftools.yaml'
+        config['snakelines_dir'] + '/enviroments/create_consensus_fasta.yaml'
     shell:
         """
         mask=''
-        if [ {params.mask} = true ]; then
-            mask='--mask {input.mask}'
+        if (( {params.mask_lte_coverage} >= 0 )); then
+            # coverage value is at column 4 of bedgraph
+            complement_regions=`bedtools merge -i <(awk '$4 > {params.mask_lte_coverage}' {input.bedgraph} | cut -f 1-3)`
+            bedtools complement -i <(printf \"$complement_regions\") -g {input.genome} > {params.bed}
+            mask='--mask {params.bed}'
         fi
 
         bcftools consensus \
             --fasta-ref {input.fasta} \
             --output {output.fasta} \
             $mask \
-            {input.vcf}
+            {input.vcf} \
+            1> /dev/null
 
         sed -i '1s/>.*/>{wildcards.sample}/' {output.fasta}
         """

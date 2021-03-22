@@ -82,7 +82,7 @@ variant:                                    # Identify variation in reads given 
 consensus:                      # consesnus sequence
     fasta:                      # create consesnus sequence based on vcf of a sample and reference fasta
         method: bcftools        # bcftools is the only option
-        mask: True              # mask regions not covered by reads with N
+        mask_lte_coverage: 5    # mask bases with N where coverage is lower than or equal to parameter
 
     summary:
         method: cat             # concatenate consensus sequences from the samples into a single file

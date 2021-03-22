@@ -11,6 +11,22 @@ rule bedtools__create_genome_file:
             cut -f 1-2 {input.fai} > {output.genome}
         """
 
+rule bedtools_bedgraph:
+    """
+        Report coverage in BedGraph format.
+        See: https://bedtools.readthedocs.io/en/latest/content/tools/genomecov.html#bg-reporting-genome-coverage-in-bedgraph-format
+    """
+    input:
+        bam = 'mapping/{reference}/%s/{sample}.bam' % pipeline.postprocessed_map_type
+    output:
+        bedgraph = 'mapping/{reference}/%s/bed/{sample}.bedgraph' % pipeline.postprocessed_map_type
+    conda:
+        config['snakelines_dir'] + '/enviroments/bedtools.yaml'
+    shell:
+        """
+        bedtools genomecov -ibam {input.bam} -bg > {output.bedgraph}
+        """
+
 rule bedtools_merge_bam:
     """
         Combines overlapping regions into a single region.
@@ -20,7 +36,7 @@ rule bedtools_merge_bam:
     output:
         bed = 'mapping/{reference}/%s/bed/{sample}.merge.bed' % pipeline.postprocessed_map_type
     conda:
-        config['snakelines_dir'] + '/enviroments/bedtools_samtools.yaml'
+        config['snakelines_dir'] + '/enviroments/merge_bam.yaml'
     shell:
         """
             bedtools merge -i <(samtools view -b -F 4 {input.bam}) > {output.bed}
