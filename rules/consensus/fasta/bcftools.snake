@@ -41,7 +41,8 @@ rule bcftools__create_consensus_fasta:
             --output {output.fasta} \
             $mask \
             {input.vcf} \
-            1> /dev/null
+        1> {log.out} \
+        2> {log.err}
 
         sed -i '1s/>.*/>{wildcards.sample}/' {output.fasta}
         """

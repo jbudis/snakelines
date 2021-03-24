@@ -7,13 +7,14 @@ threads: 16                         # Number of threads to use in analysis
 
 reads:                              # Prepare reads and quality reports for downstream analysis
     preprocess:                     # Pre-process of reads, eliminate sequencing artifacts, contamination ...
+
         trimmed:                    # Remove low quality parts of reads
             method: trimmomatic     # Supported values: trimmomatic
             temporary: False        # If True, generated files would be removed after successful analysis
             crop: 275               # Maximal number of bases in read to keep. Longer reads would be truncated.
             quality: 20             # Minimal average quality of read bases to keep (inside sliding window of length 5)
-            headcrop: 20            # Number of bases to remove from the start of read
-            minlen: 35              # Minimal length of trimmed read. Shorter reads would be removed.
+            headcrop: 0            # Number of bases to remove from the start of read
+            minlen: 20              # Minimal length of trimmed read. Shorter reads would be removed.
 
         decontaminated:             # Eliminate fragments from known artificial source, e.g. contamination by human
             method: bowtie2         # Supported values: bowtie2
@@ -22,10 +23,6 @@ reads:                              # Prepare reads and quality reports for down
                 - grch38_decoy
             keep: False              # Keep reads mapped to references (True) or remove them as contamination (False)
 
-        deduplicated:               # Remove fragments with the same sequence (PCR duplicated)
-            method: fastuniq        # Supported values: fastuniq
-            temporary: False        # If True, generated files would be removed after successful analysis
-
     report:                         # Summary reports of read characteristics to assess their quality
         quality_report:             # HTML summary report of read quality
             method: fastqc          # Supported values: fastqc
@@ -33,14 +30,11 @@ reads:                              # Prepare reads and quality reports for down
                 - original
                 - trimmed
                 - decontaminated
-                - deduplicated
 
 mapping:                            # Find the most similar genomic region to reads in reference (mapping process)
     mapper:                         # Method for mapping
-        method: bowtie2             # Supported values: bowtie2
-        params: --very-sensitive    # Additional parameters for the method
-        only_concordant: False      # Keep only reads with consistently mapped reads from both paired-ends
-        temporary: True
+        method: bwa                 # Supported values: bowtie2, bwa
+        temporary: False
 
     index:                          # Generate .bai index for mapped reads in .bam files
         method: samtools            # Supported values: samtools
@@ -48,7 +42,7 @@ mapping:                            # Find the most similar genomic region to re
     postprocess:                    # Successive steps to refine mapped reads
         sorted:
             method: samtools
-            temporary: True
+            temporary: False
         deduplicated:               # Mark duplicated reads (PCR duplicated)
             method: picard          # Supported values: picard
 
@@ -60,17 +54,15 @@ mapping:                            # Find the most similar genomic region to re
 
 variant:                                    # Identify variation in reads given reference genome
     caller:                                 # Method for variant identification
-        method: vardict                     # Supported values: vardict
-        hard_filter:                        # Variants that do not pass any of these filters would NOT be present in the VCF file
-            min_nonref_allele_freq: 0.05    # Minimal proportion of reads with alternative allele against all observations
-            min_alternate_count: 2          # Minimal number of reads with alternative allele
-            min_map_quality: 15             # Minimal average mapping quality of reads with alternative allele
-        soft_filter:                        # Failing these filters would be indicated in the FILTER field of the VCF file
-            min_map_quality: 20             # Minimal average mapping quality of reads with alternative allele
-            read_depth: 10                  # Minimal number of reads with alternative allele
-            min_nonref_allele_freq: 0.20    # Minimal proportion of reads with alternative allele against all observations
-            min_mean_base_quality: 20       # Minimal average base quality of bases that support alternative allele
-
+        method: freebayes
+        min_mapping_quality: 50       # Exclude alignments from analysis if they have a mapping quality less than Q.  default: 1
+        min_base_quality: 20          # Exclude alleles from analysis if their supporting base quality is less than Q.  default: 0
+        min_alternate_count: 3        # Require at least this fraction of observations supporting an alternate allele within a single individual in the in order to evaluate the posit$
+        min_alternate_fraction: 0.5   # Require at least this count of observations supporting an alternate allele within a single individual in the in order to evaluate the position$
+        min_coverage: 3               # Require at least this coverage to process a site. default: 0
+        all_alleles: False            # Report all alleles, not only those which are in called genotypes.
+        gvcf: False                   # Write gVCF output, which indicates coverage in uncalled regions, emitting a record for all bases.
+        ploidy: 1                     # Sets the default ploidy for the analysis to N.  default: 2
 
     report:
         calling:
@@ -79,10 +71,11 @@ variant:                                    # Identify variation in reads given 
         summary:
             method: custom
 
-consensus:                      # consesnus sequence
-    fasta:                      # create consesnus sequence based on vcf of a sample and reference fasta
-        method: bcftools        # bcftools is the only option
-        mask_lte_coverage: 5    # mask bases with N where coverage is lower than or equal to parameter
+consensus:                          # consesnus sequence
+    fasta:                          # create consesnus sequence based on vcf of a sample and reference fasta
+        method: bcftools            # bcftools is the only option
+        mask_lte_coverage: 2        # mask bases with N where coverage is lower than or equal to parameter
 
     summary:
-        method: cat             # concatenate consensus sequences from the samples into a single file
+        method: cat                 # concatenate consensus sequences from the samples into a single file
+
