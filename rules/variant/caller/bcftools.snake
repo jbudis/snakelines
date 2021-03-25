@@ -35,8 +35,8 @@ rule bcftools_call_germline_variants:
             --min-BQ {params.min_base_quality} \
             --min-MQ {params.min_mapping_quality} \
             --regions-file {input.bed} \
-            --max-depth 1000 \
-            --max-idepth 1000 \
+            --max-depth 9999 \
+            --max-idepth 9999 \
             {input.bam} \
         | \
         bcftools call \
