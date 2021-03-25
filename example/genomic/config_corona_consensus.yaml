@@ -7,10 +7,9 @@ threads: 16                         # Number of threads to use in analysis
 
 reads:                              # Prepare reads and quality reports for downstream analysis
     preprocess:                     # Pre-process of reads, eliminate sequencing artifacts, contamination ...
-
         trimmed:                    # Remove low quality parts of reads
             method: trimmomatic     # Supported values: trimmomatic
-            temporary: False        # If True, generated files would be removed after successful analysis
+            temporary: True        # If True, generated files would be removed after successful analysis
             crop: 275               # Maximal number of bases in read to keep. Longer reads would be truncated.
             quality: 20             # Minimal average quality of read bases to keep (inside sliding window of length 5)
             headcrop: 0            # Number of bases to remove from the start of read
@@ -18,7 +17,6 @@ reads:                              # Prepare reads and quality reports for down
 
         decontaminated:             # Eliminate fragments from known artificial source, e.g. contamination by human
             method: bowtie2         # Supported values: bowtie2
-            temporary: False        # If True, generated files would be removed after successful analysis
             references:             # List of reference genomes
                 - grch38_decoy
             keep: False              # Keep reads mapped to references (True) or remove them as contamination (False)
@@ -34,7 +32,7 @@ reads:                              # Prepare reads and quality reports for down
 mapping:                            # Find the most similar genomic region to reads in reference (mapping process)
     mapper:                         # Method for mapping
         method: bwa                 # Supported values: bowtie2, bwa
-        temporary: False
+        temporary: True
 
     index:                          # Generate .bai index for mapped reads in .bam files
         method: samtools            # Supported values: samtools
@@ -42,7 +40,7 @@ mapping:                            # Find the most similar genomic region to re
     postprocess:                    # Successive steps to refine mapped reads
         sorted:
             method: samtools
-            temporary: False
+            temporary: True
         deduplicated:               # Mark duplicated reads (PCR duplicated)
             method: picard          # Supported values: picard
 
