@@ -127,6 +127,9 @@ mapping:
         filtered:
             output:
                 mapped_reads: expand('mapping/{sr.reference}/filtered/{sr.sample}.bam', sr=pipeline.sample_references)
+        trimmed:
+            output:
+                mapped_reads: expand('mapping/{sr.reference}/trimmed/{sr.sample}.bam', sr=pipeline.sample_references)
         read_group:
             output:
                 mapped_reads: expand('mapping/{sr.reference}/read_group/{sr.sample}.bam', sr=pipeline.sample_references)

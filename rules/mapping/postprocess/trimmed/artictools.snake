@@ -1,0 +1,26 @@
+rule artictools__trim_mapped_reads:
+    """
+    The align_trim command is used to softmask primers from an alignment.
+    """
+    input:
+        ref = 'reference/{reference}/{reference}.fa',
+        bam = 'mapping/{reference}/%s/{sample}.bam' % method_config['input_map_type'],
+        bai = 'mapping/{reference}/%s/{sample}.bam.bai' % method_config['input_map_type'],
+        bed = 'reference/{reference}/annotation/primer_scheme.bed'
+    output:
+        bam = configured_temp('mapping/{reference}/trimmed/{sample}.bam')
+    log:
+        err = 'mapping/{reference}/trimmed/log/{sample}.artictools.err'
+    benchmark:
+        'mapping/{reference}/trimmed/log/{sample}.artictools.benchmark'
+    conda:
+        config['snakelines_dir'] + '/enviroments/artictools.yaml'
+    shell:
+        """
+        artic-tools align_trim \
+            --inputFile {input.bam} \
+            {input.bed} \
+        1> {output.bam} \
+        2> {log.err}
+        """
+
