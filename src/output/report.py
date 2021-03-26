@@ -42,11 +42,4 @@ def multiqc_report(outdir: str, out_list_filename: str):
         '--force',
         '--verbose'
     ]
-    # with \
-    #         open('%s/%s.out' % (outdir, basename), 'w') as out_file, \
-    #         open('%s/%s.err' % (outdir, basename), 'w') as err_file:
-    #
-    #     print(out_file.name)
-    #     print(err_file.name)
-        
     subprocess.run(args, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
