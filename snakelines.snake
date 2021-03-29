@@ -9,6 +9,7 @@ from src.output.copy_files import store_snakelines_version
 from src.output.send_email import send_email
 from src.output.report import runtime_report
 from src.output.report import multiqc_report
+from src.output.report import multiqc_summary_report
 from src.output.report import write_output_filenames
 from datetime import datetime
 
@@ -58,6 +59,7 @@ rule pipeline:
 onstart:
     pipeline_started = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
     print('pipeline run started at %s' % pipeline_started, file=sys.stderr)
+    print(f'found {len(samples)} samples: {samples}', file=sys.stderr)
 
 onsuccess:
     pipeline_finished = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
@@ -74,10 +76,10 @@ onsuccess:
 
     # on success copy the files to report directory and send email(s)
     if 'report_dir' in config:
-        print("Success - finalizing", file=sys.stderr)
+        print("Analysis is completed - reporting", file=sys.stderr)
 
         copied = copy_input_files_with_consisent_names_dict(get_files(outputs), get_files(copy_where), pipeline)
-        print("Copied {} files to report dir '{}'".format(copied, config['report_dir']), file=sys.stderr)
+        print("Copied {} files to report directory '{}'".format(copied, config['report_dir']), file=sys.stderr)
 
         copy_config(execution_dir, workflow, pipeline)
         store_snakelines_version(execution_dir, SNAKELINES_VERSION)
@@ -86,13 +88,23 @@ onsuccess:
         out_list_filename = '%s/rules_output.txt' % execution_dir
         write_output_filenames(out_list_filename, workflow)
 
-        print("Generating MultiQC report", file=sys.stderr)
-        multiqc_report(
-            outdir=summary_dir,
-            out_list_filename=out_list_filename
-        )
+        multiqc_config = config.get('report', {}).get('multiqc')
+        if multiqc_config:
+            print("Creating MultiQC report", file=sys.stderr)
+            multiqc_report(
+                out_dir=summary_dir,
+                out_list_filename=out_list_filename
+            )
+            if multiqc_config.get('summary'):
+                print("Creating MultiQC Summary report", file=sys.stderr)
+                multiqc_summary_report(
+                    multiqc_dir=summary_dir,
+                    sample_dir=config['report_dir'],
+                    samples=pipeline.samples,
+                    metrics=multiqc_config.get('summary')
+                )
 
-        print("Generating runtime report", file=sys.stderr)
+        print("Generating Runtime Report", file=sys.stderr)
         runtime_report(
             outdir=execution_dir,
             snakefile=workflow.snakefile,
@@ -100,6 +112,7 @@ onsuccess:
         )
 
     send_email(config, get_files(outputs), get_files(copy_where), True)
+
 
 # on error send email(s)
 onerror:
