@@ -2,7 +2,7 @@ samples:                            # List of sample categories to be analysed
     - name: example.*               # Regex expression of sample names to be analysed (reads/original/example.*_R1.fastq.gz)
       reference: mhv                 # Reference genome for reads in the category (reference/mhv/mhv.fa)
 
-report_dir: report/public/01-corona-consensus  # Generated reports and essential output files would be stored there
+report_dir: report/public/01-corona-report  # Generated reports and essential output files would be stored there
 threads: 16                         # Number of threads to use in analysis
 
 reads:                              # Prepare reads and quality reports for downstream analysis
@@ -68,6 +68,85 @@ variant:                                    # Identify variation in reads given 
 
         summary:
             method: custom
+
+report:
+    multiqc:
+        summary:
+            - name: mapped_reads
+              key: report_general_stats_data.{sample}.mapped_reads
+              # key: report_saved_raw_data.multiqc_general_stats.{sample}.QualiMap_mqc-generalstats-qualimap-mapped_reads
+              validator:
+                  - pass:
+                      - { from: 1e6, to: 5e5 }
+                  - warn:
+                      - { from: 5e5 }
+
+            - name: mapped_reads_pc
+              key: report_general_stats_data.{sample}.percentage_aligned
+              # key: report_saved_raw_data.multiqc_general_stats.{sample}.QualiMap_mqc-generalstats-qualimap-mapped_reads
+              validator:
+                  - pass:
+                      - { from: 90 }
+                  - warn:
+                      - { from: 80 }
+
+            - name: median_insert_size
+              key: report_general_stats_data.{sample}.median_insert_size
+              # key: report_saved_raw_data.multiqc_general_stats.{sample}.QualiMap_mqc-generalstats-qualimap-median_insert_size
+              validator:
+                  - pass:
+                      - { from: 150, to: 170 }
+                  - warn:
+                      - { from: 140, to: 150 }
+                      - { from: 170, to: 180 }
+
+            - name: mapped_reads_coverage_5x_pc
+              key: report_general_stats_data.{sample}.5_x_pc
+              # key: report_saved_raw_data.multiqc_general_stats.{sample}.QualiMap_mqc-generalstats-qualimap-5_x_pc
+              validator:
+                  - pass:
+                      - { from: 95 }
+                  - warn:
+                      - { from: 90 }
+
+            - name: median_coverage
+              key: report_general_stats_data.{sample}.median_coverage
+              # key: report_saved_raw_data.multiqc_general_stats.{sample}.QualiMap_mqc-generalstats-qualimap-median_coverage
+              validator:
+                  - pass:
+                    - { from: 1000 }
+                  - warn:
+                    - { from: 100 }
+
+            - name: novel_titv
+              key: report_general_stats_data.{sample}.NOVEL_TITV
+              # key: report_saved_raw_data.multiqc_general_stats.{sample}.Picard_mqc-generalstats-picard-NOVEL_TITV
+              validator:
+                  - pass:
+                    - { from: 1.6, to: 2.4 }
+                  - warn:
+                    - { from: 1.2, to:  1.6 }
+                    - { from: 2.4, to:  2.8 }
+
+            - name: called_variants_known
+              key: report_general_stats_data.{sample}.total_called_variants_known
+              # key: report_saved_raw_data.multiqc_general_stats.{sample}.total_called_variants_known
+              validator:
+                  - pass:
+                    - { from: 0, to: 0 }
+                  - warn:
+                    - { from: 1, to: 3 }
+
+            - name: called_variants_novel
+              key: report_general_stats_data.{sample}.total_called_variants_novel
+              # key: report_saved_raw_data.multiqc_general_stats.{sample}.total_called_variants_novel
+              validator:
+                  - pass:
+                    - { from: 20, to: 40 }
+                  - warn:
+                    - { from: 15, to: 20 }
+                    - { from: 40, to: 50 }
+
 
 consensus:                          # consesnus sequence
     fasta:                          # create consesnus sequence based on vcf of a sample and reference fasta
