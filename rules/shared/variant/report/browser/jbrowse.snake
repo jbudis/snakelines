@@ -1,0 +1,41 @@
+rule create_vcf_track:
+    input:
+        vcf = 'variant/{reference}-wgs/original/{sample}.vcf',
+    output:
+        conf = temp('variant/{reference}-wgs/original/{sample}.jbrowse.conf')
+    log:
+        out = 'variant/{reference}-wgs/original/log/{sample}.out',
+        err = 'variant/{reference}-wgs/original/log/{sample}.err'
+    shell:
+        """
+        SID=$(basename {input.vcf} | cut -f1 -d '.')
+        fullpath=`realpath {output.conf}`
+
+        echo "[tracks.myvcf_${{SID}}]" >> {output.conf}
+        echo "category        = VCF" >> {output.conf}
+        echo "key             = ${{SID}}.vcf" >> {output.conf}
+        echo "urlTemplate     = ${{fullpath}}" >> {output.conf}
+        echo "storeClass      = JBrowse/Store/SeqFeature/VCFTabix" >> {output.conf}
+        echo "type            = JBrowse/View/Track/CanvasVariants" >> {output.conf}
+        echo "" >> {output.conf}
+        """
+
+def all_config_files(wildcards):
+    print(wildcards.reference)
+    return expand('variant/{reference}-wgs/original/{sample}.jbrowse.conf',
+        reference=wildcards.reference, sample=pipeline.samples_for(wildcards.reference))
+
+
+rule summarize_vcf_configs:
+    input:
+        all_configs = all_config_files
+    output:
+        fin_conf = 'variant/{reference}-wgs/original/jbrowse.conf'
+    shell:
+        """
+        # Column1: Sample name
+        # Column2: Path to precomputed jbrowse config
+        for CONFIG in {input.all_configs}; do
+            cat $CONFIG >> {output.fin_conf}
+        done
+        """

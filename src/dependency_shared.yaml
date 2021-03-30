@@ -126,6 +126,12 @@ mapping:
             depends:
                 - mapping/mapper
 
+        browser:
+            output:
+                config: expand('mapping/{reference}/sorted/jbrowse/jbrowse.conf',
+                                reference=pipeline.references, sample=pipeline.samples)
+
+
         methylation:
             output:
                 methylation_reports:
@@ -171,6 +177,10 @@ variant:
                 - reads/preprocess
                 - reads/report/quality_report
                 - mapping/mapper
+
+        browser:
+            output:
+                config: expand('variant/{reference}-wgs/original/jbrowse.conf', reference=pipeline.references)
 
 classification:
     read_based:
@@ -375,3 +385,5 @@ assembly:
                     to:   expand('{report_dir}/{sample}/assembly_report/contig_graph.svg',
                                   report_dir=config['report_dir'],
                                   sample=pipeline.samples)
+
+
