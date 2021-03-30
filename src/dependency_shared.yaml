@@ -128,8 +128,12 @@ mapping:
 
         browser:
             output:
-                config: expand('mapping/{reference}/sorted/jbrowse/jbrowse.conf',
+                config:
+                    from: expand('mapping/{reference}/jbrowse/coverage_tracks.conf',
                                 reference=pipeline.references, sample=pipeline.samples)
+                    to:   expand('{report_dir}/_summary/jbrowse/coverage_tracks.conf', report_dir=config['report_dir'])
+            depends:
+                - mapping/mapper
 
 
         methylation:
@@ -180,7 +184,11 @@ variant:
 
         browser:
             output:
-                config: expand('variant/{reference}-wgs/original/jbrowse.conf', reference=pipeline.references)
+                config:
+                    from: expand('variant/{reference}-wgs/original/jbrowse.conf', reference=pipeline.references)
+                    to:   expand('{report_dir}/_summary/jbrowse/variant_tracks.conf', report_dir=config['report_dir'])
+            depends:
+                - mapping/mapper
 
 classification:
     read_based:
