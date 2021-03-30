@@ -6,7 +6,7 @@ samples:
         reference: sars_cov_2
 
 report_dir: report/example
-threads: 2
+threads: 16
 
 reference:
     index:
@@ -17,6 +17,12 @@ reads:
     preprocess:
         trimmed:
             method: trimmomatic
+            temporary: False
+            crop: 500
+            quality: 20
+            headcrop: 20
+            minlen: 35
+
     report:
         quality_report:
             method: fastqc
@@ -38,5 +44,5 @@ mapping:
 
 variant:
     caller:
-        method: medaka
+        method: clair
 

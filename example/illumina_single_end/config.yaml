@@ -2,10 +2,10 @@ platform: single_end
 technology: illumina
 
 samples:                              # List of sample categories to be analysed
-    - name: example_.*                 # Regex expression of sample names to be analysed (reads/original/example.*_R1.fastq.gz)
+    - name: example_.*                # Regex expression of sample names to be analysed (reads/original/example.*.fastq.gz)
       reference: mhv                  # Reference genome for reads in the category (reference/mhv/mhv.fa)
 
-report_dir: report/public/01-mapping  # Generated reports and essential output files would be stored there
+report_dir: report/public/illumina_SE # Generated reports and essential output files would be stored there
 threads: 16                           # Number of threads to use in analysis
 
 reads:                              # Prepare reads and quality reports for downstream analysis
