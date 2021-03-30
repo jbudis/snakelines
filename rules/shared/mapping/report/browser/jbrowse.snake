@@ -3,52 +3,45 @@ rule bamcoverage__create_coverage_track:
         bam = '{mapper}/{reference}/sorted/{sample}.bam',
         bai = '{mapper}/{reference}/sorted/{sample}.bam.bai'
     output:
-        conf = '{mapper}/{reference}/sorted/jbrowse/samples/{sample}.jbrowse.conf',
-        bw   = '{mapper}/{reference}/sorted/jbrowse/samples/{sample}.bw'
+        bw   = '{mapper}/{reference}/jbrowse/coverages/{sample}.bw'
     log:
-        out = '{mapper}/{reference}/sorted/jbrowse/summary/log/{sample}/bamcoverage.out',
-        err = '{mapper}/{reference}/sorted/jbrowse/summary/log/{sample}/bamcoverage.err'
+        out = '{mapper}/{reference}/jbrowse/log/{sample}/bamcoverage.out',
+        err = '{mapper}/{reference}/jbrowse/log/{sample}/bamcoverage.err'
     conda:
         config['snakelines_dir'] + '/enviroments/deeptools.yaml' 
     shell:
         """
-        SID=$(basename {input.bam} | cut -f1 -d '.')
-
         bamCoverage \
             -b {input.bam} \
             -o {output.bw} \
         > {log.out} \
         2> {log.err}
-
-        fullpath=`realpath {output.bw}`
-
-        echo $SID
-        echo "[tracks.alignments_${{SID}}]" >> {output.conf}
-        echo "category        = Alignments" >> {output.conf}
-        echo "key             = $fullpath" >> {output.conf}
-        echo "urlTemplate     = $fullpath" >> {output.conf}
-        echo "storeClass      = JBrowse/Store/BigWig" >> {output.conf}
-        echo "type            = JBrowse/View/Track/Wiggle/Density" >> {output.conf}
-        echo "" >> {output.conf}
         """
 
-def all_config_files(wildcards):
+def all_coverage_tracks(wildcards):
     print(wildcards.reference)
-    return expand('{mapper}/{reference}/sorted/jbrowse/samples/{sample}.jbrowse.conf',
+    return expand('{mapper}/{reference}/jbrowse/coverages/{sample}.bw',
         mapper=wildcards.mapper, reference=wildcards.reference, sample=pipeline.samples_for(wildcards.reference))
 
 
 rule summarize_configs:
     input:
-        all_configs = all_config_files
+        coverages = all_coverage_tracks
     output:
-        fin_conf = '{mapper}/{reference}/sorted/jbrowse/jbrowse.conf'
+        conf = '{mapper}/{reference}/jbrowse/coverage_tracks.conf'
     shell:
         """
-        # Column1: Sample name
-        # Column2: Path to precomputed jbrowse config
-        for CONFIG in {input.all_configs}; do
-            cat $CONFIG >> {output.fin_conf}
+        for BW in {input.coverages}; do
+            SID=$(basename $BW | cut -f1 -d '.')
+            fullpath=`realpath $BW`
+
+            echo "[tracks.alignments_${{SID}}]" >> {output.conf}
+            echo "category        = Alignments" >> {output.conf}
+            echo "key             = $fullpath" >> {output.conf}
+            echo "urlTemplate     = $fullpath" >> {output.conf}
+            echo "storeClass      = JBrowse/Store/BigWig" >> {output.conf}
+            echo "type            = JBrowse/View/Track/Wiggle/Density" >> {output.conf}
+            echo "" >> {output.conf}
         done
         """
 ruleorder: bamcoverage__create_coverage_track > summarize_configs
