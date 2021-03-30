@@ -112,8 +112,8 @@ def multiqc_summary_report(multiqc_dir: str, sample_dir: str, samples: list, met
                     sample_key = [sample if segment == '{sample}' else segment for segment in key]
                     value = dig_value(data, sample_key)
 
-                    sample_file.write(f'{name}\t{value}\n')
+                    sample_file.write(f'{name}-text\t{value}\n')
 
                     if validator:
                         result = validate_multiqc_summary_config(validator, value)
-                        sample_file.write(f'{name}_validator\t{result}\n')
+                        sample_file.write(f'{name}-validation\t{result}\n')
