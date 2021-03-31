@@ -1,104 +1,29 @@
-rule gatk__fix_vcf_header:
-    """
-    Adds missing sequence dictionary to VCF header. This job also generates VCF index (.idx).
-    :input vcf: Raw VCF from variant caller vardict.
-    :input fasta: Reference sequence.
-    :output vcf: Fixed VCF.
-    :output vcf_index: Fixed VCF index.
-    """
-    input:
-        vcf = 'variant/{reference}-wgs/original/{sample}.vardict.vcf',
-        fasta = 'reference/{reference}/{reference}.fa'
-    output:
-        vcf = 'variant/{reference}-wgs/original/{sample}.vcf',
-        vcf_index = 'variant/{reference}-wgs/original/{sample}.vcf.idx',
-    log:
-        out = 'variant/{reference}-wgs/original/log/{sample}.out',
-        err = 'variant/{reference}-wgs/original/log/{sample}.err',
-    conda:
-        config['snakelines_dir'] + '/enviroments/gatk4.yaml'
-    shell:
-        """
-        gatk SelectVariants \
-            -V {input.vcf} \
-            -R {input.fasta} \
-            -O {output.vcf} \
-            1>{log.out} \
-            2>{log.err}
-        """
-
-rule tabix__index_vcf:
-    """
-    Create tabix intex on BGZF (bgzipped) VCF file.
-    :input: bgzipped vcf
-    :output: tabix index of bgzipped VCF file
-    """
-    input:
-        '{path}/{filename}.vcf.gz'
-    output:
-        '{path}/{filename}.vcf.gz.tbi'
-    log:
-        out = '{path}/log/{filename}_tabix.out',
-        err = '{path}/log/{filename}_tabix.err'
-    conda:
-        config['snakelines_dir'] + '/enviroments/samtools.yaml'
-    shell:
-        """
-        tabix -p vcf {input} 1>{log.out} 2>{log.err}
-        """
-
-rule picard__bed_to_interval_list:
-    """
-    Conversion of BED file to GATK specific interval_list.
-    :input bed: BED file
-    :input seq_dict: sequence dictionary
-    :output intervals: interval list
-    """
-    input:
-        bed      = 'reference/{reference}/annotation/wgs/regions.bed',
-        seq_dict = 'reference/{reference}/{reference}.dict'
-    output:
-        intervals = 'variant/{reference}-wgs/original/interval_list/{sample}.interval_list'
-    log:
-        out = 'variant/{reference}-wgs/original/interval_list/log/{sample}.out',
-        err = 'variant/{reference}-wgs/original/interval_list/log/{sample}.err'
-    conda:
-        config['snakelines_dir'] + '/enviroments/picard.yaml'
-    shell:
-        """
-        picard BedToIntervalList \
-            INPUT={input.bed} \
-            SEQUENCE_DICTIONARY={input.seq_dict} \
-            OUTPUT={output.intervals} \
-            SORT=true \
-            UNIQUE=true \
-            1> {log.out} \
-            2> {log.err}
-        """
+include: config['snakelines_dir'] + '/rules/variant/index/tabix.snake'
 
 rule gatk__collect_variant_calling_metrics:
     """
     GATK tool for generating
     :input vcf: called variants
     :input vcf_index: index of called variants
-    :input dbsnp: DBSNP in BGZF format.
-    :input dbsnp_index: DBSNP index of BGZF format.
+    :input dbsnp: DBSNP in BGZF format written by bgzip.
+    :input dbsnp_index: DBSNP tabix index.
     :input intervals: Genomic regions of interest.
     :output filename: Text file with summary of calling metrics.
     """
     input:
         vcf = 'variant/{reference}-{panel}/original/{sample}.vcf',
         vcf_index = 'variant/{reference}-{panel}/original/{sample}.vcf.idx',
-
-        dbsnp = 'reference/{reference}/dbsnp/dbsnp.vcf.gz',
-        dbsnp_index = 'reference/{reference}/dbsnp/dbsnp.vcf.gz.tbi',
-
-        intervals = 'variant/{reference}-{panel}/original/interval_list/{sample}.interval_list'
+        dbsnp = 'reference/{reference}/variants/dbsnp.vcf.bgz',
+        dbsnp_index = 'reference/{reference}/variants/dbsnp.vcf.bgz.tbi',
+        intervals = 'reference/{reference}/annotation/{panel}/regions.interval_list',
     output:
-        filename = 'variant/{reference}-{panel}/original/calling_metrics/{sample}.variant_calling_summary_metrics'
+        summary = 'variant/{reference}-{panel}/original/calling_metrics/{sample}.variant_calling_summary_metrics',
+        detail  = 'variant/{reference}-{panel}/original/calling_metrics/{sample}.variant_calling_detail_metrics'
     log:
         out = 'variant/{reference}-{panel}/original/calling_metrics/log/{sample}.out',
         err = 'variant/{reference}-{panel}/original/calling_metrics/log/{sample}.err'
+    threads:
+        int(config['threads'])
     conda:
         config['snakelines_dir'] + '/enviroments/gatk4.yaml'
     shell:

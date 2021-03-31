@@ -1,4 +1,4 @@
-def extract_from_config(config, items, default_value = None):
+def extract_from_config(config, items, default_value=None):
     """
     Load items from the configuration file based on series of keys. If some key is not found in hierarchy,
     return default value specified as the parameter.

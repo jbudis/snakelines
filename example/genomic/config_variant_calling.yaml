@@ -6,11 +6,6 @@ samples:                             # List of sample categories to be analysed
 report_dir: report/public/01-variant # Generated reports and essential output files would be stored there
 threads: 16                          # Number of threads to use in analysis
 
-reference:
-    index:
-        dict:
-            method: picard
-
 reads:                              # Prepare reads and quality reports for downstream analysis
     preprocess:                     # Pre-process of reads, eliminate sequencing artifacts, contamination ...
 
@@ -53,17 +48,33 @@ mapping:                            # Find the most similar genomic region to re
         method: samtools            # Supported values: samtools
 
     postprocess:                    # Successive steps to refine mapped reads
-        sorted:
-            method: samtools
-            temporary: True
+        sorted:                     # Order reads according to their genomic position
+            method: samtools        # Supported values: samtools
+            temporary: True         # If True, generated files would be removed after successful analysis
+
+        read_group:                 # Include sample name, flow cell, barcode and lanes to BAM header
+            method: custom          # Supported values: custom
+            temporary: True         # If True, generated files would be removed after successful analysis
+
         deduplicated:               # Mark duplicated reads (PCR duplicated)
             method: picard          # Supported values: picard
+            temporary: True         # If True, generated files would be removed after successful analysis
+
+        realigned:                  # Realign mapped reads locally around indels that are problematic for standard mappers
+            method: gatk            # Supported values: gatk
+            temporary: True         # If True, generated files would be removed after successful analysis
+
+        filtered:                     # Eliminate reads that do not meet conditions
+            method: bamtools          # Supported values: bamtools
+            min_map_quality: 20       # Minimal quality of mapping
+            drop_improper_pairs: True # Eliminate reads that do not pass paired-end resolution
+
 
     report:                         # Summary reports of mapping process and results
         quality_report:             # HTML summary with quality of mappings
             method: qualimap        # Supported values: qualimap
             map_types:              # List of post-process steps for quality reports
-                - deduplicated
+                - filtered
 
 variant:                                    # Identify variation in reads given reference genome
     caller:                                 # Method for variant identification

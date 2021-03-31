@@ -39,7 +39,7 @@ reads:                              # Prepare reads and quality reports for down
 
 assembly:                           # Join reads into longer sequences (contigs) based on their overlaps
     assembler:                      # Method for joining reads
-        method: spades              # Supported values: spades, unicycler
+        method: spades              # Supported values: spades, unicycler, megahit
         mode: standard              # Supported values: standard, meta, plasmid, rna, iontorrent
         careful: True               # Can not be combined with the meta mode. Reduce number of mismatches and short indels, longer runtime
 

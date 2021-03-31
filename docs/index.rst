@@ -16,6 +16,7 @@ Contents
    user/running
    user/configuration
    user/aliases
+   user/tools
 
 .. toctree::
    :caption: Developer notes

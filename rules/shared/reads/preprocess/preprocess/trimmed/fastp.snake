@@ -1,0 +1,37 @@
+rule fastp__trim_reads:
+    """
+        Advanced trimming with optional corrections.
+    """
+    input:
+        r1 = 'reads/%s/{sample}_R1.fastq.gz' % method_config['input_read_type'],
+        r2 = 'reads/%s/{sample}_R2.fastq.gz' % method_config['input_read_type']
+    output:
+        r1 = configured_temp('reads/trimmed/{sample}_R1.fastq.gz'),
+        r2 = configured_temp('reads/trimmed/{sample}_R2.fastq.gz'),
+        report = 'reads/%s/stats/{sample}_fastp.html' % method_config['input_read_type'],
+    params:
+        params = method_config.get('params', ''),
+        correction = '--correction' if method_config.get('paired', '') else '',
+        detect_adapter = '--detect_adapter_for_pe' if method_config.get('paired', '') else ''
+    threads:
+        int(config['threads'])
+    log:
+        out = 'reads/trimmed/log/{sample}.log',
+        err = 'reads/trimmed/log/{sample}.err'
+    shell:
+        """
+        fastp \
+            --thread {threads} \
+            --in1 {input.r1} \
+            --in2 {input.r2} \
+            --out1 {output.r1} \
+            --out2 {output.r2} \
+            --html {output.report} \
+            {params.correction} \
+            {params.detect_paired} \
+            {params.params} \
+        1> {log.out} \
+        2> {log.err}
+        """
+
+

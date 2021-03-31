@@ -1,4 +1,5 @@
-include: config['snakelines_dir'] + '/rules/shared/mapping/mapper/indices/bwa_index.snake'
+include: srcdir('indices/bwa_index.snake')
+include: config['snakelines_dir'] + '/rules/shared/reads/group/read_group.snake'
 
 rule bwa__map_reads_to_reference:
     """
@@ -15,14 +16,16 @@ rule bwa__map_reads_to_reference:
         r1    = 'reads/%s/{sample}_R1.fastq.gz' % pipeline.preprocessed_read_type,
         r2    = 'reads/%s/{sample}_R2.fastq.gz' % pipeline.preprocessed_read_type,
         index = 'reference/{reference}/bwa_index/{reference}.bwt',
+        read_group = 'reads/%s/read_group/{sample}.txt' % pipeline.preprocessed_read_type
     output:
         bam   = configured_temp('mapping/{reference}/original/{sample}.bam')
     log:
-        err   = 'mapping/{reference}/original/log/{sample}.bwa.map_stats'
+        out   = 'mapping/{reference}/original/log/{sample}.bam.out',
+        err   = 'mapping/{reference}/original/log/{sample}.bam.err'
+    benchmark:
+         'mapping/{reference}/original/log/{sample}.bam.benchmark'
     params:
         index = 'reference/{reference}/bwa_index/{reference}',
-        additional = method_config.get('params', ''),
-        concordant = '-B 40 -O 60 -E 10  –L100' if method_config.get('only_concordant', False) else ''
     threads:
         int(config['threads'])
     conda:
@@ -31,12 +34,10 @@ rule bwa__map_reads_to_reference:
         """
         bwa mem \
             -t {threads} \
+            -R \"$(sed 's/\\t/\\\\t/g' < {input.read_group})\" \
             {params.index} \
             {input.r1} \
             {input.r2} \
-            {params.concordant} \
-            {params.additional} \
-        2> {log.err} \
-        | samtools view -bS - \
-        > {output.bam}
+            2> {log.err} \
+        | samtools view -bS > {output.bam}
         """

@@ -44,7 +44,7 @@ rule fasta_summary__blast:
         min_query_coverage = method_config.get('min_query_coverage', 0),
         max_target_seqs = method_config.get('max_target_seqs', 999999999)
     run:
-        blast = pd.DataFrame.from_csv(input.blast, sep='\t', index_col=None)
+        blast = pd.read_csv(input.blast, sep='\t', index_col=None)
         seqids, info_list = [], []
         for seqid, aligns in blast.groupby('qseqid'):
             aligns['qcov'] = ((aligns['qend'] - aligns['qstart']) / aligns['qlen']).abs()
@@ -76,7 +76,7 @@ rule fasta_summary__coverage:
     :output tsv: Mapping coverage in standardised unified format for fasta summary generation
     """
     input:
-        qualimap = '{indir}/mapping/stats-wgs/{name}/genome_results.txt',
+        qualimap = '{indir}/mapping/stats-{panel}/{name}/genome_results.txt',
     output:
         tsv      = '{indir}/annotation/{name}/attributes/coverage.tsv'
     run:
@@ -228,7 +228,7 @@ rule fasta_summary__summarize_annotations:
             return flat
 
         def load_attrs(attr_file):
-            table = pd.DataFrame.from_csv(attr_file, sep='\t', index_col=0)
+            table = pd.read_csv(attr_file, sep='\t', index_col=0)
             return table
 
         attr_files = flatten([attr_file for name, attr_file in input.__dict__.items() if name.startswith('attrs_')])

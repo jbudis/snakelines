@@ -1,0 +1,214 @@
+rule vep__install_cache:
+    """
+        Installs the newest GRCh38 VEP cache.
+    """
+    output:
+        flag = 'reference/{reference}/annotation/vep/cache_installed'
+    shell:
+        """
+            mkdir -p `dirname {output.flag}`
+            vep_install \
+                -a c \
+                --species homo_sapiens \
+                --assembly GRCh38 \
+                --cachedir `dirname {output.flag}`
+            vep_convert_cache \
+                --dir `dirname {output.flag}` \
+                --species all \
+                --version all \
+                --compress 'gzip -dc'
+            touch {output.flag}
+        """
+
+rule vep_install_dbnsfp:
+    """
+        Installs VEP dbNSFP plugin, downloads the dbNSFP databse,
+        and prepares the dbNSFP database file for use with the plugin.
+    """
+    output:
+        database = 'reference/{wildcards.reference}/variants/dbnsfp/dbNSFP4.1c.bgz',
+        index    = 'reference/{wildcards.reference}/variants/dbnsfp/dbNSFP4.1c.bgz.tbi',
+    threads:
+        int(config['threads'])
+    shell:
+        """
+            vep_install -a p --PLUGINS dbNSFP
+
+            # make destination directory
+            mkdir -p `dirname {database.output}`
+            cd `dirname {database.output}`
+
+            # download
+            wget ftp://dbnsfp:dbnsfp@dbnsfp.softgenetics.com/dbNSFP4.1c.zip
+            unzip dbNSFP4.1c.zip
+
+            # extract header
+            gzip -dc dbNSFP4.1c_variant.chr1.gz | head -n 1 | bgzip > header.bgz
+
+            # merge databse into single file
+            cat dbNSFP4.1c_variant.chr{1..22}.gz \
+                dbNSFP4.1c_variant.chrX.gz \
+                dbNSFP4.1c_variant.chrY.gz \
+                dbNSFP4.1c_variant.chrM.gz \
+                | zgrep -v '#chr' \
+                | bgzip -@ {threads} \
+                > dbNSFP4.1c.noheader.bgz
+
+            # attach the header
+            cat header.bgz dbNSFP4.1c.noheader.bgz > {output.database}
+
+            # index
+            tabix -s 1 -b 2 -e 2 {output.database}
+
+            # cleanup
+#            rm dbNSFP4.1c.zip
+#            rm dbNSFP4.1c_variant.chr{1..22}.gz \
+#                dbNSFP4.1c_variant.chrX.gz \
+#                dbNSFP4.1c_variant.chrY.gz \
+#                dbNSFP4.1c_variant.chrM.gz
+#            rm header.bgz
+#            rm dbNSFP4.1c.noheader.bgz
+        """
+
+rule vep__annotate_vcf:
+    """
+        Annotate VCF file using selected dbNSFP features.
+        See https://www.ensembl.org/info/docs/tools/vep/script/vep_options.html
+    """
+    input:
+        vcf          = 'variant/{reference}-{panel}/%s/{sample}.vcf' % method_config['input_variant_type'],
+        fasta        = 'reference/{reference}/{reference}.fa',
+        fai          = 'reference/{reference}/{reference}.fa.fai',
+        cache        = 'reference/{reference}/annotation/vep/cache_installed',
+        dbnsfp       = 'reference/{reference}/variants/dbnsfp/dbNSFP4.1c.gz'
+    output:
+        vcf   = 'variant/{reference}-{panel}/annotated/{sample}.vcf',
+        stats = 'variant/{reference}-{panel}/annotated/{sample}.report.html'
+    params:
+        assembly = method_config['assembly'],
+        dbnsfp = ','.join(method_config.get('plugins', {}).get('dbnsfp', [])),
+    log:
+        out = 'variant/{reference}-{panel}/annotated/log/{sample}.vcf.out',
+        err = 'variant/{reference}-{panel}/annotated/log/{sample}.vcf.err'
+    threads:
+        int(config['threads'])
+    shell:
+        """
+        DBNSFP=''
+        if [ ! -z {params.dbnsfp} ]; then
+            DBNSFP='--plugin dbNSFP,{input.dbnsfp},{params.dbnsfp}'
+        fi
+
+        vep \
+            --cache \
+            --dir `dirname {input.cache}` \
+            --species homo_sapiens \
+            --fasta {input.fasta} \
+            --input_file {input.vcf} \
+            --format vcf \
+            --output_file {output.vcf} \
+            --stats_file {output.stats} \
+            --fork {threads} \
+            --assembly {params.assembly} \
+            --vcf \
+            --force_overwrite \
+            --flag_pick_allele \
+            --canonical \
+            --variant_class \
+            --gene_phenotype \
+            --regulatory \
+            --hgvs \
+            --hgvsg \
+            --shift_hgvs 1 \
+            --transcript_version \
+            --protein \
+            --symbol \
+            --ccds \
+            --uniprot \
+            --mane \
+            --biotype \
+            --domains \
+            --check_existing \
+            --exclude_null_alleles \
+            --clin_sig_allele 1 \
+            --pubmed \
+            --var_synonyms \
+            --lookup_ref \
+            --minimal \
+            --allele_number \
+            --offline \
+            $DBNSFP \
+        1> {log.out} \
+        2> {log.err}
+        """
+
+rule vep__annotate_tsv:
+    """
+        Annotate VCF file using selected dbNSFP features and save it in TSV format.
+        See https://www.ensembl.org/info/docs/tools/vep/script/vep_options.html
+    """
+    input:
+        vcf          = 'variant/{reference}-{panel}/%s/{sample}.vcf' % method_config['input_variant_type'],
+        fasta        = 'reference/{reference}/{reference}.fa',
+        fai          = 'reference/{reference}/{reference}.fa.fai',
+        cache        = 'reference/{reference}/annotation/vep/cache_installed',
+        dbnsfp       = 'reference/{reference}/variants/dbnsfp/dbNSFP4.1c.gz'
+    output:
+        tsv   = 'variant/{reference}-{panel}/annotated/{sample}.tsv',
+    params:
+        assembly = method_config['assembly'],
+        dbnsfp = ','.join(method_config.get('plugins', {}).get('dbnsfp', [])),
+    log:
+        out = 'variant/{reference}-{panel}/annotated/log/{sample}.tsv.out',
+        err = 'variant/{reference}-{panel}/annotated/log/{sample}.tsv.err'
+    threads:
+        int(config['threads'])
+    shell:
+        """
+        DBNSFP=''
+        if [ ! -z {params.dbnsfp} ]; then
+            DBNSFP='--plugin dbNSFP,{input.dbnsfp},{params.dbnsfp}'
+        fi
+
+        vep \
+            --cache \
+            --dir `dirname {input.cache}` \
+            --species homo_sapiens \
+            --fasta {input.fasta} \
+            --input_file {input.vcf} \
+            --format vcf \
+            --output_file {output.tsv} \
+            --no_stats \
+            --fork {threads} \
+            --assembly {params.assembly} \
+            --tab \
+            --force_overwrite \
+            --flag_pick_allele \
+            --canonical \
+            --variant_class \
+            --gene_phenotype \
+            --regulatory \
+            --hgvs \
+            --hgvsg \
+            --shift_hgvs 1 \
+            --transcript_version \
+            --protein \
+            --symbol \
+            --ccds \
+            --uniprot \
+            --mane \
+            --biotype \
+            --domains \
+            --check_existing \
+            --exclude_null_alleles \
+            --clin_sig_allele 1 \
+            --pubmed \
+            --var_synonyms \
+            --lookup_ref \
+            --minimal \
+            --allele_number \
+            --offline \
+            $DBNSFP \
+        1> {log.out} \
+        2> {log.err}
+        """

@@ -1,6 +1,5 @@
 include: config['snakelines_dir'] + '/rules/shared/reference/index/dict/picard.snake'
 include: config['snakelines_dir'] + '/rules/shared/reference/index/fai/samtools.snake'
-include: config['snakelines_dir'] + '/rules/shared/mapping/index/samtools.snake'
 
 rule gatk__identify_regions_to_realign:
     """
@@ -25,8 +24,8 @@ rule gatk__identify_regions_to_realign:
         err = 'mapping/{reference}/realigned/log/{sample}.intervals.err'
     threads:
         int(config['threads'])
-#    conda:
-#        config['snakelines_dir'] + '/enviroments/gatk3.yaml'
+    conda:
+        config['snakelines_dir'] + '/enviroments/openjdk8.yaml'
     shell:
         '''
         gatk3 --analysis_type RealignerTargetCreator \
@@ -53,12 +52,12 @@ rule gatk__realign_regions:
     output:
         bam = configured_temp('mapping/{reference}/realigned/{sample}.bam')
     log:
-        out = 'mapping/{reference}/realigned/log/{sample}.intervals.log',
-        err = 'mapping/{reference}/realigned/log/{sample}.intervals.err'
+        out = 'mapping/{reference}/realigned/log/{sample}.bam.log',
+        err = 'mapping/{reference}/realigned/log/{sample}.bam.err'
     threads:
         int(config['threads'])
-#    conda:
-#        config['snakelines_dir'] + '/enviroments/gatk3.yaml'
+    conda:
+        config['snakelines_dir'] + '/enviroments/openjdk8.yaml'
     shell:
         '''
         gatk3 --analysis_type IndelRealigner \

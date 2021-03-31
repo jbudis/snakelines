@@ -1,23 +1,35 @@
-include: config['snakelines_dir'] + '/rules/shared/mapping/index/samtools.snake'
+include: config['snakelines_dir'] + '/rules/shared/reference/annotation/regions.snake'
 include: config['snakelines_dir'] + '/rules/shared/reference/index/fai/samtools.snake'
+include: config['snakelines_dir'] + '/rules/shared/reference/index/dict/picard.snake'
 
-rule vardict__create_wgs_bed_file:
+rule gatk__prepare_vcf:
     """
-    Creates bed file with whole genomic regions in reference fasta file. Simple way to unite WGS and panel analysis.
+    Adds missing sequence dictionary to VCF header. This job also generates VCF index (.idx).
+    :input vcf: Raw VCF from variant caller vardict.
+    :input fasta: Reference sequence.
+    :output vcf: Fixed VCF.
+    :output vcf_index: Fixed VCF index.
     """
     input:
-        fai = 'reference/{reference}/{reference}.fa.fai'
+        vcf = 'variant/{reference}-{panel}/original/{sample}.vardict.vcf',
+        fasta = 'reference/{reference}/{reference}.fa'
     output:
-        bed = 'reference/{reference}/annotation/wgs/regions.bed'
+        vcf = 'variant/{reference}-{panel}/original/{sample}.vcf',
+        vcf_index = 'variant/{reference}-{panel}/original/{sample}.vcf.idx'
+    log:
+        out = 'variant/{reference}-{panel}/original/log/{sample}.out',
+        err = 'variant/{reference}-{panel}/original/log/{sample}.err'
+    conda:
+        config['snakelines_dir'] + '/enviroments/gatk4.yaml'
     shell:
-          """
-        awk \
-            '{{print $1, 1, $2, $1}}' \
-      {input.fai} \
-              | sed \
-              's/ /\t/g' \
-              > {output.bed}
-              """
+        """
+        gatk SelectVariants \
+            -V {input.vcf} \
+            -R {input.fasta} \
+            -O {output.vcf} \
+            1>{log.out} \
+            2>{log.err}
+        """
 
 rule vardict__prepare_bed_file:
     """
@@ -32,7 +44,7 @@ rule vardict__prepare_bed_file:
         cut -f 1-4 {input.bed} > {output.bed}
         """
 
-# TODO variants should ve stored in original/ folder
+# TODO variants should be stored in "original" folder
 rule vardict__call_germline_variants:
     """
     Identify small variation (SNP and indels) from the mapped reads.
@@ -51,15 +63,15 @@ rule vardict__call_germline_variants:
     :output vcf: Variants in the Variant Call Format (VCF)
     """
     input:
-        bam      = 'mapping/{reference}/deduplicated/{sample}.bam',
-        bai      = 'mapping/{reference}/deduplicated/{sample}.bam.bai',
+        bam      = 'mapping/{reference}/%s/{sample}.bam' % pipeline.postprocessed_map_type,
+        bai      = 'mapping/{reference}/%s/{sample}.bam.bai' % pipeline.postprocessed_map_type,
         bed      = 'reference/{reference}/annotation/{panel}/regions.vardict.bed',
         reffasta = 'reference/{reference}/{reference}.fa',
         reffaidx = 'reference/{reference}/{reference}.fa.fai'
     output:
-        vdc = temp('variant/{reference}-{panel}/{state}/{sample}.vdc')
+        vdc = temp('variant/{reference}-{panel}/original/{sample}.vdc')
     log:
-        err      = 'variant/{reference}-{panel}/{state}/log/{sample}.vdc.err'
+        err      = 'variant/{reference}-{panel}/original/log/{sample}.vdc.err'
     params:
         min_nonref_allele_freq = method_config.get('hard_filter', {}).get('min_nonref_allele_freq', 0.05),
         min_alternate_count    = method_config.get('hard_filter', {}).get('min_alternate_count', 2),
@@ -92,11 +104,11 @@ rule vardict__test_strand_bias:
     Perform statistical testing of strand bias.
     """
     input:
-        vdc = 'variant/{reference}-{panel}/{state}/{sample}.vdc'
+        vdc = 'variant/{reference}-{panel}/original/{sample}.vdc'
     output:
-        tsb = temp('variant/{reference}-{panel}/{state}/{sample}.tsb')
+        tsb = temp('variant/{reference}-{panel}/original/{sample}.tsb')
     log:
-        err = 'variant/{reference}-{panel}/{state}/log/{sample}.test_strand_bias.err'
+        err = 'variant/{reference}-{panel}/original/log/{sample}.test_strand_bias.err'
     conda:
         config['snakelines_dir'] + '/enviroments/vardict.yaml'
     shell:
@@ -113,7 +125,7 @@ rule vardict__tsb_to_vcf:
     Convert intermediate files of Vardict to VCF format
     """
     input:
-        tsb = 'variant/{reference}-{panel}/{state}/{sample}.tsb'
+        tsb = 'variant/{reference}-{panel}/original/{sample}.tsb'
     output:
         vcf = 'variant/{reference}-{panel}/{state}/{sample}.vcf'
     params:

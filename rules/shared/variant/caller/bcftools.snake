@@ -1,0 +1,81 @@
+include: config['snakelines_dir'] + '/rules/shared/reference/annotation/regions.snake'
+include: config['snakelines_dir'] + '/rules/shared/reference/index/fai/samtools.snake'
+include: config['snakelines_dir'] + '/rules/shared/reference/index/dict/picard.snake'
+
+rule bcftools_call_germline_variants:
+    """
+        See: https://samtools.github.io/bcftools/howtos/variant-calling.html
+    """
+    input:
+        bam   = 'mapping/{reference}/%s/{sample}.bam' % pipeline.postprocessed_map_type,
+        bai   = 'mapping/{reference}/%s/{sample}.bam.bai' % pipeline.postprocessed_map_type,
+        bed   = 'reference/{reference}/annotation/{panel}/regions.bed',
+        fasta = 'reference/{reference}/{reference}.fa',
+        fai   = 'reference/{reference}/{reference}.fa.fai'
+    output:
+        vcf  = 'variant/{reference}-{panel}/original/{sample}.bcftools.vcf'
+    params:
+        ploidy              = method_config.get('haploid', 'GRCh38'),
+        min_base_quality    = method_config.get('min_base_quality', 13),
+        min_mapping_quality = method_config.get('min_mapping_quality', 0),
+        all_alleles         = '--keep-alts' if method_config.get('all_alleles', False) else ''
+    threads:
+        int(config['threads'])
+    log:
+        out = 'variant/{reference}-{panel}/original/log/{sample}.bcftools.vcf.out',
+        err = 'variant/{reference}-{panel}/original/log/{sample}.bcftools.vcf.err'
+    benchmark:
+        'variant/{reference}-{panel}/original/log/{sample}.vcf.benchmark',
+    conda:
+        config['snakelines_dir'] + '/enviroments/bcftools.yaml'
+    shell:
+        """
+        bcftools mpileup \
+            --fasta-ref {input.fasta} \
+            --min-BQ {params.min_base_quality} \
+            --min-MQ {params.min_mapping_quality} \
+            --regions-file {input.bed} \
+            --max-depth 9999 \
+            --max-idepth 9999 \
+            {input.bam} \
+        | \
+        bcftools call \
+            --consensus-caller \
+            --ploidy {params.ploidy} \
+            --variants-only \
+            {params.all_alleles} \
+            --output-type v \
+            --output {output.vcf}
+        1> {log.out} \
+        2> {log.err}
+        """
+
+rule gatk__prepare_vcf:
+    """
+    Adds missing sequence dictionary to VCF header. This job also generates VCF index (.idx).
+    :input vcf: Raw VCF from variant caller vardict.
+    :input fasta: Reference sequence.
+    :output vcf: Fixed VCF.
+    :output vcf_index: Fixed VCF index.
+    """
+    input:
+        vcf = 'variant/{reference}-{panel}/original/{sample}.bcftools.vcf',
+        fasta = 'reference/{reference}/{reference}.fa'
+    output:
+        vcf = 'variant/{reference}-{panel}/original/{sample}.vcf',
+        vcf_index = 'variant/{reference}-{panel}/original/{sample}.vcf.idx',
+    log:
+        out = 'variant/{reference}-{panel}/original/log/{sample}.out',
+        err = 'variant/{reference}-{panel}/original/log/{sample}.err',
+    conda:
+        config['snakelines_dir'] + '/enviroments/gatk4.yaml'
+    shell:
+        """
+        gatk SelectVariants \
+            -V {input.vcf} \
+            -R {input.fasta} \
+            -O {output.vcf} \
+            1>{log.out} \
+            2>{log.err}
+        """
+

@@ -1,5 +1,3 @@
-include: config['snakelines_dir'] + '/rules/shared/mapping/index/samtools.snake'
-
 def all_bams(wildcards):
     return expand('mapping/{reference}/{map_type}/{sample}.bam',
                    sample=pipeline.samples_for(wildcards.reference), reference=wildcards.reference,

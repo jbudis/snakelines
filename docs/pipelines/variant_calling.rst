@@ -11,9 +11,9 @@ Purpose
 * Identify genomic differences between close species
 * Important for various genetic tests
 
-  * inherited diseases
-  * de novo mutations
-  * oncological diseases - screening and assessing its type
+	* inherited diseases
+	* de novo mutations
+	* oncological diseases - screening and assessing its type
 
 Required inputs
 ---------------
@@ -21,20 +21,39 @@ Required inputs
 * Sequenced paired-end reads from Illumina sequencer in gzipped fastq format.
 
 
-  * each sample is represented by two gzipped fastq files
-  * standard output files of paired-end sequencing
+	* each sample is represented by two gzipped fastq files
+	* standard output files of paired-end sequencing
 
-* Reference genome in fasta format
+* reference genome in fasta format
 
 ::
 
-   |-- reads/original
-           |-- <sample_1>_R1.fastq.gz
-           |-- <sample_1>_R2.fastq.gz
-           |-- <sample_2>_R1.fastq.gz
-           |-- <sample_2>_R2.fastq.gz
-   |-- reference/<reference>
-           |-- <reference>.fa
+	|-- reads/original
+		|-- <sample_1>_R1.fastq.gz
+		|-- <sample_1>_R2.fastq.gz
+		|-- <sample_2>_R1.fastq.gz
+		|-- <sample_2>_R2.fastq.gz
+	|-- reference/<reference>
+		|-- <reference>.fa
+
+Optional inputs
+---------------
+
+* GATK ready dbSNP database in bgzipped VCF format
+
+	* if the bgzipped database file has `gz` suffix it must be changed to `bgz`
+	* required for base quality recalibration step
+	* required for variant calling report
+	* optional for GATK-HC variant caller
+
+* tabix index of the dbSNP database file
+
+::
+
+	|-- reference/<reference>/variants
+		|-- dbsnp.vcf.bgz
+		|-- dbsnp.vcf.bgz.tbi
+
 
 Generated outputs
 -----------------
