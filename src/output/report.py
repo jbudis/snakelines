@@ -66,7 +66,7 @@ def dig_value(data: dict, keys: list):
             break
 
     if not found:
-        value = False
+        value = None
 
     return value
 
@@ -80,8 +80,18 @@ def validate_multiqc_summary_config(validator: list, value, default='fail'):
         for from_to in range_list:
             from_value = from_to.get('from')
             to_value = from_to.get('to')
-            from_passed = float(value) > float(from_value) if from_value else True
-            to_passed = float(value) < float(to_value) if to_value else True
+
+            if from_value is not None and to_value is not None:
+                assert float(from_value) <= float(to_value)
+
+            from_passed = True
+            if from_value is not None:
+                from_passed = float(value) >= float(from_value)
+
+            to_passed = True
+            if to_value is not None:
+                to_passed = float(value) <= float(to_value)
+
             if from_passed and to_passed:
                 passed = True
                 break
@@ -91,6 +101,21 @@ def validate_multiqc_summary_config(validator: list, value, default='fail'):
             break
 
     return result
+
+
+def format_value(value, format_str: str, humanize: str) -> str:
+    formatted_value = float(value)
+    if humanize == 'G':
+        formatted_value = formatted_value / 1e9
+    if humanize == 'M':
+        formatted_value = formatted_value / 1e6
+    elif humanize == 'K':
+        formatted_value = formatted_value / 1e3
+
+    if format_str:
+        formatted_value = format_str.format(formatted_value)
+
+    return str(formatted_value)
 
 
 def multiqc_summary_report(multiqc_dir: str, sample_dir: str, samples: list, metrics: list):
@@ -108,12 +133,23 @@ def multiqc_summary_report(multiqc_dir: str, sample_dir: str, samples: list, met
                     key = metric['key'].split('.')
                     name = metric.get('name', key[-1])
                     validator = metric.get('validator')
+                    format_str = metric.get('format')
+                    unit = metric.get('humanize')
 
                     sample_key = [sample if segment == '{sample}' else segment for segment in key]
                     value = dig_value(data, sample_key)
 
-                    sample_file.write(f'{name}-text\t{value}\n')
+                    if value is not None:
+                        sample_file.write(f'{name}-value\t{value}\n')
+                        sample_file.write(f'{name}-text\t{format_value(value, format_str, unit)}\n')
 
-                    if validator:
-                        result = validate_multiqc_summary_config(validator, value)
-                        sample_file.write(f'{name}-validation\t{result}\n')
+                        if validator is not None:
+                            result = validate_multiqc_summary_config(validator, value)
+                            sample_file.write(f'{name}-validation\t{result}\n')
+                        else:
+                            sample_file.write(f'{name}-validation\tNOT_APPLICABLE\n')
+
+                    else:  # missing value
+                        sample_file.write(f'{name}-value\t\n')
+                        sample_file.write(f'{name}-text\t\n')
+                        sample_file.write(f'{name}-validation\tNOT_APPLICABLE\n')
