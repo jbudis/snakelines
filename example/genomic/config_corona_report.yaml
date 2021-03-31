@@ -72,27 +72,28 @@ variant:                                    # Identify variation in reads given 
 report:
     multiqc:
         summary:
-            - name: mapped_reads
+            - name: control-mapped_reads
               key: report_general_stats_data.{sample}.mapped_reads
-              # key: report_saved_raw_data.multiqc_general_stats.{sample}.QualiMap_mqc-generalstats-qualimap-mapped_reads
+              format: "{:,.1f}M"
+              humanize: M # K or M or G
               validator:
                   - pass:
-                      - { from: 1e6, to: 5e5 }
+                      - { from: 1e6 }
                   - warn:
                       - { from: 5e5 }
 
-            - name: mapped_reads_pc
+            - name: control-mapped_reads_pc
               key: report_general_stats_data.{sample}.percentage_aligned
-              # key: report_saved_raw_data.multiqc_general_stats.{sample}.QualiMap_mqc-generalstats-qualimap-mapped_reads
+              format: "{:,.1f}%"
               validator:
                   - pass:
                       - { from: 90 }
                   - warn:
                       - { from: 80 }
 
-            - name: median_insert_size
+            - name: control-median_insert_size
               key: report_general_stats_data.{sample}.median_insert_size
-              # key: report_saved_raw_data.multiqc_general_stats.{sample}.QualiMap_mqc-generalstats-qualimap-median_insert_size
+              format: "{:,.0f}"
               validator:
                   - pass:
                       - { from: 150, to: 170 }
@@ -100,27 +101,27 @@ report:
                       - { from: 140, to: 150 }
                       - { from: 170, to: 180 }
 
-            - name: mapped_reads_coverage_5x_pc
+            - name: control-mapped_reads_coverage_5x_pc
               key: report_general_stats_data.{sample}.5_x_pc
-              # key: report_saved_raw_data.multiqc_general_stats.{sample}.QualiMap_mqc-generalstats-qualimap-5_x_pc
+              format: "{:,.1f}%"
               validator:
                   - pass:
                       - { from: 95 }
                   - warn:
                       - { from: 90 }
 
-            - name: median_coverage
+            - name: control-median_coverage
               key: report_general_stats_data.{sample}.median_coverage
-              # key: report_saved_raw_data.multiqc_general_stats.{sample}.QualiMap_mqc-generalstats-qualimap-median_coverage
+              format: "{:,.0f}x"
               validator:
                   - pass:
                     - { from: 1000 }
                   - warn:
                     - { from: 100 }
 
-            - name: novel_titv
+            - name: control-novel_titv
               key: report_general_stats_data.{sample}.NOVEL_TITV
-              # key: report_saved_raw_data.multiqc_general_stats.{sample}.Picard_mqc-generalstats-picard-NOVEL_TITV
+              format: "{:,.1f}x"
               validator:
                   - pass:
                     - { from: 1.6, to: 2.4 }
@@ -128,18 +129,9 @@ report:
                     - { from: 1.2, to:  1.6 }
                     - { from: 2.4, to:  2.8 }
 
-            - name: called_variants_known
+            - name: control-called_variants_known
               key: report_general_stats_data.{sample}.total_called_variants_known
-              # key: report_saved_raw_data.multiqc_general_stats.{sample}.total_called_variants_known
-              validator:
-                  - pass:
-                    - { from: 0, to: 0 }
-                  - warn:
-                    - { from: 1, to: 3 }
-
-            - name: called_variants_novel
-              key: report_general_stats_data.{sample}.total_called_variants_novel
-              # key: report_saved_raw_data.multiqc_general_stats.{sample}.total_called_variants_novel
+              format: "{:,.0f}"
               validator:
                   - pass:
                     - { from: 20, to: 40 }
@@ -147,12 +139,11 @@ report:
                     - { from: 15, to: 20 }
                     - { from: 40, to: 50 }
 
-
-consensus:                          # consesnus sequence
-    fasta:                          # create consesnus sequence based on vcf of a sample and reference fasta
-        method: bcftools            # bcftools is the only option
-        mask_lte_coverage: 2        # mask bases with N where coverage is lower than or equal to parameter
-
-    summary:
-        method: cat                 # concatenate consensus sequences from the samples into a single file
-
+            - name: control-called_variants_novel
+              key: report_general_stats_data.{sample}.total_called_variants_novel
+              format: "{:,.0f}"
+              validator:
+                  - pass:
+                    - { from: 0, to: 0 }
+                  - warn:
+                    - { from: 1, to: 3 }
