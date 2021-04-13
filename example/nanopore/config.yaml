@@ -46,3 +46,6 @@ variant:
     caller:
         method: clair
 
+lineage:
+	method: pangolin
+
