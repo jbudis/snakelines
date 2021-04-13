@@ -47,5 +47,5 @@ variant:
         method: clair
 
 lineage:
-	method: pangolin
+    method: pangolin
 
