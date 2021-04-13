@@ -1,3 +1,5 @@
+include: config['snakelines_dir'] + '/rules/shared/browser/jbrowse/merge.snake'
+
 def all_vcf(wildcards):
     print(wildcards.reference)
     return expand('variant/{reference}-wgs/original/{sample}.vcf',
@@ -15,9 +17,9 @@ rule summarize_vcf_configs:
         # Column2: Path to precomputed jbrowse config
         for VCF in {input.vcf_list}; do
             SID=$(basename $VCF | cut -f1 -d '.')
-            fullpath=`realpath {output.conf}`
+            fullpath=variants/$(basename $VCF)
 
-            echo "[tracks.myvcf_${{SID}}]" >> {output.conf}
+            echo "[tracks.vcf_${{SID}}]" >> {output.conf}
             echo "category        = VCF" >> {output.conf}
             echo "key             = ${{SID}}.vcf" >> {output.conf}
             echo "urlTemplate     = ${{fullpath}}" >> {output.conf}
@@ -26,3 +28,4 @@ rule summarize_vcf_configs:
             echo "" >> {output.conf}
         done
         """
+ruleorder: summarize_vcf_configs > create_final_config

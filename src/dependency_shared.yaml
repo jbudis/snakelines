@@ -129,9 +129,13 @@ mapping:
         browser:
             output:
                 config:
-                    from: expand('mapping/{reference}/jbrowse/coverage_tracks.conf',
-                                reference=pipeline.references, sample=pipeline.samples)
-                    to:   expand('{report_dir}/_summary/jbrowse/coverage_tracks.conf', report_dir=config['report_dir'])
+                    from: expand('mapping/{reference}/jbrowse/coverage_tracks.conf', reference=pipeline.references)
+                    to:   expand('{report_dir}/jbrowse/{reference}/coverage_tracks.jbrowse.conf',
+                            report_dir=config['report_dir'], reference=pipeline.references)
+                coverages:
+                    from: expand('mapping/{sr.reference}/jbrowse/coverages/{sr.sample}.bw', sr=pipeline.sample_references)
+                    to:   expand('{report_dir}/jbrowse/{sr.reference}/coverages/{sr.sample}.bw',
+                            report_dir=config['report_dir'], sr=pipeline.sample_references)
             depends:
                 - mapping/mapper
 
@@ -186,7 +190,13 @@ variant:
             output:
                 config:
                     from: expand('variant/{reference}-wgs/original/jbrowse.conf', reference=pipeline.references)
-                    to:   expand('{report_dir}/_summary/jbrowse/variant_tracks.conf', report_dir=config['report_dir'])
+                    to:   expand('{report_dir}/jbrowse/{reference}/variant_tracks.jbrowse.conf',
+                            report_dir=config['report_dir'], reference=pipeline.references)
+                variants:
+                    from: expand('variant/{sr.reference}-wgs/original/{sr.sample}.vcf',
+                              sr=pipeline.sample_references, map_type=pipeline.postprocessed_map_type)
+                    to:   expand('{report_dir}/jbrowse/{sr.reference}/variants/{sr.sample}.vcf',
+                            report_dir=config['report_dir'], sr=pipeline.sample_references)
             depends:
                 - mapping/mapper
 
@@ -393,5 +403,4 @@ assembly:
                     to:   expand('{report_dir}/{sample}/assembly_report/contig_graph.svg',
                                   report_dir=config['report_dir'],
                                   sample=pipeline.samples)
-
 

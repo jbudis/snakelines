@@ -1,12 +1,14 @@
+include: config['snakelines_dir'] + '/rules/shared/browser/jbrowse/merge.snake'
+
 rule bamcoverage__create_coverage_track:
     input:
-        bam = '{mapper}/{reference}/sorted/{sample}.bam',
-        bai = '{mapper}/{reference}/sorted/{sample}.bam.bai'
+        bam = 'mapping/{reference}/sorted/{sample}.bam',
+        bai = 'mapping/{reference}/sorted/{sample}.bam.bai'
     output:
-        bw   = '{mapper}/{reference}/jbrowse/coverages/{sample}.bw'
+        bw   = 'mapping/{reference}/jbrowse/coverages/{sample}.bw'
     log:
-        out = '{mapper}/{reference}/jbrowse/log/{sample}/bamcoverage.out',
-        err = '{mapper}/{reference}/jbrowse/log/{sample}/bamcoverage.err'
+        out = 'mapping/{reference}/jbrowse/log/{sample}/bamcoverage.out',
+        err = 'mapping/{reference}/jbrowse/log/{sample}/bamcoverage.err'
     conda:
         config['snakelines_dir'] + '/enviroments/deeptools.yaml' 
     shell:
@@ -19,29 +21,28 @@ rule bamcoverage__create_coverage_track:
         """
 
 def all_coverage_tracks(wildcards):
-    print(wildcards.reference)
-    return expand('{mapper}/{reference}/jbrowse/coverages/{sample}.bw',
-        mapper=wildcards.mapper, reference=wildcards.reference, sample=pipeline.samples_for(wildcards.reference))
+    return expand('mapping/{reference}/jbrowse/coverages/{sample}.bw',
+        reference=wildcards.reference, sample=pipeline.samples_for(wildcards.reference))
 
 
 rule summarize_configs:
     input:
         coverages = all_coverage_tracks
     output:
-        conf = '{mapper}/{reference}/jbrowse/coverage_tracks.conf'
+        conf = 'mapping/{reference}/jbrowse/coverage_tracks.conf'
     shell:
         """
         for BW in {input.coverages}; do
             SID=$(basename $BW | cut -f1 -d '.')
-            fullpath=`realpath $BW`
+            fullpath=coverages/$(basename $BW)
 
-            echo "[tracks.alignments_${{SID}}]" >> {output.conf}
+            echo "[tracks.coverage_${{SID}}]" >> {output.conf}
             echo "category        = Alignments" >> {output.conf}
-            echo "key             = $fullpath" >> {output.conf}
+            echo "key             = $SID" >> {output.conf}
             echo "urlTemplate     = $fullpath" >> {output.conf}
             echo "storeClass      = JBrowse/Store/BigWig" >> {output.conf}
             echo "type            = JBrowse/View/Track/Wiggle/Density" >> {output.conf}
             echo "" >> {output.conf}
         done
         """
-ruleorder: bamcoverage__create_coverage_track > summarize_configs
+ruleorder: bamcoverage__create_coverage_track > summarize_configs > create_final_config
