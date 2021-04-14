@@ -1,4 +1,4 @@
-include: config['snakelines_dir'] + '/rules/illumina/classification/report/taxonomic_counts/count_table/custom.snake'
+include: config['snakelines_dir'] + '/rules/paired_end/classification/report/taxonomic_counts/count_table/custom.snake'
 
 import pandas as pd
 

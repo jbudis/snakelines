@@ -1,4 +1,4 @@
-include: config['snakelines_dir'] + '/rules/reference/attributes/desc/custom.snake'
+include: config['snakelines_dir'] + '/rules/shared/reference/attributes/desc/custom.snake'
 
 import pandas as pd
 pd.set_option('display.max_colwidth', 1000000)

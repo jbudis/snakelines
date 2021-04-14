@@ -5,7 +5,7 @@ from config.impute_process_types import impute_read_types, impute_mapping_types,
 from config.load_imports import import_files_in_config
 from config.values_retrieval import extract_from_config
 
-include: config['snakelines_dir'] + '/rules/reference/annotation/flank.snake'
+include: config['snakelines_dir'] + '/rules/shared/reference/annotation/flank.snake'
 
 def configured_temp(output_file):
     """

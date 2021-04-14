@@ -1,4 +1,4 @@
-include: config['snakelines_dir'] + '/rules/variant/index/tabix.snake'
+include: config['snakelines_dir'] + '/rules/shared/variant/index/tabix.snake'
 
 rule gatk__collect_variant_calling_metrics:
     """
