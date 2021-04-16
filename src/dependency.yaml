@@ -300,6 +300,14 @@ consensus:
               to: expand('{report_dir}/_summary/consensus-{sr.reference}-{sr.panel}.fa',
                 report_dir=config['report_dir'], sr=pipeline.sample_references)
 
+    lineage:
+        output:
+            report:
+                from: expand('consensus/{sr.reference}-{sr.panel}/{sr.sample}.lineage_report.csv',
+                            sr=pipeline.sample_references)
+                to: expand('{report_dir}/consensus/{sr.reference}-{sr.panel}/{sr.sample}.lineage_report.csv',
+                            report_dir=config['report_dir'], sr=pipeline.sample_references)
+
 classification:
     read_based:
         output:
@@ -503,10 +511,4 @@ assembly:
                     to:   expand('{report_dir}/{sample}/assembly_report/contig_graph.svg',
                                   report_dir=config['report_dir'],
                                   sample=pipeline.samples)
-lineage:
-    output:
-        report:
-            from: expand('consensus/{sr.reference}-{sr.panel}/{sr.sample}.lineage_report.csv',
-                        sr=pipeline.sample_references)
-            to: expand('{report_dir}/consensus/{sr.reference}-{sr.panel}/{sr.sample}.lineage_report.csv',
-                        report_dir=config['report_dir'], sr=pipeline.sample_references)
+
