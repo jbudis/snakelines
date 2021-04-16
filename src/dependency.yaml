@@ -511,4 +511,3 @@ assembly:
                     to:   expand('{report_dir}/{sample}/assembly_report/contig_graph.svg',
                                   report_dir=config['report_dir'],
                                   sample=pipeline.samples)
-
