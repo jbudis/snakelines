@@ -77,5 +77,3 @@ consensus:                          # consesnus sequence
     summary:
         method: cat                 # concatenate consensus sequences from the samples into a single file
 
-    lineage:
-        method: pangolin

@@ -1,6 +1,7 @@
 import json
 import os
 import subprocess
+import sys
 from itertools import chain
 
 
@@ -71,7 +72,7 @@ def dig_value(data: dict, keys: list):
     return value
 
 
-def validate_multiqc_summary_config(validator: list, value, default='fail'):
+def validate_multiqc_summary_value(validator: list, value, default='fail'):
     result = default
     passed = False
     for validation_class in validator:
@@ -103,7 +104,7 @@ def validate_multiqc_summary_config(validator: list, value, default='fail'):
     return result
 
 
-def format_value(value, format_str: str, humanize: str) -> str:
+def format_float_value(value, format_str: str, humanize: str) -> str:
     formatted_value = float(value)
     if humanize == 'G':
         formatted_value = formatted_value / 1e9
@@ -118,16 +119,49 @@ def format_value(value, format_str: str, humanize: str) -> str:
     return str(formatted_value)
 
 
-def multiqc_summary_report(multiqc_dir: str, sample_dir: str, samples: list, metrics: list):
+def multiqc_summary_report(
+        multiqc_dir: str,
+        report_dir: str,
+        sample_references: list,
+        metrics: list,
+        lineage: bool = False
+):
     data_filepath = os.path.join(multiqc_dir, 'multiqc_report_data', 'multiqc_data.json')
     with open(data_filepath, 'rt') as data_file:
-        data = json.load(data_file)
-
-        for sample in samples:
-            summary_filepath = os.path.join(sample_dir, sample, 'summary.tsv')
+        json_data = json.load(data_file)
+        for sr in sample_references:
+            summary_filepath = os.path.join(report_dir, sr.sample, 'summary.tsv')
 
             with open(summary_filepath, 'wt') as sample_file:
 
+                # lineage
+                lineage_filename = f'lineage_report-{sr.reference}-{sr.panel}.csv'
+                lineage_filepath = os.path.join(report_dir, sr.sample, lineage_filename)
+                if lineage and os.path.isfile(lineage_filepath):
+                    with open(lineage_filepath, 'rt') as lineage_file:
+                        lineage_header = lineage_file.readline().rstrip().split(',')
+                        lineage_data = lineage_file.readline().rstrip().split(',')
+                        lineage_dict = dict(zip(lineage_header, lineage_data))
+
+                        value = lineage_dict['lineage']
+                        text = lineage_dict['lineage']
+                        status = lineage_dict['status']
+                        note = lineage_dict['note']
+
+                        # status is "passed_qc" or "fail"
+                        validation = status[:4]
+                        if validation == 'fail':
+                            text = note
+
+                        sample_file.write(f'control-lineage-value\t{value}\n')
+                        sample_file.write(f'control-lineage-text\t{text}\n')
+                        sample_file.write(f'control-lineage-validation\t{validation}\n')
+                else:  # missing value
+                    sample_file.write(f'control-lineage-value\t\n')
+                    sample_file.write(f'control-lineage-text\t\n')
+                    sample_file.write(f'control-lineage-validation\tNOT_APPLICABLE\n')
+
+                # multiqc
                 for metric in metrics:
                     assert 'key' in metric
                     key = metric['key'].split('.')
@@ -136,16 +170,16 @@ def multiqc_summary_report(multiqc_dir: str, sample_dir: str, samples: list, met
                     format_str = metric.get('format')
                     unit = metric.get('humanize')
 
-                    sample_key = [sample if segment == '{sample}' else segment for segment in key]
-                    value = dig_value(data, sample_key)
+                    sample_key = [sr.sample if segment == '{sample}' else segment for segment in key]
+                    value = dig_value(json_data, sample_key)
 
                     if value is not None:
                         sample_file.write(f'{name}-value\t{value}\n')
-                        sample_file.write(f'{name}-text\t{format_value(value, format_str, unit)}\n')
+                        sample_file.write(f'{name}-text\t{format_float_value(value, format_str, unit)}\n')
 
                         if validator is not None:
-                            result = validate_multiqc_summary_config(validator, value)
-                            sample_file.write(f'{name}-validation\t{result}\n')
+                            validation = validate_multiqc_summary_value(validator, value)
+                            sample_file.write(f'{name}-validation\t{validation}\n')
                         else:
                             sample_file.write(f'{name}-validation\tNOT_APPLICABLE\n')
 

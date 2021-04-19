@@ -305,7 +305,7 @@ consensus:
             report:
                 from: expand('consensus/{sr.reference}-{sr.panel}/{sr.sample}.lineage_report.csv',
                             sr=pipeline.sample_references)
-                to: expand('{report_dir}/consensus/{sr.reference}-{sr.panel}/{sr.sample}.lineage_report.csv',
+                to: expand('{report_dir}/{sr.sample}/lineage_report-{sr.reference}-{sr.panel}.csv',
                             report_dir=config['report_dir'], sr=pipeline.sample_references)
 
 classification:

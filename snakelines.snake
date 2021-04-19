@@ -96,12 +96,14 @@ onsuccess:
                 out_list_filename=out_list_filename
             )
             if multiqc_config.get('summary'):
-                print("Creating MultiQC Summary report", file=sys.stderr)
+                print("Creating MultiQC summary report", file=sys.stderr)
+                lineage_method=config.get('consensus', {}).get('lineage', {}).get('method')
                 multiqc_summary_report(
                     multiqc_dir=summary_dir,
-                    sample_dir=config['report_dir'],
-                    samples=pipeline.samples,
-                    metrics=multiqc_config.get('summary')
+                    report_dir=config['report_dir'],
+                    sample_references=pipeline.sample_references,
+                    metrics=multiqc_config.get('summary'),
+                    lineage=lineage_method == 'pangolin'
                 )
 
         print("Generating Runtime Report", file=sys.stderr)
