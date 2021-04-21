@@ -94,3 +94,6 @@ variant:                                    # Identify variation in reads given 
 
         summary:
             method: custom
+
+report:
+    multiqc: True

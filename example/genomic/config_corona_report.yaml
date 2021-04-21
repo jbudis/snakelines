@@ -69,9 +69,9 @@ variant:                                    # Identify variation in reads given 
         summary:
             method: custom
 
-consensus:
-    lineage:
-        method: pangolin
+#consensus:
+#    lineage:
+#        method: pangolin
 
 report:
     multiqc:

@@ -95,7 +95,7 @@ onsuccess:
                 out_dir=summary_dir,
                 out_list_filename=out_list_filename
             )
-            if multiqc_config.get('summary'):
+            if type(multiqc_config) is dict and multiqc_config.get('summary'):
                 print("Creating MultiQC summary report", file=sys.stderr)
                 lineage_method=config.get('consensus', {}).get('lineage', {}).get('method')
                 multiqc_summary_report(
