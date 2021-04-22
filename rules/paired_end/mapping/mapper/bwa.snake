@@ -1,0 +1,43 @@
+include: srcdir('indices/bwa_index.snake')
+include: config['snakelines_dir'] + '/rules/shared/reads/group/read_group.snake'
+
+rule bwa__map_reads_to_reference:
+    """
+    For input preprocessed reads bwa finds the most similar genomic region in the provided reference genome, using bwa mem algorithm.
+    :input r1: gzipped fastq file with left reads, e.g. 'reads/%s/{sample}_R1.fastq.gz'
+    :input r2: gzipped fastq file with right reads, e.g. 'reads/%s/{sample}_R2.fastq.gz'
+    :input index: reference index (created by rule bwa__prepare_index), e.g. 'reference/{reference}/bwa_index/{reference}.bwt'
+    :output bam: mapped read in BAM file, e.g. 'mapping/{reference}/original/{sample}.bam'
+    :param index: name of reference, technically filename's path prefix, e.g. 'reference/{reference}/bwa_index/{reference}'
+    :param additional: additional params
+    :param concordant: more strict conditions for scoring options should help to map only concordant reads
+    """
+    input:
+        r1    = 'reads/%s/{sample}_R1.fastq.gz' % pipeline.preprocessed_read_type,
+        r2    = 'reads/%s/{sample}_R2.fastq.gz' % pipeline.preprocessed_read_type,
+        index = 'reference/{reference}/bwa_index/{reference}.bwt',
+        read_group = 'reads/%s/read_group/{sample}.txt' % pipeline.preprocessed_read_type
+    output:
+        bam   = configured_temp('mapping/{reference}/original/{sample}.bam')
+    log:
+        out   = 'mapping/{reference}/original/log/{sample}.bam.out',
+        err   = 'mapping/{reference}/original/log/{sample}.bam.err'
+    benchmark:
+         'mapping/{reference}/original/log/{sample}.bam.benchmark'
+    params:
+        index = 'reference/{reference}/bwa_index/{reference}',
+    threads:
+        int(config['threads'])
+    conda:
+        config['snakelines_dir'] + '/enviroments/bwa_samtools.yaml'
+    shell:
+        """
+        bwa mem \
+            -t {threads} \
+            -R \"$(sed 's/\\t/\\\\t/g' < {input.read_group})\" \
+            {params.index} \
+            {input.r1} \
+            {input.r2} \
+            2> {log.err} \
+        | samtools view -bS > {output.bam}
+        """

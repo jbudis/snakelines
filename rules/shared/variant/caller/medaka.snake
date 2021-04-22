@@ -1,0 +1,37 @@
+include: config['snakelines_dir'] + '/rules/shared/mapping/index/samtools.snake'
+
+rule medaka__variant_call_mapped_reads:
+    """
+    Identify small variants from reads mapped to a reference. Mainly for diploid samples.
+
+    :input bam: Unordered mapped reads in bam format
+    :input reffasta: Reference genomic sequences in fasta format
+    :input reffaidx: Indexed reference genomic sequences in fasta.fai format
+    :output vcf: Variants in the Variant Call Format (VCF)
+    """
+    input:
+        bam = 'mapping/{reference}/deduplicated/{sample}.bam',
+        reffasta = 'reference/{reference}/{reference}.fa',
+        reffaidx = 'reference/{reference}/{reference}.fa.fai'
+    output:
+        vcf = 'variant/{reference}-wgs/{map_type}/{sample}.vcf',
+    log:
+        out = 'variant/{reference}/{map_type}/log/{sample}.out'
+        err = 'variant/{reference}/{map_type}/log/{sample}.err'
+    threads:
+        int(config['threads'])
+    conda:
+        config['snakelines_dir'] + '/enviroments/medaka.yaml'
+    shell:
+        """
+        medaka_variant \
+            -f {input.reffasta} \
+            -i {input.bam} \
+            -t {threads}
+        >  {log.out}
+        2> {log.err}
+
+        vcfcat medaka_variant/round_1.vcf | bcftools sort > {output.vcf} 2> {log.err}
+        rm -r medaka_variant
+        """
+

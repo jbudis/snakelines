@@ -1,0 +1,28 @@
+def all_jbrowse_configs(wildcards):
+    conf_list = []
+    if config['mapping']['report']['jbrowse']:
+        conf_list.extend(expand('mapping/{reference}/jbrowse/coverage_tracks.jbrowse.conf',
+        mapper=wildcards.mapper, reference=wildcards.reference))
+    if config['variant']['report']['jbrowse']:
+        conf_list.extend(expand('variant/{reference}-wgs/original/variant_tracks.jbrowse.conf',
+        reference=wildcards.reference))
+    print(conf_list)
+    return conf_list
+
+
+rule create_final_config:
+    input:
+        conf_list = all_jbrowse_configs,
+        ref = 'reference/{reference}/{reference}.fa'
+
+    output:
+        conf = 'jbrowse.conf'
+    shell:
+        """
+        echo "[GENERAL]" > {output.conf}
+        echo "refSeqs=reference/$(basename {{input.ref}})"
+
+        for CONFIG in {input.conf_list}; do
+            cat $CONFIG >> {output.conf}
+        done
+        """

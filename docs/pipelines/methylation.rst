@@ -2,7 +2,7 @@ Analyse methylation profiles
 ============================
 
 Identify genomic regions with and without methylation.
-The pipeline expects reads with the bisulfide conversion.
+The pipeline expects paired-end Illumina reads with the bisulfide conversion.
 
 Purpose
 -------
@@ -13,7 +13,7 @@ Purpose
 Required inputs
 ---------------
 
-* Sequenced reads in gzipped fastq format.
+* Sequenced paired-end reads from Illumina sequencer in gzipped fastq format.
 
   * each sample is represented by two gzipped fastq files
   * standard output files of paired-end sequencing
@@ -69,5 +69,5 @@ Included pipelines
    :maxdepth: 2
 
    /pipelines/quality_report
-   /pipelines/preprocess
+   /pipelines/preprocess_paired_end
    /pipelines/mapping

@@ -67,14 +67,15 @@ Directory structure of input files
 
 SnakeLines takes as input files of two types; reads and reference-based files.
 Read files in Fastq files represent sequenced DNA fragments.
-SnakeLines in current version supports only paired-end reads that are represented by pair of files, with _R1.fastq.gz and _R2.fastq.gz extension.
+SnakeLines in current version supports single-end reads with .fastq.gz extensions as well as paired-end reads that are
+represented by pairs of files, with _R1.fastq.gz and _R2.fastq.gz extensions.
 Read files must be gzipped and located in the reads/original directory.
 
 Reference-based files define sequence and annotation of reference genome.
 Sequence file must be in the fasta format and have to be located in the reference/<genome>/<genome>.fa file.
 Annotation is typically bed file with targeted genomic regions and have to be located in the reference/<genome>/<genome>/annotation/<panel>/regions.bed file.
 
-Example minimal input file configuration for a reference (hg38), targeted panel (sureselect6) and reads for samples example_A and example_B:
+Example minimal input file configuration for a reference (hg38), targeted panel (sureselect6) and paired-end reads for samples example_A and example_B:
 ::
 
    |-- reads/original

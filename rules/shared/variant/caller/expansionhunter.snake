@@ -1,0 +1,67 @@
+include: config['snakelines_dir'] + '/rules/shared/reference/annotation/regions.snake'
+include: config['snakelines_dir'] + '/rules/shared/reference/index/fai/samtools.snake'
+include: config['snakelines_dir'] + '/rules/shared/reference/index/dict/picard.snake'
+
+rule expansionhunter_call_germline_variants:
+    """
+        A tool for estimating STR sizes.
+        https://github.com/Illumina/ExpansionHunter
+    """
+    input:
+        bam     = 'mapping/{reference}/%s/{sample}.bam' % pipeline.postprocessed_map_type,
+        bai     = 'mapping/{reference}/%s/{sample}.bam.bai' % pipeline.postprocessed_map_type,
+        catalog = 'reference/{reference}/annotation/{panel}/variant_catalog.json',
+        fasta   = 'reference/{reference}/{reference}.fa',
+        fai     = 'reference/{reference}/{reference}.fa.fai'
+    output:
+        vcf  = 'variant/{reference}-{panel}/original/{sample}.expansionhunter.vcf'
+    threads:
+        int(config['threads'])
+    log:
+        out = 'variant/{reference}-{panel}/original/log/{sample}.expansionhunter.vcf.out',
+        err = 'variant/{reference}-{panel}/original/log/{sample}.expansionhunter.vcf.err'
+    benchmark:
+        'variant/{reference}-{panel}/original/log/{sample}.vcf.benchmark',
+    conda:
+        config['snakelines_dir'] + '/enviroments/expansionhunter.yaml'
+    shell:
+        """
+        vcf={output.vcf}
+        ExpansionHunter \
+            --reads {input.bam} \
+            --reference {input.fasta} \
+            --variant-catalog {input.catalog} \
+            --output-prefix  ${{vcf%.*}} \
+        1> {log.out} \
+        2> {log.err}
+        """
+
+rule gatk__prepare_vcf:
+    """
+    Adds missing sequence dictionary to VCF header. This job also generates VCF index (.idx).
+    :input vcf: Raw VCF from variant caller vardict.
+    :input fasta: Reference sequence.
+    :output vcf: Fixed VCF.
+    :output vcf_index: Fixed VCF index.
+    """
+    input:
+        vcf = 'variant/{reference}-{panel}/original/{sample}.expansionhunter.vcf',
+        fasta = 'reference/{reference}/{reference}.fa'
+    output:
+        vcf = 'variant/{reference}-{panel}/original/{sample}.vcf',
+        vcf_index = 'variant/{reference}-{panel}/original/{sample}.vcf.idx',
+    log:
+        out = 'variant/{reference}-{panel}/original/log/{sample}.out',
+        err = 'variant/{reference}-{panel}/original/log/{sample}.err',
+    conda:
+        config['snakelines_dir'] + '/enviroments/gatk4.yaml'
+    shell:
+        """
+        gatk SelectVariants \
+            -V {input.vcf} \
+            -R {input.fasta} \
+            -O {output.vcf} \
+            1>{log.out} \
+            2>{log.err}
+        """
+

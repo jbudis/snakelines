@@ -1,3 +1,4 @@
+sequencing: paired_end
 samples:                             # List of sample categories to be analysed
     - name: example.*                # Regex expression of sample names to be analysed (reads/original/example.*_R1.fastq.gz)
       reference: mhv                 # Reference genome for reads in the category (reference/mhv/mhv.fa)
@@ -90,3 +91,16 @@ variant:                                    # Identify variation in reads given 
 
         summary:
             method: custom
+variant:                                    # Identify variation in reads given reference genome
+    caller:                                 # Method for variant identification
+        method: vardict                     # Supported values: vardict
+        hard_filter:                        # Variants that do not pass any of these filters would NOT be present in the VCF file
+            min_nonref_allele_freq: 0.05    # Minimal proportion of reads with alternative allele against all observations
+            min_alternate_count: 2          # Minimal number of reads with alternative allele
+            min_map_quality: 15             # Minimal average mapping quality of reads with alternative allele
+        soft_filter:                        # Failing these filters would be indicated in the FILTER field of the VCF file
+            min_map_quality: 20             # Minimal average mapping quality of reads with alternative allele
+            read_depth: 10                  # Minimal number of reads with alternative allele
+            min_nonref_allele_freq: 0.20    # Minimal proportion of reads with alternative allele against all observations
+            min_mean_base_quality: 20       # Minimal average base quality of bases that support alternative allele
+

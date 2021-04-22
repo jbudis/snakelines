@@ -1,0 +1,99 @@
+include: config['snakelines_dir'] + '/rules/shared/mapping/index/samtools.snake'
+
+rule clair__variant_call_mapped_reads:
+    """
+    Identify small variants from reads mapped to a reference.
+    
+    Config parameters:
+        hard_filter:
+            min_nonref_allele_freq
+            min_coverage
+
+    :input bam: Unordered mapped reads in bam format
+    :input bai: Ordered and indexed mapped reads in bam format
+    :input reffasta: Reference genomic sequences in fasta format
+    :input reffaidx: Indexed reference genomic sequences in fasta.fai format
+    :output vcf: Variants in the Variant Call Format (VCF)
+    """
+    input:
+        bam = 'mapping/{reference}/sorted/{sample}.bam',
+        bai = 'mapping/{reference}/sorted/{sample}.bam.bai',
+        reffasta = 'reference/{reference}/{reference}.fa',
+        reffaidx = 'reference/{reference}/{reference}.fa.fai'
+    output:
+        vcf = 'variant/{reference}-wgs/{map_type}/{sample}.vcf',
+    params:
+        min_nonref_allele_freq = method_config.get('hard_filter', {}).get('min_nonref_allele_freq', 0.1),
+        min_coverage = method_config.get('hard_filter', {}).get('min_coverage', 5)
+    log:
+        out = 'variant/{reference}/{map_type}/log/{sample}.out',
+        err = 'variant/{reference}/{map_type}/log/{sample}.err'
+    threads:
+        int(config['threads'])
+    conda:
+        config['snakelines_dir'] + '/enviroments/clair.yaml'
+    shell:
+        """
+        CLAIR=`which clair.py`
+        MODEL_DIR="clair_model"
+        pypy3 -m ensurepip > {log.out} 2> {log.err}
+        pypy3 -m pip install --no-cache-dir intervaltree==3.0.2 >> {log.out} 2> {log.err}
+
+        if [ ! -d $MODEL_DIR ]
+        then
+            # download the trained model for the given sequencing type
+            mkdir $MODEL_DIR 
+            if [ "{config[sequencing]}" = "paired_end" ] || [ "{config[platform]}" = "illumina" ]
+            then
+                URL="http://www.bio8.cs.hku.hk/clair_models/ont/122HD34.tar"
+            else
+                URL="http://www.bio8.cs.hku.hk/clair_models/illumina/12345.tar"
+            fi
+            wget $URL -P $MODEL_DIR >> {log.out} 2> {log.err}
+            tar -C $MODEL_DIR -xf $MODEL_DIR/$(basename $URL) >> {log.out} 2> {log.err}
+        fi
+
+        if [ -d "variant/tmp" ]; then rm -r variant/tmp; fi
+        mkdir -p variant/tmp
+
+        python3 $CLAIR callVarBamParallel \
+            --chkpnt_fn ./clair_model/model \
+            --ref_fn {input.reffasta} \
+            --bam_fn {input.bam} \
+            --includingAllContigs \
+            --threshold {params.min_nonref_allele_freq} \
+            --minCoverage {params.min_coverage} \
+            --output_prefix "variant/tmp/var" \
+        > command.sh \
+        2> {log.err}
+
+        cat command.sh | parallel \
+            -j{threads} \
+            --will-cite \
+        >> {log.out} \
+        2> {log.err}
+
+        for i in variant/tmp/var.*.vcf
+        do 
+            if [ -z "$(tail -c 1 "$i")" ]; then echo "$i"; fi
+        done | grep -f - command.sh | sh 2> {log.err}
+        
+        vcfcat variant/tmp/*.vcf | bcftools sort >> {output.vcf} 2> {log.err}
+        rm -r variant/tmp
+        """
+
+rule vcfcat__merge_vcf_files:
+    """
+    Concatente all vcf files into one
+    """
+    input:
+        vcffiles = 'variant/{reference}*.vcf'
+    output:
+        finalvcf = 'variant/{reference}/snp_and_indel.vcf.gz'
+    threads:
+        int(config['threads'])
+    shell:
+        """
+        vcfcat {output.vcffiles}*.vcf | bcftools sort | bgziptabix {output.finalvcf}
+        """
+

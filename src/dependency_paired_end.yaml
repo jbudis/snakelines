@@ -1,0 +1,48 @@
+reads:
+    preprocess:
+        original:
+            output:
+                reads: expand('reads/original/{sample}_R{orientation}.fastq.gz',
+                               sample=pipeline.samples, orientation=[1,2])
+        trimmed:
+            output:
+                reads: expand('reads/trimmed/{sample}_R{orientation}.fastq.gz',
+                               sample=pipeline.samples, orientation=[1,2])
+        decontaminated:
+            output:
+                reads: expand('reads/decontaminated/{sample}_R{orientation}.fastq.gz',
+                               sample=pipeline.samples, orientation=[1,2])
+        deduplicated:
+            output:
+                reads: expand('reads/deduplicated/{sample}_R{orientation}.fastq.gz',
+                               sample=pipeline.samples, orientation=[1,2])
+        joined:
+            output:
+                reads: expand('reads/joined/{sample}_R{orientation}.fastq.gz',
+                               sample=pipeline.samples, orientation=[1, 2,'M','C'])
+        subsampled:
+            output:
+                reads: expand('reads/subsampled/{sample}_R{orientation}.fastq.gz',
+                               sample=pipeline.samples, orientation=[1,2])
+
+    report:
+        quality_report:
+            output:
+                fastqcs:
+                    from: expand('reads/{read_type}/stats/{sample}_R{orientation}_fastqc.html',
+                                  sample=pipeline.samples, orientation=[1,2],
+                                  read_type=read_types_with_quality_report)
+
+                    to:   expand('{report_dir}/{sample}/read_quality/{read_type}_R{orientation}.html',
+                                  report_dir=config['report_dir'],
+                                  sample=pipeline.samples, orientation=[1,2],
+                                  read_type=read_types_with_quality_report)
+
+                reports:
+                    from: expand('reads/{read_type}/stats/summary.html',
+                                  read_type=read_types_with_quality_report)
+
+                    to:   expand('{report_dir}/_summary/read_quality/{read_type}.html',
+                                  report_dir=config['report_dir'],
+                                  read_type=read_types_with_quality_report)
+
