@@ -1,5 +1,5 @@
-platform: single_end
-technology: nanopore
+platform: nanopore
+sequencing: single_end
 
 samples:
       - name: example_.*

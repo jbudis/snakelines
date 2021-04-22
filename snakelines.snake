@@ -25,17 +25,17 @@ if 'threads' not in config:
 if 'snakelines_dir' not in config:
     config['snakelines_dir'] = os.path.dirname(os.path.realpath(workflow.snakefile))
 
-if 'platform' in config:
-    if config['platform'] not in ['single_end', 'paired_end']:
-        print('ERROR: Invalid platform')
+if 'sequencing' in config:
+    if config['sequencing'] not in ['single_end', 'paired_end']:
+        print('ERROR: Invalid sequencing')
         sys.exit(1)
 else:
     print('ERROR: Platform not defined')
     sys.exit(1)
 
-if config['platform'] == 'single_end':
-    if 'technology' not in config:
-        print('Single-end mode requires a technology specification (technology: nanopore/illumina)')
+if config['sequencing'] == 'single_end':
+    if 'platform' not in config:
+        print('Single-end mode requires a platform specification (platform: nanopore/illumina)')
         sys.exit(1)
 
 # Run startup scripts that automatically loads imports from src/ and load helper methods

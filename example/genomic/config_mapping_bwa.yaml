@@ -1,4 +1,4 @@
-platform: paired_end
+sequencing: paired_end
 samples:                                  # List of sample categories to be analysed
     - name: example.*                     # Regex expression of sample names to be analysed (reads/original/example.*_R1.fastq.gz)
       reference: mhv                      # Reference genome for reads in the category (reference/mhv/mhv.fa)

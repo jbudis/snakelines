@@ -23,7 +23,7 @@ pipeline = Pipeline()
 
 DEFAULT_SAMPLE_CONFIGURATION = [{'name': '.*'}]
 default_read_names = {'single_end': '{}.fastq.gz', 'paired_end': '{}_R1.fastq.gz'}
-DEFAULT_SAMPLE_LOCATION = 'reads/original/' + default_read_names[config['platform']]
+DEFAULT_SAMPLE_LOCATION = 'reads/original/' + default_read_names[config['sequencing']]
 sample_configurations = config.get('samples', DEFAULT_SAMPLE_CONFIGURATION)
 for sample_configuration in sample_configurations:
 
@@ -59,11 +59,11 @@ if not 'tmp_dir' in config:
 # load imports
 rules_dir = '{}/rules'.format(config['snakelines_dir']) +'/{}'
 for import_file, method_config in import_files_in_config(config, rules_dir):
-    rule_platform = import_file.format(config['platform'])
+    rule_sequencing = import_file.format(config['sequencing'])
     rule_shared = import_file.format('shared')
-    if os.path.isfile(rule_platform):
-        print('Importing snakefile:', rule_platform, file=sys.stderr)
-        include: rule_platform
+    if os.path.isfile(rule_sequencing):
+        print('Importing snakefile:', rule_sequencing, file=sys.stderr)
+        include: rule_sequencing
     elif os.path.isfile(rule_shared):
         print('Importing snakefile:', rule_shared, file=sys.stderr)
         include: rule_shared

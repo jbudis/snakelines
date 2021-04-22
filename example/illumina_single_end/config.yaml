@@ -1,5 +1,5 @@
-platform: single_end
-technology: illumina
+platform: illumina
+sequencing: single_end
 
 samples:                              # List of sample categories to be analysed
     - name: example_.*                # Regex expression of sample names to be analysed (reads/original/example.*.fastq.gz)

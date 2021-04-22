@@ -1,4 +1,4 @@
-platform: paired_end
+sequencing: paired_end
 samples:                            # List of sample categories to be analysed
     - name: .*                      # Regex expression of sample names to be analysed (reads/original/.*-16S_R1.fastq.gz)
       reference: pombe              # Reference genome for reads in the category (reference/silva-16S/silva-16S.fa)

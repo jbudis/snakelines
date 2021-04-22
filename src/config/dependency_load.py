@@ -66,9 +66,9 @@ def check_dependency(dependency_file, config_dict):
     outputs = {}
 
     # load dependency file
-    dependency_platform = load_yaml(dependency_file.format(config_dict['platform']))
+    dependency_sequencing = load_yaml(dependency_file.format(config_dict['sequencing']))
     dependency_shared = load_yaml(dependency_file.format('shared'))
-    dependency_dict = {**dependency_platform, **dependency_shared} #NOTE: z = x | y for 3.9+ ONLY
+    dependency_dict = {**dependency_sequencing, **dependency_shared} #NOTE: z = x | y for 3.9+ ONLY
 
     # for every import file check the dependency and outputs
     import_files = load_imports.import_files_in_config(config_dict, "")

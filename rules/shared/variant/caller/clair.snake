@@ -41,9 +41,9 @@ rule clair__variant_call_mapped_reads:
 
         if [ ! -d $MODEL_DIR ]
         then
-            # download the trained model for the given platform
+            # download the trained model for the given sequencing type
             mkdir $MODEL_DIR 
-            if [ "{config[platform]}" = "paired_end" ] || [ "{config[technology]}" = "illumina" ]
+            if [ "{config[sequencing]}" = "paired_end" ] || [ "{config[platform]}" = "illumina" ]
             then
                 URL="http://www.bio8.cs.hku.hk/clair_models/ont/122HD34.tar"
             else

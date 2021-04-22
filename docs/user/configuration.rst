@@ -38,12 +38,12 @@ Specifying the mode of
 
 SnakeLines can analyse sequencing reads both from Illumina and Nanopore sequencers, with the possibility to also analyse
 single end Illumina reads. The configuration file has to contain the platform to specify the source of the reads, so
-that SnakeLines use appropriate rules. When analysing Illumina reads, further specification about the  has to be made in the
-technology entry.
+that SnakeLines use appropriate rules. When analysing Illumina reads, further specification about
+the read pairedness has to be made in the sequencing entry.
 
 .. code-block:: yaml
     platform: illumina
-    technology: paired_end
+    sequencing: paired_end
 
 Using pre-analysed files
 ~~~~~~~~~~~~~~~~~~~~~~~~
