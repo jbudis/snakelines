@@ -82,9 +82,6 @@ mapping:
         read_group:
             output:
                 mapped_reads: expand('mapping/{sr.reference}/read_group/{sr.sample}.bam', sr=pipeline.sample_references)
-        realigned:
-            output:
-                mapped_reads: expand('mapping/{sr.reference}/realigned/{sr.sample}.bam', sr=pipeline.sample_references)
         deduplicated:
             output:
                 mapped_reads: expand('mapping/{sr.reference}/deduplicated/{sr.sample}.bam', sr=pipeline.sample_references)
@@ -251,6 +248,14 @@ consensus:
 
               to: expand('{report_dir}/_summary/consensus-{sr.reference}-{sr.panel}.fa',
                 report_dir=config['report_dir'], sr=pipeline.sample_references)
+
+    lineage:
+        output:
+            report:
+                from: expand('consensus/{sr.reference}-{sr.panel}/{sr.sample}.lineage_report.csv',
+                            sr=pipeline.sample_references)
+                to: expand('{report_dir}/consensus/{sr.reference}-{sr.panel}/{sr.sample}.lineage_report.csv',
+                            report_dir=config['report_dir'], sr=pipeline.sample_references)
 
 classification:
     read_based:

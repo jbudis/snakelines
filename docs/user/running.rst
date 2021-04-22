@@ -62,8 +62,6 @@ You may download them directly or clone them using git.
 
 Compiling is not required, scripts are ready for use right after download.
 
-Note that GATK3 has to be installed separately (if the user intends to use it) as the license prohibits GATK3 to be distributed via Conda repository.
-
 Directory structure of input files
 ----------------------------------
 
