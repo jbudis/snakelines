@@ -1,4 +1,6 @@
 channels:
 - bioconda
+- conda-forge
 dependencies:
-- salmon=1.4.0
+- salmon==1.4.0
+- tbb-devel==2021.2.0
