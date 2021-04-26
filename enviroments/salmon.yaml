@@ -2,5 +2,5 @@ channels:
 - bioconda
 - conda-forge
 dependencies:
-- salmon==1.4.0
-- tbb=2020.1
+- salmon=1.4.0
+- tbb=2020.2
