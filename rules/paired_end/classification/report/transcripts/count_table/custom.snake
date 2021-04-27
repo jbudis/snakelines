@@ -26,7 +26,7 @@ rule custom__summarize_transcriptomic_counts_into_tsv_table:
         def load_counts(krn):
             sid = os.path.splitext(os.path.basename(krn))[0]
             counts = pd.read_csv(krn, sep='\t', index_col=1, header=None)
-            counts.columns = [[sid]]
+            counts.columns = [sid]
             return counts[sid]
 
         counts = pd.DataFrame([load_counts(krn) for krn in input.krns]).transpose()
