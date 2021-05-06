@@ -26,7 +26,8 @@ rule trimmomatic__trim_reads:
         quality = 'SLIDINGWINDOW:5:%s' % method_config.get('quality', ''),
         headcrop = 'HEADCROP:%s' % method_config.get('headcrop', ''),
         crop = 'CROP:%s' % method_config.get('crop', ''),
-        minlen = 'MINLEN:%s' % method_config.get('minlen', '')
+        minlen = 'MINLEN:%s' % method_config.get('minlen', ''),
+        illuminaclip = 'ILLUMINACLIP:%s' % method_config.get('illuminaclip', ''),
     threads:
         int(config['threads'])
     log:
@@ -48,6 +49,7 @@ rule trimmomatic__trim_reads:
             {params.headcrop} \
             {params.quality} \
             {params.minlen} \
+            {params.illuminaclip} \
         >  {log.out} \
         2> {log.err}
         """

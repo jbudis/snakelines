@@ -2,7 +2,7 @@ samples:                            # List of sample categories to be analysed
     - name: example.*               # Regex expression of sample names to be analysed (reads/original/example.*_R1.fastq.gz)
       reference: mhv                 # Reference genome for reads in the category (reference/mhv/mhv.fa)
 
-report_dir: report/public/01-corona-consensus  # Generated reports and essential output files would be stored there
+report_dir: report/public/01-corona-report  # Generated reports and essential output files would be stored there
 threads: 16                         # Number of threads to use in analysis
 
 reads:                              # Prepare reads and quality reports for downstream analysis
@@ -12,8 +12,9 @@ reads:                              # Prepare reads and quality reports for down
             temporary: True        # If True, generated files would be removed after successful analysis
             crop: 275               # Maximal number of bases in read to keep. Longer reads would be truncated.
             quality: 20             # Minimal average quality of read bases to keep (inside sliding window of length 5)
-            headcrop: 0            # Number of bases to remove from the start of read
-            minlen: 20              # Minimal length of trimmed read. Shorter reads would be removed.
+            headcrop: 20            # Number of bases to remove from the start of read
+            minlen: 0               # Minimal length of trimmed read. Shorter reads would be removed.
+            illuminaclip: 'description/adapters/artic.fa:2:30:10'
 
         decontaminated:             # Eliminate fragments from known artificial source, e.g. contamination by human
             method: bowtie2         # Supported values: bowtie2
@@ -70,6 +71,9 @@ variant:                                    # Identify variation in reads given 
             method: custom
 
 consensus:                          # consesnus sequence
+    lineage:
+      method: pangolin
+
     fasta:                          # create consesnus sequence based on vcf of a sample and reference fasta
         method: bcftools            # bcftools is the only option
         mask_lte_coverage: 2        # mask bases with N where coverage is lower than or equal to parameter
@@ -77,3 +81,81 @@ consensus:                          # consesnus sequence
     summary:
         method: cat                 # concatenate consensus sequences from the samples into a single file
 
+report:
+    multiqc:
+        summary:
+            - name: control-mapped_reads
+              key: report_general_stats_data.{sample}.mapped_reads
+              format: "{:,.1f}M"
+              humanize: M # K or M or G
+              validator:
+                  - pass:
+                      - { from: 1e6 }
+                  - warn:
+                      - { from: 5e5 }
+
+            - name: control-mapped_reads_pc
+              key: report_general_stats_data.{sample}.percentage_aligned
+              format: "{:,.1f}%"
+              validator:
+                  - pass:
+                      - { from: 90 }
+                  - warn:
+                      - { from: 80 }
+
+            - name: control-median_insert_size
+              key: report_general_stats_data.{sample}.median_insert_size
+              format: "{:,.0f}"
+              validator:
+                  - pass:
+                      - { from: 150, to: 170 }
+                  - warn:
+                      - { from: 140, to: 150 }
+                      - { from: 170, to: 180 }
+
+            - name: control-mapped_reads_coverage_5x_pc
+              key: report_general_stats_data.{sample}.5_x_pc
+              format: "{:,.1f}%"
+              validator:
+                  - pass:
+                      - { from: 95 }
+                  - warn:
+                      - { from: 90 }
+
+            - name: control-median_coverage
+              key: report_general_stats_data.{sample}.median_coverage
+              format: "{:,.0f}x"
+              validator:
+                  - pass:
+                    - { from: 1000 }
+                  - warn:
+                    - { from: 100 }
+
+            - name: control-novel_titv
+              key: report_general_stats_data.{sample}.NOVEL_TITV
+              format: "{:,.1f}x"
+              validator:
+                  - pass:
+                    - { from: 1.6, to: 2.4 }
+                  - warn:
+                    - { from: 1.2, to:  1.6 }
+                    - { from: 2.4, to:  2.8 }
+
+            - name: control-called_variants_known
+              key: report_general_stats_data.{sample}.total_called_variants_known
+              format: "{:,.0f}"
+              validator:
+                  - pass:
+                    - { from: 20, to: 40 }
+                  - warn:
+                    - { from: 15, to: 20 }
+                    - { from: 40, to: 50 }
+
+            - name: control-called_variants_novel
+              key: report_general_stats_data.{sample}.total_called_variants_novel
+              format: "{:,.0f}"
+              validator:
+                  - pass:
+                    - { from: 0, to: 0 }
+                  - warn:
+                    - { from: 1, to: 3 }
