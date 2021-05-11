@@ -41,8 +41,8 @@ rule cutadapt__trim_reads:
             {params.length} \
             {input.r1} \
             {input.r2} \
-            1 > {log.out} \
-            2 > {log.err}
+            1> {log.out} \
+            2> {log.err}
         """
 
 
