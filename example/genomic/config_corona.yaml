@@ -8,17 +8,23 @@ threads: 16                         # Number of threads to use in analysis
 reads:                              # Prepare reads and quality reports for downstream analysis
     preprocess:                     # Pre-process of reads, eliminate sequencing artifacts, contamination ...
         trimmed:                    # Remove low quality parts of reads
-            method: trimmomatic     # Supported values: trimmomatic
-            temporary: True        # If True, generated files would be removed after successful analysis
-            crop: 275               # Maximal number of bases in read to keep. Longer reads would be truncated.
-            quality: 20             # Minimal average quality of read bases to keep (inside sliding window of length 5)
-            headcrop: 0            # Number of bases to remove from the start of read
-            minlen: 20               # Minimal length of trimmed read. Shorter reads would be removed.
-            illuminaclip:
-                fasta: artic
-                seed_mismatches: 2
-                palindrome_clip_threshold: 30
-                simple_clip_threshold: 10
+#            method: trimmomatic     # Supported values: trimmomatic
+#            temporary: True        # If True, generated files would be removed after successful analysis
+#            crop: 275               # Maximal number of bases in read to keep. Longer reads would be truncated.
+#            quality: 20             # Minimal average quality of read bases to keep (inside sliding window of length 5)
+#            headcrop: 0            # Number of bases to remove from the start of read
+#            minlen: 20               # Minimal length of trimmed read. Shorter reads would be removed.
+#            illuminaclip:
+#                fasta: artic
+#                seed_mismatches: 2
+#                palindrome_clip_threshold: 30
+#                simple_clip_threshold: 10
+            method: cutadapt
+            temporary: True
+            fasta: artic
+            minimum_length: 20      # shorter reads are discarded
+            quality_cutoff: 20      # cutoff on 3' end ("20") or cutoff on both 5' and 3' ends ("20,20")
+            length: 275             # truncate reads to this length
 
         decontaminated:             # Eliminate fragments from known artificial source, e.g. contamination by human
             method: bowtie2         # Supported values: bowtie2

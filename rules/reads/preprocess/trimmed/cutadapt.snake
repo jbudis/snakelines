@@ -1,0 +1,48 @@
+rule cutadapt__trim_reads:
+    """
+        Adapter clipping focused trimming.
+    """
+    input:
+        r1 = 'reads/%s/{sample}_R1.fastq.gz' % method_config['input_read_type'],
+        r2 = 'reads/%s/{sample}_R2.fastq.gz' % method_config['input_read_type'],
+        fasta = 'description/adapters/%s.fa' % method_config.get('fasta')
+    output:
+        r1 = configured_temp('reads/trimmed/{sample}_R1.fastq.gz'),
+        r2 = configured_temp('reads/trimmed/{sample}_R2.fastq.gz'),
+        info = 'reads/%s/stats/{sample}.cutadapt.tsv' % method_config['input_read_type'],
+    params:
+        overlap = method_config.get('overlap', 10),
+        error_rate = method_config.get('error_rate', 0.1),
+        minimum_length = method_config.get('minimum_length', 1),
+        quality_cutoff = method_config.get('quality_cutoff', 20),
+        length = '--length %s' % method_config['length'] if 'length' in method_config else '',
+    threads:
+        int(config['threads'])
+    log:
+        out = 'reads/trimmed/log/{sample}.cutadapt.log',
+        err = 'reads/trimmed/log/{sample}.cutadapt.err'
+    conda:
+        config['snakelines_dir'] + '/enviroments/cutadapt.yaml'
+    shell:
+        """
+        cutadapt \
+            -b file:{input.fasta} \
+            -B file:{input.fasta} \
+            --output {output.r1} \
+            --paired-output {output.r2} \
+            --action trim \
+            --cores {threads} \
+            --info-file {output.info} \
+            --report full \
+            --overlap {params.overlap} \
+            --error-rate {params.error_rate} \
+            --minimum-length {params.minimum_length} \
+            --quality-cutoff {params.quality_cutoff} \
+            {params.length} \
+            {input.r1} \
+            {input.r2} \
+            1 > {log.out} \
+            2 > {log.err}
+        """
+
+
