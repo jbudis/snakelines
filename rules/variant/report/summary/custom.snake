@@ -24,7 +24,8 @@ rule custom__summary_report:
             read_type=pipeline.preprocessed_read_type,
         ),
         qualimap_txt = 'mapping/{reference}/%s/stats-{panel}/samples/{sample}/genome_results.txt' % pipeline.postprocessed_map_type,
-        qualimap_html = 'mapping/{reference}/%s/stats-{panel}/samples/{sample}/qualimapReport.html' % pipeline.postprocessed_map_type,
+        qualimap_html = 'mapping/{reference}/%s/stats-{panel}/samples/{sample}/qualimapReport.html' % pipeline.postprocessed_map_type
+    params:
         calling_stats = 'variant/{reference}-{panel}/original/calling_metrics/{sample}.variant_calling_summary_metrics'
     output:
         xml = 'variant/{reference}-{panel}/original/report/{sample}.xml',
@@ -44,7 +45,7 @@ rule custom__summary_report:
             output.xml,
             output.html,
             output.pdf,
-            input.calling_stats
+            params.calling_stats
         )
 
 
