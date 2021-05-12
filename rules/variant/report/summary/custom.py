@@ -500,7 +500,7 @@ class QcReporter:
         format_filename = '%s/rules/variant/report/calling/stats/name_format' % self._src_dir
         stats_filename = '%s/rules/variant/report/calling/stats/%s_mean_std' % (self._src_dir, panel_name)
         
-        if calling_report is not None and os.path.isfile(stats_filename):
+        if calling_report is not None and os.path.isfile(calling_report) and os.path.isfile(stats_filename):
             calling_summary = GatkCallingParser.parse_summary(calling_report, format_filename, stats_filename)
         else:
             calling_summary = []
