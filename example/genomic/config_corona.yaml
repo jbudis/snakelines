@@ -27,7 +27,8 @@ reads:                              # Prepare reads and quality reports for down
             minimum_length: 20      # shorter reads are discarded
             quality_cutoff: 20      # cutoff on 3' end ("20") or cutoff on both 5' and 3' ends ("20,20")
             length: 275             # truncate reads to this length
-            cut: 0                  # If the given length is positive, the bases are removed from the beginning of each read. If it is negative, the bases are removed from the end.
+            head_cut: 0             # number of bases that are removed from the beginning of each read
+            tail_cut: 0             # number of bases are removed from the end of each read
 
         decontaminated:             # Eliminate fragments from known artificial source, e.g. contamination by human
             method: bowtie2         # Supported values: bowtie2
