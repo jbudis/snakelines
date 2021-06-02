@@ -82,9 +82,6 @@ mapping:
         read_group:
             output:
                 mapped_reads: expand('mapping/{sr.reference}/read_group/{sr.sample}.bam', sr=pipeline.sample_references)
-        realigned:
-            output:
-                mapped_reads: expand('mapping/{sr.reference}/realigned/{sr.sample}.bam', sr=pipeline.sample_references)
         deduplicated:
             output:
                 mapped_reads: expand('mapping/{sr.reference}/deduplicated/{sr.sample}.bam', sr=pipeline.sample_references)

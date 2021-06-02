@@ -55,10 +55,6 @@ mapping:                            # Find the most similar genomic region to re
             method: picard          # Supported values: picard
             temporary: True         # If True, generated files would be removed after successful analysis
 
-        realigned:                  # Realign mapped reads locally around indels that are problematic for standard mappers
-            method: gatk            # Supported values: gatk
-            temporary: True         # If True, generated files would be removed after successful analysis
-
         filtered:                     # Eliminate reads that do not meet conditions
             method: bamtools          # Supported values: bamtools
             min_map_quality: 20       # Minimal quality of mapping
