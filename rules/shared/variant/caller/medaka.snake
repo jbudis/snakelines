@@ -10,13 +10,13 @@ rule medaka__variant_call_mapped_reads:
     :output vcf: Variants in the Variant Call Format (VCF)
     """
     input:
-        bam = 'mapping/{reference}/deduplicated/{sample}.bam',
+        bam = 'mapping/{{reference}}/{map_type}/{{sample}}.bam'.format(map_type=pipeline.postprocessed_map_type),
         reffasta = 'reference/{reference}/{reference}.fa',
         reffaidx = 'reference/{reference}/{reference}.fa.fai'
     output:
         vcf = 'variant/{reference}-wgs/{map_type}/{sample}.vcf',
     log:
-        out = 'variant/{reference}/{map_type}/log/{sample}.out'
+        out = 'variant/{reference}/{map_type}/log/{sample}.out',
         err = 'variant/{reference}/{map_type}/log/{sample}.err'
     threads:
         int(config['threads'])
@@ -27,11 +27,11 @@ rule medaka__variant_call_mapped_reads:
         medaka_variant \
             -f {input.reffasta} \
             -i {input.bam} \
-            -t {threads}
-        >  {log.out}
+            -t {threads} \
+        >  {log.out} \
         2> {log.err}
 
-        vcfcat medaka_variant/round_1.vcf | bcftools sort > {output.vcf} 2> {log.err}
+        cat medaka_variant/round_1.vcf | bcftools sort > {output.vcf} 2> {log.err}
         rm -r medaka_variant
         """
 

@@ -10,8 +10,8 @@ rule freebayes_call_germline_variants:
         with recommended settings: mapping quality (MQ≥30), and base quality (BQ≥24) filters
     """
     input:
-        bam   = 'mapping/{reference}/%s/{sample}.bam' % pipeline.postprocessed_map_type,
-        bai   = 'mapping/{reference}/%s/{sample}.bam.bai' % pipeline.postprocessed_map_type,
+        bam   = 'mapping/{{reference}}/{map_type}/{{sample}}.bam'.format(map_type=pipeline.postprocessed_map_type),
+        bai   = 'mapping/{{reference}}/{map_type}/{{sample}}.bam.bai'.format(map_type=pipeline.postprocessed_map_type),
         bed   = 'reference/{reference}/annotation/{panel}/regions.bed',
         fasta = 'reference/{reference}/{reference}.fa',
         fai   = 'reference/{reference}/{reference}.fa.fai'
@@ -54,6 +54,7 @@ rule freebayes_call_germline_variants:
         2> {log.err}
         """
 
+
 rule gatk__prepare_vcf:
     """
     Adds missing sequence dictionary to VCF header. This job also generates VCF index (.idx).
@@ -64,7 +65,8 @@ rule gatk__prepare_vcf:
     """
     input:
         vcf = 'variant/{reference}-{panel}/original/{sample}.freebayes.vcf',
-        fasta = 'reference/{reference}/{reference}.fa'
+        fasta = 'reference/{reference}/{reference}.fa',
+        ref_dict = 'reference/{reference}/{reference}.dict'
     output:
         vcf = 'variant/{reference}-{panel}/original/{sample}.vcf',
         vcf_index = 'variant/{reference}-{panel}/original/{sample}.vcf.idx',

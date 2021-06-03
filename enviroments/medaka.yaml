@@ -2,5 +2,5 @@ channels:
 - bioconda
 - conda-forge
 dependencies:
-- medaka
-- vcflib
+- medaka=1.4.1
+- vcflib=1.0.2

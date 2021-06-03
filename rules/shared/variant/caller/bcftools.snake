@@ -7,8 +7,8 @@ rule bcftools_call_germline_variants:
         See: https://samtools.github.io/bcftools/howtos/variant-calling.html
     """
     input:
-        bam   = 'mapping/{reference}/%s/{sample}.bam' % pipeline.postprocessed_map_type,
-        bai   = 'mapping/{reference}/%s/{sample}.bam.bai' % pipeline.postprocessed_map_type,
+        bam   = 'mapping/{reference}/{map_type}/{sample}.bam'.format(map_type=pipeline.postprocessed_map_type),
+        bai   = 'mapping/{reference}/{map_type}/{sample}.bam.bai'.format(map_type=pipeline.postprocessed_map_type),
         bed   = 'reference/{reference}/annotation/{panel}/regions.bed',
         fasta = 'reference/{reference}/{reference}.fa',
         fai   = 'reference/{reference}/{reference}.fa.fai'

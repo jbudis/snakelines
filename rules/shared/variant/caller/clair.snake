@@ -16,8 +16,8 @@ rule clair__variant_call_mapped_reads:
     :output vcf: Variants in the Variant Call Format (VCF)
     """
     input:
-        bam = 'mapping/{reference}/sorted/{sample}.bam',
-        bai = 'mapping/{reference}/sorted/{sample}.bam.bai',
+        bam = 'mapping/{{reference}}/{map_type}/{{sample}}.bam'.format(map_type=pipeline.postprocessed_map_type),
+        bai = 'mapping/{{reference}}/{map_type}/{{sample}}.bam.bai'.format(map_type=pipeline.postprocessed_map_type),
         reffasta = 'reference/{reference}/{reference}.fa',
         reffaidx = 'reference/{reference}/{reference}.fa.fai'
     output:
