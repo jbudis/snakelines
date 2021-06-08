@@ -1,4 +1,4 @@
-rule tabix__index_vcf:
+rule tabix__index_vcf_gz:
     """
     Create tabix index bgziped VCF file.
     :input: bgzipped vcf
@@ -8,6 +8,28 @@ rule tabix__index_vcf:
         '{path}/{sample}.vcf.gz'
     output:
         '{path}/{sample}.vcf.gz.tbi'
+    conda:
+        config['snakelines_dir'] + '/enviroments/samtools.yaml'
+    shell:
+        """
+        tabix \
+            --preset vcf \
+            --force \
+            {input} \
+            &> /dev/null \
+        """
+
+
+rule tabix__index_vcf_bgz:
+    """
+    Create tabix index bgziped VCF file.
+    :input: bgzipped vcf
+    :output: tabix index of bgzipped VCF file
+    """
+    input:
+        '{path}/{sample}.vcf.bgz'
+    output:
+        '{path}/{sample}.vcf.bgz.tbi'
     conda:
         config['snakelines_dir'] + '/enviroments/samtools.yaml'
     shell:
