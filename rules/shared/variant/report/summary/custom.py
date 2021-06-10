@@ -473,7 +473,7 @@ class GatkCallingParser:
 class QcReporter:
     def __init__(self, src_dir: str):
         self._src_dir = src_dir
-        template_dir = self._src_dir + '/rules/variant/report/summary/templates'
+        template_dir = self._src_dir + '/rules/shared/variant/report/summary/templates'
         env = Environment(loader=FileSystemLoader(template_dir), autoescape=True)
         self._xml_template = env.get_template('quality_report.xml')
         self._html_template = env.get_template('quality_report.html')
