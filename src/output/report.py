@@ -49,11 +49,9 @@ def multiqc_report(out_dir: str, out_list_filename: str):
 
 def dig_value(data: dict, keys: list):
     value = data
-    found = False
     for key in keys:
         if isinstance(value, dict):
             if key in value:
-                found = True
                 value = value[key]
         elif isinstance(value, list):
             # merge listed dicts
@@ -65,7 +63,8 @@ def dig_value(data: dict, keys: list):
         else:
             break
 
-    if not found:
+    if isinstance(value, dict):
+        # the value was not found
         value = None
 
     return value
