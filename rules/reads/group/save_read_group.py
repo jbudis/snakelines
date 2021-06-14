@@ -44,7 +44,6 @@ with gzip.open(in_fastq, 'rt') as fastq_file:
                 flowcell = 'unknown'
                 # raise ValueError('unknown format of read header: %s' % header)
 
-
         readgroup += '@RG\t'
         readgroup += 'ID:%s.%s\t' % (flowcell, sid)
         readgroup += 'LB:%s.%s\t' % (flowcell, sid)
