@@ -1,0 +1,3 @@
+[submodule "snakelines_private"]
+	path = snakelines_private
+	url = git@gen-git.cusp.uniba.sk:kucharik/snakelines_private.git

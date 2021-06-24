@@ -44,6 +44,10 @@ include: config['snakelines_dir'] + '/src/common.snake'
 # check dependencies and asses inputs and outputs
 outputs, copy_where = check_dependency(config['snakelines_dir'] + '/src/dependency_{}.yaml', config)
 
+print("Based on config, generating these outputs:")
+for k,v in outputs.items():
+    print(k, '  :  ', v)
+
 # function to evaluate output directories from dependency.yaml
 def get_files(source_dict):
     additional_params = {'expand': expand, 'protected': protected, 'temp': temp, 'config': config,
