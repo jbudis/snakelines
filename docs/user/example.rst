@@ -23,7 +23,7 @@ Use git to download sources
 
 Alternately you may `download sources directly <running.html#installation>`_.
 
-Execute pipeline
+Execute example pipeline
 ----------------
 
 Toy example read files and references are stored at the `/example` directory of downloaded sources.
