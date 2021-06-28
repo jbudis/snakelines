@@ -1,4 +1,4 @@
-SNAKELINES_VERSION = '0.11.6'
+SNAKELINES_VERSION = '1.0.0'
 
 import os
 import sys
