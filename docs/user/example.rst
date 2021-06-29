@@ -44,6 +44,6 @@ Assuming, that sources are downloaded in /usr/local/snakelines, `variant_calling
    
    cd /usr/local/snakelines/example/genomic
 
-   snakemake \
+   snakelines \
       --configfile config_variant_calling.yaml \
       --use-conda
