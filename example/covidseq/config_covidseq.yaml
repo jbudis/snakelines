@@ -18,12 +18,15 @@ reads:                              # Prepare reads and quality reports for down
             head_cut: 0            # number of bases that are removed from the beginning of each read
             tail_cut: 0            # number of bases are removed from the end of each read
 
-        decontaminated:             # Eliminate fragments from known artificial source, e.g. contamination by human
-            method: bowtie2         # Supported values: bowtie2
-            temporary: True        # If True, generated files would be removed after successful analysis
-            references:             # List of reference genomes
-                - grch38_decoy
-            keep: False              # Keep reads mapped to references (True) or remove them as contamination (False)
+# Optional, but recommended step to eliminate fragments from host human genome first
+# Download human reference genome at first into reference/hg38/hg38.fa
+#        decontaminated:             # Eliminate fragments from known artificial source, e.g. contamination by human
+#            method: bowtie2         # Supported values: bowtie2
+#            temporary: True        # If True, generated files would be removed after successful analysis
+#            references:             # List of reference genomes
+#                - hg38
+#            keep: False              # Keep reads mapped to references (True) or remove them as contamination (False)
+
     report:                         # Summary reports of read characteristics to assess their quality
         quality_report:             # HTML summary report of read quality
             method: fastqc          # Supported values: fastqc
