@@ -48,7 +48,7 @@ Example
 How to run example:
 
 Copy Fastq files from the Illumina COVIDSeq sequencing into /usr/local/snakelines/example/covidseq/reads/original.
-Real-time examples can be also freely downloaded from the `ENA portal <https://www.ebi.ac.uk/ena/browser/view/PRJEB43444>`_.
+Real-world examples can be also freely downloaded from the `ENA portal <https://www.ebi.ac.uk/ena/browser/view/PRJEB43444>`_.
 
 .. code-block:: bash
 
