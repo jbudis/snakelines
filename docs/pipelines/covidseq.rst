@@ -13,7 +13,7 @@ Purpose
 
 Required inputs
 ---------------
-
+* Sequences of primers used in PCR amplicon based enrichment (fasta format, artic.fa)
 * Sequenced paired-end reads from Illumina sequencer in gzipped fastq format.
 
   * each sample is represented by two gzipped fastq files
@@ -23,6 +23,8 @@ Required inputs
 
 ::
 
+   |-- description/adapters
+           |-- artic.fa
    |-- reads/original
            |-- <sample_1>_R1.fastq.gz
            |-- <sample_1>_R2.fastq.gz
@@ -30,6 +32,7 @@ Required inputs
            |-- <sample_2>_R2.fastq.gz
    |-- reference/<reference>
            |-- <reference>.fa
+
 
 Generated outputs
 -----------------
