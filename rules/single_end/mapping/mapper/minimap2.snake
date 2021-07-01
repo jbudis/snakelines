@@ -1,0 +1,30 @@
+rule minimap2__map_reads_to_reference:
+    """
+    Align reads to the reference genome.
+    :input reads: gzipped fastq file with reads, e.g. 'reads/%s/{sample}.fastq.gz'
+    :input ref: Reference genomic sequences in fasta format
+    :output sam: Ordered mapped reads according to their location on reference genome
+    """
+    input:
+        reads = 'reads/original/{sample}.fastq' ,
+        ref = 'reference/{reference}/{reference}.fa'
+    output:
+        sam = configured_temp('mapping/{reference}/original/{sample}.sam')
+    log:
+        err = 'mapping/{reference}/sorted/log/{sample}.err'
+    params:
+        platform = '-ax sr' if config['platform'] == 'illumina' else '-ax map-ont'
+    threads:
+        int(config['threads'])
+    conda:
+        config['snakelines_dir'] + '/enviroments/minimap2.yaml'
+    shell:
+        """
+            minimap2 \
+                {params.platform} \
+                {input.ref} \
+                {input.reads} \
+                -t {threads} \
+            > {output.sam} \
+            2> {log.err}
+        """

@@ -1,0 +1,56 @@
+include: config['snakelines_dir'] + '/rules/shared/mapping/mapper/indices/bowtie2_index.snake'
+
+rule bowtie2__filter_reads_from_reference:
+    """
+    Remove reads that do not map to the reference, and so may be caused by contamination in lab processing.
+    Alternatively, using keep: False configuration removes all fragments that belongs to reference, and so is suitable
+    to remove contamination caused by host with known genome, e.g. human fragments.
+    :input reads: Left side of sequenced fragments in gzipped fastq format
+    :input index_files: List of reference bowtie2 databases
+    :output reads: Left side of filtered fragments in gzipped fastq format
+    :params indices: Prefixes of reference bowtie2 databases
+    :params keep_param: Determine if keep or remove sequences aligned to reference databases
+    """
+    input:
+        reads = 'reads/%s/{sample}.fastq.gz' % method_config['input_read_type'],
+        index_files = expand('reference/{ref}/bowtie2_index/{ref}.1.bt2', ref=method_config['references'])
+    output:
+        reads = configured_temp('reads/decontaminated/{sample}.fastq.gz'),
+    params:
+        indices = expand('reference/{reference}/bowtie2_index/{reference}', reference=method_config['references']),
+        keep_param = '--al-gz' if method_config.get('keep', False) else '--un-gz',
+        tmp_dir = 'reads/decontaminated/tmp/{sample}'
+    threads:
+        int(config['threads'])
+    log:
+        prefix = 'reads/decontaminated/log/{sample}'
+    conda:
+        config['snakelines_dir'] + '/enviroments/bowtie2.yaml'
+    shell:
+        """
+        R_IN={input.reads}
+
+        for INDEX in {params.indices}; do
+
+            REF=`basename $INDEX`
+            REF_DIR={params.tmp_dir}/$REF
+            mkdir -p $REF_DIR
+
+            R_OUT=$REF_DIR/{wildcards.sample}.fastq.gz
+
+            bowtie2 \
+                -x $INDEX \
+                -U $R_IN \
+                --very-sensitive \
+                --threads {threads} \
+                {params.keep_param} $R_OUT \
+            > /dev/null
+            2> {log.prefix}.$REF.log
+
+            R_IN=$R_OUT
+        done
+
+        mv $R_OUT {output.reads}
+
+        rm -rf {params.tmp_dir}
+        """

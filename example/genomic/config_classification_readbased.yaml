@@ -1,3 +1,4 @@
+sequencing: paired_end
 samples:                             # List of sample categories to be analysed
     - name: .*                       # Regex expression of sample names to be analysed (reads/original/example.*_R1.fastq.gz)
       reference: mhv_classification  # Reference genome or database, important to create kallisto index for used reference
