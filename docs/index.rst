@@ -45,6 +45,7 @@ Contents
    pipelines/infer_phylogeny
    pipelines/illumina_single_end
    pipelines/nanopore_variant
+   pipelines/covidseq
 
 .. toctree::
    :caption: Documentation
