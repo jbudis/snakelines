@@ -1,6 +1,6 @@
 rule custom__save_read_group:
     """
-    Infer sample name, flow cell and barcode from the input BAM file from Illumina sequencing.
+    Infer sample name, flow cell and barcode from the input FASTQ produced by Illumina sequencing.
     Write the information representing single read group to a dedicated file.
     """
     input:

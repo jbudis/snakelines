@@ -1,3 +1,19 @@
+def get_illuminaclip():
+    illuminaclip_list = []
+    if 'illuminaclip' in method_config:
+        illuminaclip_params = method_config.get('illuminaclip')
+        illuminaclip_list.append('ILLUMINACLIP')
+        illuminaclip_list.append('description/adapters/%s.fa' % illuminaclip_params.get('fasta'))
+        illuminaclip_list.append(illuminaclip_params.get('seed_mismatches'))
+        illuminaclip_list.append(illuminaclip_params.get('palindrome_clip_threshold'))
+        illuminaclip_list.append(illuminaclip_params.get('simple_clip_threshold'))
+        if 'min_adapter_length' in illuminaclip_params:
+            illuminaclip_list.append(illuminaclip_params.get('min_adapter_length'))
+        if 'keep_both_reads' in illuminaclip_params:
+            illuminaclip_list.append(illuminaclip_params.get('keep_both_reads'))
+
+    return ':'.join(map(str, illuminaclip_list)) if illuminaclip_list else ''
+
 rule trimmomatic__trim_reads:
     """
     Remove low quality ends of reads and then filter reads that are too short.
@@ -26,7 +42,8 @@ rule trimmomatic__trim_reads:
         quality = 'SLIDINGWINDOW:5:%s' % method_config.get('quality', ''),
         headcrop = 'HEADCROP:%s' % method_config.get('headcrop', ''),
         crop = 'CROP:%s' % method_config.get('crop', ''),
-        minlen = 'MINLEN:%s' % method_config.get('minlen', '')
+        minlen = 'MINLEN:%s' % method_config.get('minlen', ''),
+        illuminaclip = get_illuminaclip()
     threads:
         int(config['threads'])
     log:
@@ -48,6 +65,7 @@ rule trimmomatic__trim_reads:
             {params.headcrop} \
             {params.quality} \
             {params.minlen} \
+            {params.illuminaclip} \
         >  {log.out} \
         2> {log.err}
         """

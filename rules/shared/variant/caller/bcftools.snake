@@ -15,7 +15,7 @@ rule bcftools_call_germline_variants:
     output:
         vcf  = 'variant/{reference}-{panel}/original/{sample}.bcftools.vcf'
     params:
-        ploidy              = method_config.get('haploid', 'GRCh38'),
+        ploidy              = method_config.get('haploid', 'GRCh38'), # for haploid use '1'
         min_base_quality    = method_config.get('min_base_quality', 13),
         min_mapping_quality = method_config.get('min_mapping_quality', 0),
         all_alleles         = '--keep-alts' if method_config.get('all_alleles', False) else ''

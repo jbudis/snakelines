@@ -104,3 +104,6 @@ variant:                                    # Identify variation in reads given 
             min_nonref_allele_freq: 0.20    # Minimal proportion of reads with alternative allele against all observations
             min_mean_base_quality: 20       # Minimal average base quality of bases that support alternative allele
 
+
+report:
+    multiqc: True

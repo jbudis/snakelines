@@ -10,7 +10,8 @@ rule bcftools__create_consensus_fasta:
         See http://samtools.github.io/bcftools/bcftools.html#consensus
     """
     input:
-        vcf      = 'variant/{reference}-{panel}/original/{sample}.vcf.gz',
+        vcf      = 'variant/{reference}-{panel}/original/{sample}.vcf',
+        vcf_gz   = 'variant/{reference}-{panel}/original/{sample}.vcf.gz',
         tbi      = 'variant/{reference}-{panel}/original/{sample}.vcf.gz.tbi',
         fasta    = 'reference/{reference}/{reference}.fa',
         fai      = 'reference/{reference}/{reference}.fa.fai',
@@ -24,6 +25,8 @@ rule bcftools__create_consensus_fasta:
     params:
         mask_lte_coverage = method_config.get('mask_lte_coverage', -1),
         bed = 'consensus/{reference}-{panel}/{sample}.masked.bed',
+        use_iupac = 'true' if method_config.get('use_iupac', False) else 'false',
+        snakelines_path = config['snakelines_dir']
     conda:
         config['snakelines_dir'] + '/enviroments/create_consensus_fasta.yaml'
     shell:
@@ -40,9 +43,12 @@ rule bcftools__create_consensus_fasta:
             --fasta-ref {input.fasta} \
             --output {output.fasta} \
             $mask \
-            {input.vcf} \
+            {input.vcf_gz} \
         1> {log.out} \
         2> {log.err}
+        if {params.use_iupac}; then
+            python3 {params.snakelines_path}/rules/consensus/fasta/add_iupac_codes.py {output.fasta} {input.vcf} {output.fasta}
+        fi
 
         sed -i '1s/>.*/>{wildcards.sample}/' {output.fasta}
         """

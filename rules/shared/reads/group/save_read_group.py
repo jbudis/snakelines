@@ -14,7 +14,6 @@ with gzip.open(in_fastq, 'rt') as fastq_file:
         # assume illumina header
         # @AP2-11:127:H53WFDMXX:1:1101:1271:1031 1:N:0:GGACTCCT+GTAAGGAG
         segments = header.split(':')
-        assume_illumina = True
         if len(segments) >= 3:
             flowcell = segments[2]
             platform = 'ILLUMINA'
@@ -41,7 +40,9 @@ with gzip.open(in_fastq, 'rt') as fastq_file:
                 platform = 'MGISEQ-2000'  # aka DNBSEQ-G400
                 flowcell = bgi_header[:12]
             else:
-                raise ValueError('unknown format of read header: %s' % header)
+                platform = 'unknown'
+                flowcell = 'unknown'
+                # raise ValueError('unknown format of read header: %s' % header)
 
         readgroup += '@RG\t'
         readgroup += 'ID:%s.%s\t' % (flowcell, sid)
