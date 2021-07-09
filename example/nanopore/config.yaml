@@ -1,0 +1,51 @@
+platform: nanopore
+sequencing: single_end
+
+samples:
+      - name: example_.*
+        reference: sars_cov_2
+
+report_dir: report/example
+threads: 16
+
+reference:
+    index:
+        fai:
+            method: samtools
+
+reads:
+    preprocess:
+        trimmed:
+            method: trimmomatic
+            temporary: False
+            crop: 500
+            quality: 20
+            headcrop: 20
+            minlen: 35
+
+    report:
+        quality_report:
+            method: fastqc
+            read_types:
+                - original
+mapping:
+    mapper:
+        method: minimap2
+    index:
+        method: samtools
+    postprocess:
+        sorted:
+            method: samtools
+    report:
+        quality_report:
+            method: qualimap
+            map_types:
+                - original
+
+variant:
+    caller:
+        method: clair
+
+lineage:
+    method: pangolin
+

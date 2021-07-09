@@ -1,3 +1,4 @@
+sequencing: paired_end
 samples:                              # List of sample categories to be analysed
     - name: example.*                 # Regex expression of sample names to be analysed (reads/original/example.*_R1.fastq.gz)
       reference: mhv                  # Reference genome for reads in the category (reference/mhv/mhv.fa)
@@ -56,10 +57,6 @@ mapping:                            # Find the most similar genomic region to re
 
         deduplicated:               # Mark duplicated reads (PCR duplicated)
             method: picard          # Supported values: picard
-            temporary: True         # If True, generated files would be removed after successful analysis
-
-        realigned:                  # Realign mapped reads locally around indels that are problematic for standard mappers
-            method: gatk            # Supported values: gatk
             temporary: True         # If True, generated files would be removed after successful analysis
 
         filtered:                     # Eliminate reads that do not meet conditions

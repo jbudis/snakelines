@@ -1,0 +1,97 @@
+include: config['snakelines_dir'] + '/rules/shared/reference/annotation/regions.snake'
+include: config['snakelines_dir'] + '/rules/shared/reference/index/fai/samtools.snake'
+include: config['snakelines_dir'] + '/rules/shared/reference/index/dict/picard.snake'
+
+rule gatk__recalibrate:
+    """
+        Builds a recalibration model to score variant quality for filtering purposes.
+        See: https://software.broadinstitute.org/gatk/documentation/article.php?id=2805
+        See: https://software.broadinstitute.org/gatk/documentation/article.php?id=1259
+    """
+    input:
+        vcf            = 'variant/{reference}-{panel}/%s/{sample}.vcf' % method_config['input_variant_type'],
+        fasta          = 'reference/{reference}/{reference}.fa',
+        fai            = 'reference/{reference}/{reference}.fa.fai',
+        dict           = 'reference/{reference}/{reference}.dict',
+        hapmap         = 'reference/{reference}/variants/hapmap.vcf.bgz',
+        hapmap_index   = 'reference/{reference}/variants/hapmap.vcf.bgz.tbi',
+        omni           = 'reference/{reference}/variants/omni.vcf.bgz',
+        omni_index     = 'reference/{reference}/variants/omni.vcf.bgz.tbi',
+        thousand       = 'reference/{reference}/variants/1000g.vcf.bgz',
+        thousand_index = 'reference/{reference}/variants/1000g.vcf.bgz.tbi',
+        dbsnp          = 'reference/{reference}/variants/dbsnp.vcf.bgz',
+        dbsnp_index    = 'reference/{reference}/variants/dbsnp.vcf.bgz.tbi',
+        bed            = 'reference/{reference}/annotation/twist/regions.interval_list',
+    output:
+        vcf      = 'variant/{reference}-{panel}/recalibrated/{sample}.recalibration.vcf',
+        model    = 'variant/{reference}-{panel}/recalibrated/{sample}.model',
+        tranches = 'variant/{reference}-{panel}/recalibrated/{sample}.tranches',
+        script   = 'variant/{reference}-{panel}/recalibrated/{sample}.r'
+    log:
+        out = 'variant/{reference}-{panel}/recalibrated/log/{sample}.recalibration.out',
+        err = 'variant/{reference}-{panel}/recalibrated/log/{sample}.recalibration.err'
+    threads:
+        int(config['threads'])
+    shell:
+        # --disable-sequence-dictionary-validation
+#        --use-annotation DP \
+#        --use-annotation MQ \
+#        --use-annotation MQRankSum \
+#        --use-annotation QD \
+#        --use-annotation FS \
+#        --use-annotation SOR \
+        """
+        gatk VariantRecalibrator \
+            --reference {input.fasta} \
+            --intervals {input.bed} \
+            --sequence-dictionary {input.dict} \
+            --variant {input.vcf} \
+            --resource {input.dbsnp} \
+            --tranches-file {output.tranches} \
+            --resource hapmap,known=false,training=true,truth=true,prior=15.0:{input.hapmap} \
+            --resource omni,known=false,training=true,truth=true,prior=12.0:{input.omni} \
+            --resource 1000G,known=false,training=true,truth=false,prior=10.0:{input.thousand} \
+            --resource dbsnp,known=true,training=false,truth=false,prior=2.0:{input.dbsnp} \
+            --use-annotation ReadPosRankSum \
+            --mode SNP \
+            --output-model {output.model} \
+            --rscript-file {output.script} \
+            --output {output.vcf} \
+        1> {log.out} \
+        2> {log.err}
+        """
+
+rule gatk__apply_vqsr:
+    """
+        Applies a score cutoff to filter variants based on a recalibration table.
+    """
+    input:
+        vcf           = 'variant/{reference}-{panel}/%s/{sample}.vcf' % method_config['input_variant_type'],
+        fasta         = 'reference/{reference}/{reference}.fa',
+        fai           = 'reference/{reference}/{reference}.fa.fai',
+        dict          = 'reference/{reference}/{reference}.dict',
+        recalibration = 'variant/{reference}-{panel}/recalibrated/{sample}.recalibration.vcf',
+        bed           = 'reference/{reference}/annotation/twist/regions.interval_list',
+        tranches      = 'variant/{reference}-{panel}/recalibrated/{sample}.tranches',
+    output:
+        vcf = 'variant/{reference}-{panel}/recalibrated/{sample}.vcf',
+    log:
+        out = 'variant/{reference}-{panel}/recalibrated/log/{sample}.vcf.out',
+        err = 'variant/{reference}-{panel}/recalibrated/log/{sample}.vcf.err'
+    threads:
+        int(config['threads'])
+    shell:
+        # --truth-sensitivity-filter-level 99.0 \
+        """
+        gatk ApplyVQSR \
+           --reference {input.fasta} \
+           --intervals {input.bed} \
+           --sequence-dictionary {input.dict} \
+           --variant {input.vcf} \
+           --tranches-file {input.tranches} \
+           --recal-file {input.recalibration} \
+           --mode SNP \
+           --output {output.vcf} \
+        1> {log.out} \
+        2> {log.err}
+        """

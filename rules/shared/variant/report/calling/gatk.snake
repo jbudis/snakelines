@@ -1,0 +1,39 @@
+include: config['snakelines_dir'] + '/rules/shared/variant/index/tabix.snake'
+
+rule gatk__collect_variant_calling_metrics:
+    """
+    GATK tool for generating
+    :input vcf: called variants
+    :input vcf_index: index of called variants
+    :input dbsnp: DBSNP in BGZF format written by bgzip.
+    :input dbsnp_index: DBSNP tabix index.
+    :input intervals: Genomic regions of interest.
+    :output filename: Text file with summary of calling metrics.
+    """
+    input:
+        vcf = 'variant/{reference}-{panel}/original/{sample}.vcf',
+        vcf_index = 'variant/{reference}-{panel}/original/{sample}.vcf.idx',
+        dbsnp = 'reference/{reference}/variants/dbsnp.vcf.bgz',
+        dbsnp_index = 'reference/{reference}/variants/dbsnp.vcf.bgz.tbi',
+        intervals = 'reference/{reference}/annotation/{panel}/regions.interval_list',
+    output:
+        summary = 'variant/{reference}-{panel}/original/calling_metrics/{sample}.variant_calling_summary_metrics',
+        detail  = 'variant/{reference}-{panel}/original/calling_metrics/{sample}.variant_calling_detail_metrics'
+    log:
+        out = 'variant/{reference}-{panel}/original/calling_metrics/log/{sample}.out',
+        err = 'variant/{reference}-{panel}/original/calling_metrics/log/{sample}.err'
+    threads:
+        int(config['threads'])
+    conda:
+        config['snakelines_dir'] + '/enviroments/gatk4.yaml'
+    shell:
+        """
+        gatk CollectVariantCallingMetrics \
+            --INPUT {input.vcf} \
+            --DBSNP {input.dbsnp} \
+            --OUTPUT variant/{wildcards.reference}-{wildcards.panel}/original/calling_metrics/{wildcards.sample} \
+            --THREAD_COUNT {threads} \
+            --TARGET_INTERVALS {input.intervals} \
+            1> {log.out} \
+            2> {log.err}
+        """
