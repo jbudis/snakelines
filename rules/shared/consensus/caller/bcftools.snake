@@ -1,0 +1,13 @@
+rule bcftools__build_consensus_sequence:
+    """
+    """
+    input:
+        fa = 'reference/{reference}/{reference}.fa.fai',
+	vcf = 'variant/'
+    output:
+        bed = 'reference/{reference}/annotation/{panel}/regions.vardict.bed',
+    shell:
+        """
+        cut -f 1-4 {input.bed} > {output.bed}
+	"""
+
