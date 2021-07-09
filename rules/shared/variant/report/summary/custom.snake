@@ -1,0 +1,51 @@
+include: "custom.py"
+
+rule custom__summary_report:
+    """
+    Summarizing key metrics from sequencing (FASTQC),
+    mapping (Qualimap) and variant calling (GATK) in a single report file.
+    :input fastqc_original: FASTQC report on original reads.
+    :input fastqc_trimmed: FASTQC report on trimmed reads.
+    :input qualimap_txt: Plain text Qualimap report on deduplicated mapped reads.
+    :input qualimap_html: HTML Qualimap report on deduplicated mapped reads.
+    :input calling_stats: GATK variant calling metrics.
+    :output xml: Report for further computer processing.
+    :output html: Formatted report which is used to generate PDF report.
+    :output pdf: Human readable report in form of PDF document.
+    """
+    input:
+        fastqc_original = expand(
+            'reads/original/stats/{{sample}}_R{orientation}_fastqc/summary.txt',
+            orientation=[1,2],
+        ),
+        fastqc_trimmed = expand(
+            'reads/{read_type}/stats/{{sample}}_R{orientation}_fastqc/summary.txt',
+            orientation=[1,2],
+            read_type=pipeline.preprocessed_read_type,
+        ),
+        qualimap_txt = 'mapping/{reference}/%s/stats-{panel}/samples/{sample}/genome_results.txt' % pipeline.postprocessed_map_type,
+        qualimap_html = 'mapping/{reference}/%s/stats-{panel}/samples/{sample}/qualimapReport.html' % pipeline.postprocessed_map_type
+    params:
+        calling_stats = 'variant/{reference}-{panel}/original/calling_metrics/{sample}.variant_calling_summary_metrics'
+    output:
+        xml = 'variant/{reference}-{panel}/original/report/{sample}.xml',
+        html = 'variant/{reference}-{panel}/original/report/{sample}.html',
+        pdf = 'variant/{reference}-{panel}/original/report/{sample}.pdf'
+    run:
+        reporter = QcReporter(config['snakelines_dir'])
+        reporter.run(
+            wildcards.sample,
+            wildcards.panel,
+            input.fastqc_original[0],
+            input.fastqc_original[1],
+            input.fastqc_trimmed[0],
+            input.fastqc_trimmed[1],
+            input.qualimap_txt,
+            input.qualimap_html,
+            output.xml,
+            output.html,
+            output.pdf,
+            params.calling_stats
+        )
+
+

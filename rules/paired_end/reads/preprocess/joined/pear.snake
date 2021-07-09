@@ -1,0 +1,104 @@
+include: config['snakelines_dir'] + '/rules/shared/reads/preprocess/conversion/unzip.snake'
+
+import gzip
+from Bio import SeqIO
+from Bio.SeqRecord import SeqRecord
+from Bio.Seq import Seq
+from Bio.Alphabet import IUPAC
+
+# TODO also create fastq reports for RM files
+# TODO also create fastq reports for RM files
+rule pear__join_read_pairs:
+    """
+    Join paired reads into single end reads based on sequence overlap
+    :input r1: Left side of sequenced fragments in fastq format
+    :input r2: Right side of sequenced fragments in fastq format
+    :output r1: Left side of fragments without overlap in fastq format
+    :output r2: Right side of fragments without overlap in fastq format
+    :output rm: Paired reads with overlap joined into merged sequences in fastq format
+    :params tmp_r1: Temporary generated file, would be immediately renamed to the standardised name
+    :params tmp_r2: Temporary generated file, would be immediately renamed to the standardised name
+    :params tmp_rm: Temporary generated file, would be immediately renamed to the standardised name
+    :params tmp_rd: Temporary generated file, would be immediately removed
+    :params outpref: Prefix of generated output files
+    """
+    input:
+        r1 = 'reads/%s/{sample}_R1.fastq' % method_config['input_read_type'],
+        r2 = 'reads/%s/{sample}_R2.fastq' % method_config['input_read_type']
+    output:
+        r1 = configured_temp('reads/joined/{sample}_R1.fastq.gz'),
+        r2 = configured_temp('reads/joined/{sample}_R2.fastq.gz'),
+        rm = configured_temp('reads/joined/{sample}_RM.fastq.gz')
+    params:
+        tmp_r1 = 'reads/joined/{sample}.unassembled.forward.fastq',
+        tmp_r2 = 'reads/joined/{sample}.unassembled.reverse.fastq',
+        tmp_rm = 'reads/joined/{sample}.assembled.fastq',
+        tmp_rd = 'reads/joined/{sample}.discarded.fastq',
+        outpref = 'reads/joined/{sample}'
+    threads:
+        int(config['threads'])
+    log:
+        out = 'reads/joined/log/{sample}.log',
+        err = 'reads/joined/log/{sample}.err',
+    conda:
+        config['snakelines_dir'] + '/enviroments/pear_pigz.yaml'
+    shell:
+        """
+        pear \
+            --forward-fastq {input.r1} \
+            --reverse-fastq {input.r2} \
+            --output {params.outpref} \
+            --threads {threads} \
+        >  {log.out} \
+        2> {log.err}
+
+        pigz \
+            --processes {threads} \
+            {params.tmp_r1} \
+            {params.tmp_r2} \
+            {params.tmp_rm}
+
+        mv {params.tmp_r1}.gz {output.r1}
+        mv {params.tmp_r2}.gz {output.r2}
+        mv {params.tmp_rm}.gz {output.rm}
+
+        rm {params.tmp_rd}
+        """
+
+# TODO this is not good way how to deal with pair reads without overlap. Concatenate only rm with r1?
+rule pear__concat_joined_with_single:
+    """
+    Unite joined reads, and reads that could not be joined into a single fastq file.
+    Sequence between reads without overlap would be filled with N symbol.
+    :input r1: Left side of fragments without overlap in fastq format
+    :input r2: Right side of fragments without overlap in fastq format
+    :input rm: Paired reads with overlap joined into merged sequences in fastq format
+    :output rc: Concatenated file, first goes joined reads and then reads without overlap with N symbols between reads
+    """
+    input:
+        r1 = 'reads/joined/{sample}_R1.fastq.gz',
+        r2 = 'reads/joined/{sample}_R2.fastq.gz',
+        rm = 'reads/joined/{sample}_RM.fastq.gz'
+    output:
+        rc = 'reads/joined/{sample}_RC.fastq.gz'
+    params:
+    	n_ambiguous_bases = int(method_config['n_ambiguous_bases'])
+    run:
+        with gzip.open(output.rc, 'wt') as out:
+
+            with gzip.open(input.rm, 'rt') as rm:
+                for read in SeqIO.parse(rm, 'fastq'):
+                    SeqIO.write(read, out, 'fastq')
+
+            with gzip.open(input.r1, 'rt') as r1, gzip.open(input.r2, 'rt') as r2:
+                for read1, read2 in zip(SeqIO.parse(r1, 'fastq'), SeqIO.parse(r2, 'fastq')):
+
+                    joined_seq = '{}{}{}'.format(read1.seq, 'N'*params.n_ambiguous_bases, read2.seq)
+                    joined_qual = {'phred_quality': read1.letter_annotations['phred_quality'] + \
+													[1]*params.n_ambiguous_bases + \
+												    read2.letter_annotations['phred_quality']}
+                    joined_description = '{} {}|{}'.format(read1.id, read1.description.split(' ')[1], read2.description.split(' ')[1])
+                    joined = SeqRecord(id=read1.id, description=joined_description,
+                                       seq=Seq(joined_seq, IUPAC.IUPACAmbiguousDNA()), letter_annotations=joined_qual)
+
+                    SeqIO.write(joined, out, 'fastq')

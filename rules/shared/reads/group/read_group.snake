@@ -1,0 +1,24 @@
+rule custom__save_read_group:
+    """
+    Infer sample name, flow cell and barcode from the input FASTQ produced by Illumina sequencing.
+    Write the information representing single read group to a dedicated file.
+    """
+    input:
+        fastq = 'reads/%s/{sample}_R1.fastq.gz' % pipeline.preprocessed_read_type
+    output:
+        read_group = 'reads/%s/read_group/{sample}.txt' % pipeline.preprocessed_read_type
+    log:
+        out = 'reads/%s/read_group/log/{sample}.log' % pipeline.preprocessed_read_type,
+        err = 'reads/%s/read_group/log/{sample}.err' % pipeline.preprocessed_read_type
+    params:
+        script = srcdir("save_read_group.py")
+    shell:
+        """
+        python3 \
+            {params.script} \
+            {input.fastq} \
+            {output.read_group} \
+            {wildcards.sample} \
+            1> {log.out} \
+            2> {log.err}
+        """

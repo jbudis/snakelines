@@ -37,11 +37,11 @@ def copy_input_files_with_consistent_output_names(input_files, output_files):
 
         # Single file items are directly copied
         if type(input_item) == str:
-            shutil.copy(input_item, output_item)
+            shutil.copyfile(input_item, output_item)
 
         # List items are copied item by item
         for in_item, out_item in zip(input_item, output_item):
-            shutil.copy(in_item, out_item)
+            shutil.copyfile(in_item, out_item)
 
 
 def store_snakelines_version(report_dir, version):
@@ -82,9 +82,9 @@ def copy(src, dest):
     if os.path.isdir(src):
         if os.path.exists(dest):
             shutil.rmtree(dest)
-        shutil.copytree(src, dest)
+        shutil.copytree(src, dest, copy_function=shutil.copyfile)
     else:
-        shutil.copy(src, dest)
+        shutil.copyfile(src, dest)
 
 
 def copy_with_makedirs(src, dest, pipeline):

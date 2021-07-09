@@ -1,0 +1,85 @@
+platform: illumina
+sequencing: single_end
+
+samples:                              # List of sample categories to be analysed
+    - name: example_.*                # Regex expression of sample names to be analysed (reads/original/example.*.fastq.gz)
+      reference: mhv                  # Reference genome for reads in the category (reference/mhv/mhv.fa)
+
+report_dir: report/public/illumina_SE # Generated reports and essential output files would be stored there
+threads: 16                           # Number of threads to use in analysis
+
+reads:                              # Prepare reads and quality reports for downstream analysis
+    preprocess:                     # Pre-process of reads, eliminate sequencing artifacts, contamination ...
+        trimmed:                    # Remove low quality parts of reads
+            method: trimmomatic     # Supported values: trimmomatic
+            temporary: False        # If True, generated files would be removed after successful analysis
+            crop: 500               # Maximal number of bases in read to keep. Longer reads would be truncated.
+            quality: 20             # Minimal average quality of read bases to keep (inside sliding window of length 5)
+            headcrop: 20            # Number of bases to remove from the start of read
+            minlen: 35              # Minimal length of trimmed read. Shorter reads would be removed.
+        decontaminated:             # Eliminate fragments from known artificial source, e.g. contamination by human
+            method: bowtie2         # Supported values: bowtie2
+            temporary: True         # If True, generated files would be removed after successful analysis
+            references:             # List of reference genomes
+                - mhv
+            keep: True              # Keep reads mapped to references (True) or remove them as contamination (False)
+
+    report:                         # Summary reports of read characteristics to assess their quality
+        quality_report:             # HTML summary report of read quality
+            method: fastqc          # Supported values: fastqc
+            read_types:             # List of preprocess steps for quality reports
+                - original
+                - trimmed
+                - decontaminated
+
+mapping:                            # Find the most similar genomic region to reads in reference (mapping process)
+    mapper:                         # Method for mapping
+        method: bowtie2
+        params: --very-sensitive    # Additional parameters
+        only_concordant: False      # Keep only reads with consistently mapped reads from both paired-ends
+        temporary: True
+
+    index:                          # Generate .bai index for mapped reads in .bam files
+        method: samtools            # Supported values: samtools
+
+    postprocess:                    # Successive steps to refine mapped reads
+        sorted:                     # Order reads according to their genomic position
+            method: samtools        # Supported values: samtools
+            temporary: True         # If True, generated files would be removed after successful analysis
+
+        read_group:                 # Include sample name, flow cell, barcode and lanes to BAM header
+            method: custom          # Supported values: custom
+            temporary: True         # If True, generated files would be removed after successful analysis
+
+        deduplicated:               # Mark duplicated reads (PCR duplicated)
+            method: picard          # Supported values: picard
+            temporary: True         # If True, generated files would be removed after successful analysis
+
+        filtered:                     # Eliminate reads that do not meet conditions
+            method: bamtools          # Supported values: bamtools
+            min_map_quality: 20       # Minimal quality of mapping
+            drop_improper_pairs: True # Eliminate reads that do not pass paired-end resolution
+
+    report:                         # Summary reports of mapping process and results
+        quality_report:             # HTML summary with quality of mappings
+            method: qualimap        # Supported values: qualimap
+            map_types:              # List of post-process steps for quality reports
+                - deduplicated
+                - sorted
+
+    merged:                         # Merge all mapped reads into a single BAM file
+        method: bamtools            # Supported values: bamtools
+
+variant:                                    # Identify variation in reads given reference genome
+    caller:                                 # Method for variant identification
+        method: vardict                     # Supported values: vardict
+        hard_filter:                        # Variants that do not pass any of these filters would NOT be present in the VCF file
+            min_nonref_allele_freq: 0.05    # Minimal proportion of reads with alternative allele against all observations
+            min_alternate_count: 2          # Minimal number of reads with alternative allele
+            min_map_quality: 15             # Minimal average mapping quality of reads with alternative allele
+        soft_filter:                        # Failing these filters would be indicated in the FILTER field of the VCF file
+            min_map_quality: 20             # Minimal average mapping quality of reads with alternative allele
+            read_depth: 10                  # Minimal number of reads with alternative allele
+            min_nonref_allele_freq: 0.20    # Minimal proportion of reads with alternative allele against all observations
+            min_mean_base_quality: 20       # Minimal average base quality of bases that support alternative allele
+

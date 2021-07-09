@@ -1,0 +1,35 @@
+rule samtools__convert_sam_to_bam:
+    """
+    Convert .bam to .sam.
+    :input bam: Mapped reads in bam format
+    :output sam: Mapped reads in sam format
+    """
+    input:
+        sam = '{path}/{sample}.sam'
+    output:
+        '{path}/{sample}.bam'
+    conda:
+        config['snakelines_dir'] + '/enviroments/samtools.yaml'
+    shell:
+        """
+        samtools view -S -b {input.sam} > {output}
+        """
+
+rule samtools__bam_index:
+    """
+    Generate .bai index to .bam files to quick recover reads from genomic location of interest.
+    :input bam: Mapped reads in bam format
+    :output bai: Index to mapped reads for enable fast read retrieval from desired genomic region
+    """
+    input:
+        bam = '{path}/{sample}.bam'
+    output:
+        '{path}/{sample}.bam.bai'
+    benchmark:
+        '{path}/log/{sample}.bai.benchmark'
+    conda:
+        config['snakelines_dir'] + '/enviroments/samtools.yaml'
+    shell:
+        """
+        samtools index {input.bam} > {output}
+        """
