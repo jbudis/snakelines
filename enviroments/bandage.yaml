@@ -2,5 +2,6 @@ channels:
 - conda-forge
 - bioconda
 dependencies:
-- qt=5.12.5
-- bandage=0.8.1
+- qt==5.12.5
+- bandage==0.8.1
+- libglib==2.68.1
