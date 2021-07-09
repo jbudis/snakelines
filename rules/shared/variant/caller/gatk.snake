@@ -1,0 +1,44 @@
+include: config['snakelines_dir'] + '/rules/shared/reference/annotation/regions.snake'
+include: config['snakelines_dir'] + '/rules/shared/reference/index/fai/samtools.snake'
+include: config['snakelines_dir'] + '/rules/shared/reference/index/dict/picard.snake'
+
+rule gatk__call_germline_variants:
+    """
+        Detect variants within the mapped reads and annotates them with dbSNP
+        if possible when the database is provided.
+    """
+    input:
+        bam         = 'mapping/{{reference}}/{map_type}/{{sample}}.bam'.format(map_type=pipeline.postprocessed_map_type),
+        bai         = 'mapping/{{reference}}/{map_type}/{{sample}}.bam.bai'.format(map_type=pipeline.postprocessed_map_type),
+        bed         = 'reference/{reference}/annotation/{panel}/regions.interval_list',
+        fasta       = 'reference/{reference}/{reference}.fa',
+        fai         = 'reference/{reference}/{reference}.fa.fai'
+    output:
+        vcf         = 'variant/{reference}-{panel}/original/{sample}.vcf',
+        vcf_index   = 'variant/{reference}-{panel}/original/{sample}.vcf.idx'
+    params:
+        sample_ploidy = method_config.get('sample_ploidy', 2),
+        dbsnp = 'reference/{reference}/variants/dbsnp.vcf.bgz' if method_config.get('dbsnp') else ''
+    threads:
+        int(config['threads'])
+    log:
+        out = 'variant/{reference}-{panel}/original/log/{sample}.vcf.out',
+        err = 'variant/{reference}-{panel}/original/log/{sample}.vcf.err'
+    benchmark:
+        'variant/{reference}-{panel}/original/log/{sample}.vcf.benchmark',
+    conda:
+        config['snakelines_dir'] + '/enviroments/gatk4.yaml'
+    shell:
+        """
+        gatk HaplotypeCaller \
+            --input {input.bam} \
+            --reference {input.fasta} \
+            --output {output.vcf} \
+            --intervals {input.bed} \
+            --sample-ploidy {params.sample_ploidy} \
+            --native-pair-hmm-threads {threads} \
+            {params.dbsnp} \
+        1> {log.out} \
+        2> {log.err}
+        """
+

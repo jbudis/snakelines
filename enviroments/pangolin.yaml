@@ -1,5 +1,6 @@
 channels:
-    - bioconda
-    - defaults
+- conda-forge
+- bioconda
+- defaults
 dependencies:
-    - pangolin
+- pangolin

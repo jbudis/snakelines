@@ -1,9 +1,9 @@
-Download reference and map reads
-================================
+Download reference and map paired-end reads
+===========================================
 
 At first, download sequences from NCBI according to selected genbank ids and prepare reference database.
 Then proceed with the standard mapping pipeline.
-Align sequenced reads to a reference genome to find the most probable genomic positions of origin.
+Align sequenced paired-end reads to a reference genome to find the most probable genomic positions of origin.
 Reference genome may represent DNA of a single organism, multiple organisms, transcripts...
 
 The reference part of the configuration may be similarly used for other types of analysis, such as variant calling, methylation...
@@ -23,7 +23,7 @@ Purpose
 Required inputs
 ---------------
 
-* Sequenced reads in gzipped fastq format.
+* Sequenced paired-end reads from Illumina sequencer in gzipped fastq format.
 
   * each sample is represented by two gzipped fastq files
   * standard output files of paired-end sequencing
@@ -81,5 +81,5 @@ Included pipelines
    :maxdepth: 2
 
    /pipelines/quality_report
-   /pipelines/preprocess
+   /pipelines/preprocess_paired_end
    /pipelines/mapping

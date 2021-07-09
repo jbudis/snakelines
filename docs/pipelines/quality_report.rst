@@ -1,7 +1,7 @@
 Read quality report
 ===================
 
-Generate summary HTMl report with quality statistics of sequenced reads, including
+Generate summary HTMl report with quality statistics of sequenced paired-end reads, including
 
 * Overall sequence quality
 * Per base sequence quality
@@ -23,7 +23,7 @@ Purpose
 Required inputs
 ---------------
 
-* Sequenced reads in gzipped fastq format.
+* Sequenced paired-end reads from Illumina sequencer in gzipped fastq format.
 
   * each sample is represented by two gzipped fastq files
   * standard output files of paired-end sequencing
