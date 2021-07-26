@@ -7,15 +7,15 @@ rule bcftools_call_germline_variants:
         See: https://samtools.github.io/bcftools/howtos/variant-calling.html
     """
     input:
-        bam   = 'mapping/{reference}/{map_type}/{sample}.bam'.format(map_type=pipeline.postprocessed_map_type),
-        bai   = 'mapping/{reference}/{map_type}/{sample}.bam.bai'.format(map_type=pipeline.postprocessed_map_type),
+        bam   = 'mapping/{{reference}}/{map_type}/{{sample}}.bam'.format(map_type=pipeline.postprocessed_map_type),
+        bai   = 'mapping/{{reference}}/{map_type}/{{sample}}.bam.bai'.format(map_type=pipeline.postprocessed_map_type),
         bed   = 'reference/{reference}/annotation/{panel}/regions.bed',
         fasta = 'reference/{reference}/{reference}.fa',
         fai   = 'reference/{reference}/{reference}.fa.fai'
     output:
         vcf  = 'variant/{reference}-{panel}/original/{sample}.bcftools.vcf'
     params:
-        ploidy              = method_config.get('haploid', 'GRCh38'), # for haploid use '1'
+        ploidy              = method_config.get('haploid', 'GRCh38'),
         min_base_quality    = method_config.get('min_base_quality', 13),
         min_mapping_quality = method_config.get('min_mapping_quality', 0),
         all_alleles         = '--keep-alts' if method_config.get('all_alleles', False) else ''
