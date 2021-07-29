@@ -1,0 +1,37 @@
+rule raven__create_assembly:
+    """
+    Create a draft assembly from basecalled fastq reads
+    :input reads: basecalled reads in fastq format
+    :output bam: Ordered mapped reads according to their location on reference genome
+    """
+    input:
+        fastq = 'reads/basecalled/{sample}.fastq.gz'
+    output:
+        assembly = 'assembly/{sample}/assembly.fa',
+        graph = 'assembly/{sample}/assembly_graph.gfa'
+    params:
+        outdir = 'assembly/{sample}/raven',
+        assembly = 'assembly/{sample}/raven/assembly.fa',
+        graph = 'assembly/{sample}/raven/assembly_graph.gfa',
+        polish_iters = '-p %s' % method_config.get('iterations', '2')
+    threads:
+        int(config['threads'])
+    log:
+        out = 'assembly/{sample}/log/raven.log',
+        err = 'assembly/{sample}/log/raven.err'
+    conda:
+        config['snakelines_dir'] + '/enviroments/raven.yaml'
+    shell:
+        """
+        mkdir {params.outdir}
+        raven \
+            --graphical-fragment-assembly \
+            {params.graph} \
+            -t 32 \
+            {input.fastq} \
+            > {params.assembly} \
+            2> {log.err};
+        mv {params.assembly} {output.assembly}
+        mv {params.graph} {output.graph}
+        rm -rf {params.outdir}
+        """

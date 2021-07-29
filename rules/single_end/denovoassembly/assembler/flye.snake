@@ -1,0 +1,45 @@
+rule flye__create_assembly:
+    """
+    Create a draft assembly from basecalled fastq reads
+    :input reads: basecalled reads in fastq format
+    :output bam: Ordered mapped reads according to their location on reference genome
+    """
+    input:
+        fastq = 'reads/basecalled/{sample}.fastq.gz'
+    output:
+        assembly = 'assembly/{sample}/assembly.fa',
+        graph = 'assembly/{sample}/assembly_graph.gfa',
+        info = 'assembly/{sample}/assembly_info.txt',
+    params:
+        outdir = 'assembly/{sample}/flye',
+        assembly = 'assembly/{sample}/flye/assembly.fasta',
+        graph = 'assembly/{sample}/flye/assembly_graph.gfa',
+        info = 'assembly/{sample}/flye/assembly_info.txt',
+        plasmids = '--plasmids' if method_config.get('plasmids', False) else '',
+        keep_haplotypes = '--keep-haplotypes' if method_config.get('keep_haplotypes', False) else '',
+        polish_iters = '-i %s' % method_config.get('iterations', '1'),
+        flyelog = 'assembly/{sample}/flye/flye.log'
+    threads:
+        int(config['threads'])
+    log:
+        out = 'assembly/{sample}/log/flye.log',
+        err = 'assembly/{sample}/log/flye.err'
+    conda:
+        config['snakelines_dir'] + '/enviroments/flye.yaml'
+    shell:
+        """
+        flye \
+            --nano-raw {input.fastq} \
+            -o {params.outdir} \
+            -t {threads} \
+            {params.plasmids} \
+            {params.polish_iters} \
+            {params.keep_haplotypes} \
+            > {log.out} \
+            2> {log.err}
+        mv {params.assembly} {output.assembly}
+        mv {params.graph} {output.graph}
+        mv {params.info} {output.info}
+        mv {params.flyelog} {log.out}
+        rm -rf {params.outdir}
+        """

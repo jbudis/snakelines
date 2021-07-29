@@ -1,0 +1,39 @@
+rule medaka__polish_assembly:
+    """
+    Polish created draft assembly.
+    :input reads: Basecalled reads in fastq format used for creating draft assembly
+    :input model: Model used for polishing, should correspond to the used Guppy basecaller version
+    :output bam: Ordered mapped reads according to their location on reference genome
+    """
+    input:
+        fastq = 'reads/basecalled/{sample}.fastq.gz',
+        assembly = 'assembly/{sample}/assembly.fa'
+    output:
+        consensus = 'assembly/{sample}/consensus.fa'
+    params:
+        outdir = 'assembly/{sample}/medaka',
+        consensus = 'assembly/{sample}/medaka/consensus.fasta',
+        model = '-m {}'.format(method_config['model'])
+    threads:
+        int(config['threads'])
+    log:
+        out = 'assembly/{sample}/log/medaka.log',
+        err = 'assembly/{sample}/log/medaka.err'
+    conda:
+        config['snakelines_dir'] + '/enviroments/medaka.yaml'
+    shell:
+        """
+        medaka_consensus \
+            -i {input.fastq} \
+            -d {input.assembly} \
+            -o {params.outdir} \
+            -t {threads} \
+            {params.model} \
+            > {log.out} \
+            2> {log.err}
+        mv {params.consensus} {output.consensus}
+        rm -rf {params.outdir}
+        rm -rf {input.assembly}.fai
+        rm -rf {input.assembly}.mmi
+        """
+
