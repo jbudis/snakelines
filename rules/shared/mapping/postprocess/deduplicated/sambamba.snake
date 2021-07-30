@@ -21,6 +21,8 @@ rule sambamba__mark_duplicates:
             '{mapper}/{reference}/deduplicated/log/{sample}.benchmark'
     threads:
         int(config['threads'])
+    conda:
+        config['snakelines_dir'] + '/enviroments/sambamba.yaml'
     shell:
         """
         export TMPDIR=/data/tmp
