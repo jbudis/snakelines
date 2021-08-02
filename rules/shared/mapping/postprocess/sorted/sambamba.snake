@@ -17,6 +17,8 @@ rule sambamba__sort_mapped_reads:
         'mapping/{reference}/sorted/log/{sample}.benchmark'
     threads:
         int(config['threads'])
+    conda:
+        config['snakelines_dir'] + '/enviroments/sambamba.yaml'
     shell:
         """
         sambamba sort \
