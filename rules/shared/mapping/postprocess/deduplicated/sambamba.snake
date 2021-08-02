@@ -23,7 +23,7 @@ rule sambamba__mark_duplicates:
         int(config['threads'])
     shell:
         """
-        export TMPDIR=/data/tmp
+        export TMPDIR={params.tmp_dir}
         sambamba markdup \
             --nthreads {threads} \
             --overflow-list-size 2000000 \
