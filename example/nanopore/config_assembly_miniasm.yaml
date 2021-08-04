@@ -1,0 +1,24 @@
+platform: nanopore
+sequencing: single_end
+
+samples:
+      - name: example_.* # The regular expression for names of samples
+
+report_dir: report/example # The path where reports will be stored
+threads: 2 # The number of threads to be used
+
+denovoassembly:
+    assembler: # Method for creating draft assembly from basecalled reads
+        method: miniasm # Supported values: flye, raven
+        iterations: 1 # The number of builtin polishing iterations
+
+    polisher: # Method for polishing draft assembly
+        method: medaka # Supported values: medaka
+        model: r941_min_high_g360 #Required
+
+    report:
+        quality_report:
+            method: quast
+        assembly_graph:
+            method: bandage
+

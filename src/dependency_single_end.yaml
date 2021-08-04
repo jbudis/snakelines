@@ -54,3 +54,8 @@ denovoassembly:
                 quality_reports:
                     from: expand('assembly/{sample}/quality_report/report.pdf', sample=pipeline.samples)
                     to:   expand('{report_dir}/{sample}/assembly_report/report.pdf', report_dir=config['report_dir'], sample=pipeline.samples)
+        assembly_graph:
+            output:
+                overlap_graphs:
+                    from: expand('assembly/{sample}/assembly_graph.svg', sample=pipeline.samples)
+                    to:   expand('{report_dir}/{sample}/assembly_report/contig_graph.svg', report_dir=config['report_dir'], sample=pipeline.samples)

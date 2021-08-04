@@ -1,8 +1,19 @@
 rule flye__create_assembly:
     """
     Create a draft assembly from basecalled fastq reads
-    :input reads: basecalled reads in fastq format
-    :output bam: Ordered mapped reads according to their location on reference genome
+    :input fastq: basecalled reads in fastq format or fastq.gz
+    :output assembly: assembled contigs in fasta format
+    :output graph: assembled contigs in graphical gfa format
+    :output info: information about contigs as produced by Flye
+    :param outdir: auxiliary directory, will be deleted in the end (do not change)
+    :param assembly: outputted assembled contigs by Flye (do not change)
+    :param graph: outputted graph by Flye (do not change)
+    :param info: outputted info by Flye (do not change)
+    :param plasmids: whether to rescue plasmids (set in config)
+    :param keep_haplotypes: whether to keep haplotypes (set in config)
+    :param polish_iters: the number of used polishing iterations (set in config)
+    :param meta_mode: whether to use Flye metagenome mode (set in config)
+    :param flyelog: outputted log by Flye (do not change)
     """
     input:
         fastq = 'reads/basecalled/{sample}.fastq.gz'
@@ -17,7 +28,9 @@ rule flye__create_assembly:
         info = 'assembly/{sample}/flye/assembly_info.txt',
         plasmids = '--plasmids' if method_config.get('plasmids', False) else '',
         keep_haplotypes = '--keep-haplotypes' if method_config.get('keep_haplotypes', False) else '',
-        polish_iters = '-i %s' % method_config.get('iterations', '1'),
+        polish_iters = '-i %s' % method_config.get('iterations', '2'),
+        meta_mode = '--meta' if method_config.get('meta_mode', False) else '',
+        use_trestle = '--trestle' if method_config.get('use_trestle', False) else '',
         flyelog = 'assembly/{sample}/flye/flye.log'
     threads:
         int(config['threads'])
@@ -35,8 +48,12 @@ rule flye__create_assembly:
             {params.plasmids} \
             {params.polish_iters} \
             {params.keep_haplotypes} \
+            {params.use_trestle} \
+            {params.meta_mode} \
             > {log.out} \
-            2> {log.err}
+            2> {log.err};
+
+        # move desired outputs and remove useless ones
         mv {params.assembly} {output.assembly}
         mv {params.graph} {output.graph}
         mv {params.info} {output.info}

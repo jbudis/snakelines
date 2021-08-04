@@ -10,8 +10,6 @@ threads: 2 # The number of threads to be used
 denovoassembly:
     assembler: # Method for creating draft assembly from basecalled reads
         method: raven # Supported values: flye, raven
-        plasmids: False # Rescues short unassembled plasmids if set to True (False)
-        keep_haplotypes: False # If True produces more detailed but less contiguous contigs (default False)
         iterations: 2 # The number of builtin polishing iterations
 
     polisher: # Method for polishing draft assembly
@@ -21,3 +19,5 @@ denovoassembly:
     report:
         quality_report:
             method: quast
+        assembly_graph:
+            method: bandage
