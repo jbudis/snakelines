@@ -99,10 +99,14 @@ def qualimap_pdf_reports(wildcards):
     """
     Pdf qualimap report files for all samples of a reference from the path
     """
-    return expand('{mapper}/{reference}/{map_type}/stats-{panel}/samples/{sample}/report.pdf',
-                   mapper=wildcards.mapper, reference=wildcards.reference,
-                   map_type=wildcards.map_type, panel=wildcards.panel,
-                   sample=pipeline.samples_for(wildcards.reference))
+    return expand(
+        '{mapper}/{reference}/{map_type}/stats-{panel}/samples/{sample}/report.pdf',
+        mapper=wildcards.mapper,
+        reference=wildcards.reference,
+        map_type=wildcards.map_type,
+        panel=wildcards.panel,
+        sample=pipeline.samples_for(wildcards.reference)
+    )
 
 rule qualimap__summarize_quality_reports:
     """
@@ -119,7 +123,7 @@ rule qualimap__summarize_quality_reports:
         html        = '{mapper}/{reference}/{map_type}/stats-{panel}/summary/multisampleBamQcReport.html',
         pdf         = '{mapper}/{reference}/{map_type}/stats-{panel}/summary/report.pdf',
     params:
-        sample_list = '{mapper}/{reference}/{map_type}/stats-{panel}/summary/samples.list',
+        sample_list = '{report_dir}/_summary/mapping_quality/sample.list'.format(report_dir=config['report_dir']),
         out_dir     = '{mapper}/{reference}/{map_type}/stats-{panel}/summary'
     log:
         out         = '{mapper}/{reference}/{map_type}/stats-{panel}/summary/log/analysis.log',
@@ -132,6 +136,9 @@ rule qualimap__summarize_quality_reports:
         # Prepare sample list file for the qualimap
         ## Column1: Sample name
         ## Column2: Path to precomputed bamqc report
+
+        rm -f "{params.sample_list}"
+        mkdir -p $(dirname "{params.sample_list}")
 
         for REPORT in {input.reports}; do
             REPORT_DIR=`dirname $REPORT`
