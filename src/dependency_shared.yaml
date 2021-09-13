@@ -466,3 +466,14 @@ lineage:
         report:
             from: expand('reference/{reference}/lineage_report.csv', reference=pipeline.references)
             to: expand('{report_dir}/{reference}/lineage_report.csv', report_dir=config['report_dir'],reference=pipeline.references)
+            
+amr:
+    assembly_based:
+        output:
+            report:
+                from: expand('assembly/{sample}/contigs.fa', sample=pipeline.samples)
+                to: expand('{report_dir}/{sample}/amr/{sample}.amrfinder.out',
+                                          report_dir=config['report_dir'],
+                                          sample=pipeline.samples)
+        depends:
+            - assembly/assembler
