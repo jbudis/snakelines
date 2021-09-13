@@ -5,15 +5,15 @@ rule amrfinder__find_resistant_genes:
     input:
         contigs   = 'assembly/{sample}/contigs.fa'
     output:
-        amrfinder_output = '{sample}/amr/{sample}.amrfinder.out'
+        amrfinder_output = 'amr/amrfinder/{sample}/amrfinder.out'
     log:    
-        err = '{sample}/amr/{sample}.amrfinder.err'
+        err = 'amr/amrfinder/{sample}/amrfinder.err'
     conda:
        config['snakelines_dir'] + '/enviroments/amrfinder.yaml'
     shell:
         '''
-        amrfinder --update &&
-        amrfinder --nucleotide {input.contigs} 
-        > {output.amrfinder_output} 
+        amrfinder --update && \
+        amrfinder --nucleotide {input.contigs} \
+        > {output.amrfinder_output} \
         2> {log.err}
         '''
