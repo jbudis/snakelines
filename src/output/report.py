@@ -1,7 +1,6 @@
 import json
 import os
 import subprocess
-import sys
 from itertools import chain
 
 

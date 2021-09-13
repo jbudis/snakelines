@@ -61,7 +61,7 @@ def prepare_text_cell(text):
 def generate_icon_row(report_name, report_file, report_icons, report):
     tr = doc.createElement('tr')
     sequences, lens = retrieve_summary(report)
-    for text in [report_name, '{0:,}'.format(int(sequences)), lens]:
+    for text in [report_name, '{0:}'.format(int(sequences)), lens]:
         tr.appendChild(prepare_text_cell(text))
     for icon, pos in zip(report_icons, range(len(list(report_icons)))):
         td, a = doc.createElement('td'), doc.createElement('a')
