@@ -1,3 +1,7 @@
 .idea
 docs/_build
+
 __pycache__/
+
+#resfinder folder created when resfinder is used for the first time
+tools/amr/resfinder/
