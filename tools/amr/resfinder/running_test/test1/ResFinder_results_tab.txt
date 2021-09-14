@@ -1,0 +1,2 @@
+Resistance gene	Identity	Alignment Length/Gene Length	Coverage	Position in reference	Contig	Position in contig	Phenotype	Accession no.
+blaB-2	100.00	750/750	100.0	1..750	test_isolate_01 blaB-2_1_AF189300	631..1380	Beta-lactam resistance	AF189300

@@ -1,0 +1,9 @@
+dependencies:
+- pip
+- pip:
+  - tabulate 
+  - biopython 
+  - cgecore 
+  - gitpython 
+  - python-dateutil
+

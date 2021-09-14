@@ -1,0 +1,16 @@
+gyrA
+parC
+penA
+pilQ
+ponA
+porB
+rpsE
+rpsJ
+16S_rRNA
+23S_rRNA_a1
+23S_rRNA_a2
+23S_rRNA_a3
+23S_rRNA_a4
+mtrC_promoter_size_174bp
+macAB_promoter_size_225bp
+mtrR_promoter_size_66bp

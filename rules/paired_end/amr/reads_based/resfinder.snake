@@ -1,0 +1,40 @@
+rule resfinder__find_resistant_genes:
+    """
+    Find resistant genes in reads
+    """
+    input:
+        r1 = 'reads/%s/{sample}_R1.fastq.gz' % pipeline.preprocessed_read_type,
+        r2 = 'reads/%s/{sample}_R2.fastq.gz' % pipeline.preprocessed_read_type
+    params:
+        reads_string = 'reads/%s/{sample}*' % pipeline.preprocessed_read_type,
+        output_path = 'amr/resfinder/{sample}',
+        min_cov = method_config.get('min_cov', ''),
+        threshold = method_config.get('threshold', ''),
+        resfinder_path = config['snakelines_dir'] + '/tools/amr/resfinder/run_resfinder.py',
+        db_path = config['snakelines_dir'] + '/tools/amr/resfinder/db_resfinder',
+        kma_path = config['snakelines_dir'] + '/tools/amr/resfinder/cge/kma/kma',
+        blast_path = config['snakelines_dir'] + '/tools/amr/resfinder/cge/blastn'
+    output:
+        res = 'amr/resfinder/{sample}/'
+    log:    
+        out = 'amr/resfinder/log/{sample}.resfinder.log',
+        err = 'amr/resfinder/log/{sample}.resfinder.err'
+    conda:
+       config['snakelines_dir'] + '/enviroments/resfinder.yaml'
+    shell:
+        '''
+        python3 {params.resfinder_path} \
+        --inputfastq {params.reads_string} \
+        --outputPath {params.output_path} \
+        --min_cov {params.min_cov} \
+        --threshold {params.threshold} \ 
+        --db_path_res {params.db_path} \
+        --kmaPath {params.kma_path} \
+        --blastPath {params.blast_path} \
+        --acquired \
+        > {log.out} \
+        2> {log.err}
+        '''
+
+
+
