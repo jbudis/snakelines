@@ -1,0 +1,54 @@
+sequencing: paired_end
+samples:                            # List of sample categories to be analysed
+    - name: KMB.*               # Regex expression of sample names to be analysed (reads/original/example.*_R1.fastq.gz)
+
+report_dir: report/public/01-example   # Generated reports and essential output files would be stored there
+threads: 16                         # Number of threads to use in analysis
+
+reads:                              # Prepare reads and quality reports for downstream analysis
+    preprocess:                     # Pre-process of reads, eliminate sequencing artifacts, contamination ...
+
+        trimmed:                    # Remove low quality parts of reads
+            method: trimmomatic     # Supported values: trimmomatic
+            temporary: False        # If True, generated files would be removed after successful analysis
+            crop: 500               # Maximal number of bases in read to keep. Longer reads would be truncated.
+            quality: 20             # Minimal average quality of read bases to keep (inside sliding window of length 5)
+            headcrop: 20            # Number of bases to remove from the start of read
+            minlen: 35              # Minimal length of trimmed read. Shorter reads would be removed.
+
+        deduplicated:               # Remove fragments with the same sequence (PCR duplicated)
+            method: fastuniq        # Supported values: fastuniq
+            temporary: False        # If True, generated files would be removed after successful analysis
+
+    report:                         # Summary reports of read characteristics to assess their quality
+        quality_report:             # HTML summary report of read quality
+            method: fastqc          # Supported values: fastqc
+            read_types:             # List of preprocess steps for quality reports
+                - original
+                - trimmed
+                - deduplicated
+
+
+assembly:                           # Join reads into longer sequences (contigs) based on their overlaps
+    assembler:                      # Method for joining reads
+        method: spades              # Supported values: spades, unicycler, megahit
+        mode: standard              # Supported values: standard, meta, plasmid, rna, iontorrent
+        careful: True               # Can not be combined with the meta mode. Reduce number of mismatches and short indels, longer runtime
+
+    report:                         # Summary reports for assembly process and results
+        assembly_graph:             # Visualisation of overlaps between assembled contigs
+            method: bandage         # Supported values: bandage
+
+
+            
+amr:
+    reads_based:
+        method: resfinder           #supported values: amrfinder, resfinder
+        temporary: False
+        min_cov: 0.5                # Minimum (breadth-of) coverage of ResFinder, Valid interval: 0.00-1.00
+        threshold: 0.5              # Threshold for identity of ResFinder, Valid interval: 0.00-1.00
+    
+    assembly_based:
+        method: amrfinder
+        temporary: false
+        
