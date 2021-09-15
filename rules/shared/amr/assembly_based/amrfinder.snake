@@ -7,12 +7,14 @@ rule amrfinder__find_resistant_genes:
     output:
         amrfinder_output = 'amr/amrfinder/{sample}/amrfinder.out'
     log:    
-        err = 'amr/amrfinder/{sample}/amrfinder.err'
+        err = 'amr/amrfinder/log/{sample}.amrfinder.err',
+        update_log = 'amr/amrfinder/log/{sample}.amrfinder_update.out',
+        update_err = 'amr/amrfinder/log/{sample}.amrfinder_update.err'
     conda:
        config['snakelines_dir'] + '/enviroments/amrfinder.yaml'
     shell:
         '''
-        amrfinder --update && \
+        amrfinder --update > {log.update_log} 2> {log.update_err} && \
         amrfinder --nucleotide {input.contigs} \
         > {output.amrfinder_output} \
         2> {log.err}

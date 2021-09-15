@@ -477,12 +477,5 @@ amr:
                                           sample=pipeline.samples)
         depends:
             - assembly/assembler
-                  
-    reads_based:
-        output:
-            report:
-                from: expand('amr/resfinder/{sample}/', sample=pipeline.samples)
-                to: expand('{report_dir}/{sample}/amr/resfinder/',
-                                          report_dir=config['report_dir'],
-                                          sample=pipeline.samples)
+
 

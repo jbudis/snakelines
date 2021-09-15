@@ -12,7 +12,7 @@ def load_yaml(file_name):
     :return: dict - YAML dict
     """
     with open(file_name) as f:
-        dependency_dict = oyaml.load(f)
+        dependency_dict = oyaml.safe_load(f)
 
     return dependency_dict
 
@@ -55,7 +55,8 @@ def add_temp(text, add_temp=True):
 
 def check_dependency(dependency_file, config_dict):
     """
-    Checks the dependencies of all things from config file.
+    Checks the dependencies of all things from config file. 
+    (does not only check, also used to load outputs in snakelines.snake)
     :param dependency_file: str - filename for dependency file
     :param config_dict: dict - dict for config file
     :return: str - empty if no warning is raised
@@ -69,6 +70,11 @@ def check_dependency(dependency_file, config_dict):
     dependency_sequencing = load_yaml(dependency_file.format(config_dict['sequencing']))
     dependency_shared = load_yaml(dependency_file.format('shared'))
     dependency_dict = {**dependency_sequencing, **dependency_shared} #NOTE: z = x | y for 3.9+ ONLY
+    
+    # solve key conflicts in sequencing and shared dict
+    intersection = dependency_shared.keys() & dependency_sequencing.keys()
+    for dict_key in intersection:
+        dependency_dict[dict_key]={**dependency_sequencing[dict_key],**dependency_shared[dict_key]} 
 
     # for every import file check the dependency and outputs
     import_files = load_imports.import_files_in_config(config_dict, "")

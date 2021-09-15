@@ -45,4 +45,11 @@ reads:
                     to:   expand('{report_dir}/_summary/read_quality/{read_type}.html',
                                   report_dir=config['report_dir'],
                                   read_type=read_types_with_quality_report)
-
+amr:                  
+    reads_based:
+        output:
+            report:
+                from: expand('amr/resfinder/{sample}/', sample=pipeline.samples)
+                to: expand('{report_dir}/{sample}/amr/resfinder/',
+                                          report_dir=config['report_dir'],
+                                          sample=pipeline.samples)
