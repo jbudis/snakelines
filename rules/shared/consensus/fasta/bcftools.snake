@@ -19,12 +19,16 @@ rule bcftools__create_consensus_fasta:
         bedgraph = 'mapping/{reference}/%s/bed/{sample}.bedgraph' % pipeline.postprocessed_map_type
     output:
         fasta = 'consensus/{reference}-{panel}/{sample}.fa',
+        complement = temp('consensus/{reference}-{panel}/{sample}_complement.bed')
     log:
         out = 'consensus/{reference}-{panel}/log/{sample}.fa.out',
         err = 'consensus/{reference}-{panel}/log/{sample}.fa.err'
     params:
         mask_lte_coverage = method_config.get('mask_lte_coverage', -1),
-        bed = 'consensus/{reference}-{panel}/{sample}.masked.bed',
+        coverage_bed = 'consensus/{reference}-{panel}/{sample}.coverage.bed',
+        complement_bed = 'consensus/{reference}-{panel}/{sample}.complement.bed',
+        vcf_bed = 'consensus/{reference}-{panel}/{sample}.vcf.bed',
+        masking_bed = 'consensus/{reference}-{panel}/{sample}.masking.bed',
         use_iupac = 'true' if method_config.get('use_iupac', False) else 'false',
         snakelines_path = config['snakelines_dir']
     conda:
@@ -34,9 +38,11 @@ rule bcftools__create_consensus_fasta:
         mask=''
         if (( {params.mask_lte_coverage} >= 0 )); then
             # coverage value is at column 4 of bedgraph
-            complement_regions=`bedtools merge -i <(awk '$4 > {params.mask_lte_coverage}' {input.bedgraph} | cut -f 1-3)`
-            bedtools complement -i <(printf \"$complement_regions\") -g {input.genome} > {params.bed}
-            mask='--mask {params.bed}'
+            bedtools merge -i <(awk '$4 > {params.mask_lte_coverage}' {input.bedgraph} | cut -f 1-3) > {params.coverage_bed}
+            bedtools complement -i {params.coverage_bed} -g {input.genome} > {params.complement_bed}
+            vcf2bed < {input.vcf} > {params.vcf_bed}
+            bedtools subtract -a {params.complement_bed} -b {params.vcf_bed} > {params.masking_bed}
+            mask='--mask {params.masking_bed}'
         fi
 
         bcftools consensus \
