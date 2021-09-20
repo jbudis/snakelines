@@ -1,4 +1,4 @@
 channels:
 - bioconda
 dependencies:
-- sambamba=0.7.1
+- sambamba=0.8.1

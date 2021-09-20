@@ -1,4 +1,4 @@
 channels:
 - bioconda
 dependencies:
-- vardict-java=1.5.1
+- vardict-java=1.8.2

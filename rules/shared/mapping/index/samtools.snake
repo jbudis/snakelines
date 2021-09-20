@@ -1,6 +1,6 @@
 rule samtools__convert_sam_to_bam:
     """
-    Convert .bam to .sam.
+    Convert .sam to .bam.
     :input bam: Mapped reads in bam format
     :output sam: Mapped reads in sam format
     """

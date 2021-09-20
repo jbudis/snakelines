@@ -26,7 +26,7 @@ rule deepvariant__call_germline_variants:
     benchmark:
         'variant/{reference}-{panel}/original/log/{sample}.vcf.benchmark',
     singularity:
-        'docker://google/deepvariant:0.10.0'
+        'docker://google/deepvariant:1.2.0'
     shell:
         """
         /opt/deepvariant/bin/run_deepvariant \

@@ -31,8 +31,8 @@ rule fastuniq__deduplicate_reads:
             -o {output.unzipped_r1} \
             -p {output.unzipped_r2}
 
-        gzip --keep {output.unzipped_r1}
-        gzip --keep {output.unzipped_r2}
+        gzip -c {output.unzipped_r1} > {output.r1}
+        gzip -c {output.unzipped_r2} > {output.r2}
         """
 
 
