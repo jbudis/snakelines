@@ -18,8 +18,7 @@ rule bcftools__create_consensus_fasta:
         genome   = 'reference/{reference}/{reference}.genome',
         bedgraph = 'mapping/{reference}/%s/bed/{sample}.bedgraph' % pipeline.postprocessed_map_type
     output:
-        fasta = 'consensus/{reference}-{panel}/{sample}.fa',
-        complement = temp('consensus/{reference}-{panel}/{sample}_complement.bed')
+        fasta = 'consensus/{reference}-{panel}/{sample}.fa'
     log:
         out = 'consensus/{reference}-{panel}/log/{sample}.fa.out',
         err = 'consensus/{reference}-{panel}/log/{sample}.fa.err'
