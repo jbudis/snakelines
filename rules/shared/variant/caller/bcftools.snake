@@ -18,7 +18,10 @@ rule bcftools_call_germline_variants:
         ploidy              = method_config.get('haploid', 'GRCh38'),
         min_base_quality    = method_config.get('min_base_quality', 13),
         min_mapping_quality = method_config.get('min_mapping_quality', 0),
-        all_alleles         = '--keep-alts' if method_config.get('all_alleles', False) else ''
+        all_alleles         = '--keep-alts' if method_config.get('all_alleles', False) else '',
+        redo_baq            = '--redo-BAQ' if method_config.get('redo_baq', False) else '',
+        adjust_mq           = method_config.get('adjust_mq', 0),
+        gap_frac            = method_config.get('gap_frac', 0.002)
     threads:
         int(config['threads'])
     log:
@@ -35,8 +38,12 @@ rule bcftools_call_germline_variants:
             --min-BQ {params.min_base_quality} \
             --min-MQ {params.min_mapping_quality} \
             --regions-file {input.bed} \
+            --adjust-MQ {params.adjust_mq} \
+            --gap-frac {params.gap_frac} \
+            {params.redo_baq} \
             --max-depth 9999 \
             --max-idepth 9999 \
+            --output-type u \
             {input.bam} \
         | \
         bcftools call \
