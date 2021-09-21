@@ -26,7 +26,7 @@ rule bcftools__create_consensus_fasta:
         mask_lte_coverage = method_config.get('mask_lte_coverage', -1),
         coverage_bed = 'consensus/{reference}-{panel}/{sample}.coverage.bed',
         complement_bed = 'consensus/{reference}-{panel}/{sample}.complement.bed',
-        vcf_bed = 'consensus/{reference}-{panel}/{sample}.vcf.bed',
+        deletions_bed = 'consensus/{reference}-{panel}/{sample}.deletions.bed',
         masking_bed = 'consensus/{reference}-{panel}/{sample}.masking.bed',
         use_iupac = 'true' if method_config.get('use_iupac', False) else 'false',
         snakelines_path = config['snakelines_dir']
@@ -39,8 +39,8 @@ rule bcftools__create_consensus_fasta:
             # coverage value is at column 4 of bedgraph
             bedtools merge -i <(awk '$4 > {params.mask_lte_coverage}' {input.bedgraph} | cut -f 1-3) > {params.coverage_bed}
             bedtools complement -i {params.coverage_bed} -g {input.genome} > {params.complement_bed}
-            vcf2bed < {input.vcf} > {params.vcf_bed}
-            bedtools subtract -a {params.complement_bed} -b {params.vcf_bed} > {params.masking_bed}
+            vcf2bed --deletions < {input.vcf} > {params.deletions_bed}
+            bedtools subtract -a {params.complement_bed} -b {params.deletions_bed} > {params.masking_bed}
             mask='--mask {params.masking_bed}'
         fi
 
