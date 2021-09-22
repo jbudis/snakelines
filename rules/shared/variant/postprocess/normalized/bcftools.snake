@@ -40,6 +40,6 @@ rule bcftools__normalize_vcf:
             --set-id '%CHROM:%POS:%REF:%ALT' \
             --output-type v \
             --output {output.vcf} \
-        1> {log.out} \
-        2> {log.err}
+            1> {log.out} \
+            2>> {log.err}
         """
