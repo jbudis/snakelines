@@ -10,9 +10,9 @@ rule bcftools__create_consensus_fasta:
         See http://samtools.github.io/bcftools/bcftools.html#consensus
     """
     input:
-        vcf      = 'variant/{reference}-{panel}/original/{sample}.vcf',
-        vcf_gz   = 'variant/{reference}-{panel}/original/{sample}.vcf.gz',
-        tbi      = 'variant/{reference}-{panel}/original/{sample}.vcf.gz.tbi',
+        vcf      = 'variant/{reference}-{panel}/%s/{sample}.vcf' % pipeline.postprocessed_variant_type,
+        vcf_gz   = 'variant/{reference}-{panel}/%s/{sample}.vcf.gz' % pipeline.postprocessed_variant_type,
+        tbi      = 'variant/{reference}-{panel}/%s/{sample}.vcf.gz.tbi' % pipeline.postprocessed_variant_type,
         fasta    = 'reference/{reference}/{reference}.fa',
         fai      = 'reference/{reference}/{reference}.fa.fai',
         genome   = 'reference/{reference}/{reference}.genome',
