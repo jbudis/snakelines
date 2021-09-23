@@ -11,9 +11,10 @@ rule bcftools__filter_vcf:
       See: http://samtools.github.io/bcftools/bcftools.html#norm
     """
     input:
-        vcf   = 'variant/{reference}-{panel}/%s/{sample}.vcf' % method_config['input_variant_type']
+        vcf   = 'variant/{reference}-{panel}/%s/{sample}.vcf.gz' % method_config['input_variant_type'],
+        tbi   = 'variant/{reference}-{panel}/%s/{sample}.vcf.gz.tbi' % method_config['input_variant_type']
     output:
-        vcf   = 'variant/{reference}-{panel}/normalized/{sample}.vcf',
+        vcf   = 'variant/{reference}-{panel}/filtered/{sample}.vcf',
     params:
         snp_gap             = method_config.get('snp_gap', ''),
         indel_gap           = method_config.get('indel_gap', ''),
@@ -26,41 +27,37 @@ rule bcftools__filter_vcf:
     threads:
         int(config['threads'])
     benchmark:
-          'variant/{reference}-{panel}/normalized/log/{sample}.vcf.benchmark',
+          'variant/{reference}-{panel}/filtered/log/{sample}.vcf.benchmark',
     shell:
         """
         snp_gap=''
-        if [ ! -z {params.snp_gap} ]; then
+        if [ ! -z '{params.snp_gap}' ]; then
             snp_gap='--SnpGap {params.snp_gap}'
         fi
 
         indel_gap=''
-        if [ ! -z {params.indel_gap} ]; then
+        if [ ! -z '{params.indel_gap}' ]; then
             indel_gap='--IndelGap {params.indel_gap}'
         fi
 
         set_gts=''
-        if [ ! -z {params.set_gts} ]; then
+        if [ ! -z '{params.set_gts}' ]; then
             set_gts='--set-GTs {params.set_gts}'
-        fi
-
-        include=''
-        if [ ! -z {params.include} ]; then
-            include='--include {params.include}'
         fi
 
         bcftools filter \
             {input.vcf} \
-            --include {params.include} \
-            {snp_gap} \
-            {indel_gap} \
-            {set_gts} \
+            --include '{params.include}' \
+            $snp_gap \
+            $indel_gap \
+            $set_gts \
             --output-type u \
-            2> {log.err} \
+            2>> {log.err} \
             | \
         bcftools view \
             {params.trim_alt_alleles} \
             --output-type v \
+            --output {output.vcf} \
             1> {log.out} \
             2>> {log.err}
         """

@@ -45,6 +45,7 @@ rule bcftools_call_germline_variants:
             --max-idepth 9999 \
             --output-type u \
             {input.bam} \
+            2> {log.err} \
         | \
         bcftools call \
             --multiallelic-caller \
@@ -55,7 +56,7 @@ rule bcftools_call_germline_variants:
             --output-type v \
             --output {output.vcf}
         1> {log.out} \
-        2> {log.err}
+        2>> {log.err}
         """
 
 rule gatk__prepare_vcf:
