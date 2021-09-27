@@ -1,9 +1,12 @@
 rule medaka__polish_assembly:
     """
     Polish created draft assembly.
-    :input reads: Basecalled reads in fastq format used for creating draft assembly
-    :input model: Model used for polishing, should correspond to the used Guppy basecaller version
-    :output bam: Ordered mapped reads according to their location on reference genome
+    :input fastq: basecalled reads in fastq format used for creating draft assembly, in fastq or fastq.gz format
+    :input assembly: to-be polished draft assembly created in the previous pipeline step
+    :output consensus: polished draft assembly using medaka_consensus command
+    :param outdir: auxiliary dir, will be deleted after running (do not change)
+    :param consensus: outputted polished draft assembly (do not change)
+    :param model: medaka model used for polishing (must be set in config). Should correspond to the used Guppy basecaller configuration, e.g. model r941_min_hac_g303 should be used when using data from MinION R9.4.1 flowcells and guppy hac configuration of version 3.0.3. When there is no corresponding version, use model version lesser than the used guppy version.
     """
     input:
         fastq = 'reads/basecalled/{sample}.fastq.gz',
@@ -36,4 +39,3 @@ rule medaka__polish_assembly:
         rm -rf {input.assembly}.fai
         rm -rf {input.assembly}.mmi
         """
-

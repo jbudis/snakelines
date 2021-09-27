@@ -1,23 +1,26 @@
 platform: nanopore
 sequencing: single_end
 
-samples:
-      - name: example_.* # The regular expression for names of samples
+samples:                            # The list of samples to be analysed
+      - name: example_.*            # The regular expression for names of samples
 
-report_dir: report/example # The path where reports will be stored
-threads: 2 # The number of threads to be used
+report_dir: report/example          # The path where reports will be stored
+threads: 2                          # The number of threads to be used
 
-denovoassembly:
-    assembler: # Method for creating draft assembly from basecalled reads
-        method: raven # Supported values: flye, raven
-        iterations: 2 # The number of builtin polishing iterations
+#PLACEHOLDER for basecalling and other preprocessing steps, that will produce basecalled fastq data that will be assembled (assemblers expect input in reads/basecalled/example_.*)
 
-    polisher: # Method for polishing draft assembly
-        method: medaka # Supported values: medaka
-        model: r941_min_high_g360 #Required
+denovoassembly:                     # Create assembly from reads and polish it
+    assembler:                      # Method for creating draft assembly from basecalled reads
+        method: raven               # Supported values: flye, raven, miniasm
+        iterations: 2               # The number of builtin Racon polishing iterations
 
-    report:
-        quality_report:
-            method: quast
-        assembly_graph:
-            method: bandage
+    polisher:                       # Method for polishing draft assembly
+        method: medaka              # Supported values: medaka
+        model: r941_min_high_g360   # Required, defines polishing model that should be used. The version should correspond to the ONT and guppy version. E.g. this r941_min_high_g360 should be used for R9.4.1 MinION data, basecalled with guppy configuration set to high and version equal or higher than 3.6.0. (see https://github.com/nanoporetech/medaka/#models for more info)
+
+    report:                         # Summary reports for assembly process and results
+        quality_report:             # Quality of assembled contigs
+            method: quast           # Supported values: quast
+
+        assembly_graph:             # Visualisation of overlaps between assembled contigs
+            method: bandage         # Supported values: bandage

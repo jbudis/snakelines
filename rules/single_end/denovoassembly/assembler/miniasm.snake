@@ -1,7 +1,7 @@
 rule miniasm__create_assembly:
     """
     Create a draft assembly from basecalled fastq reads
-    :input fastq: basecalled reads in fastq format or fastq.gz
+    :input fastq: basecalled reads in fastq.gz format
     :output assembly: assembled contigs in fasta format
     :output graph: assembled contigs in graphical gfa format
     :param outdir: auxiliary directory, will be deleted in the end (do not change)
@@ -22,7 +22,7 @@ rule miniasm__create_assembly:
         assembly = 'assembly/{sample}/miniasm/assembly.fasta',
         graph = 'assembly/{sample}/miniasm/assembly_graph.gfa',
         polished_graph = 'assembly/{sample}/miniasm/polished_graph.gfa',
-        polish_iters = '--rounds %s' % method_cionfig.get('iterations', '2')
+        polish_iters = '--rounds %s' % method_config.get('iterations', '2')
     threads:
         int(config['threads'])
     log:

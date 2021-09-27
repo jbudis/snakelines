@@ -1,7 +1,7 @@
 rule flye__create_assembly:
     """
     Create a draft assembly from basecalled fastq reads
-    :input fastq: basecalled reads in fastq format or fastq.gz
+    :input fastq: basecalled reads in fastq.gz format
     :output assembly: assembled contigs in fasta format
     :output graph: assembled contigs in graphical gfa format
     :output info: information about contigs as produced by Flye
