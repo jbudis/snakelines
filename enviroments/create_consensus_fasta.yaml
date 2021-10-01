@@ -5,3 +5,4 @@ dependencies:
 - bcftools=1.13
 - pyvcf=0.6.8
 - biopython=1.79
+- bedops=2.4.39

@@ -174,8 +174,23 @@ variant:
 
         normalized:
             output:
-                vcf: expand('variant/{sr.reference}-{sr.panel}/normalized/{sr.sample}.vcf',
+                vcf:
+                    from:
+                        expand('variant/{sr.reference}-{sr.panel}/normalized/{sr.sample}.vcf',
                               sr=pipeline.sample_references)
+                    to:
+                        expand('{report_dir}/{sr.sample}/normalized-{sr.reference}-{sr.panel}.vcf',
+                              report_dir=config['report_dir'], sr=pipeline.sample_references)
+
+        filtered:
+            output:
+                vcf:
+                    from:
+                        expand('variant/{sr.reference}-{sr.panel}/filtered/{sr.sample}.vcf',
+                              sr=pipeline.sample_references)
+                    to:
+                        expand('{report_dir}/{sr.sample}/filtered-{sr.reference}-{sr.panel}.vcf',
+                              report_dir=config['report_dir'], sr=pipeline.sample_references)
 
         annotated:
             output:
