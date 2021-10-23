@@ -1,5 +1,3 @@
-from Bio import SeqIO
-
 rule custom__prepare_description_file:
     """
     Extract ID and description from input reference sequences in FASTA format.
@@ -14,11 +12,14 @@ rule custom__prepare_description_file:
     log:
         out = 'reference/{reference}/log/{sequences}.desc.log',
         err = 'reference/{reference}/log/{sequences}.desc.err'
-    run:
-        with open(output.dict, 'w') as out:
-            for seq in SeqIO.parse(input.reference, 'fasta'):
-                desc = seq.description
-                if desc.startswith(seq.id):
-                    desc = desc[len(seq.id) + 1:]
-                out.write('{}\t{}\n'.format(seq.id, desc))
-    
+    conda:
+        config['snakelines_dir'] + '/enviroments/description_preparation.yaml'
+    shell:
+        """
+        python3 scripts/prepare_description.py\
+            {input.reference}\
+            {output.dict}\
+        1> {log.out}\
+        2> {log.err}
+        """
+
