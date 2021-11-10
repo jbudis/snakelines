@@ -106,28 +106,15 @@ rule blast__annotate_with_taxonomy:
         taxes = '/data/genome/metagenome/blast/nt/17-01-17/taxonomy/code_taxonomy.pickle'
     output:
         blast = '{indir}/blast/{name}.blast.tax.tsv'
-    run:
-        taxes = pickle.load(open(input.taxes, 'rb'))
-
-        def get_tax(taxid):
-            if not taxid or taxid == 'N/A':
-                return 'Unknown'
-            taxid = int(taxid)
-            return ';'.join(taxes.get(taxid, ''))
-
-        with open(input.blast) as in_blast, open(output.blast, 'w') as out_blast:
-            for i, line in enumerate(in_blast):
-                items = line.strip().split("\t")
-                if i == 0:
-                    tax_col = items.index('staxid')
-                    to_insert = 'taxonomy'
-                else:
-                    tax = get_tax(items[tax_col])
-                    to_insert = tax
-
-                items = items[:tax_col] + [to_insert] + items[tax_col:]
-                out_blast.write('\t'.join(items))
-                out_blast.write('\n')
+    conda:
+        config['snakelines_dir'] + '/enviroments/blast_annotate.yaml'
+    shell:
+        """
+        python3 scripts/annotate_with_taxonomy.py\
+            {input.blast}\
+            {input.taxes}\
+            {output.blast}
+        """
 
 
 rule blast__prepare_reference_index_for_nucleotide:
