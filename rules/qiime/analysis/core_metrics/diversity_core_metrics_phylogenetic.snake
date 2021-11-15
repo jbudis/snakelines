@@ -63,7 +63,7 @@ rule qiime__diversity_core_metrics_phylogenetic:
           --i-phylogeny {input.rooted_tree} \
           --i-table {input.table} \
           --p-sampling-depth $min \
-          --p-n-jobs {threads} \
+          --p-n-jobs-or-threads {threads} \
           --m-metadata-file {input.metadata} \
           --output-dir {params.output_dir}
         '''
