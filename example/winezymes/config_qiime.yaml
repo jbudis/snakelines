@@ -96,7 +96,7 @@ qiime:
             alpha_types:
                 - evenness
                 - faith_pd
-                - observed_otus
+                - observed_features
                 - shannon
             beta_types:
                 - bray_curtis
