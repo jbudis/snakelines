@@ -11,12 +11,13 @@ class Pipeline:
     
     def __init__(self):
         self.samples = []
+        self.metadatas = []
         self.references = []
         self.panels = []
         self.sample_references = []
         self.__reference_map = {}
     
-    def add(self, samples, reference, panel, prebuilt_reference, would_be_downloaded):
+    def add(self, samples, metadata, reference, panel, prebuilt_reference, would_be_downloaded):
         """
         Add samples intended for analysis.
         :param samples: list of sample names to be analysed
@@ -40,7 +41,8 @@ class Pipeline:
         
         # Extend lists
         self.samples.extend(samples)
-        
+        self.metadatas.extend(metadata)
+
         if reference:
             if reference not in self.references:
                 self.references.append(reference)

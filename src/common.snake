@@ -1,5 +1,7 @@
 import sys
 import tempfile
+import parse as parser # new dependency
+import csv # new dependency
 from pipeline.samples import Pipeline
 from config.impute_process_types import impute_read_types, impute_mapping_types, impute_variant_types
 from config.load_imports import import_files_in_config
@@ -18,27 +20,117 @@ def configured_temp(output_file):
     return temp(output_file) if method_config.get('temporary', False) else output_file
 
 
+def parse_description_by_schema(sample, description, description_schema):
+    """
+    Parses sample metadata from config description and validates it using schema provided in config.
+
+    :param sample: name of the processing sample
+    :param description: parsed sample description
+    :param description_schema: parsing schema used for validation
+    :return: validated parsed sample metadata
+    """
+    metadata = {}
+    metadata["sample_id"] = sample
+    for attr in description_schema:
+        if attr in description:
+            if description_schema[attr]['type'] == "int":
+                try:
+                    metadata[attr] = int(description[attr])
+                except:
+                    raise ValueError("Expecting int in '{}' but got '{}' in {} for sample {}".format(attr,description[attr], description.named, sample))
+
+            if description_schema[attr]['type'] == "categorical":
+                try:
+                    metadata[attr] = description_schema[attr]['values'][description[attr]]
+                except:
+                    raise KeyError("Unrecognized key '{}' found in '{}' for sample {}. Defined ones are: {}".format(description[attr], attr, sample, list(description_schema[attr]['values'].keys())))
+        else:
+            raise ValueError("Missing attribute '{}' in {} for sample {}".format(attr, description.named, sample))
+    return metadata
+
+
+def write_metadata_to_file(file_path, metadata):
+    """
+    Writes metadata of all samples into metadata file of .tsv format.
+
+    :param file_path: path to file where metadata will be written
+    :param metadata: list of sample metadata
+    """
+    with open(file_path, "w") as metadata_file:
+        colnames = list(metadata[0].keys())
+        writer = csv.DictWriter(metadata_file, fieldnames=colnames, delimiter='\t')
+        writer.writeheader()
+        for row in metadata:
+            writer.writerow(row)
+
+
+def load_metadata_from_file(file_path):
+    """
+    Loads metadata of all samples from file of .tsv format.
+
+    :param file_path: path to file from which metadata will be loaded
+    :return metadata: list of sample metadata
+    """
+    metadata = []
+    with open(file_path, "r") as metadata_file:
+        reader = csv.DictReader(metadata_file,delimiter='\t')
+        for row in reader:
+            metadata.append(row)
+    return metadata
+
+
 # create pipeline
 pipeline = Pipeline()
 
 DEFAULT_SAMPLE_CONFIGURATION = [{'name': '.*'}]
 default_read_names = {'single_end': '{}.fastq.gz', 'paired_end': '{}_R1.fastq.gz'}
 DEFAULT_SAMPLE_LOCATION = 'reads/original/' + default_read_names[config['sequencing']]
+DEFAULT_METADATA_LOCATION = 'description/joined-sample-metadata.tsv'
 sample_configurations = config.get('samples', DEFAULT_SAMPLE_CONFIGURATION)
+
 for sample_configuration in sample_configurations:
 
     # Filter samples according to the user configuration
     samples = []
+    metadata = []
     if 'name' in sample_configuration:
         location = sample_configuration.get('location', DEFAULT_SAMPLE_LOCATION)
         location = location.replace('{}', '{sample, %s}' % sample_configuration['name'])
         wildcards = glob_wildcards(location)
         samples = wildcards.sample
         assert len(wildcards.sample) > 0, 'No samples in {} match configured pattern {}'.format(location, sample_configuration['name'])
-    
+        
+        if 'description' in sample_configuration:
+            desc_config = sample_configuration['description']
 
+            if desc_config['overwrite'] or os.path.exists(DEFAULT_METADATA_LOCATION) is False:
+                input_format = desc_config['format']
+                
+                parsing_results = [parser.parse(input_format, sample) for sample in samples]
+                not_parsed_samples = [samples[sample_idx] for sample_idx,result in enumerate(parsing_results) if result is None]
+                assert len(not_parsed_samples) == 0, 'Metadata for samples {} could not be parsed using format {}'.format(not_parsed_samples, input_format)                
+                
+                if 'attributes' in desc_config:
+                    description_schema = desc_config['attributes']
+                    metadata = [parse_description_by_schema(sample, res, description_schema) for sample,res in zip(samples, parsing_results)]
+
+                try:
+                    write_metadata_to_file(metadata, DEFAULT_METADATA_LOCATION)
+                except Exception as e:
+                    print("Error '{}' occured when writing metadata to file {}".format(e, DEFAULT_METADATA_LOCATION))
+            
+            else:
+                # je potrebne validovat podla description?
+                try:
+                    metadata = load_metadata_from_file(DEFAULT_METADATA_LOCATION)
+                except Exception as e:
+                    print("Error '{}' occured when loading metadata from file {}".format(e, DEFAULT_METADATA_LOCATION))
+
+            assert len(metadata) == len(samples), 'Number of metadata rows and number of samples do not match'                 
+    
     reference = sample_configuration.get('reference', None)
     pipeline.add(samples,
+                metadata,
                 reference,
                 sample_configuration.get('panel', None),
                 sample_configuration.get('prebuilt', False),

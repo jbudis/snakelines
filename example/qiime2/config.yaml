@@ -1,0 +1,34 @@
+sequencing: paired_end
+samples:                            # List of sample categories to be analysed
+    - name: .*-16S                  # Regex expression of sample names to be analysed (reads/original/.*-16S_R1.fastq.gz)
+    - name: .*-16S                  # Another category of samples, with names that end with "-ITS"
+      description:
+          overwrite: True             #True or False
+          format: '{year}-{wine}-{wineyard}-16S' # napr. 2021-R-S_R1.fastq.gz
+          attributes: # https://pypi.org/project/parse/
+              year:
+                  type: int
+              wine:
+                  type: categorical
+                  values:
+                      R: rulandske
+                      M: merlot
+              wineyard:
+                  type: categorical
+                  values:
+                      M: modra
+                      S: svaty_jur
+
+report_dir: report/public/01-classify      # Generated reports and essential output files would be stored there
+threads: 16                         # Number of threads to use in analysis
+
+reads:                              # Prepare reads and quality reports for downstream analysis
+    preprocess:                     # Pre-process of reads, eliminate sequencing artifacts, contamination ...
+
+        trimmed:                    # Remove low quality parts of reads
+            method: trimmomatic     # Supported values: trimmomatic
+            temporary: False        # If True, generated files would be removed after successful analysis
+            crop: 500               # Maximal number of bases in read to keep. Longer reads would be truncated.
+            quality: 20             # Minimal average quality of read bases to keep (inside sliding window of length 5)
+            headcrop: 20            # Number of bases to remove from the start of read
+            minlen: 35     
