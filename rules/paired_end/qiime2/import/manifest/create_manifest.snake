@@ -1,0 +1,28 @@
+import os
+
+rule qiime2__create_manifest:
+    """
+    Creates manifest file ...
+    :input path: relative path to (preprocessed) joined fastQ samples, e.g. reads/joined/*_RM.fastq.gz
+    :output manifest: TSV manifest file in format 'sample-id,absolute-filepath,direction', e.g. reads/qiime/silva16S.manifest
+    """
+    input:
+        rm = expand('reads/original/{sample}_R1.fastq.gz',
+                        sample=pipeline.samples)
+    output:
+        manifest = 'reads/import/{reference}.manifest'
+    params:
+        pwd = '$PWD'
+    run:
+        print("zapisujem")
+        with open(output.manifest, 'w') as out:
+            out.write('sample-id\tforward-absolute-filepath\treverse-absolute-filepath\n')
+            print("nevydalo",output.manifest)
+            for read_file in input.rm:
+                sample_name = os.path.basename(read_file).split('_R1')[0]
+                reverse = read_file.split("_")[0]+"_R2.fastq.gz"
+                abs_reverse = os.path.join(params.pwd,reverse)
+                abs_forward = os.path.join(params.pwd,read_file)
+                print("zapisujem",sample_name,abs_forward,abs_reverse)
+                out.write('{sample_name}\t{forward}\t{reverse}\n'.format(sample_name=sample_name,forward=abs_forward,reverse=abs_reverse))
+
