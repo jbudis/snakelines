@@ -1,4 +1,5 @@
 sequencing: paired_end
+
 samples:                            # List of sample categories to be analysed
     - name: .*-16S                  # Another category of samples, with names that end with "-ITS"
       reference: silva-16S-90-filtered          # Reference genome for reads in the category (reference/silva-16S/silva-16S.fa)
@@ -7,7 +8,12 @@ samples:                            # List of sample categories to be analysed
         format: '{year}-{wine}-{wineyard}-16S' # napr. 2021-R-S_R1.fastq.gz
         attributes: # https://pypi.org/project/parse/
             year:
-                type: int
+                type: numeric
+                values:
+                    17: 2017
+                    18: 2018
+                    19: 2019
+                    20: 2020
             wine:
                 type: categorical
                 values:
@@ -28,5 +34,11 @@ qiime2:
             method: create_manifest
         data:
             method: import
-            sequence_type: manifest # allowed: EMP, MultiplexedBarcodeInSequence, MultiplexedBarcodeInSequence, manifest
-        
+            PHRED_offset: 33 #allowed: 33,64 (33 used in Sanger, Illumina1.8, 64 used in Illumina 1.3), default: 33
+    
+    preprocess:
+        demultiplex:
+            method: cutadapt
+            minlen: 35 # Minimal length of trimmed read. Shorter reads would be removed. (Must be higher or equal to 1, default: 1)
+            max_error_rate: 0.1 # Maximum allowed error rate (Must be from range 0-1, default: 0.1)
+            

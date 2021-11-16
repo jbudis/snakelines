@@ -481,3 +481,34 @@ lineage:
         report:
             from: expand('reference/{reference}/lineage_report.csv', reference=pipeline.references)
             to: expand('{report_dir}/{reference}/lineage_report.csv', report_dir=config['report_dir'],reference=pipeline.references)
+
+qiime2:
+    import:
+        manifest:
+            output:
+                manifest:
+                    from: expand('reads/import/{reference}.manifest',
+                                        reference=pipeline.references)
+                    
+                    to:   expand('{report_dir}/{reference}/import/{reference}.manifest',
+                                        report_dir=config['report_dir'],
+                                        reference=pipeline.references)
+        data:    
+            output:
+                qza:
+                    from: expand('reads/import/{reference}.qza',
+                                        reference=pipeline.references)
+
+                    to:   expand('{report_dir}/{reference}/import/{reference}.qza',
+                                        report_dir=config['report_dir'],
+                                        reference=pipeline.references)
+    preprocess:
+        demultiplex:
+            output:
+                qza:
+                    from: expand('reads/preprocess/cutadapt/{reference}.qza',
+                                        reference=pipeline.references)
+
+                    to:   expand('{report_dir}/{reference}/preprocess/cutadapt/{reference}.qza',
+                                        report_dir=config['report_dir'],
+                                        reference=pipeline.references)

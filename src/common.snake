@@ -33,33 +33,48 @@ def parse_description_by_schema(sample, description, description_schema):
     metadata["sample_id"] = sample
     for attr in description_schema:
         if attr in description:
-            if description_schema[attr]['type'] == "int":
+            if description_schema[attr]['type'] == "numeric":
                 try:
-                    metadata[attr] = int(description[attr])
+                    attr_value = int(description[attr])
                 except:
                     raise ValueError("Expecting int in '{}' but got '{}' in {} for sample {}".format(attr,description[attr], description.named, sample))
+            
+            elif description_schema[attr]['type'] == "categorical":
+                attr_value = description[attr]
 
-            if description_schema[attr]['type'] == "categorical":
+            if 'values' in description_schema[attr]:
                 try:
-                    metadata[attr] = description_schema[attr]['values'][description[attr]]
+                    metadata[attr] = description_schema[attr]['values'][attr_value]
                 except:
-                    raise KeyError("Unrecognized key '{}' found in '{}' for sample {}. Defined ones are: {}".format(description[attr], attr, sample, list(description_schema[attr]['values'].keys())))
+                    raise KeyError("Unrecognized key '{}' found in '{}' for sample {}. Defined ones are: {}".format(description[attr], attr, sample, list(description_schema[attr]['values'].keys())))        
+            else:
+                metadata[attr] = attr_value
+
         else:
             raise ValueError("Missing attribute '{}' in {} for sample {}".format(attr, description.named, sample))
     return metadata
 
 
-def write_metadata_to_file(metadata, file_path):
+def write_metadata_to_file(metadata, desc_config, file_path):
     """
     Writes metadata of all samples into metadata file of .tsv format.
 
     :param file_path: path to file where metadata will be written
     :param metadata: list of sample metadata
     """
+    colnames = list(metadata[0].keys())
     with open(file_path, "w") as metadata_file:
-        colnames = list(metadata[0].keys())
         writer = csv.DictWriter(metadata_file, fieldnames=colnames, delimiter='\t')
         writer.writeheader()
+
+        # obtain second header row with qiime2 data types
+        q2types_row = '#q2:types'
+        for i in colnames:
+            if i!="sample_id":
+                q2types_row += '\t'+desc_config[i]['type']
+
+        metadata_file.write(q2types_row+"\n")
+
         for row in metadata:
             writer.writerow(row)
 
@@ -76,7 +91,7 @@ def load_metadata_from_file(file_path):
         reader = csv.DictReader(metadata_file,delimiter='\t')
         for row in reader:
             metadata.append(row)
-    return metadata
+    return metadata[1:] #remove second header defining q2types
 
 
 # create pipeline
@@ -113,14 +128,15 @@ for sample_configuration in sample_configurations:
                 if 'attributes' in desc_config:
                     description_schema = desc_config['attributes']
                     metadata = [parse_description_by_schema(sample, res, description_schema) for sample,res in zip(samples, parsing_results)]
-
-                try:
-                    write_metadata_to_file(metadata, DEFAULT_METADATA_LOCATION)
-                except Exception as e:
-                    print("Error '{}' occured when writing metadata to file {}".format(e, DEFAULT_METADATA_LOCATION))
+                
+                    try:
+                        write_metadata_to_file(metadata, description_schema, DEFAULT_METADATA_LOCATION)
+                    except Exception as e:
+                        print("Error '{}' occured when writing metadata to file {}".format(e, DEFAULT_METADATA_LOCATION))
+                else:
+                    raise ValueError("Missing 'attributes' section in the description element of config")
             
             else:
-                # je potrebne validovat podla description?
                 try:
                     metadata = load_metadata_from_file(DEFAULT_METADATA_LOCATION)
                 except Exception as e:

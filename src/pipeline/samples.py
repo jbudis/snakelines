@@ -11,7 +11,7 @@ class Pipeline:
     
     def __init__(self):
         self.samples = []
-        self.metadatas = []
+        self.metadata = []
         self.references = []
         self.panels = []
         self.sample_references = []
@@ -21,6 +21,7 @@ class Pipeline:
         """
         Add samples intended for analysis.
         :param samples: list of sample names to be analysed
+        :param metadata: list of sample descriptions
         :param reference: name of reference fasta file for samples
         :param panel: name of targeted panel for samples
         :param prebuilt_reference: if reference is only a parameter to a specific tool that utilize its own database,
@@ -41,7 +42,7 @@ class Pipeline:
         
         # Extend lists
         self.samples.extend(samples)
-        self.metadatas.extend(metadata)
+        self.metadata.extend(metadata)
 
         if reference:
             if reference not in self.references:

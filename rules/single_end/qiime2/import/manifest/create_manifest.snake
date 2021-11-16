@@ -1,0 +1,23 @@
+import os
+
+rule qiime2__create_manifest:
+    """
+    Creates manifest file for single reads
+    :input path: list of input samples
+    :output manifest: TSV single-read manifest file in format containing: sample-id,absolute-filepath
+    """
+    input:
+        rm = expand('reads/original/{sample}.fastq.gz',
+                        sample=pipeline.samples)
+    output:
+        manifest = 'reads/import/{reference}.manifest'
+    params:
+        pwd = '$PWD'
+    run:
+        with open(output.manifest, 'w') as out:
+            out.write('sample-id\tabsolute-filepath\n')
+            for read_file in input.rm:
+                sample_name = os.path.basename(read_file).split('.fastq.gz')[0]
+                abs_path = os.path.join(params.pwd,read_file)
+                out.write('{sample_name}\t{read}\n'.format(sample_name=sample_name,read=abs_path))
+

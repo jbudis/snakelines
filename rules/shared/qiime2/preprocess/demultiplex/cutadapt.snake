@@ -1,0 +1,31 @@
+rule qiime2__cutadapt:
+    """
+    Imports samples written down in metadata file, sequences should NOT be pair-end. Calls 'qiime tools import'
+    :input manifest: TSV manifest file in format 'sample-id,absolute-filepath,direction', e.g. reads/qiime/silva16S.manifest
+    :output qza: qiime artifact of type SampleData[{params.data_type}], e.g. reads/qiime/silva16S-imported.qza
+    :params data_type: SampleData type, possible values: JoinedSequencesWithQuality | SequencesWithQuality | Sequences
+    """
+    input:
+        demux_sequences = 'reads/import/{reference}.qza'
+    output:
+        trimmed_sequences = 'reads/preprocess/cutadapt/{reference}.qza'
+    log:
+        out = 'reads/preprocess/cutadapt/log/{reference}.log',
+        err = 'reads/preprocess/cutadapt/log/{reference}.err'
+    threads:
+        int(config['threads'])
+    params:
+        sequen = config['sequencing'].split("_end")[0],
+        minlen = method_config.get('minlen', 1),
+        maxerr = method_config.get('max_error_rate', 0.1) 
+    conda:
+        config['snakelines_dir'] + '/enviroments/qiime2.yaml'
+    shell:
+        '''
+        qiime cutadapt trim-{params.sequen} \
+            --i-demultiplexed-sequences {input.demux_sequences} \
+            --o-trimmed-sequences {output.trimmed_sequences} \
+            --p-cores {threads} \
+            --p-minimum-length {params.minlen} \
+            --p-error-rate {params.maxerr}
+        '''

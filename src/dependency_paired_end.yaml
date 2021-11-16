@@ -46,23 +46,3 @@ reads:
                                   report_dir=config['report_dir'],
                                   read_type=read_types_with_quality_report)
 
-qiime2:
-    import:
-        manifest:
-            output:
-                manifest:
-                    from: expand('reads/import/{reference}.manifest',
-                                        reference=pipeline.references)
-                    
-                    to:   expand('{report_dir}/{reference}/import/{reference}.manifest',
-                                        report_dir=config['report_dir'],
-                                        reference=pipeline.references)
-        data:    
-            output:
-                qza:
-                    from: expand('reads/import/{reference}.qza',
-                                        reference=pipeline.references)
-
-                    to:   expand('{report_dir}/{reference}/import/{reference}.qza',
-                                        report_dir=config['report_dir'],
-                                        reference=pipeline.references)
