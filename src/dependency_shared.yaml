@@ -91,6 +91,11 @@ mapping:
         recalibrated:
             output:
                 mapped_reads: expand('mapping/{sr.reference}/recalibrated/{sr.sample}.bam', sr=pipeline.sample_references)
+    oncomers:
+        output:
+            out:
+                from: expand('mapping/{sr.reference}/{map_type}/{sr.sample}.oncomers.out', sr=pipeline.sample_references, map_type=pipeline.postprocessed_map_type)
+                to: expand('{report_dir}/{sr.sample}/mapping/{map_type}-{sr.reference}.oncomers.out', sr=pipeline.sample_references, map_type=pipeline.postprocessed_map_type)
 
     merged:
         output:

@@ -1,0 +1,28 @@
+rule oncomers_annotate:
+    input:
+        bam  = '{{mapper}}/{{reference}}/{map_type}/{{sample}}.bam'.format(map_type=pipeline.postprocessed_map_type),
+        bai  = '{{mapper}}/{{reference}}/{map_type}/{{sample}}.bam.bai'.format(map_type=pipeline.postprocessed_map_type),
+    output:
+        out  = '{{mapper}}/{{reference}}/{map_type}/{{sample}}.oncomers.out'.format(map_type=pipeline.postprocessed_map_type),
+        npz  = '{{mapper}}/{{reference}}/{map_type}/{{sample}}.oncomers.npz'.format(map_type=pipeline.postprocessed_map_type)
+    params:
+        script = srcdir('data/analysis.py'),
+        ref_names = srcdir('data/ref_names'),
+        bed = srcdir('data/GCA.bed')
+    log:
+        out  = '{mapper}/{reference}/oncomers/log/{sample}.log',
+        err  = '{mapper}/{reference}/oncomers/log/{sample}.err',
+    conda:
+        config['snakelines_dir'] + '/enviroments/oncomers.yaml'
+    shell:
+        """
+        python3 {params.script}\
+            {input.bam}\
+            {input.bai}\
+            {params.ref_names}\
+            {params.bed}\
+            {output.out}\
+            {output.npz}
+        1> {log.out}\
+        2> {log.err}
+        """
