@@ -506,9 +506,79 @@ qiime2:
         demultiplex:
             output:
                 qza:
-                    from: expand('reads/preprocess/cutadapt/{reference}.qza',
+                    from: expand('reads/preprocess/demultiplex/{reference}.qza',
                                         reference=pipeline.references)
 
-                    to:   expand('{report_dir}/{reference}/preprocess/cutadapt/{reference}.qza',
+                    to:   expand('{report_dir}/{reference}/preprocess/demultiplex/{reference}.qza',
                                         report_dir=config['report_dir'],
+                                        reference=pipeline.references)
+                qzv:
+                    from: expand('reads/preprocess/demultiplex/{reference}_quality.qzv',
+                                        reference=pipeline.references)
+
+                    to:   expand('{report_dir}/{reference}/preprocess/demultiplex/{reference}_quality.qzv',
+                                        report_dir=config['report_dir'],
+                                        reference=pipeline.references)
+        
+        quality_filter:
+            output:
+                qza:
+                    from: expand('reads/preprocess/qscore/{reference}.qza',
+                                        reference=pipeline.references)
+
+                    to:   expand('{report_dir}/{reference}/preprocess/qscore/{reference}.qza',
+                                        report_dir=config['report_dir'],
+                                        reference=pipeline.references)
+                stats:
+                    from: expand('reads/preprocess/qscore/{reference}_stats.qza',
+                                        reference=pipeline.references)
+
+                    to:   expand('{report_dir}/{reference}/preprocess/qscore/{reference}_stats.qza',
+                                        report_dir=config['report_dir'],
+                                        reference=pipeline.references)
+        
+        denoise:
+            output:
+                qza: 
+                    from: expand('reads/preprocess/denoise/{reference}_{type}.qza',
+                                        reference=pipeline.references,
+                                        type=['rep-seqs', 'table', 'denoising-stats'])
+
+                    to:   expand('{report_dir}/{reference}/preprocess/denoise/{reference}_{type}.qza',
+                                        report_dir=config['report_dir'],
+                                        reference=pipeline.references,
+                                        type=['rep-seqs', 'table', 'denoising-stats'])
+                qzv:
+                    from: expand('reads/preprocess/denoise/{reference}_{type}.qzv',
+                                        reference=pipeline.references,
+                                        type=['rep-seqs', 'table', 'denoising-stats'])
+
+                    to:   expand('{report_dir}/{reference}/preprocess/denoise/{reference}_{type}.qzv',
+                                        report_dir=config['report_dir'],
+                                        reference=pipeline.references,
+                                        type=['rep-seqs', 'table', 'denoising-stats'])
+
+    analysis:
+        phylogeny:
+            output:
+                alignment: expand('reads/analysis/alignment/{reference}_{type}.qza', 
+                                        reference=pipeline.references, 
+                                        type=['rep-aligned-seqs','rep-masked-aligned-seqs','unrooted-tree','rooted-tree'])
+    
+    report:
+        export:
+            output:
+                read_quality_report:
+                    from:   expand('reads/preprocess/demultiplex/{reference}_quality/',
+                                        reference=pipeline.references)
+                    to:     expand('{report_dir}/{reference}/01_preprocessing_report/read_quality/',
+                                        report_dir=config['report_dir'],
+                                        reference=pipeline.references)
+                preprocessing_report:
+                    from:   expand('reads/preprocess/denoise/{reference}_{type}/',
+                                        type=['rep-seqs', 'table', 'denoising-stats'],
+                                        reference=pipeline.references)
+                    to:     expand('{report_dir}/{reference}/01_preprocessing_report/{type}/',
+                                        report_dir=config['report_dir'],
+                                        type=['rep-seqs', 'table', 'denoising-stats'],
                                         reference=pipeline.references)

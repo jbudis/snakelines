@@ -1,17 +1,19 @@
-rule qiime2__cutadapt:
+rule qiime2__cutadapt_trim:
     """
-    Imports samples written down in metadata file, sequences should NOT be pair-end. Calls 'qiime tools import'
-    :input manifest: TSV manifest file in format 'sample-id,absolute-filepath,direction', e.g. reads/qiime/silva16S.manifest
-    :output qza: qiime artifact of type SampleData[{params.data_type}], e.g. reads/qiime/silva16S-imported.qza
-    :params data_type: SampleData type, possible values: JoinedSequencesWithQuality | SequencesWithQuality | Sequences
+    Cut adapters from reads (paired or single-end). Calls 'qiime cutadapt trim-paired' or 'qiime cutadapt trim-single'
+    :input demux_sequences: Imported demultiplexed sequences
+    :output trimmed_sequences: Sequences with cut adapters using qiime cutadapt
+    :params sequen: str, type of sequencing, either single-end or paired-end, derived from main config
+    :params minlen: int, required min length of sequences to be kept after cutting adapters
+    :params maxerr: float 0-1, maximum allowed error rate of sequence to be kept
     """
     input:
         demux_sequences = 'reads/import/{reference}.qza'
     output:
-        trimmed_sequences = 'reads/preprocess/cutadapt/{reference}.qza'
+        trimmed_sequences = 'reads/preprocess/demultiplex/{reference}.qza'
     log:
-        out = 'reads/preprocess/cutadapt/log/{reference}.log',
-        err = 'reads/preprocess/cutadapt/log/{reference}.err'
+        out = 'reads/preprocess/demultiplex/log/{reference}.log',
+        err = 'reads/preprocess/demultiplex/log/{reference}.err'
     threads:
         int(config['threads'])
     params:
@@ -28,4 +30,25 @@ rule qiime2__cutadapt:
             --p-cores {threads} \
             --p-minimum-length {params.minlen} \
             --p-error-rate {params.maxerr}
+        '''
+
+#to je asi vhodne len pri subsample
+rule qiime2__cutadapt_tabulate:
+    """
+    Summarize counts per sample for all samples, and visualize using `n` randomly selected sequences.
+    Calls 'qiime demux summarize'
+    :input demux_seqs: demultiplexed sequences with cut adapters
+    :output visualization: artifact of interactive positional quality plots
+    """
+    input:
+        demux_seqs = 'reads/preprocess/demultiplex/{reference}.qza'
+    output:
+        qzv = 'reads/preprocess/demultiplex/{reference}_quality.qzv'
+    conda:
+        config['snakelines_dir'] + '/enviroments/qiime2.yaml'
+    shell:
+        '''    
+        qiime demux summarize \
+            --i-data {input.demux_seqs} \
+            --o-visualization {output.qzv}
         '''

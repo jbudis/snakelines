@@ -30,7 +30,7 @@ def parse_description_by_schema(sample, description, description_schema):
     :return: validated parsed sample metadata
     """
     metadata = {}
-    metadata["sample_id"] = sample
+    metadata["sample-id"] = sample
     for attr in description_schema:
         if attr in description:
             if description_schema[attr]['type'] == "numeric":
@@ -70,7 +70,7 @@ def write_metadata_to_file(metadata, desc_config, file_path):
         # obtain second header row with qiime2 data types
         q2types_row = '#q2:types'
         for i in colnames:
-            if i!="sample_id":
+            if i!="sample-id":
                 q2types_row += '\t'+desc_config[i]['type']
 
         metadata_file.write(q2types_row+"\n")
@@ -120,13 +120,13 @@ for sample_configuration in sample_configurations:
 
             if desc_config['overwrite'] or os.path.exists(DEFAULT_METADATA_LOCATION) is False:
                 input_format = desc_config['format']
-                
+                description_schema = desc_config.get('attributes',None)
+
                 parsing_results = [parser.parse(input_format, sample) for sample in samples]
                 not_parsed_samples = [samples[sample_idx] for sample_idx,result in enumerate(parsing_results) if result is None]
                 assert len(not_parsed_samples) == 0, 'Metadata for samples {} could not be parsed using format {}'.format(not_parsed_samples, input_format)                
                 
-                if 'attributes' in desc_config:
-                    description_schema = desc_config['attributes']
+                if description_schema is not None:
                     metadata = [parse_description_by_schema(sample, res, description_schema) for sample,res in zip(samples, parsing_results)]
                 
                     try:
