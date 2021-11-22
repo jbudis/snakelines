@@ -128,6 +128,12 @@ qiime2:
     analysis:
         phylogeny:
             method: fasttree # allowed: fasttree, iqtree, raxml
-            max-gap-freq: 1.0 # float 0-1, maximum frequency of gap characters in a column for the column to be retained (if 1 - retains all, default: 1.0)
-            min-conservation: 0.4 # float 0-1, minimum relative frequency of at least one non-gap character in a column for that column to be retained (if 0.4, column must contain a gapless character occuring at least 40% of sequences, default: 0.4)
+            max_gap_freq: 1.0 # valid for all, float 0-1, maximum frequency of gap characters in a column for the column to be retained (if 1 - retains all, default: 1.0)
+            min_conservation: 0.4 # valid for all, float 0-1, minimum relative frequency of at least one non-gap character in a column for that column to be retained (if 0.4, column must contain a gapless character occuring at least 40% of sequences, default: 0.4)
+            substitution_model: 'MFP' # valid for iqtree and raxml, defines... (default: 'MFP' for iqtree, 'GTRGAMMA' for raxml)
+            fast_mode: False # valid for iqtree, (default: False)
+        core_metrics:
+            method: phylogenetic #allowed 'phylogenetic', 'nonphylogenetic' - not done
+            sampling_depth: auto #frequency that each sample should be rarefied to prior to computing diversity metrics, auto = lowest count of sequences (default: auto)
+
 

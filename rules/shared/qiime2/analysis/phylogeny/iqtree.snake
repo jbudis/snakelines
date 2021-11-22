@@ -1,9 +1,9 @@
 
-rule qiime__phylogeny_align_to_tree_mafft_fasttree:
+rule qiime__phylogeny_align_to_tree_mafft_iqtree:
     """
-    Generate a phylogenetic tree with align-to-tree-mafft-fasttree pipeline from the q2-phylogeny plugin.
+    Generate a phylogenetic tree with align-to-tree-mafft-iqtree pipeline from the q2-phylogeny plugin.
 
-    Calls 'qiime phylogeny align-to-tree-mafft-fasttree'.
+    Calls 'qiime phylogeny align-to-tree-mafft-iqtree'.
 
     First, the pipeline uses the mafft program to perform a multiple sequence alignment of the sequences at input artifact (FeatureData[Sequence]) to create a FeatureData[AlignedSequence] QIIME 2 artifact. Next, the pipeline masks (or filters) the alignment to remove positions that are highly variable. These positions are generally considered to add noise to a resulting phylogenetic tree. Following that, the pipeline applies FastTree to generate a phylogenetic tree from the masked alignment. The FastTree program creates an unrooted tree, so in the final step in this section midpoint rooting is applied to place the root of the tree at the midpoint of the longest tip-to-tip distance in the unrooted tree.
     :input rep_seqs: representative sequences, qiime artifact of type FeatureData[Sequence], e.g. reads/qiime/silva16S-rep-seqs-dn-99.qza
@@ -25,10 +25,12 @@ rule qiime__phylogeny_align_to_tree_mafft_fasttree:
         int(config['threads'])
     params:
         max_gap_freq = method_config.get('max_gap_freq', 1.0),
-        min_conservation = method_config.get('min_conservation', 0.4)
+        min_conservation = method_config.get('min_conservation', 0.4),
+        substitution_model = method_config.get('substitution_model', 'MFP'),
+        fast_mode = '--p-fast' if method_config.get('fast_mode', 'False') else '--p-no-fast'
     shell:
         '''
-        qiime phylogeny align-to-tree-mafft-fasttree \
+        qiime phylogeny align-to-tree-mafft-iqtree \
             --i-sequences {input.rep_seqs} \
             --o-alignment {output.alignment} \
             --o-masked-alignment {output.masked_alignment} \
@@ -36,6 +38,7 @@ rule qiime__phylogeny_align_to_tree_mafft_fasttree:
             --o-rooted-tree {output.rooted_tree} \
             --p-n-threads {threads} \
             --p-mask-max-gap-frequency {params.max_gap_freq} \
-            --p-mask-min-conservation {params.min_conservation}
-
+            --p-mask-min-conservation {params.min_conservation} \
+            --p-substitution-model {params.substitution_model} \
+            {params.fast_mode}
         '''

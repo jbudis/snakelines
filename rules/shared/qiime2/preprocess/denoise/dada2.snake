@@ -87,7 +87,8 @@ rule qiime2__dada2_summarize_feature_table:
     :output visualization:
     """
     input:
-        dada2_table = 'reads/preprocess/denoise/{reference}_table.qza'
+        dada2_table = 'reads/preprocess/denoise/{reference}_table.qza',
+        metadata    = 'description/joined-sample-metadata.tsv'
     output:
         vis_table = 'reads/preprocess/denoise/{reference}_table.qzv'
     conda:
@@ -97,7 +98,7 @@ rule qiime2__dada2_summarize_feature_table:
         qiime feature-table summarize \
             --i-table {input.dada2_table} \
             --o-visualization {output.vis_table} \
-            --m-sample-metadata-file description/joined-sample-metadata.tsv
+            --m-sample-metadata-file {input.metadata}
         '''
 
 rule qiime2__dada2_tabulate_seqs:

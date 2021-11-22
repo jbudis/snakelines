@@ -564,7 +564,23 @@ qiime2:
                 alignment: expand('reads/analysis/alignment/{reference}_{type}.qza', 
                                         reference=pipeline.references, 
                                         type=['rep-aligned-seqs','rep-masked-aligned-seqs','unrooted-tree','rooted-tree'])
-    
+        core_metrics:
+            output:
+                rarefied_table: expand('reads/analysis/core_metrics/{reference}_rarefied_table.qza',
+                                        reference=pipeline.references)
+                vector: expand('reads/analysis/core_metrics/{reference}_{type}_vector.qza',
+                                        reference=pipeline.references,
+                                        type=['faith','evenness','observed','shannon'])
+                dist_matrix: expand('reads/analysis/core_metrics/{reference}_{type}_dist_matrix.qza',
+                                        reference=pipeline.references,
+                                        type=['unweighted_unifrac','weighted_unifrac','jaccard','bray_curtis'])
+                pcoa: expand('reads/analysis/core_metrics/{reference}_{type}_pcoa.qza',
+                                        reference=pipeline.references,
+                                        type=['unweighted_unifrac','weighted_unifrac','jaccard','bray_curtis'])
+                qzv: expand('reads/analysis/core_metrics/{reference}_{type}_emperor.qzv',
+                                        reference=pipeline.references,
+                                        type=['unweighted_unifrac','weighted_unifrac','jaccard','bray_curtis'])
+
     report:
         export:
             output:
