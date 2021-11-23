@@ -60,34 +60,35 @@ samples:                            # List of sample categories to be analysed
                     3: 3
 
 
-report_dir: report                  # Generated reports and essential output files would be stored there
-threads: 16                         # Number of threads to use in analysis
+report_dir: report                      # Generated reports and essential output files would be stored there
+threads: 4                              # Number of threads to use in analysis
+
 
 qiime2:
     import:
         manifest:
-            method: create_manifest
+            method: create_manifest     # allowed: create_manifest. This creates a tsv file with all input reads
         data:
-            method: import
-            PHRED_offset: 33        # allowed: 33,64 (33 used in Sanger, Illumina1.8, 64 used in Illumina 1.3), default: 33
+            method: import              # allowed: import. This creates a qza from all reads in the created tsv manifest file
+            PHRED_offset: 33            # allowed: 33,64 (33 used in Sanger, Illumina1.8, 64 used in Illumina 1.3), default: 33
     
     preprocess:
         demultiplex:
-            method: cutadapt        # see https://docs.qiime2.org/2021.8/plugins/available/cutadapt/trim-paired/
-            minlen: 35              # Minimal length of trimmed read. Shorter reads would be removed. (Must be higher or equal to 1, default: 1)
-            max_error_rate: 0.1     # Maximum allowed error rate (Must be from range 0-1, default: 0.1)
+            method: cutadapt            # see https://docs.qiime2.org/2021.8/plugins/available/cutadapt/trim-paired/
+            minlen: 35                  # Minimal length of trimmed read. Shorter reads would be removed. (Must be higher or equal to 1, default: 1)
+            max_error_rate: 0.1         # Maximum allowed error rate (Must be from range 0-1, default: 0.1)
                 
         #paired have more parameters, how to handle it? e.g. trunc_len_f a trunc_len_r namiesto trunc_len
         denoise:  #https://docs.qiime2.org/2021.8/plugins/available/dada2/denoise-paired/
-            method: dada2           # allowed dada2, deblur (requires quality_filter and joining if paired-end)
-            trunc_len_f: 150        # position where truncation starts on forward, discard reads if shorter, if zero, dont do truncation
-            trunc_len_r: 150        # position where truncation starts on reverse, discard reads if shorter, if zero, dont do truncation
-            trim_left_f: 0          # how many bases trims from start on forward strand, set to 0 for no trimming (default: 0)
-            trim_left_r: 0          # how many bases trims from start on reverse strand, set to 0 for no trimming (default: 0)
-            max_ee_f: 2.0           # forward reads with expected errors higher than this value are discarded (default: 2.0)
-            max_ee_r: 2.0           # reverse reads with expected errors higher than this value are discarded (default: 2.0)
-            trunc_start_qual: 2     # truncate read from the first occurence of quality lower than this value, (default: 2)
-            min_overlap: 4          # min length of overlap required for merging forward and reverse reads (default: 12)
+            method: dada2               # allowed dada2, deblur (requires quality_filter and joining if paired-end)
+            trunc_len_f: 260            # position where truncation starts on forward, discard reads if shorter, if zero, dont do truncation
+            trunc_len_r: 260            # position where truncation starts on reverse, discard reads if shorter, if zero, dont do truncation
+            trim_left_f: 0              # how many bases trims from start on forward strand, set to 0 for no trimming (default: 0)
+            trim_left_r: 0              # how many bases trims from start on reverse strand, set to 0 for no trimming (default: 0)
+            max_ee_f: 2.0               # forward reads with expected errors higher than this value are discarded (default: 2.0)
+            max_ee_r: 2.0               # reverse reads with expected errors higher than this value are discarded (default: 2.0)
+            trunc_start_qual: 2         # truncate read from the first occurence of quality lower than this value, (default: 2)
+            min_overlap: 4              # min length of overlap required for merging forward and reverse reads (default: 12)
             denoise_pooling: independent    # allowed 'independent', 'pseudo'; denoise samples independently, or use pseudo-pooling (default: independent)
             chimera_method: consensus       # allowed 'consensus', 'pooled', 'none' (default: consensus)
             chimera_parent_abundance: 1.0   # when tested for chimeric, this gives the minimum abundance of parents, (default: 1.0)
@@ -127,13 +128,72 @@ qiime2:
 
     analysis:
         phylogeny:
-            method: fasttree # allowed: fasttree, iqtree, raxml
-            max_gap_freq: 1.0 # valid for all, float 0-1, maximum frequency of gap characters in a column for the column to be retained (if 1 - retains all, default: 1.0)
-            min_conservation: 0.4 # valid for all, float 0-1, minimum relative frequency of at least one non-gap character in a column for that column to be retained (if 0.4, column must contain a gapless character occuring at least 40% of sequences, default: 0.4)
-            substitution_model: 'MFP' # valid for iqtree and raxml, defines... (default: 'MFP' for iqtree, 'GTRGAMMA' for raxml)
-            fast_mode: False # valid for iqtree, (default: False)
+            method: fasttree                        # allowed: fasttree, iqtree, raxml
+            max_gap_freq: 1.0                       # valid for all, float 0-1, maximum frequency of gap characters in a column for the column to be retained (if 1 - retains all, default: 1.0)
+            min_conservation: 0.4                   # valid for all, float 0-1, minimum relative frequency of at least one non-gap character in a column for that column to be retained (if 0.4, column must contain a gapless character occuring at least 40% of sequences, default: 0.4)
+            substitution_model: 'MFP'               # valid for iqtree and raxml, defines... (default: 'MFP' for iqtree, 'GTRGAMMA' for raxml)
+            fast_mode: False                        # valid for iqtree, (default: False)
+        
         core_metrics:
-            method: phylogenetic #allowed 'phylogenetic', 'nonphylogenetic' - not done
-            sampling_depth: auto #frequency that each sample should be rarefied to prior to computing diversity metrics, auto = lowest count of sequences (default: auto)
+            method: phylogenetic                    # allowed 'phylogenetic', 'nonphylogenetic' - not done
+            sampling_depth: auto                    # frequency that each sample should be rarefied to prior to computing diversity metrics, auto = lowest count of sequences (default: auto)
+            alpha_types:                            # allowed: 'evenness', 'shannon', 'observed', 'faith_pd' (invalid in nonphylogenetic)
+                - evenness
+                - faith_pd
+                - observed
+                - shannon
+                #- evenness: True
+                #- faith_pd: True
+                #- observed_features: True
+                #- shannon: True
+            beta_types:                             # allowed: 'bray_curtis', 'jaccard', 'unweighted_unifrac' and 'weighted_unifrac' (both invalid in nonphylogenetic)
+                - bray_curtis
+                - jaccard
+                - unweighted_unifrac
+                - weighted_unifrac
+            emperor_types:                          # allowed: 'bray_curtis', 'jaccard', 'unweighted_unifrac' and 'weighted_unifrac' (both invalid in nonphylogenetic)
+                - bray_curtis
+                - jaccard
+                - unweighted_unifrac
+                - weighted_unifrac
 
+        diversity:
+            alpha:                                  # uses alpha_types list
+                method: alpha_group_significance    # allowed 'alpha_group_significance'
+            beta:                                   # uses beta_types list
+                method: beta_group_significance     # allowed 'beta_group_significance'
+                pairwise_tests: True                # if true, do tests between all pairs of groups in addition to the test across all groups
+                test_method: 'permanova'            # which group significance test to apply, allowed 'permanova', 'anosim', 'permdisp', (default: 'permanova')
+                columns:                            # define columns from metadata
+                    - additive
+            pcoa_explore:                           # uses beta_types list
+                method: emperor                     # allowed 'emperor', creates Emperor plots of the PCoA results to explore groups or time using numeric metadata column
+                columns:                            # define columns from metadata, must be numeric
+                    - year
 
+            #alpha_rarefaction:
+            #beta_rarefaction:
+
+        #taxonomy:
+            #fit:
+                #method:
+            #classify:
+                #method:
+        
+        #longitudinal: https://docs.qiime2.org/2021.8/tutorials/longitudinal/
+            #pairwise-differences
+                #method: pairwise-differences
+            #pairwise-distances:
+                #method: pairwise-distances
+            #effect_model:
+                #method: linear-mixed-effects
+            #volatility
+            #feature_volatility
+            #maturity_index
+
+        #differential abundance:
+            # ANCOM https://docs.qiime2.org/2021.8/tutorials/moving-pictures/#ancom
+            # gneiss https://docs.qiime2.org/2021.8/tutorials/gneiss/ 
+        #quality_evaluation https://docs.qiime2.org/2021.8/tutorials/quality-control/
+
+        #predictions? https://docs.qiime2.org/2021.8/tutorials/sample-classifier/

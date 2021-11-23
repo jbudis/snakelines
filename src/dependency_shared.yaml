@@ -570,16 +570,35 @@ qiime2:
                                         reference=pipeline.references)
                 vector: expand('reads/analysis/core_metrics/{reference}_{type}_vector.qza',
                                         reference=pipeline.references,
-                                        type=['faith','evenness','observed','shannon'])
+                                        type=qiime2_alpha_types)
                 dist_matrix: expand('reads/analysis/core_metrics/{reference}_{type}_dist_matrix.qza',
                                         reference=pipeline.references,
-                                        type=['unweighted_unifrac','weighted_unifrac','jaccard','bray_curtis'])
+                                        type=qiime2_beta_types)
                 pcoa: expand('reads/analysis/core_metrics/{reference}_{type}_pcoa.qza',
                                         reference=pipeline.references,
-                                        type=['unweighted_unifrac','weighted_unifrac','jaccard','bray_curtis'])
+                                        type=qiime2_beta_types)
                 qzv: expand('reads/analysis/core_metrics/{reference}_{type}_emperor.qzv',
                                         reference=pipeline.references,
-                                        type=['unweighted_unifrac','weighted_unifrac','jaccard','bray_curtis'])
+                                        type=qiime2_emperor_types)
+        diversity:
+            alpha:
+                output:
+                    qzv: expand('reads/analysis/core_metrics/alpha/{reference}_{type}_group_significance.qzv',
+                                        reference=pipeline.references,
+                                        type=qiime2_alpha_types)
+            beta:
+                output:
+                    qzv: expand('reads/analysis/core_metrics/beta/{reference}_{type}_{column}_significance.qzv',
+                                        reference=pipeline.references,
+                                        type=qiime2_beta_types,
+                                        column=qiime2_beta_significance_columns)
+            pcoa_explore:
+                output:
+                    qzv: expand('reads/analysis/core_metrics/pcoa_explore/{reference}_{type}_{column}_emperor.qzv',
+                                        reference=pipeline.references,
+                                        type=qiime2_beta_types,
+                                        column=qiime2_pcoa_custom_columns)
+
 
     report:
         export:
@@ -598,3 +617,43 @@ qiime2:
                                         report_dir=config['report_dir'],
                                         type=['rep-seqs', 'table', 'denoising-stats'],
                                         reference=pipeline.references)
+                
+                alpha_group_significance_reports:
+                    from:   expand('reads/analysis/core_metrics/alpha/{reference}_{type}_group_significance/',
+                                        reference=pipeline.references,
+                                        type=qiime2_alpha_types)
+                    to:     expand('{report_dir}/{reference}/02_core_metrics_report/alpha_group_significance/{type}_group_significance/',
+                                        report_dir=config['report_dir'],
+                                        reference=pipeline.references,
+                                        type=qiime2_alpha_types)
+
+                beta_group_significance_reports:
+                    from:   expand('reads/analysis/core_metrics/beta/{reference}_{type}_{column}_significance/',
+                                        reference=pipeline.references,
+                                        type=qiime2_beta_types,
+                                        column=qiime2_beta_significance_columns)
+                    to:     expand('{report_dir}/{reference}/02_core_metrics_report/beta_group_significance/{type}_{column}_significance/',
+                                        report_dir=config['report_dir'],
+                                        reference=pipeline.references,
+                                        type=qiime2_beta_types,
+                                        column=qiime2_beta_significance_columns)
+
+                emperor_plot_reports:
+                    from:   expand('reads/analysis/core_metrics/{reference}_{type}_emperor/',
+                                        reference=pipeline.references,
+                                        type=qiime2_emperor_types)
+                    to:     expand('{report_dir}/{reference}/02_core_metrics_report/emperor_plots/{type}_emperor/',
+                                        report_dir=config['report_dir'],
+                                        reference=pipeline.references,
+                                        type=qiime2_emperor_types)
+                
+                pcoa_explore_reports:
+                    from:   expand('reads/analysis/core_metrics/pcoa_explore/{reference}_{type}_{column}_emperor/',
+                                        reference=pipeline.references,
+                                        column=qiime2_pcoa_custom_columns,
+                                        type=qiime2_beta_types)
+                    to:     expand('{report_dir}/{reference}/02_core_metrics_report/pcoa_explore/{type}_{column}_emperor/',
+                                        report_dir=config['report_dir'],
+                                        reference=pipeline.references,
+                                        column=qiime2_pcoa_custom_columns,
+                                        type=qiime2_beta_types)

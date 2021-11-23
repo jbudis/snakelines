@@ -13,8 +13,8 @@ rule qiime2__import_manifest:
         out = 'reads/import/log/{reference}.log',
         err = 'reads/import/log/{reference}.err'
     params:
-        sequence_type = "'SampleData[PairedEndSequencesWithQuality]'", #method_config.get('sequence_type', ''), 
-        input_format = 'PairedEndFastqManifestPhred33V2' #
+        sequence_type = "'SampleData[PairedEndSequencesWithQuality]'",
+        input_format = 'PairedEndFastqManifestPhred' + str(method_config.get('PHRED_offset',33)) + 'V2'
     conda:
         config['snakelines_dir'] + '/enviroments/qiime2.yaml'
     shell:

@@ -204,3 +204,14 @@ barplot_formats = extract_from_config(config, ['classification', 'report', 'taxo
 tax_levels_alphas = extract_from_config(config, ['classification', 'report', 'taxonomic_counts', 'alpha_diversity', 'tax_levels'], [])
 
 pca_formats = extract_from_config(config, ['classification', 'report', 'transcripts', 'pca', 'formats'], ['svg', 'png'])
+
+
+# Which types use in qiime2 core-metrics analysis
+qiime2_alpha_types = extract_from_config(config, ['qiime2', 'analysis', 'core_metrics', 'alpha_types'], [])
+qiime2_beta_types = extract_from_config(config, ['qiime2', 'analysis', 'core_metrics', 'beta_types'], [])
+qiime2_emperor_types = extract_from_config(config, ['qiime2', 'analysis', 'core_metrics', 'emperor_types'], [])
+
+# Which columns from metadata use in beta-significance report
+qiime2_beta_significance_columns = extract_from_config(config, ['qiime2', 'analysis', 'diversity', 'beta','columns'], [])
+qiime2_pcoa_custom_columns = extract_from_config(config, ['qiime2', 'analysis', 'diversity', 'pcoa_explore','columns'], [])
+#qiime2_alpha_types = [list(val.keys())[0] for val in qiime2_alpha_types if list(val.values())[0]]

@@ -14,7 +14,6 @@ rule qiime2__create_manifest:
     params:
         pwd = '$PWD'
     run:
-        print(config['sequencing'])
         with open(output.manifest, 'w') as out:
             out.write('sample-id\tforward-absolute-filepath\treverse-absolute-filepath\n')
             for read_file in input.rm:

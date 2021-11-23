@@ -1,5 +1,5 @@
 
-rule qiime__phylogeny_align_to_tree_mafft_fasttree:
+rule qiime2__phylogeny_align_to_tree_mafft_fasttree:
     """
     Generate a phylogenetic tree with align-to-tree-mafft-fasttree pipeline from the q2-phylogeny plugin.
 
