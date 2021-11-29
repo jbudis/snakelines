@@ -5,10 +5,10 @@ samples:                            # List of sample categories to be analysed
       reference: silva-16S-90-filtered  # Reference genome for reads in the category (reference/silva-16S/silva-16S.fa)
       description:
         overwrite: True             #True or False
-        format: '{year}-{wine}-{additive}-{material}-{rRNA}-{phase}-{biological_replica}{technical_replica:d}' # napr. 2021-R-S_R1.fastq.gz
+        format: '{year}-{wine}-{additive}-{material}-{rRNA}-{phase}-{biological_replica}-{technical_replica}' # napr. 2021-R-S_R1.fastq.gz
         attributes: # https://pypi.org/project/parse/
             year:
-                type: numeric
+                # type: int # if not set, qiime2 takes it as both, numerical or categorical type
                 values:
                     17: 2017
                     18: 2018
@@ -53,7 +53,7 @@ samples:                            # List of sample categories to be analysed
                     repB: second replica
                     repC: third replica
             technical_replica:
-                type: numeric
+                type: categorical
                 values:
                     1: 1
                     2: 2
@@ -61,7 +61,7 @@ samples:                            # List of sample categories to be analysed
 
 
 report_dir: report                      # Generated reports and essential output files would be stored there
-threads: 4                              # Number of threads to use in analysis
+threads: 2                              # Number of threads to use in analysis
 
 
 qiime2:
@@ -81,19 +81,20 @@ qiime2:
         #paired have more parameters, how to handle it? e.g. trunc_len_f a trunc_len_r namiesto trunc_len
         denoise:  #https://docs.qiime2.org/2021.8/plugins/available/dada2/denoise-paired/
             method: dada2               # allowed dada2, deblur (requires quality_filter and joining if paired-end)
-            trunc_len_f: 260            # position where truncation starts on forward, discard reads if shorter, if zero, dont do truncation
-            trunc_len_r: 260            # position where truncation starts on reverse, discard reads if shorter, if zero, dont do truncation
+            trunc_len_f: 0              # position where truncation starts on forward, discard reads if shorter, if zero, dont do truncation
+            trunc_len_r: 0              # position where truncation starts on reverse, discard reads if shorter, if zero, dont do truncation
             trim_left_f: 0              # how many bases trims from start on forward strand, set to 0 for no trimming (default: 0)
             trim_left_r: 0              # how many bases trims from start on reverse strand, set to 0 for no trimming (default: 0)
-            max_ee_f: 2.0               # forward reads with expected errors higher than this value are discarded (default: 2.0)
-            max_ee_r: 2.0               # reverse reads with expected errors higher than this value are discarded (default: 2.0)
+            max_ee_f: 4.0               # forward reads with expected errors higher than this value are discarded (default: 2.0)
+            max_ee_r: 4.0               # reverse reads with expected errors higher than this value are discarded (default: 2.0)
             trunc_start_qual: 2         # truncate read from the first occurence of quality lower than this value, (default: 2)
-            min_overlap: 4              # min length of overlap required for merging forward and reverse reads (default: 12)
+            min_overlap: 12             # min length of overlap required for merging forward and reverse reads (default: 12)
             denoise_pooling: independent    # allowed 'independent', 'pseudo'; denoise samples independently, or use pseudo-pooling (default: independent)
             chimera_method: consensus       # allowed 'consensus', 'pooled', 'none' (default: consensus)
-            chimera_parent_abundance: 1.0   # when tested for chimeric, this gives the minimum abundance of parents, (default: 1.0)
+            chimera_parent_abundance: 2.0   # when tested for chimeric, this gives the minimum abundance of parents, (default: 1.0)
             num_reads_train: 1000000        # number of reads used for training error model, lower number = faster, but less reliable model (default: 1000000)
-        
+            #https://forum.qiime2.org/t/the-meaning-of-dada2-command-p-min-fold-parent-over-abundance-float/9454
+
     report:
         #core_features:
             #https://docs.qiime2.org/2021.8/plugins/available/feature-table/core-features/

@@ -33,20 +33,21 @@ def parse_description_by_schema(sample, description, description_schema):
     metadata["sample-id"] = sample
     for attr in description_schema:
         if attr in description:
-            if description_schema[attr]['type'] == "numeric":
-                try:
-                    attr_value = int(description[attr])
-                except:
-                    raise ValueError("Expecting int in '{}' but got '{}' in {} for sample {}".format(attr,description[attr], description.named, sample))
             
-            elif description_schema[attr]['type'] == "categorical":
-                attr_value = description[attr]
-
+            # convert parsed string into int if all description keys are integers, else use it as string
+            if 'values' in description_schema[attr] and len(description_schema[attr]['values'])>0:
+                types = list(set(type(k) for k in description_schema[attr]['values'].keys()))
+                if len(types)==1 and types[0] == int:
+                    attr_value = int(description[attr])
+                else:
+                    attr_value = description[attr]
+                
+            # recode input value using key in description values
             if 'values' in description_schema[attr]:
                 try:
                     metadata[attr] = description_schema[attr]['values'][attr_value]
                 except:
-                    raise KeyError("Unrecognized key '{}' found in '{}' for sample {}. Defined ones are: {}".format(description[attr], attr, sample, list(description_schema[attr]['values'].keys())))        
+                    raise KeyError("Unrecognized key '{}' found in '{}' for sample {}. Defined ones are: {}".format(attr_value, attr, sample, list(description_schema[attr]['values'].keys())))        
             else:
                 metadata[attr] = attr_value
 
@@ -67,11 +68,12 @@ def write_metadata_to_file(metadata, desc_config, file_path):
         writer = csv.DictWriter(metadata_file, fieldnames=colnames, delimiter='\t')
         writer.writeheader()
 
-        # obtain second header row with qiime2 data types
+        # obtain second header row with qiime2 data types using description type
+        # if description type is missing, use empty string as type (used in Qiime2)
         q2types_row = '#q2:types'
         for i in colnames:
             if i!="sample-id":
-                q2types_row += '\t'+desc_config[i]['type']
+                q2types_row += '\t'+desc_config[i].get('type','')
 
         metadata_file.write(q2types_row+"\n")
 
