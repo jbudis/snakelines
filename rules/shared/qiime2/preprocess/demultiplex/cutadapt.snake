@@ -25,9 +25,9 @@ def get_adapters(adapter_set, primer_set, seq_end):
     r_adapter = ADAPTER_DEFINES[adapter_set]['r'] if adapter_set in ADAPTER_DEFINES else ''
     f_primers = [f_adapter + i for i in PRIMER_DEFINES[primer_set]['f']] if primer_set in PRIMER_DEFINES else []
     r_primers = [r_adapter + i for i in PRIMER_DEFINES[primer_set]['r']] if primer_set in PRIMER_DEFINES else []
-    qiime_call_f = '--p-adapter-f '+' '.join(f_primers) if len(f_primers) else ''
-    qiime_call_r = '--p-adapter-r '+' '.join(r_primers) if len(r_primers) else '' 
-    return qiime_call_f+' '+qiime_call_f
+    qiime_call_f = '--p-front-f '+' '.join(f_primers) if len(f_primers) else ''
+    qiime_call_r = '--p-front-r '+' '.join(r_primers) if len(r_primers) else '' 
+    return qiime_call_f+' '+qiime_call_r
 
 rule qiime2__cutadapt_trim:
     """
@@ -53,14 +53,6 @@ rule qiime2__cutadapt_trim:
         maxerr = method_config.get('max_error_rate', 0.1),
         discard_untrimmed = '--p-discard-untrimmed' if method_config.get('discard_undetected',False) else '--p-no-discard-untrimmed',
         adapter_call = get_adapters(method_config.get('adapter_set','None'),method_config.get('primer_set',''), config['sequencing'].split("_end")[0])
-        #adapter_set = method_config.get('adapter_set','None'),
-        #f_adapter = ADAPTER_DEFINES[adapter_set]['f']['r'] if params.adapter_set in ADAPTER_DEFINES else '',
-        #r_adapter = ADAPTER_DEFINES[adapter_set]['r']['r'] if params.adapter_set in ADAPTER_DEFINES else '',
-        #primer_set = method_config.get('primer_set',''),
-        #f_primers = [f_adapter + i for i in PRIMER_DEFINES[primer_set]['f']] if primer_set in PRIMER_DEFINES else [],
-        #r_primers = [r_adapter + i for i in PRIMER_DEFINES[primer_set]['r']] if primer_set in PRIMER_DEFINES else [],
-        #qiime_call_f = '--p-adapter-f '+' '.join(f_primers) if len(f_primers) else '',
-        #qiime_call_r = '--p-adapter-r '+' '.join(r_primers) if len(r_primers) else ''
 
     conda:
         config['snakelines_dir'] + '/enviroments/qiime2.yaml'

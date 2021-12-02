@@ -78,8 +78,8 @@ qiime2:
             minlen: 35                  # Minimal length of trimmed read. Shorter reads would be removed. (Must be higher or equal to 1, default: 1)
             max_error_rate: 0.1         # Maximum allowed error rate (Must be from range 0-1, default: 0.1)
             primer_set: 16S             # Allowed '16S','ITS','28S', defined in rules/shared/qiime2/preprocess/demultiplex/cutadapt
-            adapter_set: Illumina       # Allowed 'Illumina' or 'None' for no cutting sequencing adapters, i.e. to trim only primers
-            discard_undetected: false   # Whether to discard reads where adapter was not found, default: False
+            adapter_set: None       # Allowed 'Illumina' or 'None' for no cutting sequencing adapters, i.e. to trim only primers
+            discard_undetected: True   # Whether to discard reads where adapter was not found, default: False
             
         #paired have more parameters, how to handle it? e.g. trunc_len_f a trunc_len_r namiesto trunc_len
         denoise:  #https://docs.qiime2.org/2021.8/plugins/available/dada2/denoise-paired/
