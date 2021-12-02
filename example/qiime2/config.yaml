@@ -6,9 +6,9 @@ samples:                            # List of sample categories to be analysed
       description:
         overwrite: True             #True or False
         format: '{year}-{wine}-{additive}-{material}-{rRNA}-{phase}-{biological_replica}-{technical_replica}' # napr. 2021-R-S_R1.fastq.gz
-        attributes: # https://pypi.org/project/parse/
+        attributes:
             year:
-                # type: int # if not set, qiime2 takes it as both, numerical or categorical type
+                # type: int # if not set, qiime2 infers type automatically
                 values:
                     17: 2017
                     18: 2018
@@ -67,9 +67,9 @@ threads: 2                              # Number of threads to use in analysis
 qiime2:
     import:
         manifest:
-            method: create_manifest     # allowed: create_manifest. This creates a tsv file with all input reads
+            method: create_manifest     # allowed: 'create_manifest', this creates a tsv file with all input reads
         data:
-            method: import              # allowed: import. This creates a qza from all reads in the created tsv manifest file
+            method: import              # allowed: 'import', this creates a qza from all reads that are in the created tsv manifest file
             PHRED_offset: 33            # allowed: 33,64 (33 used in Sanger, Illumina1.8, 64 used in Illumina 1.3), default: 33
     
     preprocess:
@@ -77,7 +77,10 @@ qiime2:
             method: cutadapt            # see https://docs.qiime2.org/2021.8/plugins/available/cutadapt/trim-paired/
             minlen: 35                  # Minimal length of trimmed read. Shorter reads would be removed. (Must be higher or equal to 1, default: 1)
             max_error_rate: 0.1         # Maximum allowed error rate (Must be from range 0-1, default: 0.1)
-                
+            primer_set: 16S             # Allowed '16S','ITS','28S', defined in rules/shared/qiime2/preprocess/demultiplex/cutadapt
+            adapter_set: Illumina       # Allowed 'Illumina' or 'None' for no cutting sequencing adapters, i.e. to trim only primers
+            discard_undetected: false   # Whether to discard reads where adapter was not found, default: False
+            
         #paired have more parameters, how to handle it? e.g. trunc_len_f a trunc_len_r namiesto trunc_len
         denoise:  #https://docs.qiime2.org/2021.8/plugins/available/dada2/denoise-paired/
             method: dada2               # allowed dada2, deblur (requires quality_filter and joining if paired-end)
@@ -87,7 +90,7 @@ qiime2:
             trim_left_r: 0              # how many bases trims from start on reverse strand, set to 0 for no trimming (default: 0)
             max_ee_f: 4.0               # forward reads with expected errors higher than this value are discarded (default: 2.0)
             max_ee_r: 4.0               # reverse reads with expected errors higher than this value are discarded (default: 2.0)
-            trunc_start_qual: 2         # truncate read from the first occurence of quality lower than this value, (default: 2)
+            trunc_start_qual: 5         # truncate read from the first occurence of quality lower than this value, (default: 2)
             min_overlap: 12             # min length of overlap required for merging forward and reverse reads (default: 12)
             denoise_pooling: independent    # allowed 'independent', 'pseudo'; denoise samples independently, or use pseudo-pooling (default: independent)
             chimera_method: consensus       # allowed 'consensus', 'pooled', 'none' (default: consensus)
@@ -96,7 +99,7 @@ qiime2:
             #https://forum.qiime2.org/t/the-meaning-of-dada2-command-p-min-fold-parent-over-abundance-float/9454
 
     report:
-        #core_features:
+        #core_features: automaticky alebo nutne definovat?
             #https://docs.qiime2.org/2021.8/plugins/available/feature-table/core-features/
         #heatmap:
             #https://docs.qiime2.org/2021.8/plugins/available/feature-table/heatmap/

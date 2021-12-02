@@ -1,3 +1,34 @@
+PRIMER_DEFINES = {
+    "16S": {
+        "f":["CCTACGGGNGGCWGCAG"], 
+        "r":["GACTACHVGGGTATCTAATCC"]
+        },
+    "ITS": {
+        "f":["GAGTCGAGTTGTTTGGGAAT"],
+        "r":["GGTCCGTGTTTCAAGACGG"]
+        },
+    "28S": {
+        "f":["GAGTCGAGTTGTTTGGGAAT"],
+        "r":["GGTCCGTGTTTCAAGACGG"]
+        }
+    }
+
+ADAPTER_DEFINES = {
+    "Illumina": {
+        "f":"TCGTCGGCAGCGTCAGATGTGTATAAGAGACAG",
+        "r":"GTCTCGTGGGCTCGGAGATGTGTATAAGAGACAG"
+    }
+}
+
+def get_adapters(adapter_set, primer_set, seq_end):
+    f_adapter = ADAPTER_DEFINES[adapter_set]['f'] if adapter_set in ADAPTER_DEFINES else ''
+    r_adapter = ADAPTER_DEFINES[adapter_set]['r'] if adapter_set in ADAPTER_DEFINES else ''
+    f_primers = [f_adapter + i for i in PRIMER_DEFINES[primer_set]['f']] if primer_set in PRIMER_DEFINES else []
+    r_primers = [r_adapter + i for i in PRIMER_DEFINES[primer_set]['r']] if primer_set in PRIMER_DEFINES else []
+    qiime_call_f = '--p-adapter-f '+' '.join(f_primers) if len(f_primers) else ''
+    qiime_call_r = '--p-adapter-r '+' '.join(r_primers) if len(r_primers) else '' 
+    return qiime_call_f+' '+qiime_call_f
+
 rule qiime2__cutadapt_trim:
     """
     Cut adapters from reads (paired or single-end). Calls 'qiime cutadapt trim-paired' or 'qiime cutadapt trim-single'
@@ -19,7 +50,18 @@ rule qiime2__cutadapt_trim:
     params:
         sequen = config['sequencing'].split("_end")[0],
         minlen = method_config.get('minlen', 1),
-        maxerr = method_config.get('max_error_rate', 0.1) 
+        maxerr = method_config.get('max_error_rate', 0.1),
+        discard_untrimmed = '--p-discard-untrimmed' if method_config.get('discard_undetected',False) else '--p-no-discard-untrimmed',
+        adapter_call = get_adapters(method_config.get('adapter_set','None'),method_config.get('primer_set',''), config['sequencing'].split("_end")[0])
+        #adapter_set = method_config.get('adapter_set','None'),
+        #f_adapter = ADAPTER_DEFINES[adapter_set]['f']['r'] if params.adapter_set in ADAPTER_DEFINES else '',
+        #r_adapter = ADAPTER_DEFINES[adapter_set]['r']['r'] if params.adapter_set in ADAPTER_DEFINES else '',
+        #primer_set = method_config.get('primer_set',''),
+        #f_primers = [f_adapter + i for i in PRIMER_DEFINES[primer_set]['f']] if primer_set in PRIMER_DEFINES else [],
+        #r_primers = [r_adapter + i for i in PRIMER_DEFINES[primer_set]['r']] if primer_set in PRIMER_DEFINES else [],
+        #qiime_call_f = '--p-adapter-f '+' '.join(f_primers) if len(f_primers) else '',
+        #qiime_call_r = '--p-adapter-r '+' '.join(r_primers) if len(r_primers) else ''
+
     conda:
         config['snakelines_dir'] + '/enviroments/qiime2.yaml'
     shell:
@@ -29,7 +71,9 @@ rule qiime2__cutadapt_trim:
             --o-trimmed-sequences {output.trimmed_sequences} \
             --p-cores {threads} \
             --p-minimum-length {params.minlen} \
-            --p-error-rate {params.maxerr}
+            --p-error-rate {params.maxerr} \
+            {params.adapter_call} \
+            {params.discard_untrimmed}
         '''
 
 #to je asi vhodne len pri subsample
