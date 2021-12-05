@@ -1,7 +1,6 @@
 import pickle
 import pandas as pd
 from glob import glob
-from Bio import SeqIO
 
 blast_binaries = {
     ('nucleotide', 'nucleotide'): 'blastn',
