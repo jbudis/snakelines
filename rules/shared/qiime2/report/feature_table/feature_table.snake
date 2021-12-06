@@ -1,0 +1,41 @@
+rule qiime2__summarize_feature_table:
+    """
+    Generate visual and tabular summaries of a feature table.
+    Calls 'qiime feature-table summarize'
+    :input dada2stats: resulting dada2 stats artifact
+    :output visualization:
+    """
+    input:
+        table = 'reads/preprocess/{type}/{reference}_table.qza',
+        metadata    = 'description/joined-sample-metadata.tsv'
+    output:
+        vis_table = 'reads/preprocess/{type}/{reference}_table.qzv'
+    conda:
+        config['snakelines_dir'] + '/enviroments/qiime2.yaml'
+    shell:
+        '''    
+        qiime feature-table summarize \
+            --i-table {input.table} \
+            --o-visualization {output.vis_table} \
+            --m-sample-metadata-file {input.metadata}
+        '''
+
+rule qiime2__tabulate_seqs:
+    """
+    Generate tabular view of feature identifier to sequence mapping, including  links to BLAST each sequence against the NCBI nt database.
+    Calls 'qiime feature-table tabulate-seqs'
+    :input dada2_rep_seqs: resulting dada2 representative sequences
+    :output visualization: qiime2 visualization artifact
+    """
+    input:
+        rep_seqs = 'reads/preprocess/{type}/{reference}_rep-seqs.qza'
+    output:
+        vis_rep_seqs = 'reads/preprocess/{type}/{reference}_rep-seqs.qzv'
+    conda:
+        config['snakelines_dir'] + '/enviroments/qiime2.yaml'
+    shell:
+        '''    
+        qiime feature-table tabulate-seqs \
+            --i-data {input.rep_seqs} \
+            --o-visualization {output.vis_rep_seqs}
+        '''    

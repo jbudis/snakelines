@@ -101,6 +101,9 @@ qiime2:
             #https://docs.qiime2.org/2021.8/plugins/available/feature-table/core-features/
         #heatmap:
             #https://docs.qiime2.org/2021.8/plugins/available/feature-table/heatmap/
+        feature_table:
+            method: feature_table
+
         export:
             method: export              # Allowed 'export'. This tells snakelines to export each .qzv into human readable .html form
             #representative_seqs: True #
@@ -130,6 +133,13 @@ qiime2:
 
     # Possible filtering
     # label: 
+    #filter:
+    #    method: filter_samples
+    #    label: only_2019
+    #    column: year
+    #    conditions:
+    #      - equals: 2019
+
     analysis:
         phylogeny:                                  # Constructs phylogeny tree
             method: fasttree                        # Allowed: fasttree, iqtree, raxml
@@ -196,4 +206,4 @@ qiime2:
             # gneiss https://docs.qiime2.org/2021.8/tutorials/gneiss/ 
         #quality_evaluation https://docs.qiime2.org/2021.8/tutorials/quality-control/
 
-        #predictions? https://docs.qiime2.org/2021.8/tutorials/sample-classifier/
+        #predictions? https://docs.qiime2.org/2021.8/tutorials/sample-classifier/    
