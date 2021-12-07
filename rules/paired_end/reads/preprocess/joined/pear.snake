@@ -76,12 +76,13 @@ rule pear__concat_joined_with_single:
     output:
         rc = 'reads/joined/{sample}_RC.fastq.gz'
     params:
-    	n_ambiguous_bases = int(method_config['n_ambiguous_bases'])
+    	n_ambiguous_bases = int(method_config.get('n_ambiguous_bases', 0)),
+    	script_path = srcdir('scripts/concat_joined_with_single.py')
     conda:
         config['snakelines_dir'] + '/enviroments/pear_custom_concat.yaml'
     shell:
         """
-        python3 scripts/concat_joined_with_single.py \
+        python3  {params.script_path}\
             {input.r1}\
             {input.r2}\
             {input.rm}\
