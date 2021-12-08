@@ -1,11 +1,12 @@
 import sys
+import re
 import matplotlib.pyplot as plt
 from Bio import Phylo
 from Bio import SeqIO
 
 input_alignment, input_tree = sys.argv[1:3]
-threads = sys.argv[4]
-output_svg, output_ascii = sys.argv[5:7]
+threads = sys.argv[3]
+output_svg, output_ascii = sys.argv[4:6]
 
 # If all sequences have defined proportion of reads they take in sample, append it to OTU labels
 labels = {}

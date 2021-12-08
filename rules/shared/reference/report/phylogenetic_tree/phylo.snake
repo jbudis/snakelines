@@ -15,11 +15,13 @@ rule phylo__visualise_phylogenetic_tree:
         ascii     = 'reference/{reference}/alignment/{reference}.aln.treefile.ascii',
     threads:
         int(config['threads'])
+    params:
+        script_path = srcdir('scripts/visualise_phylogenetic_tree.py')
     conda:
         config['snakelines_dir'] + '/enviroments/phylo_custom.yaml'
     shell:
         """
-        python3 scripts/visualise_phylogenetic_tree.py\
+        python3 {params.script_path}\
             {input.alignment}\
             {input.tree}\
             {threads}\
