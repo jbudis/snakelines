@@ -12,11 +12,13 @@ rule custom__prepare_description_file:
     log:
         out = 'reference/{reference}/log/{sequences}.desc.log',
         err = 'reference/{reference}/log/{sequences}.desc.err'
-    conda:
-        config['snakelines_dir'] + '/enviroments/description_preparation.yaml'
+    params:
+        script_path = srcdir('scripts/prepare_description.py')
+#    conda:
+#        config['snakelines_dir'] + '/enviroments/description_preparation.yaml'
     shell:
         """
-        python3 scripts/prepare_description.py\
+        python3 {params.script_path}\
             {input.reference}\
             {output.dict}\
         1> {log.out}\

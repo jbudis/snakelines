@@ -26,6 +26,11 @@ reference:
             depends:
                 - reference/alignment
 
+    attributes:
+        desc:
+            output:
+                    desc: expand('reference/{reference}/{reference}.desc', reference=pipeline.references) # TODO: extend this to all fasta files
+
     report:
         phylogenetic_tree:
             output:
