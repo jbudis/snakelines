@@ -17,8 +17,8 @@ rule delly_call_structural_variants:
     threads:
         int(config['threads'])
     log:
-        out = 'variant/{reference}-{panel}/original/log/{sample}.delly.vcf.out',
-        err = 'variant/{reference}-{panel}/original/log/{sample}.delly.vcf.err'
+        out = 'variant/{reference}-{panel}/original/log/{sample}.delly.out',
+        err = 'variant/{reference}-{panel}/original/log/{sample}.delly.err'
     benchmark:
         'variant/{reference}-{panel}/original/log/{sample}.delly.vcf.benchmark',
     conda:
@@ -30,7 +30,7 @@ rule delly_call_structural_variants:
             --output {output.vcf} \
             {input.bam}
         1> {log.out} \
-        2>> {log.err}
+        2> {log.err}
         """
 
 rule gatk__prepare_vcf:
@@ -48,8 +48,8 @@ rule gatk__prepare_vcf:
         vcf = 'variant/{reference}-{panel}/original/{sample}.vcf',
         vcf_index = 'variant/{reference}-{panel}/original/{sample}.vcf.idx',
     log:
-        out = 'variant/{reference}-{panel}/original/log/{sample}.out',
-        err = 'variant/{reference}-{panel}/original/log/{sample}.err',
+        out = 'variant/{reference}-{panel}/original/log/{sample}.gatk.delly.out',
+        err = 'variant/{reference}-{panel}/original/log/{sample}.gatk.delly.err',
     conda:
         config['snakelines_dir'] + '/enviroments/gatk4.yaml'
     shell:
