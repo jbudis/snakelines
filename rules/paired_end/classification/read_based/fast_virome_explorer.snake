@@ -8,8 +8,8 @@ kmer_size = config['classification']['read_based']['kmer_size']
 ratio_of_coverages = config['classification']['read_based']['ratio_of_coverages']
 genome_coverage = config['classification']['read_based']['genome_coverage']
 mapped_reads = config['classification']['read_based']['mapped_reads']
-fillna_with_virusname = config['snakelines_dir'] + '/rules/classification/read_based/fast_virome_explorer/fillna_with_virusname.py'
-create_tpm_for_krona = config['snakelines_dir'] + '/rules/classification/read_based/fast_virome_explorer/create_tpm_for_krona.py'
+fillna_with_virusname = config['snakelines_dir'] + '/rules/paired_end/classification/read_based/fast_virome_explorer/fillna_with_virusname.py'
+create_tpm_for_krona = config['snakelines_dir'] + '/rules/paired_end/classification/read_based/fast_virome_explorer/create_tpm_for_krona.py'
 count_type = config['classification']['read_based']['count_type']
 
 
