@@ -105,11 +105,13 @@ rule blast__annotate_with_taxonomy:
         taxes = '/data/genome/metagenome/blast/nt/17-01-17/taxonomy/code_taxonomy.pickle'
     output:
         blast = '{indir}/blast/{name}.blast.tax.tsv'
+    params:
+        script_path = srcdir('scripts/annotate_with_taxonomy.py')
     conda:
         config['snakelines_dir'] + '/enviroments/blast_annotate.yaml'
     shell:
         """
-        python3 scripts/annotate_with_taxonomy.py\
+        python3 {params.script_path}\
             {input.blast}\
             {input.taxes}\
             {output.blast}
