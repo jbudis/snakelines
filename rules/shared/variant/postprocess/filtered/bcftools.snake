@@ -28,6 +28,8 @@ rule bcftools__filter_vcf:
         int(config['threads'])
     benchmark:
           'variant/{reference}-{panel}/filtered/log/{sample}.vcf.benchmark',
+    conda:
+        config['snakelines_dir'] + '/enviroments/bcftools.yaml'
     shell:
         """
         snp_gap=''

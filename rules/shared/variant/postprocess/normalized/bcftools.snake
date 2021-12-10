@@ -25,6 +25,8 @@ rule bcftools__normalize_vcf:
         int(config['threads'])
     benchmark:
           'variant/{reference}-{panel}/normalized/log/{sample}.vcf.benchmark',
+    conda:
+        config['snakelines_dir'] + '/enviroments/bcftools.yaml'
     shell:
         """
         bcftools norm \
