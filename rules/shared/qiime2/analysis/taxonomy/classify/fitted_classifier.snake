@@ -1,0 +1,31 @@
+rule qiime2__taxonomy_fitted_classifier:
+    """
+    Classify reads by taxon using a fitted classifier
+
+    Calls 'qiime feature-classifier classify-sklearn'.
+
+    :input rep_seqs: qiime artifact of representative sequences
+    :input classifier: qza artifact of trained classifier
+    :output taxonomy: taxonomy of OTUs in samples, qiime artifact of type FeatureData[Taxonomy]
+    :params tmp_dir: path to temporary directory, because job requires temporary a lot of free disk space, default /tmp might not be enough and path to mounted storage might be used instead
+    """
+    input:
+        rep_seqs = 'reads/preprocess/denoise/{reference}_rep-seqs.qza',
+        classifier = 'reference/{reference}/qiime2/classifier.qza'
+    output:
+        taxonomy  = 'reads/taxonomy/{reference}_tax.qza'
+    params:
+        confidence = method_config.get('confidence_threshold', 0.7)
+    conda:
+        config['snakelines_dir'] + '/enviroments/qiime2.yaml'
+    threads:
+        int(config['threads'])
+    shell:
+        '''
+        qiime feature-classifier classify-sklearn \
+          --i-classifier {input.classifier} \
+          --i-reads {input.rep_seqs} \
+          --p-n-jobs {threads} \
+          --p-confidence {params.confidence} \
+          --o-classification {output.taxonomy}
+        '''

@@ -104,6 +104,7 @@ qiime2:
         feature_table:
             method: feature_table
 
+        #https://forum.qiime2.org/t/qiime-2-2021-11-is-now-available/21457
         export:
             method: export              # Allowed 'export'. This tells snakelines to export each .qzv into human readable .html form
             #representative_seqs: True #
@@ -181,15 +182,18 @@ qiime2:
                 columns:                            # Define columns from metadata, must be numeric, either set in metadata file as numeric type or empty type
                     - year
 
-            #alpha_rarefaction:
-            #beta_rarefaction:
+            #alpha_rarefaction: #https://docs.qiime2.org/2021.8/plugins/available/diversity/alpha-rarefaction/
+            #beta_rarefaction: #https://docs.qiime2.org/2021.8/plugins/available/diversity/beta-rarefaction/
 
-        #taxonomy:
-            #fit:
-                #method:
-            #classify:
-                #method:
-        
+        taxonomy:
+            fit: #https://docs.qiime2.org/2021.8/tutorials/feature-classifier/ - extract reference reads?
+                method: naive_bayes                 # Allowed 'naive_bayes', requires .fa and .tax in specified reference directory
+                #reference_class_weights:  
+            classify:
+                method: fitted_classifier
+                confidence_threshold: 0.7           # Confidence threshold for limiting taxonomic depth (default: 0.7), either float from 0-1 range, or "disable" to disable confidence calculation, or '0' to calculate confidence but not apply it
+
+
         #longitudinal: https://docs.qiime2.org/2021.8/tutorials/longitudinal/
             #pairwise-differences
                 #method: pairwise-differences

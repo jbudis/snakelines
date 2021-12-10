@@ -580,6 +580,15 @@ qiime2:
                                         reference=pipeline.references,
                                         type=qiime2_beta_types,
                                         column=qiime2_pcoa_custom_columns)
+        taxonomy:
+            fit:
+                output:
+                    classifier: expand('reference/{reference}/qiime2/classifier.qza',
+                                        reference=pipeline.references)
+            classify:
+                output:
+                    classification: expand('reads/taxonomy/{reference}_tax.qza',
+                                        reference=pipeline.references)
 
 
     report:
