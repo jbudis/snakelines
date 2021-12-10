@@ -1,6 +1,7 @@
 include: config['snakelines_dir'] + '/rules/shared/reference/annotation/regions.snake'
 include: config['snakelines_dir'] + '/rules/shared/reference/index/fai/samtools.snake'
 include: config['snakelines_dir'] + '/rules/shared/reference/index/dict/picard.snake'
+include: config['snakelines_dir'] + '/rules/shared/variant/compression/bcftools.snake'
 
 rule delly_call_structural_variants:
     """
@@ -13,7 +14,7 @@ rule delly_call_structural_variants:
         fasta = 'reference/{reference}/{reference}.fa',
         fai   = 'reference/{reference}/{reference}.fa.fai'
     output:
-        vcf  = 'variant/{reference}-{panel}/original/{sample}.delly.vcf'
+        vcf  = 'variant/{reference}-{panel}/original/{sample}.delly.bcf'
     threads:
         int(config['threads'])
     log:
