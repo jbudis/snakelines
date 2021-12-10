@@ -27,7 +27,7 @@ rule delly_call_structural_variants:
         """
         delly call \
             --genome {input.fasta} \
-            --output {output.vcf} \
+            --outfile {output.vcf} \
             {input.bam}
         1> {log.out} \
         2> {log.err}
