@@ -1,0 +1,67 @@
+rule miniasm__create_assembly:
+    """
+    Create a draft assembly from basecalled fastq reads
+    :input fastq: basecalled reads in fastq.gz format
+    :output assembly: assembled contigs in fasta format
+    :output graph: assembled contigs in graphical gfa format
+    :param outdir: auxiliary directory, will be deleted in the end (do not change)
+    :param overlaps: outputted read-read overlaps by minimap2
+    :param assembly: outputted assembled contigs by miniasm (do not change)
+    :param graph: outputted graph by miniasm (do not change)
+    :param polished_graph: outputted polished graph by Racon (do not change)
+    :param polish_iters: the number of used polishing iterations (set in config)
+    """
+    input:
+        fastq = 'reads/basecalled/{sample}.fastq.gz'
+    output:
+        assembly = 'assembly/{sample}/assembly.fa',
+        graph = 'assembly/{sample}/assembly_graph.gfa'
+    params:
+        outdir = 'assembly/{sample}/miniasm',
+        overlaps = 'assembly/{sample}/miniasm/overlaps.paf',
+        assembly = 'assembly/{sample}/miniasm/assembly.fasta',
+        graph = 'assembly/{sample}/miniasm/assembly_graph.gfa',
+        polished_graph = 'assembly/{sample}/miniasm/polished_graph.gfa',
+        polish_iters = '--rounds %s' % method_config.get('iterations', '2')
+    threads:
+        int(config['threads'])
+    log:
+        err = 'assembly/{sample}/log/miniasm.err'
+    conda:
+        config['snakelines_dir'] + '/enviroments/miniasm.yaml'
+    shell:
+        """
+        mkdir -p {params.outdir}
+        minimap2 \
+            -t {threads} \
+            -x ava-ont {input.fastq} {input.fastq} \
+            > {params.overlaps} \
+            2> {log.err}
+        
+        # use overlaps and reads to get assemled contigs
+        miniasm \
+            -f {input.fastq} {params.overlaps} \
+            > {params.graph} \
+            2>> {log.err}
+        
+        # use Racon to polish assembled contigs
+        minipolish \
+            -t {threads} \
+            {input.fastq} \
+            {params.graph} \
+            {params.polish_iters} \
+            > {params.polished_graph} \
+            2>> {log.err}
+
+        # convert gfa to fasta as miniasm outputs only gfa
+        awk \
+            '/^S/{{print ">"$2"\\n"$3}}' \
+            {params.polished_graph} \
+            > {params.assembly} \
+            2>> {log.err}
+
+        # move desired outputs and remove useless ones
+        mv {params.assembly} {output.assembly}
+        mv {params.polished_graph} {output.graph}
+        rm -rf {params.outdir}
+        """

@@ -1,0 +1,32 @@
+platform: nanopore
+sequencing: single_end
+
+samples:                            # The list of samples to be analysed
+      - name: example_.*            # The regular expression for names of samples
+
+report_dir: report/example          # The path where reports will be stored
+threads: 2                          # The number of threads to be used
+
+#PLACEHOLDER for basecalling and other preprocessing steps, that will produce basecalled fastq data that will be assembled (assemblers expect input in reads/basecalled/example_.*)
+
+denovoassembly:                     # Create assembly from reads and polish it
+    assembler:                      # Method for creating draft assembly from basecalled reads
+        method: flye                # Supported values: flye, raven, miniasm
+        iterations: 2               # The number of Flye builtin polishing iterations (default 2)
+        
+        #advanced parameters
+        plasmids: False             # Set to True to rescue short unassembled plasmids (default False, works only with Flye)
+        keep_haplotypes: False      # Set to True to produce more detailed but less contiguous contigs (default False, works only with Flye)
+        meta_mode: False            # Set to True, if expecting non-uniform coverage or complex metagenomes (default False, works only with Flye)
+        use_trestle: False          # Set to True to increase accuracy when resolving repeats while increasing computational time drastically (default False, works only with Flye)
+
+    polisher:                       # Method for polishing draft assembly
+        method: medaka              # Supported values: medaka
+        model: r941_min_high_g360   # Required, defines polishing model that should be used. The version should correspond to the ONT and guppy version. E.g. this r941_min_high_g360 should be used for R9.4.1 MinION data, basecalled with guppy configuration set to high and version equal or higher than 3.6.0. (see https://github.com/nanoporetech/medaka/#models for more info)
+
+    report:                         # Summary reports for assembly process and results
+        quality_report:             # Quality of assembled contigs
+            method: quast           # Supported values: quast
+        
+        assembly_graph:             # Visualisation of overlaps between assembled contigs
+            method: bandage         # Supported values: bandage

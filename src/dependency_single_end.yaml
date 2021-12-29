@@ -37,4 +37,25 @@ reads:
                     to:   expand('{report_dir}/_summary/read_quality/{read_type}.html',
                                 report_dir=config['report_dir'],
                                 read_type=read_types_with_quality_report)
-
+denovoassembly:
+    assembler:
+        output:
+            assembly:
+                from: expand('assembly/{sample}/assembly.fa', sample=pipeline.samples)
+                to:   expand('{report_dir}/{sample}/assembly.fa', report_dir=config['report_dir'], sample=pipeline.samples)
+    polisher:
+        output:
+            consensus:
+                from: expand('assembly/{sample}/consensus.fa', sample=pipeline.samples)
+                to:   expand('{report_dir}/{sample}/consensus.fa',report_dir=config['report_dir'], sample=pipeline.samples)
+    report:
+        quality_report:
+            output:
+                quality_reports:
+                    from: expand('assembly/{sample}/quality_report/report.pdf', sample=pipeline.samples)
+                    to:   expand('{report_dir}/{sample}/assembly_report/report.pdf', report_dir=config['report_dir'], sample=pipeline.samples)
+        assembly_graph:
+            output:
+                overlap_graphs:
+                    from: expand('assembly/{sample}/assembly_graph.svg', sample=pipeline.samples)
+                    to:   expand('{report_dir}/{sample}/assembly_report/contig_graph.svg', report_dir=config['report_dir'], sample=pipeline.samples)

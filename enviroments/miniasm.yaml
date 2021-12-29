@@ -1,0 +1,6 @@
+channels:
+- bioconda
+- conda-forge
+dependencies:
+- miniasm=0.3_r179
+- minipolish=0.1.2
