@@ -6,6 +6,8 @@ rule bcftools__build_consensus_sequence:
 	vcf = 'variant/'
     output:
         bed = 'reference/{reference}/annotation/{panel}/regions.vardict.bed',
+    conda:
+        config['snakelines_dir'] + '/enviroments/bcftools.yaml'
     shell:
         """
         cut -f 1-4 {input.bed} > {output.bed}
