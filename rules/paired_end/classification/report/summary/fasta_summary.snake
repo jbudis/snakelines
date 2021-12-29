@@ -3,10 +3,6 @@
 
 import subprocess
 import snakemake
-from Bio.Blast import NCBIXML
-from Bio import SeqIO
-from Bio import SeqUtils
-import pysam
 import os
 import shutil
 import numpy as np
@@ -41,33 +37,20 @@ rule fasta_summary__blast:
     output:
         tsv   = '{indir}/annotation/{name}/attributes/blast/{reference}.blast.tsv'
     params:
+        script_path = srcdir('scripts/fasta_summary_blast.py'),
         min_query_coverage = method_config.get('min_query_coverage', 0),
         max_target_seqs = method_config.get('max_target_seqs', 999999999)
-    run:
-        blast = pd.read_csv(input.blast, sep='\t', index_col=None)
-        seqids, info_list = [], []
-        for seqid, aligns in blast.groupby('qseqid'):
-            aligns['qcov'] = ((aligns['qend'] - aligns['qstart']) / aligns['qlen']).abs()
-            aligns = aligns[aligns['qcov'] >= params.min_query_coverage]
-            aligns = aligns.iloc[:params.max_target_seqs]
-
-            if len(aligns) == 0:
-                continue
-
-            def create_link(align):
-                return '%3.2f%% - <a href="https://www.ncbi.nlm.nih.gov/nuccore/%s", title="%s">%s</a>' % \
-                                  (align['qcov'] * 100, align['sacc'], align['taxonomy'], align['stitle'])
-
-            seqids.append(seqid)
-            info_list.append({
-                'Homologue title (%s)' % wildcards.reference: ';'.join(aligns['stitle']),
-                'Homologue accession (%s)' % wildcards.reference: ';'.join(aligns['stitle']),
-                'Homologue link (%s)' % wildcards.reference: '<br />'.join(aligns.apply(create_link, axis=1))
-            })
-
-        infos = pd.DataFrame(info_list, index=seqids)
-        infos.to_csv(output.tsv, sep='\t')
-
+    conda:
+        config['snakelines_dir'] + '/enviroments/fasta_summary.yaml'
+    shell:
+        """
+        python3 {params.script_path}\
+            {input.blast}\
+            {params.min_query_coverage}\
+            {params.max_target_seqs}\
+            {output.tsv}
+        """
+        
 
 rule fasta_summary__coverage:
     """
@@ -79,35 +62,17 @@ rule fasta_summary__coverage:
         qualimap = '{indir}/mapping/stats-{panel}/{name}/genome_results.txt',
     output:
         tsv      = '{indir}/annotation/{name}/attributes/coverage.tsv'
-    run:
-        is_seq_coverage_line = False
-        seq_coverage_header = '>>>>>>> Coverage per contig'
-        seqids, info_list = [], []
-
-        for line in open(input.qualimap):
-
-            line = line.strip()
-            if not line:
-                continue
-
-            if line.startswith(seq_coverage_header):
-                is_seq_coverage_line = True
-                continue
-
-            if line.startswith('>>>'):
-                is_seq_coverage_line = False
-                continue
-
-            if is_seq_coverage_line:
-                seqid, seqlen, nbases, coverage, coverage_std = line.split()
-                seqids.append(seqid)
-                info_list.append({
-                    'Mapped bases': nbases,
-                    'Coverage': np.round(float(coverage), 2)
-                })
-
-        infos = pd.DataFrame(info_list, index=seqids)
-        infos.to_csv(output.tsv, sep='\t')
+    params:
+        script_path = srcdir('scripts/fasta_summary_blast.py'),
+    conda:
+        config['snakelines_dir'] + '/enviroments/fasta_summary.yaml'
+    shell:
+        """
+        python3 {params.script_path}\
+            {input.qualimap}\
+            {output.tsv}
+        """
+        
 
 rule fasta_summary__mapped_reads:
     """
@@ -135,12 +100,17 @@ rule fasta_summary__virfinder:
         pvalues   = '{indir}/virfinder/{name}.pvalues.tsv'
     output:
         tsv       = '{indir}/annotation/{name}/attributes/virfinder.tsv'
-    run:
-        pvalues = pd.read_csv(input.pvalues, sep='\t', index_col=0)
-        pvalues.index.names = ['']
-        pvalues = pvalues[['pvalue']]
-        pvalues.columns = ['VirFinder pvalue']
-        pvalues.to_csv(output.tsv, sep='\t')
+    params:
+        script_path = srcdir('scripts/fasta_summary_virfinder.py')
+    conda:
+        config['snakelines_dir'] + '/enviroments/fasta_summary.yaml'
+    shell:
+        """
+        python3 {params.script_path}\
+            {input.pvalues}\
+            {output.tsv}
+        """
+
 
 # TODO documentation
 rule fasta_summary__copy_contigs:
@@ -157,27 +127,19 @@ rule fasta_summary__copy_contigs:
         fasta_dir = directory('{indir}/annotation/{name}/sequences/'),
         seqinfo   = '{indir}/annotation/{name}/attributes/seqinfo.fa'
     params:
+        script_path = srcdir('scripts/fasta_summary_contigs.py'),
         fasta     = '{indir}/annotation/{name}/sequences/all_contigs.fa',
-    run:
-        shutil.copyfile(input.fasta, params.fasta)
+    conda:
+        config['snakelines_dir'] + '/enviroments/fasta_summary.yaml'
+    shell:
+        """
+        python3 {params.script_path}\
+            {input.fasta}\
+            {params.fasta}\
+            {output.fasta_dir}\
+            {output.seqinfo}
+        """
 
-        seqids, info_list = [], []
-        for i, seq in enumerate(SeqIO.parse(input.fasta, 'fasta')):
-
-            # Store each sequence in the fasta to the separate file
-            with open('%s/%s.fa' % (output.fasta_dir, seq.id), 'w') as out:
-                SeqIO.write(seq, out, 'fasta')
-
-            seqids.append(seq.id)
-            contig_info = {
-                'Length':     len(seq),
-                'GC content': str(np.round(SeqUtils.GC(seq.seq), 1)),
-                'Compress ratio':  len(zlib.compress(bytes(str(seq.seq), 'utf-8'))) / len(seq.seq)
-            }
-            info_list.append(contig_info)
-
-        infos = pd.DataFrame(info_list, index=seqids)
-        infos.to_csv(output.seqinfo, sep='\t')
 
 def blast_attr_tsvs(wildcards):
     return expand('{indir}/annotation/{name}/attributes/blast/{reference}.blast.tsv',
@@ -275,3 +237,4 @@ rule fasta_summary__summarize_annotations:
                                       sort_index=sort_index,
                                       sort_how=params.sort_how,
                                       seqs_per_page=params.seqs_per_page))
+

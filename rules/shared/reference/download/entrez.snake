@@ -1,6 +1,3 @@
-from Bio import Entrez
-from Bio import SeqIO
-
 rule entrez__download_sequences_by_genbank_id:
     """
     Download sequences from NCBI Genbank database according to the list of enumerated genbank ids
@@ -13,22 +10,16 @@ rule entrez__download_sequences_by_genbank_id:
         reference = protected('reference/{reference}/{reference}.fa'),
         taxonomy = protected('reference/{reference}/{reference}.tax')
     params:
-        method_config = method_config,
-        email = method_config['email']
-    run:
-        genbank_ids = params.method_config[wildcards.reference]
-        Entrez.email = params.email
+        email = method_config['email'],
+	script_path = srcdir('scripts/entrez.py'),
+    conda:
+        config['snakelines_dir'] + '/enviroments/entrez.yaml'        
+    shell:
+        """
+        python3 {params.script_path}\
+            {wildcards.reference}\
+            {params.email}\
+            {output.reference}\
+            {output.taxonomy}
+        """
 
-        with open(output.reference, 'w') as refs, open(output.taxonomy, 'w') as taxes:
-            for genbank_id in genbank_ids:
-                handle = Entrez.efetch(db="nucleotide", id=genbank_id, rettype="gb", retmode="text")
-                record = SeqIO.read(handle, "genbank")
-                handle.close()
-                SeqIO.write(record, refs, 'fasta')
-
-                taxonomy = ';'.join(record.annotations['taxonomy'])
-                if 'organism' in record.annotations:
-                    organism = record.annotations['organism']
-                    taxonomy = '{taxonomy};{organism}'.format(taxonomy=taxonomy, organism=organism)
-
-                taxes.write('{}\t{}\n'.format(genbank_id, taxonomy))
