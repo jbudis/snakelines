@@ -1,0 +1,33 @@
+rule qiime2__core_features:
+    """
+    Identify "core" features, which are features observed in a user-defined fraction of the samples. 
+    Since the core features are a function of the fraction of samples that the feature must be observed in to be considered core, 
+    this is computed over a range of fractions defined by the `min_fraction`, `max_fraction`, and `steps` parameters.
+  
+    Calls 'qiime feature-table core-features'
+
+    :input table: feature table qza artifact
+    :params min_fraction: float 0-1, The minimum fraction of samples that a feature must be observed in for that feature to be considered a core feature 
+    :params max_fraction: float 0-1, The maximum fraction of samples that a feature must be observed in for that feature to be considered a core feature 
+    :params steps: int, The number of steps to take between `min-fraction` and `max-fraction` for core features calculations.
+    :output visualization: core features as qzv
+    """
+    input:
+        table = 'reads/preprocess/denoise/{reference}_table.qza'
+    output:
+        core_features = 'reads/preprocess/denoise/{reference}_core_features.qzv'
+    params:
+        min_fraction = method_config.get('min_fraction',0.5),
+        max_fraction = method_config.get('max_fraction',1.0),
+        steps = method_config.get('steps',11)
+    conda:
+        config['snakelines_dir'] + '/enviroments/qiime2.yaml'
+    shell:
+        '''
+        qiime feature-table core-features \
+            --i-table {input.table} \
+            --o-visualization {output.core_features} \
+            --p-min-fraction {params.min_fraction} \
+            --p-max-fraction {params.max_fraction} \
+            --p-steps {params.steps}
+        '''

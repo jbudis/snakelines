@@ -6,7 +6,7 @@ rule qiime2__report_export:
     :output export_dir: directory of exported visualization
     """
     input:
-        qzv     = 'reads/{step}/{visualization}.qzv'
+        qzv = 'reads/{step}/{visualization}.qzv'
     output:
         html = 'reads/{step}/{visualization}/index.html',
         export_dir = directory('reads/{step}/{visualization}/')

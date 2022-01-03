@@ -67,10 +67,10 @@ threads: 2                              # Number of threads to use in analysis
 qiime2:
     import:
         manifest:
-            method: create_manifest     # allowed: 'create_manifest', this creates a manifest tsv file with all input reads
+            method: create_manifest     # Allowed: 'create_manifest'. This creates a manifest tsv file with all input reads
         data:
-            method: import              # allowed: 'import', this creates a qza from all reads that are in the created tsv manifest file
-            PHRED_offset: 33            # allowed: 33,64 (33 used in Sanger, Illumina1.8, 64 used in Illumina 1.3), default: 33
+            method: import              # Allowed: 'import'. This creates a qza from all reads that are in the created tsv manifest file
+            PHRED_offset: 33            # Allowed: '33' or '64' (33 used in Sanger and Illumina1.8, 64 used in Illumina 1.3), default: 33
     
     preprocess:
         demultiplex:
@@ -91,32 +91,30 @@ qiime2:
             max_ee_f: 4.0               # After trunc and trim, forward reads with expected error rate (calculated by dada2) higher than this value are discarded (default: 2.0)
             max_ee_r: 4.0               # After trunc and trim, reverse reads with expected error rate (calculated by dada2) higher than this value are discarded (default: 2.0)
             min_overlap: 12             # Minimal length of overlap required when merging forward and reverse reads (default: 12)
-            denoise_pooling: independent    # allowed 'independent', 'pseudo'; denoise samples independently, or use pseudo-pooling (default: independent)
-            chimera_method: consensus       # allowed 'consensus', 'pooled', 'none' (default: consensus)
-            chimera_parent_abundance: 2.0   # when tested for chimeric, this gives the minimum abundance of parents. When higher, chimera detection is less rigorous (default: 1.0)
-            num_reads_train: 1000000        # number of reads used for training error model, lower number = faster, but less reliable model (default: 1000000)
+            denoise_pooling: independent    # Allowed 'independent', 'pseudo'; denoise samples independently, or use pseudo-pooling (default: independent)
+            chimera_method: consensus       # Allowed 'consensus', 'pooled', 'none' (default: consensus)
+            chimera_parent_abundance: 2.0   # When tested for chimeric, this gives the minimum abundance of parents. When higher, chimera detection is less rigorous (default: 1.0)
+            num_reads_train: 1000000        # Number of reads used for training error model, lower number = faster, but less reliable model (default: 1000000)
 
     report:
-        #core_features: automaticky alebo nutne definovat?
-            #https://docs.qiime2.org/2021.8/plugins/available/feature-table/core-features/
-        #heatmap:
-            #https://docs.qiime2.org/2021.8/plugins/available/feature-table/heatmap/
+        core_features:                  # https://docs.qiime2.org/2021.8/plugins/available/feature-table/core-features/
+            method: core_features       # Allowed: 'core_features'. Features observed in the specified fraction of samples are considered core
+            min_fraction: 0.5           # minimum fraction of samples, must be 0-1 (default 0.5)
+            max_fraction: 1             # maximum fraction of samples, must be 0-1 and greater or equal than min-fraction (default 1.0)
+            steps: 11                   # number of steps to take between `min-fraction` and `max-fraction` for core features calculations (default: 11)            
         feature_table:
-            method: feature_table
-
-        #https://forum.qiime2.org/t/qiime-2-2021-11-is-now-available/21457
+            method: feature_table       # Allowd: 'feature_table'. Generates table of features and associated sequences
+        #feature_heatmap:                # https://docs.qiime2.org/2021.8/plugins/available/feature-table/heatmap/
+        #    method: feature_heatmap     # Allowed 'heatmap'. Generates a heatmap representation of a feature table.
+        #    normalize: True             # Allowed 'True' or 'False'. Whether to normalize counts of features. Default: True
+        #    metric: euclidean           # See doc for allowed metrics. Default: 'euclidean'. Defines metric used for calculating distance between features
+        #    linkage: average            # See doc for allowed values. Default: 'average'. Defines how to calculate distance between clusters
+        #    cluster_ax: both            # Allowed 'both', 'features', 'samples', 'none'. Default: 'both'. Defines which axes to cluster.
+        
+        # *** added t-SNE and UMAP in newer version - TO DO? 
+        # https://forum.qiime2.org/t/qiime-2-2021-11-is-now-available/21457
         export:
             method: export              # Allowed 'export'. This tells snakelines to export each .qzv into human readable .html form
-            #representative_seqs: True #
-            #feature_table: True
-            #denoising_stats: True
-            #core_features: True
-            #heatmap: True
-
-        # 3 pipelines:
-            # dada2 -> ASVs
-            # (join-pairs), quality filter, deblur -> ASVs 
-            # (join-pairs), quality filter, dereplicate, OTU clustering, chimera, abundance filtering -> OTUs
 
         #quality_filter:         # required when using DEBLUR
         #    method: qscore      # see https://docs.qiime2.org/2021.8/plugins/available/quality-filter/q-score/
@@ -124,13 +122,6 @@ qiime2:
         #    window_size: 3      # low score succession longer than this value are truncated from read
         #    min_length_fraction: 0.75 #if truncating results in read length of lesser fraction than this value, then read is not kept
         #    max_ambiguous: 0    # how many ambiguous bases can occur in truncated read
-
-        #joining...
-
-        #dereplicate:
-        #    method: vsearch_dereplicate_sequences # allowed 'vsearch_dereplicate_sequences'
-        
-        #clustering...
 
     # Possible filtering
     # label: 
@@ -141,6 +132,8 @@ qiime2:
     #    conditions:
     #      - equals: 2019
 
+    # *** ma zmysel urobit nonphylogenetic?
+    # *** je nutne tie alfa beta typy definovat? 
     analysis:
         phylogeny:                                  # Constructs phylogeny tree
             method: fasttree                        # Allowed: fasttree, iqtree, raxml
@@ -184,15 +177,21 @@ qiime2:
 
             #alpha_rarefaction: #https://docs.qiime2.org/2021.8/plugins/available/diversity/alpha-rarefaction/
             #beta_rarefaction: #https://docs.qiime2.org/2021.8/plugins/available/diversity/beta-rarefaction/
+            # https://docs.qiime2.org/2021.8/plugins/available/diversity/procrustes-analysis/?highlight=procrustes)
+            # https://docs.qiime2.org/2021.8/plugins/available/diversity/mantel
 
         taxonomy:
-            fit: #https://docs.qiime2.org/2021.8/tutorials/feature-classifier/ - extract reference reads?
+            fit: # ***https://docs.qiime2.org/2021.8/tutorials/feature-classifier/ - extract reference reads?
                 method: naive_bayes                 # Allowed 'naive_bayes', requires .fa and .tax in specified reference directory
                 #reference_class_weights:  
             classify:
-                method: fitted_classifier
-                confidence_threshold: 0.7           # Confidence threshold for limiting taxonomic depth (default: 0.7), either float from 0-1 range, or "disable" to disable confidence calculation, or '0' to calculate confidence but not apply it
+                method: fitted_classifier           # Allowed 'fitted_classifier'
+                # *** allow some custom classifier?
+                confidence_threshold: 0.7           # Taxonomy classification is limited at tax. depth where confidence is lower than this value (default: 0.7), either float from 0-1 range, or "disable" to disable confidence calculation, or '0' to calculate confidence but not apply it
 
+        #differential_abundance:
+        #    method: lefse
+        #/data/projects/sanitas/lichvar-analyza-1
 
         #longitudinal: https://docs.qiime2.org/2021.8/tutorials/longitudinal/
             #pairwise-differences
@@ -208,6 +207,8 @@ qiime2:
         #differential abundance:
             # ANCOM https://docs.qiime2.org/2021.8/tutorials/moving-pictures/#ancom
             # gneiss https://docs.qiime2.org/2021.8/tutorials/gneiss/ 
+        
         #quality_evaluation https://docs.qiime2.org/2021.8/tutorials/quality-control/
+        #*** ak je k dispozicii mock, alebo znama kompozicia
 
         #predictions? https://docs.qiime2.org/2021.8/tutorials/sample-classifier/    

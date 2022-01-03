@@ -25,7 +25,7 @@ rule qiime2__diversity_core_metrics_phylogenetic:
 
     :input rooted_tree: rooted tree, qiime artifact of type Phylogeny[Rooted], e.g. reads/qiime/silva16S-rooted-tree-dn-99.qza
     :input table: qiime artifact of type FeatureTable[Frequency], e.g. reads/qiime/silva16S-table-dn-99.qza
-    :input metadata: samples' metadata filepath in TSV format (tab-separated value), e.g. description/silva16S-sample-metadata.tsv
+    :input metadata: samples metadata filepath in TSV format (tab-separated value), e.g. description/silva16S-sample-metadata.tsv
     :param sample_freqs_csv: sample_frequencies.csv obtained in report of input feature table, used for auto calculation of sampling depth
     
     :output rarefied_table: qiime artifact of type FeatureTable[Frequency], e.g. reads/qiime/silva16S-core-metrics-results-dn-99/rarefied_table.qza
