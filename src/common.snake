@@ -218,3 +218,4 @@ qiime2_beta_significance_columns = extract_from_config(config, ['qiime2', 'analy
 qiime2_pcoa_custom_columns = extract_from_config(config, ['qiime2', 'analysis', 'diversity', 'pcoa_explore','columns'], [])
 
 qiime2_filt_label = extract_from_config(config, ['qiime2', 'filter','label'], "")
+qiime2_heatmap_columns = extract_from_config(config, ['qiime2', 'report', 'feature_heatmap', 'columns'], [])

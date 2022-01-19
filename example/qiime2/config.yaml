@@ -2,7 +2,7 @@ sequencing: paired_end
 
 samples:                            # List of sample categories to be analysed
     - name: .*                      # Use all reads in reads/original
-      reference: silva-16S-90-filtered  # Reference genome for reads in the category (reference/silva-16S-90-filtered/silva-16S-90-filtered.fa)
+      reference: ref-16S-bac  # Reference genome for reads in the category (reference/silva-16S-90-filtered/silva-16S-90-filtered.fa)
       description:                  # Creates metadata file (description/sample-metadata.tsv)
         overwrite: True             # allowed True or False, defines whether to overwrite created metadata file
         format: '{year}-{wine}-{additive}-{material}-{rRNA}-{phase}-{biological_replica}-{technical_replica}' # napr. 2021-R-S_R1.fastq.gz
@@ -103,14 +103,17 @@ qiime2:
             max_fraction: 1             # maximum fraction of samples, must be 0-1 and greater or equal than min-fraction (default 1.0)
             steps: 11                   # number of steps to take between `min-fraction` and `max-fraction` for core features calculations (default: 11)            
         feature_table:
-            method: feature_table       # Allowd: 'feature_table'. Generates table of features and associated sequences
-        #feature_heatmap:                # https://docs.qiime2.org/2021.8/plugins/available/feature-table/heatmap/
-        #    method: feature_heatmap     # Allowed 'heatmap'. Generates a heatmap representation of a feature table.
-        #    normalize: True             # Allowed 'True' or 'False'. Whether to normalize counts of features. Default: True
-        #    metric: euclidean           # See doc for allowed metrics. Default: 'euclidean'. Defines metric used for calculating distance between features
-        #    linkage: average            # See doc for allowed values. Default: 'average'. Defines how to calculate distance between clusters
-        #    cluster_ax: both            # Allowed 'both', 'features', 'samples', 'none'. Default: 'both'. Defines which axes to cluster.
-        
+            method: feature_table       # Allowed: 'feature_table'. Generates table of features and associated sequences
+        feature_heatmap:                # https://docs.qiime2.org/2021.8/plugins/available/feature-table/heatmap/
+            method: feature_heatmap     # Allowed 'heatmap'. Generates a heatmap representation of a feature table.
+            normalize: True             # Allowed 'True' or 'False'. Whether to normalize counts of features. Default: True
+            metric: euclidean           # See doc for allowed metrics. Default: 'euclidean'. Defines metric used for calculating distance between features
+            linkage: average            # See doc for allowed values. Default: 'average'. Defines how to calculate distance between clusters
+            cluster_ax: both            # Allowed 'both', 'features', 'samples', 'none'. Default: 'both'. Defines which axes to cluster.
+            columns:
+                - additive
+                - phase
+
         # *** added t-SNE and UMAP in newer version - TO DO? 
         # https://forum.qiime2.org/t/qiime-2-2021-11-is-now-available/21457
         export:
@@ -175,8 +178,8 @@ qiime2:
                 columns:                            # Define columns from metadata, must be numeric, either set in metadata file as numeric type or empty type
                     - year
 
-            #alpha_rarefaction: #https://docs.qiime2.org/2021.8/plugins/available/diversity/alpha-rarefaction/
-            #beta_rarefaction: #https://docs.qiime2.org/2021.8/plugins/available/diversity/beta-rarefaction/
+            # alpha_rarefaction: #https://docs.qiime2.org/2021.8/plugins/available/diversity/alpha-rarefaction/
+            # beta_rarefaction: #https://docs.qiime2.org/2021.8/plugins/available/diversity/beta-rarefaction/
             # https://docs.qiime2.org/2021.8/plugins/available/diversity/procrustes-analysis/?highlight=procrustes)
             # https://docs.qiime2.org/2021.8/plugins/available/diversity/mantel
 
@@ -189,9 +192,10 @@ qiime2:
                 # *** allow some custom classifier?
                 confidence_threshold: 0.7           # Taxonomy classification is limited at tax. depth where confidence is lower than this value (default: 0.7), either float from 0-1 range, or "disable" to disable confidence calculation, or '0' to calculate confidence but not apply it
 
-        #differential_abundance:
-        #    method: lefse
-        #/data/projects/sanitas/lichvar-analyza-1
+        differential_abundance:
+            method: lefse                           # Allowed 'lefse'
+            taxa_level: 4                           # Maximum taxonomic level that is of your interest
+            class_col: phase                        # Specify column from metadata file
 
         #longitudinal: https://docs.qiime2.org/2021.8/tutorials/longitudinal/
             #pairwise-differences

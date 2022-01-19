@@ -16,7 +16,7 @@ rule qiime2__heatmap_feature_table:
         table = 'reads/preprocess/denoise/{reference}_table.qza',
         metadata = 'description/joined-sample-metadata.tsv'
     output:
-        heatmap = 'reads/preprocess/denoise/{reference}_heatmap.qzv'
+        heatmap = 'reads/preprocess/denoise/{reference}_{column}_heatmap.qzv'
     params:
         metric = method_config.get('metric','euclidean'),
         linkage = method_config.get('linkage','average'),
@@ -30,7 +30,7 @@ rule qiime2__heatmap_feature_table:
             --i-table {input.table} \
             --o-visualization {output.heatmap} \
             --m-sample-metadata-file {input.metadata} \
-            --m-sample-metadata-column phase \
+            --m-sample-metadata-column {wildcards.column} \
             --p-metric {params.metric} \
             --p-method {params.linkage} \
             {params.normalize} \

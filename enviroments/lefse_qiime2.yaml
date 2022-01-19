@@ -1,0 +1,4 @@
+channels:
+- biobakery
+dependencies:
+- lefse=1.1.2
