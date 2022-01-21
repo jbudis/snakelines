@@ -5,7 +5,7 @@ rule cutadapt__trim_reads:
     input:
         r1 = 'reads/%s/{sample}_R1.fastq.gz' % method_config['input_read_type'],
         r2 = 'reads/%s/{sample}_R2.fastq.gz' % method_config['input_read_type'],
-        fasta = 'description/adapters/%s.fa' % method_config.get('fasta')
+        fasta = method_config.get('fasta')
     output:
         r1 = configured_temp('reads/trimmed/{sample}_R1.fastq.gz'),
         r2 = configured_temp('reads/trimmed/{sample}_R2.fastq.gz'),
