@@ -45,6 +45,8 @@ mapping:
 variant:
     caller:
         method: clair
+
+consensus:
     lineage:
         caller:
             method: pangolin

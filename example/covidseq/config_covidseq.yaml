@@ -80,9 +80,9 @@ consensus:                          # consesnus sequence
     summary:
         method: cat                 # concatenate consensus sequences from the samples into a single file
 
-        lineage:
-            caller:
-                method: pangolin
-            summary:
-                method: cat
+    lineage:
+        caller:
+            method: pangolin
+        summary:
+            method: cat
 
