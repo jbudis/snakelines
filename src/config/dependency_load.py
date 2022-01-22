@@ -12,7 +12,7 @@ def load_yaml(file_name):
     :return: dict - YAML dict
     """
     with open(file_name) as f:
-        dependency_dict = oyaml.load(f)
+        dependency_dict = oyaml.load(f,Loader=yaml.FullLoader)
 
     return dependency_dict
 
