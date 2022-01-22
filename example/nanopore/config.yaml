@@ -45,7 +45,9 @@ mapping:
 variant:
     caller:
         method: clair
-
-lineage:
-    method: pangolin
+    lineage:
+        caller:
+            method: pangolin
+        summary:
+            method: cat
 
