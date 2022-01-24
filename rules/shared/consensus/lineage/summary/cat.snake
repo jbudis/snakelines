@@ -21,7 +21,7 @@ rule awk__count_total_clades:
     shell:
         """ 
         echo "count\tlineage\tscorpio_call" > {output}
-        awk -F ',' 'NR > 1 {{if ($2 != "" && $2 != "None") print $2 " " $5}}' {input} |\
+        awk -F ',' 'NR > 1 {{if ($2 != "") print $2 " " $5}}' {input} |\
             sort | uniq -c | sort -nr -k1,1 | awk '{{print $1 "\t" $2 "\t" $3}}' >> {output}
         """
 
