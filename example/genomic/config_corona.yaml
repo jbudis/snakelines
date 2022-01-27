@@ -86,9 +86,6 @@ variant:                                    # Identify variation in reads given 
             method: custom
 
 consensus:                          # consesnus sequence
-    lineage:
-      method: pangolin
-
     fasta:                          # create consesnus sequence based on vcf of a sample and reference fasta
         method: bcftools            # bcftools is the only option
         mask_lte_coverage: 2        # mask bases with N where coverage is lower than or equal to parameter
@@ -96,6 +93,11 @@ consensus:                          # consesnus sequence
     summary:
         method: cat                 # concatenate consensus sequences from the samples into a single file
 
+    lineage:
+        caller:
+            method: pangolin
+        summary:
+            method: cat
 report:
     multiqc:
         summary:

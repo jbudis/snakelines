@@ -26,7 +26,9 @@ Installation as a Conda package
    conda config --add channels rsmulktis
    conda config --add channels moustik
   
-   conda create --name snakelines-env -c bioconda snakelines
+   conda install mamba -n base -c conda-forge
+  
+   mamba create --name snakelines-env -c bioconda snakelines
    conda activate snakelines-env
    
 
@@ -35,7 +37,7 @@ Alternately you may `download sources directly <running.html#installation>`_.
 Execute example pipeline
 ----------------
 
-Toy example read files and references are stored at the `/example` directory of downloaded sources.
+Toy example read files and references are stored at the `/example` directory of `downloaded sources <https://github.com/jbudis/snakelines/archive/refs/heads/master.zip>`_.
 Assuming, that sources are downloaded in /usr/local/snakelines, `variant_calling` pipeline may be executed using
 
 .. code-block:: bash

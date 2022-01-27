@@ -46,6 +46,10 @@ variant:
     caller:
         method: clair
 
-lineage:
-    method: pangolin
+consensus:
+    lineage:
+        caller:
+            method: pangolin
+        summary:
+            method: cat
 

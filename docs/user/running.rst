@@ -13,12 +13,13 @@ Software requirements
 Minimal software requirements are:
 
 * Linux (tested on Ubuntu 20.04)
-* Miniconda (tested on 4.8.3)
+* Miniconda (tested on 4.11.0)
+* Mamba (tested on 0.15.3)
    
 Installation
 ---------------
 
-There are two ways for SnakeLines to be installed: as Conda package and by cloning the Github repository. We recommend the first option.
+There are two ways for SnakeLines to be installed: as Conda package using Mamba and by cloning the Github repository. We recommend the first option.
 
 Installation as a Conda package
 --------------------------------
@@ -34,8 +35,10 @@ Installation as a Conda package
    conda config --add channels agbiome
    conda config --add channels rsmulktis
    conda config --add channels moustik
+   
+   conda install mamba -n base -c conda-forge
   
-   conda create --name snakelines-env -c bioconda snakelines
+   mamba create --name snakelines-env -c bioconda snakelines
    conda activate snakelines-env
    
 
@@ -46,7 +49,7 @@ Snakelines requires several Python3 modules to be installed prior to Snakelines.
 
 .. code:: bash
 
-    pip install numpy==1.19.2 oyaml==0.9 pandas==1.1.3 biopython==1.78 seaborn==0.11.0 bs4==4.9.3 weasyprint==51 pysam==0.16.0.1 openpyxl==3.0.5 scikit-bio==0.5.6 jinja2==2.11.2 snakemake==5.13.0
+    pip install numpy==1.19.2 oyaml==0.9 pandas==1.1.3 seaborn==0.11.0 bs4==4.9.3 weasyprint==51 jinja2==2.11.2 snakemake==5.13.0 multiqc==1.10.1
 
 Sources codes for SnakeLines pipelines are stored at `GitHub repository <https://github.com/jbudis/snakelines>`_.
 You may download them directly or clone them using git.

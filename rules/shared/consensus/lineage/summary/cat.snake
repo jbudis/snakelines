@@ -1,0 +1,28 @@
+rule cat__concatenate_lineage_reports:
+    input:
+        reports = expand('consensus/{sr.reference}-{sr.panel}/{sr.sample}.lineage_report.csv', sr=pipeline.sample_references)
+    output:
+        'consensus/{reference}-{panel}/lineage_report.summary.csv'
+    shell:
+        """
+        header=$(head -n 1 {input.reports[0]})
+        echo $header > {output}
+        for f in {input.reports}
+        do
+            sed 1d $f >> {output}
+        done
+        """
+
+rule awk__count_total_clades:
+    input:
+        'consensus/{reference}-{panel}/lineage_report.summary.csv'
+    output:
+        'consensus/{reference}-{panel}/lineage_report.subtotal.tsv'
+    shell:
+        """ 
+        echo "count\tlineage\tscorpio_call" > {output}
+        awk -F ',' 'NR > 1 {{if ($2 != "") print $2 " " $5}}' {input} |\
+            sort | uniq -c | sort -nr -k1,1 | awk '{{print $1 "\t" $2 "\t" $3}}' >> {output}
+        """
+
+
