@@ -29,7 +29,7 @@ rule bcftools__create_consensus_fasta:
         deletions_bed = 'consensus/{reference}-{panel}/{sample}.deletions.bed',
         masking_bed = 'consensus/{reference}-{panel}/{sample}.masking.bed',
         use_iupac = 'true' if method_config.get('use_iupac', False) else 'false',
-        snakelines_path = config['snakelines_dir']
+        iupac_script = srcdir('scripts/add_iupac_codes.py')
     conda:
         config['snakelines_dir'] + '/enviroments/create_consensus_fasta.yaml'
     shell:
@@ -52,7 +52,7 @@ rule bcftools__create_consensus_fasta:
         1> {log.out} \
         2> {log.err}
         if {params.use_iupac}; then
-            python3 {params.snakelines_path}/rules/consensus/fasta/add_iupac_codes.py {output.fasta} {input.vcf} {output.fasta}
+            python3 {params.iupac_script} {output.fasta} {input.vcf} {output.fasta}
         fi
 
         sed -i '1s/>.*/>{wildcards.sample}/' {output.fasta}

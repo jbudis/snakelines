@@ -499,8 +499,3 @@ assembly:
                                   report_dir=config['report_dir'],
                                   sample=pipeline.samples)
 
-lineage:
-    output:
-        report:
-            from: expand('reference/{reference}/lineage_report.csv', reference=pipeline.references)
-            to: expand('{report_dir}/{reference}/lineage_report.csv', report_dir=config['report_dir'],reference=pipeline.references)
