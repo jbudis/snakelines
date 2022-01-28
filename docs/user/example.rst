@@ -37,15 +37,23 @@ Alternately you may `download sources directly <running.html#installation>`_.
 Execute example pipeline
 ----------------
 
-Toy example read files and references are stored at the `/example` directory of `downloaded sources <https://github.com/jbudis/snakelines/archive/refs/heads/master.zip>`_.
-Assuming, that sources are downloaded in /usr/local/snakelines, `variant_calling` pipeline may be executed using
+Toy example read files and references are stored at the `/example` directory of Snakelines package in conda installation directory. To access them, simply use command below to copy them out of conda directory:
+
+.. code-block:: bash
+
+  cp -R `conda info --base`/envs/snakelines-env/share/snakelines/example snakelines-examples
+
+`variant_calling` pipeline may be executed using:
 
 .. code-block:: bash
 
    conda activate snakelines-env
    
-   cd /usr/local/snakelines/example/genomic
+   cd snakelines-examples/genomic
 
    snakelines \
       --configfile config_variant_calling.yaml \
-      --use-conda
+      --use-conda \ 
+      --cores 2
+      
+Please be aware that installation of some conda packages during Snakelines run might take up to several hours (especially `Qualimap <http://qualimap.conesalab.org/implementation>`_ might take up to 24 hours). This is a known issue of conda implementation in snakemake workflow and it is beyond our reach.
