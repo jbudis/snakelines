@@ -69,7 +69,8 @@ rule gatk__prepare_vcf:
     """
     input:
         vcf = 'variant/{reference}-{panel}/original/{sample}.bcftools.vcf',
-        fasta = 'reference/{reference}/{reference}.fa'
+        fasta = 'reference/{reference}/{reference}.fa',
+        ref_dict = 'reference/{reference}/{reference}.dict'
     output:
         vcf = 'variant/{reference}-{panel}/original/{sample}.vcf',
         vcf_index = 'variant/{reference}-{panel}/original/{sample}.vcf.idx',

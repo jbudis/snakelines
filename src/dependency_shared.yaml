@@ -273,27 +273,27 @@ consensus:
 
               to: expand('{report_dir}/_summary/consensus-{sr.reference}-{sr.panel}.fa',
                 report_dir=config['report_dir'], sr=pipeline.sample_references)
-    lineage:
-        caller:
-            output:
-                report:
-                    from: expand('consensus/{sr.reference}-{sr.panel}/{sr.sample}.lineage_report.csv',
-                                sr=pipeline.sample_references)
-                    to: expand('{report_dir}/{sr.sample}/lineage_report-{sr.reference}-{sr.panel}.csv',
-                                report_dir=config['report_dir'], sr=pipeline.sample_references)
-            depends:
-                - variant/caller
+lineage:
+    caller:
+        output:
+            report:
+                from: expand('consensus/{sr.reference}-{sr.panel}/{sr.sample}.lineage_report.csv',
+                            sr=pipeline.sample_references)
+                to: expand('{report_dir}/{sr.sample}/lineage_report-{sr.reference}-{sr.panel}.csv',
+                            report_dir=config['report_dir'], sr=pipeline.sample_references)
+        depends:
+            - variant/caller
 
-        summary:
-            output:
-                summary:
-                    from: expand('consensus/{sr.reference}-{sr.panel}/lineage_report.{type}',
-                        sr=pipeline.sample_references, type=["summary.csv", "subtotal.tsv"])
-                    to: expand('{report_dir}/_summary/lineage_report-{sr.reference}-{sr.panel}-{type}',
-                        report_dir=config['report_dir'], sr=pipeline.sample_references,
-                        type=['summary.csv', "subtotal.tsv"])
-            depends:
-                - consensus/lineage/caller
+    summary:
+        output:
+            summary:
+                from: expand('consensus/{sr.reference}-{sr.panel}/lineage_report.{type}',
+                    sr=pipeline.sample_references, type=["summary.csv", "subtotal.tsv"])
+                to: expand('{report_dir}/_summary/lineage_report-{sr.reference}-{sr.panel}-{type}',
+                    report_dir=config['report_dir'], sr=pipeline.sample_references,
+                    type=['summary.csv', "subtotal.tsv"])
+        depends:
+            - consensus/lineage/caller
 
 classification:
     read_based:

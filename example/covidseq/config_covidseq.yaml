@@ -34,7 +34,7 @@ reads:                              # Prepare reads and quality reports for down
             read_types:             # List of preprocess steps for quality reports
                 - original
                 - trimmed
-                - decontaminated
+#                - decontaminated
 
 mapping:                            # Find the most similar genomic region to reads in reference (mapping process)
     mapper:                         # Method for mapping
@@ -80,9 +80,9 @@ consensus:                          # consesnus sequence
     summary:
         method: cat                 # concatenate consensus sequences from the samples into a single file
 
-    lineage:
-        caller:
-            method: pangolin
-        summary:
-            method: cat
+lineage:
+    caller:
+        method: pangolin
+    summary:
+        method: cat
 
