@@ -1,0 +1,11 @@
+rule custom__count_mixed_positions:
+    input:
+        vcf = 'variant/{reference}-{panel}/original/{sample}.vcf',
+        vcf_index = 'variant/{reference}-{panel}/original/{sample}.vcf.idx',
+    output:
+        txt = 'misc/{reference}-{panel}/mixed_positions/{sample}.txt',
+    shell:
+        """
+            echo -n '{wildcards.sample}:' > {output.txt}
+            grep -c '0/1' {input.vcf} >> {output.txt}
+        """

@@ -1,0 +1,17 @@
+rule custom__concatenate_mixed_samples:
+    input:
+        expand('misc/{sr.reference}-{sr.panel}/mixed_positions/{sr.sample}.txt', sr=pipeline.sample_references)
+    output:
+        all       = 'misc/{reference}-{panel}/mixed_samples_all.txt',
+        filtered  = 'misc/{reference}-{panel}/mixed_samples_filtered.txt',
+    params:
+        min_coverage = method_config.get('min_coverage', 0),
+    conda:
+        config['snakelines_dir'] + '/enviroments/bcftools.yaml'
+    shell:
+        """
+            cat {input} > {output.all}
+            cat {output.all} | awk -F ':' '{{if ( $2 > {params.min_coverage} ) print}}' > {output.filtered}
+        """
+
+

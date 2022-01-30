@@ -293,7 +293,34 @@ lineage:
                     report_dir=config['report_dir'], sr=pipeline.sample_references,
                     type=['summary.csv', "subtotal.tsv"])
         depends:
-            - consensus/lineage/caller
+            - lineage/caller
+
+misc:
+    mixed_positions:
+        count:
+            output:
+                txt:
+                    from: expand('misc/{sr.reference}-{sr.panel}/mixed_positions/{sr.sample}.txt',
+                        sr=pipeline.sample_references)
+
+                    to: expand('{report_dir}/{sr.sample}/mixed_positions-{sr.reference}-{sr.panel}.txt',
+                        report_dir=config['report_dir'], sr=pipeline.sample_references)
+
+            depends:
+              - variant/caller
+
+        summary:
+            output:
+                txt:
+                    from: expand('misc/{sr.reference}-{sr.panel}/mixed_samples_{category}.txt',
+                        sr=pipeline.sample_references, category=['all', 'filtered'])
+
+                    to: expand('{report_dir}/_summary/mixed_samples_{category}-{sr.reference}-{sr.panel}.txt',
+                        report_dir=config['report_dir'], sr=pipeline.sample_references,
+                        category=['all', 'filtered'])
+
+            depends:
+                - misc/mixed_positions/count
 
 classification:
     read_based:
@@ -425,7 +452,7 @@ classification:
                         to:   expand('{report_dir}/_summary/transcript_counts/summary{subtype}.{format}',
                                       report_dir=config['report_dir'], subtype=['', '.normed'],
                                       format=['xlsx', 'tsv'])
-                                      
+
                 depends:
                     - classification/differential_analysis
 

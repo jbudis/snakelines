@@ -66,8 +66,8 @@ variant:                                    # Identify variation in reads given 
         haploid: True                 # Set predefined ploidy. [False]
 
     report:
-        calling:
-            method: gatk
+#        calling:
+#            method: gatk
 
         summary:
             method: custom
@@ -85,4 +85,14 @@ lineage:
         method: pangolin
     summary:
         method: cat
+
+misc:
+    mixed_positions:
+        count:
+            method: custom
+
+        summary:
+            method: custom
+            min_coverage: 9
+
 
