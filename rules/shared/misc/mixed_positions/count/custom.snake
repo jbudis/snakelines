@@ -10,10 +10,6 @@ rule custom__count_mixed_positions:
         txt = 'misc/{reference}-{panel}/mixed_positions/{sample}.txt',
     shell:
         """
-            echo -n '{wildcards.sample}:' \
-                1> {output.txt}
-
-            grep -c '0/1' {input.vcf} \
-                1>> {output.txt} || \
-                echo '0' >> {output.txt}
+            echo -n '{wildcards.sample}:' 1> {output.txt}
+            grep -c '0/1' {input.vcf} 1>> {output.txt} || true
         """
