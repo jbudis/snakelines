@@ -13,7 +13,7 @@ rule custom__count_mixed_positions:
             echo -n '{wildcards.sample}:' \
                 1> {output.txt}
 
-            grep -c '0/1' {input.vcf} | \
+            grep -c '0/1' {input.vcf} \
                 1>> {output.txt} || \
                 echo '0' >> {output.txt}
         """
