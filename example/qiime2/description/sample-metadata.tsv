@@ -1,0 +1,12 @@
+sample-id	year	wine	additive	material	rRNA	phase	biological_replica	technical_replica
+#q2:types		categorical	categorical	categorical	categorical	categorical	categorical	categorical
+18-rb-ctrl-dna-16S-m3-repA-2	2018	rulandske biele	control - commercial Saccharomyces cerevisiae only	DNA	16S	young wine	first replica	2
+18-rb-ctrl-dna-16S-m3-repA-3	2018	rulandske biele	control - commercial Saccharomyces cerevisiae only	DNA	16S	young wine	first replica	3
+18-rb-lasa-dna-16S-m3-repA-2	2018	rulandske biele	Lachancea thermotolerans and Saccharomyces cerevisiae	DNA	16S	young wine	first replica	2
+18-rb-ctrl-dna-16S-m3-repA-1	2018	rulandske biele	control - commercial Saccharomyces cerevisiae only	DNA	16S	young wine	first replica	1
+19-rb-ctrl-dna-16S-m1-repA-2	2019	rulandske biele	control - commercial Saccharomyces cerevisiae only	DNA	16S	must	first replica	2
+19-rb-lasa-dna-16S-m1-repA-1	2019	rulandske biele	Lachancea thermotolerans and Saccharomyces cerevisiae	DNA	16S	must	first replica	1
+19-rb-lasa-dna-16S-m1-repA-2	2019	rulandske biele	Lachancea thermotolerans and Saccharomyces cerevisiae	DNA	16S	must	first replica	2
+19-rb-ctrl-dna-16S-m1-repA-1	2019	rulandske biele	control - commercial Saccharomyces cerevisiae only	DNA	16S	must	first replica	1
+18-rb-lasa-dna-16S-m3-repA-1	2018	rulandske biele	Lachancea thermotolerans and Saccharomyces cerevisiae	DNA	16S	young wine	first replica	1
+18-rb-lasa-dna-16S-m3-repA-3	2018	rulandske biele	Lachancea thermotolerans and Saccharomyces cerevisiae	DNA	16S	young wine	first replica	3

@@ -18,6 +18,9 @@ rule qiime2__taxonomy_fitted_classifier:
         confidence = method_config.get('confidence_threshold', 0.7)
     conda:
         config['snakelines_dir'] + '/enviroments/qiime2.yaml'
+    log:
+        out = 'reads/taxonomy/log/{reference}_fitting.out',
+        err = 'reads/taxonomy/log/{reference}_fitting.err'    
     threads:
         int(config['threads'])
     shell:
@@ -39,9 +42,12 @@ rule qiime2__taxonomy_barplot:
     input:
         taxonomy = 'reads/taxonomy/{reference}_tax.qza',
         feature_table = 'reads/preprocess/denoise/{reference}_table.qza',
-        metadata = 'description/joined-sample-metadata.tsv'
+        metadata = 'description/sample-metadata.tsv'
     output:
         barplot = 'reads/taxonomy/{reference}_barplot.qzv'
+    log:
+        out = 'reads/taxonomy/log/{reference}_barplot.out',
+        err = 'reads/taxonomy/log/{reference}_barplot.err' 
     conda:
         config['snakelines_dir'] + '/enviroments/qiime2.yaml'
     shell:

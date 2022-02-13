@@ -102,7 +102,7 @@ pipeline = Pipeline()
 DEFAULT_SAMPLE_CONFIGURATION = [{'name': '.*'}]
 default_read_names = {'single_end': '{}.fastq.gz', 'paired_end': '{}_R1.fastq.gz'}
 DEFAULT_SAMPLE_LOCATION = 'reads/original/' + default_read_names[config['sequencing']]
-DEFAULT_METADATA_LOCATION = 'description/joined-sample-metadata.tsv'
+DEFAULT_METADATA_LOCATION = 'description/sample-metadata.tsv'
 sample_configurations = config.get('samples', DEFAULT_SAMPLE_CONFIGURATION)
 
 for sample_configuration in sample_configurations:
@@ -211,7 +211,6 @@ pca_formats = extract_from_config(config, ['classification', 'report', 'transcri
 # Which types use in qiime2 core-metrics analysis
 qiime2_alpha_types = extract_from_config(config, ['qiime2', 'analysis', 'core_metrics', 'alpha_types'], [])
 qiime2_beta_types = extract_from_config(config, ['qiime2', 'analysis', 'core_metrics', 'beta_types'], [])
-qiime2_emperor_types = extract_from_config(config, ['qiime2', 'analysis', 'core_metrics', 'emperor_types'], [])
 
 # Which columns from metadata use in beta-significance report
 qiime2_beta_significance_columns = extract_from_config(config, ['qiime2', 'analysis', 'diversity', 'beta','columns'], [])
@@ -219,3 +218,6 @@ qiime2_pcoa_custom_columns = extract_from_config(config, ['qiime2', 'analysis', 
 
 qiime2_filt_label = extract_from_config(config, ['qiime2', 'filter','label'], "")
 qiime2_heatmap_columns = extract_from_config(config, ['qiime2', 'report', 'feature_heatmap', 'columns'], [])
+qiime2_ancom_columns = extract_from_config(config, ['qiime2', 'analysis', 'differential_abundance', 'ancom', 'columns'], [])
+qiime2_ancom_taxa_lvls = extract_from_config(config, ['qiime2', 'analysis', 'differential_abundance', 'ancom_taxa', 'taxa_levels'], [])
+qiime2_ancom_taxa_columns = extract_from_config(config, ['qiime2', 'analysis', 'differential_abundance', 'ancom_taxa', 'columns'], [])

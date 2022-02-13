@@ -1,0 +1,46 @@
+rule qiime2__diversity_alpha_rarefaction:
+    """
+    Generate interactive alpha rarefaction curves by computing rarefactions between `min_depth` and `max_depth`. The number of intermediate depths to
+    compute is controlled by the `steps` parameter, with n `iterations` being computed at each rarefaction depth. If sample metadata is provided,
+    samples may be grouped based on distinct values within a metadata column.
+
+    Calls 'qiime diversity alpha-rarefaction'.
+
+    :input feature_table: feature table to compute rarefaction curves from
+    :input phylogeny: phylogeny for phylogenetic metrics
+    :input metadata: samples' metadata filepath in TSV format (tab-separated value), e.g. description/silva16S-sample-metadata.tsv
+    :param max_depth: the maximum rarefaction depth
+    :param min_depth: the minimum rarefaction depth
+    :param steps: the number of rarefaction depths to include between min-depth and max-depth
+    :param iterations: the number of rarefied feature tables to compute at each step.
+    :param metrics: the metrics to be measured.
+    :output qzv: qiime visualization - alpha rarefaction curves
+    """
+    input:
+        feature_table = 'reads/preprocess/denoise/{reference}_table.qza',
+        phylogeny = 'reads/analysis/alignment/{reference}_rooted-tree.qza',
+        metadata = 'description/sample-metadata.tsv'
+    output:
+        qzv = 'reads/analysis/rarefaction/{reference}_alpha.qzv'
+    params:
+        max_depth = method_config.get('max_depth', 4000),
+        min_depth = method_config.get('min_depth', 1),
+        steps = method_config.get('steps', 10),
+        iterations = method_config.get('iterations', 10)
+    log:
+        out = 'reads/analysis/rarefaction/log/{reference}_alpha.out',
+        err = 'reads/analysis/rarefaction/log/{reference}_alpha.err'
+    conda:
+        config['snakelines_dir'] + '/enviroments/qiime2.yaml'
+    shell:
+        '''
+        qiime diversity alpha-rarefaction \
+            --i-table {input.feature_table} \
+            --i-phylogeny {input.phylogeny} \
+            --m-metadata-file {input.metadata} \
+            --p-max-depth {params.max_depth} \
+            --p-min-depth {params.min_depth} \
+            --p-steps {params.steps} \
+            --p-iterations {params.iterations} \
+            --o-visualization {output.qzv}
+        '''

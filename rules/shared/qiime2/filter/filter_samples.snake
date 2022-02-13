@@ -3,7 +3,7 @@ rule qiime2__filter_samples:
     """
     input:
         feature_table = expand('reads/preprocess/denoise/{reference}_table.qza',reference=pipeline.references),
-        metadata = 'description/joined-sample-metadata.tsv'
+        metadata = 'description/sample-metadata.tsv'
     output:
         filtered_table = 'reads/preprocess/filtered/{label}_table.qza'
     conda:

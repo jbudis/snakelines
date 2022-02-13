@@ -19,13 +19,16 @@ rule qiime2__phylogeny_align_to_tree_mafft_fasttree:
         masked_alignment = 'reads/analysis/alignment/{reference}_rep-masked-aligned-seqs.qza',
         unrooted_tree = 'reads/analysis/alignment/{reference}_unrooted-tree.qza',
         rooted_tree = 'reads/analysis/alignment/{reference}_rooted-tree.qza'
+    params:
+        max_gap_freq = method_config.get('max_gap_freq', 1.0),
+        min_conservation = method_config.get('min_conservation', 0.4)
+    log:
+        out = 'reads/analysis/alignment/log/{reference}_align_fasttree.out',
+        err = 'reads/analysis/alignment/log/{reference}_align_fasttree.err'
     conda:
         config['snakelines_dir'] + '/enviroments/qiime2.yaml'
     threads:
         int(config['threads'])
-    params:
-        max_gap_freq = method_config.get('max_gap_freq', 1.0),
-        min_conservation = method_config.get('min_conservation', 0.4)
     shell:
         '''
         qiime phylogeny align-to-tree-mafft-fasttree \

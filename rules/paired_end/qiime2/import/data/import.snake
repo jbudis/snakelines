@@ -32,9 +32,9 @@ rule copy_description_metadata:
     Copies used description metadata
     """
     input:
-        metadata = 'description/joined-sample-metadata.tsv'
+        metadata = 'description/sample-metadata.tsv'
     output:
-        metadata = 'reads/import/joined-sample-metadata.tsv'
+        metadata = 'reads/import/sample-metadata.tsv'
     shell:
         '''
         cp {input.metadata} {output.metadata}

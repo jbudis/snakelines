@@ -7,7 +7,7 @@ rule qiime2__summarize_feature_table:
     """
     input:
         table = 'reads/preprocess/{type}/{reference}_table.qza',
-        metadata    = 'description/joined-sample-metadata.tsv'
+        metadata    = 'description/sample-metadata.tsv'
     output:
         vis_table = 'reads/preprocess/{type}/{reference}_table.qzv'
     conda:

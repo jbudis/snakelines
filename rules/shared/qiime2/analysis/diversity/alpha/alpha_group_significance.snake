@@ -10,9 +10,12 @@ rule qiime2__diversity__alpha_group_significance:
     """
     input:
         vector = 'reads/analysis/core_metrics/{reference}_{type}_vector.qza',
-        metadata = 'description/joined-sample-metadata.tsv'
+        metadata = 'description/sample-metadata.tsv'
     output:
         qzv = 'reads/analysis/core_metrics/alpha/{reference}_{type}_group_significance.qzv'
+    log:
+        out = 'reads/analysis/core_metrics/log/{reference}_{type}_alpha.out',
+        err = 'reads/analysis/core_metrics/log/{reference}_{type}_alpha.err'      
     conda:
         config['snakelines_dir'] + '/enviroments/qiime2.yaml'
     shell:

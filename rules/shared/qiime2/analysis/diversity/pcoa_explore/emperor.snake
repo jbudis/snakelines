@@ -12,9 +12,12 @@ rule qiime2__emperor__plot:
     """
     input:
         pcoa_results = 'reads/analysis/core_metrics/{reference}_{type}_pcoa.qza',
-        metadata = 'description/joined-sample-metadata.tsv'
+        metadata = 'description/sample-metadata.tsv'
     output:
         qzv = 'reads/analysis/core_metrics/pcoa_explore/{reference}_{type}_{column}_emperor.qzv'
+    log:
+        out = 'reads/analysis/core_metrics/log/{reference}_{type}_{column}_emperor.out',
+        err = 'reads/analysis/core_metrics/log/{reference}_{type}_{column}_emperor.err'    
     conda:
         config['snakelines_dir'] + '/enviroments/qiime2.yaml'
     shell:
