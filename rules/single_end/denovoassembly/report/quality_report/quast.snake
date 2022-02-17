@@ -1,0 +1,34 @@
+rule quast__quality_report_for_assembled_contigs:
+    """
+    Evaluate genome assembly by standard metrics, such as N50, number of contigs, length of contigs.
+    Metrics are summarised in an HTML, PDF and text reports.
+    :input contigs: Assembled configs in fasta format
+    :output txt: Quality report statistics in text format suitable for automated evaluation
+    :output html: Quality report statistics in HTML format
+    :output pdf: Quality report statistics in Pdf format
+    :params outdir: Directory with output files
+    """
+    input:
+        consensus = 'assembly/{sample}/consensus.fa'
+    output:
+        txt     = 'assembly/{sample}/quality_report/report.txt',
+        html    = 'assembly/{sample}/quality_report/report.html',
+        pdf     = 'assembly/{sample}/quality_report/report.pdf',
+    params:
+        outdir  = 'assembly/{sample}/quality_report'
+    log:
+        out     = 'assembly/{sample}/quality_report/log/quast.log',
+        err     = 'assembly/{sample}/quality_report/log/quast.err'
+    threads:
+        int(config['threads'])
+    conda:
+        config['snakelines_dir'] + '/enviroments/quast.yaml'
+    shell:
+        """
+        quast \
+            --output-dir {params.outdir} \
+            --threads {threads} \
+            {input.consensus} \
+        >  {log.out} \
+        2> {log.err}
+        """

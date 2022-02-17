@@ -1,0 +1,15 @@
+rule custom__count_mixed_positions:
+    """
+        grep needs special treatment
+        https://unix.stackexchange.com/questions/330660/prevent-grep-from-exiting-in-case-of-nomatch
+    """
+    input:
+        vcf = 'variant/{reference}-{panel}/original/{sample}.vcf',
+        vcf_index = 'variant/{reference}-{panel}/original/{sample}.vcf.idx',
+    output:
+        txt = 'misc/{reference}-{panel}/mixed_positions/{sample}.txt',
+    shell:
+        """
+            echo -n '{wildcards.sample}:' 1> {output.txt}
+            grep -c '0/1' {input.vcf} 1>> {output.txt} || true
+        """

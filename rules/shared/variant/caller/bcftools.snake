@@ -15,7 +15,7 @@ rule bcftools_call_germline_variants:
     output:
         vcf  = 'variant/{reference}-{panel}/original/{sample}.bcftools.vcf'
     params:
-        ploidy              = method_config.get('haploid', 'GRCh38'),
+        ploidy              = '1' if method_config.get('haploid', False) else 'GRCh38',
         min_base_quality    = method_config.get('min_base_quality', 13),
         min_mapping_quality = method_config.get('min_mapping_quality', 0),
         keep_alts           = '--keep-alts' if method_config.get('keep_alts', False) else '',
@@ -69,7 +69,8 @@ rule gatk__prepare_vcf:
     """
     input:
         vcf = 'variant/{reference}-{panel}/original/{sample}.bcftools.vcf',
-        fasta = 'reference/{reference}/{reference}.fa'
+        fasta = 'reference/{reference}/{reference}.fa',
+        ref_dict = 'reference/{reference}/{reference}.dict'
     output:
         vcf = 'variant/{reference}-{panel}/original/{sample}.vcf',
         vcf_index = 'variant/{reference}-{panel}/original/{sample}.vcf.idx',

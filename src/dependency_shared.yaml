@@ -26,6 +26,11 @@ reference:
             depends:
                 - reference/alignment
 
+    attributes:
+        desc:
+            output:
+                    desc: expand('reference/{reference}/{reference}.desc', reference=pipeline.references) # TODO: extend this to all fasta files
+
     report:
         phylogenetic_tree:
             output:
@@ -91,6 +96,11 @@ mapping:
         recalibrated:
             output:
                 mapped_reads: expand('mapping/{sr.reference}/recalibrated/{sr.sample}.bam', sr=pipeline.sample_references)
+    oncomers:
+        output:
+            out:
+                from: expand('mapping/{sr.reference}/{map_type}/{sr.sample}.oncomers.out', sr=pipeline.sample_references, map_type=pipeline.postprocessed_map_type)
+                to: expand('{report_dir}/{sr.sample}/mapping/{map_type}-{sr.reference}.oncomers.out', sr=pipeline.sample_references, map_type=pipeline.postprocessed_map_type)
 
     merged:
         output:
@@ -263,14 +273,54 @@ consensus:
 
               to: expand('{report_dir}/_summary/consensus-{sr.reference}-{sr.panel}.fa',
                 report_dir=config['report_dir'], sr=pipeline.sample_references)
-
-    lineage:
+lineage:
+    caller:
         output:
             report:
                 from: expand('consensus/{sr.reference}-{sr.panel}/{sr.sample}.lineage_report.csv',
                             sr=pipeline.sample_references)
                 to: expand('{report_dir}/{sr.sample}/lineage_report-{sr.reference}-{sr.panel}.csv',
                             report_dir=config['report_dir'], sr=pipeline.sample_references)
+        depends:
+            - variant/caller
+
+    summary:
+        output:
+            summary:
+                from: expand('consensus/{sr.reference}-{sr.panel}/lineage_report.{type}',
+                    sr=pipeline.sample_references, type=["summary.csv", "subtotal.tsv"])
+                to: expand('{report_dir}/_summary/lineage_report-{sr.reference}-{sr.panel}-{type}',
+                    report_dir=config['report_dir'], sr=pipeline.sample_references,
+                    type=['summary.csv', "subtotal.tsv"])
+        depends:
+            - lineage/caller
+
+misc:
+    mixed_positions:
+        count:
+            output:
+                txt:
+                    from: expand('misc/{sr.reference}-{sr.panel}/mixed_positions/{sr.sample}.txt',
+                        sr=pipeline.sample_references)
+
+                    to: expand('{report_dir}/{sr.sample}/mixed_positions-{sr.reference}-{sr.panel}.txt',
+                        report_dir=config['report_dir'], sr=pipeline.sample_references)
+
+            depends:
+              - variant/caller
+
+        summary:
+            output:
+                txt:
+                    from: expand('misc/{sr.reference}-{sr.panel}/mixed_samples_{category}.txt',
+                        sr=pipeline.sample_references, category=['all', 'filtered'])
+
+                    to: expand('{report_dir}/_summary/mixed_samples_{category}-{sr.reference}-{sr.panel}.txt',
+                        report_dir=config['report_dir'], sr=pipeline.sample_references,
+                        category=['all', 'filtered'])
+
+            depends:
+                - misc/mixed_positions/count
 
 classification:
     read_based:
@@ -402,7 +452,7 @@ classification:
                         to:   expand('{report_dir}/_summary/transcript_counts/summary{subtype}.{format}',
                                       report_dir=config['report_dir'], subtype=['', '.normed'],
                                       format=['xlsx', 'tsv'])
-                                      
+
                 depends:
                     - classification/differential_analysis
 
@@ -475,6 +525,7 @@ assembly:
                     to:   expand('{report_dir}/{sample}/assembly_report/contig_graph.svg',
                                   report_dir=config['report_dir'],
                                   sample=pipeline.samples)
+
 
 lineage:
     output:

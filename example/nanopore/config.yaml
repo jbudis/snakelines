@@ -47,5 +47,8 @@ variant:
         method: clair
 
 lineage:
-    method: pangolin
+    caller:
+        method: pangolin
+    summary:
+        method: cat
 

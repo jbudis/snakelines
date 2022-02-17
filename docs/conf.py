@@ -20,13 +20,13 @@
 # -- Project information -----------------------------------------------------
 
 project = u'SnakeLines'
-copyright = u'2018-2021, Jaroslav Budis'
+copyright = u'2018-2022, Jaroslav Budis'
 author = u'Jaroslav Budis'
 
 # The short X.Y version
 version = u''
 # The full version, including alpha/beta/rc tags
-release = u'1.0.2'
+release = u'1.0.5'
 
 
 # -- General configuration ---------------------------------------------------

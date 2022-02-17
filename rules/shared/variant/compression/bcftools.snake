@@ -1,0 +1,16 @@
+rule bcftools__bcf2vcf:
+    input:
+        '{path}/{sample}.bcf'
+    output:
+        '{path}/{sample}.vcf'
+    benchmark:
+        '{path}/log/{sample}.bcf2vcf.benchmark'
+    conda:
+        config['snakelines_dir'] + '/enviroments/bcftools.yaml'
+    shell:
+        """
+        bcftools view \
+            --output-type v \
+            --output-file {output} \
+            {input}
+        """

@@ -1,0 +1,65 @@
+include: config['snakelines_dir'] + '/rules/shared/reference/annotation/regions.snake'
+include: config['snakelines_dir'] + '/rules/shared/reference/index/fai/samtools.snake'
+include: config['snakelines_dir'] + '/rules/shared/reference/index/dict/picard.snake'
+include: config['snakelines_dir'] + '/rules/shared/variant/compression/bcftools.snake'
+
+rule delly_call_structural_variants:
+    """
+        See: https://github.com/dellytools/delly
+    """
+    input:
+        bam   = 'mapping/{{reference}}/{map_type}/{{sample}}.bam'.format(map_type=pipeline.postprocessed_map_type),
+        bai   = 'mapping/{{reference}}/{map_type}/{{sample}}.bam.bai'.format(map_type=pipeline.postprocessed_map_type),
+        bed   = 'reference/{reference}/annotation/{panel}/regions.bed',
+        fasta = 'reference/{reference}/{reference}.fa',
+        fai   = 'reference/{reference}/{reference}.fa.fai'
+    output:
+        vcf  = 'variant/{reference}-{panel}/original/{sample}.delly.bcf'
+    threads:
+        int(config['threads'])
+    log:
+        out = 'variant/{reference}-{panel}/original/log/{sample}.delly.out',
+        err = 'variant/{reference}-{panel}/original/log/{sample}.delly.err'
+    benchmark:
+        'variant/{reference}-{panel}/original/log/{sample}.delly.vcf.benchmark',
+    conda:
+        config['snakelines_dir'] + '/enviroments/delly.yaml'
+    shell:
+        """
+        delly call \
+            --genome {input.fasta} \
+            --outfile {output.vcf} \
+            {input.bam}
+        1> {log.out} \
+        2> {log.err}
+        """
+
+rule gatk__prepare_vcf:
+    """
+    Adds missing sequence dictionary to VCF header. This job also generates VCF index (.idx).
+    :input vcf: Raw VCF from variant caller vardict.
+    :input fasta: Reference sequence.
+    :output vcf: Fixed VCF.
+    :output vcf_index: Fixed VCF index.
+    """
+    input:
+        vcf = 'variant/{reference}-{panel}/original/{sample}.delly.vcf',
+        fasta = 'reference/{reference}/{reference}.fa'
+    output:
+        vcf = 'variant/{reference}-{panel}/original/{sample}.vcf',
+        vcf_index = 'variant/{reference}-{panel}/original/{sample}.vcf.idx',
+    log:
+        out = 'variant/{reference}-{panel}/original/log/{sample}.gatk.delly.out',
+        err = 'variant/{reference}-{panel}/original/log/{sample}.gatk.delly.err',
+    conda:
+        config['snakelines_dir'] + '/enviroments/gatk4.yaml'
+    shell:
+        """
+        gatk SelectVariants \
+            -V {input.vcf} \
+            -R {input.fasta} \
+            -O {output.vcf} \
+            1>{log.out} \
+            2>{log.err}
+        """
+
