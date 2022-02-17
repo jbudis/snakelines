@@ -96,7 +96,7 @@ class QualimapParser:
     COVERAGE_RATIO = 'Covered reads ratio'
     MULTI_COVERAGE_RATIO = '10-fold covered reads ratio'
     
-    FLOAT_REGEX = '\d+\.?\d+'
+    FLOAT_REGEX = '([0-9]*\.)?[0-9]+'
     PERCENTAGE_REGEX = FLOAT_REGEX + '%'
     MEAN_COVERAGE_REGEX = 'mean coverageData = ' + FLOAT_REGEX + 'X'
     COVERAGE_RATIO_REGEX = 'There is a ' + PERCENTAGE_REGEX + ' of reference with a coverageData >='
