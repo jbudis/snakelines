@@ -1,0 +1,80 @@
+rule qiime2__dada2_denoise:
+    """
+    Denoises sequences, dereplicates them, and filters chimeras.
+    Calls 'qiime dada2 denoise-paired' or 'qiime dada2 denoise-single'
+    :input demux_sequences: Imported demultiplexed sequences with cut adapters
+    :output table: resulting feature table of qiime2 dada2 call
+    :output rep_seqs: resulting feature sequences, feature in the feature table is represented by exactly one sequence, and in case of paired-end, these sequences will be the joined paired-end sequences
+    :output stats: resulting stats of qiime2 dada2 call
+    :params sequen: str, type of sequencing, either single-end or paired-end, derived from main config
+    :params minlen: int, required min length of sequences to be kept after cutting adapters
+    :params maxerr: float 0-1, maximum allowed error rate of sequence to be kept
+    """
+    input:
+        demux_sequences = 'reads/preprocess/demultiplex/{reference}.qza'
+    output:
+        table = 'reads/preprocess/denoise/{reference}_table.qza',
+        rep_seqs = 'reads/preprocess/denoise/{reference}_rep-seqs.qza',
+        stats = 'reads/preprocess/denoise/{reference}_denoising-stats.qza'
+    log:
+        out = 'reads/preprocess/denoise/log/{reference}.log',
+        err = 'reads/preprocess/denoise/log/{reference}.err'
+    threads:
+        int(config['threads'])
+    params:
+        sequen = config['sequencing'].split("_end")[0],
+        trunc_len_f = method_config.get('trunc_len_f', 0),
+        trunc_len_r = method_config.get('trunc_len_r', 0),
+        trim_left_f = method_config.get('trim_left_f', 0),
+        trim_left_r = method_config.get('trim_left_r', 0),
+        max_ee_f = method_config.get('max_ee_f', 2.0),
+        max_ee_r = method_config.get('max_ee_r', 2.0),
+        trunc_q = method_config.get('trunc_start_qual', 2),
+        min_overlap = method_config.get('min_overlap', 12),
+        denoise_pooling = method_config.get('denoise_pooling', 'independent'),
+        chimera_method = method_config.get('chimera_method', 'consensus'),
+        chimera_parent_abundance = method_config.get('chimera_parent_abundance', 1.0),
+        num_reads_train = method_config.get('num_reads_train', 1000000)
+    conda:
+        config['snakelines_dir'] + '/enviroments/qiime2.yaml'
+    shell:
+        '''
+        qiime dada2 denoise-{params.sequen} \
+            --i-demultiplexed-seqs {input.demux_sequences} \
+            --o-table {output.table}  \
+            --o-representative-sequences {output.rep_seqs} \
+            --o-denoising-stats {output.stats} \
+            --p-n-threads {threads} \
+            --p-trunc-len-f {params.trunc_len_f} \
+            --p-trunc-len-r {params.trunc_len_r} \
+            --p-trim-left-f {params.trim_left_f} \
+            --p-trim-left-r {params.trim_left_r} \
+            --p-max-ee-f {params.max_ee_f} \
+            --p-max-ee-r {params.max_ee_r} \
+            --p-trunc-q {params.trunc_q} \
+            --p-min-overlap {params.min_overlap} \
+            --p-pooling-method {params.denoise_pooling} \
+            --p-chimera-method {params.chimera_method} \
+            --p-min-fold-parent-over-abundance {params.chimera_parent_abundance} \
+            --p-n-reads-learn {params.num_reads_train}
+        '''
+
+rule qiime2__dada2_tabulate_stats:
+    """
+    Generates a tabular view of resulting dada2 stats.
+    Calls 'qiime metadata tabulate'
+    :input dada2stats: dada2 stats artifact
+    :output visualization: visualization of dada2 stats artifact
+    """
+    input:
+        dada2_stats = 'reads/preprocess/denoise/{reference}_denoising-stats.qza'
+    output:
+        vis_denoise_stats = 'reads/preprocess/denoise/{reference}_denoising-stats.qzv'
+    conda:
+        config['snakelines_dir'] + '/enviroments/qiime2.yaml'
+    shell:
+        '''    
+        qiime metadata tabulate \
+            --m-input-file {input.dada2_stats} \
+            --o-visualization {output.vis_denoise_stats}
+        '''    

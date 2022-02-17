@@ -1,0 +1,47 @@
+
+rule qiime2__phylogeny_align_to_tree_mafft_iqtree:
+    """
+    Generate a phylogenetic tree with align-to-tree-mafft-iqtree pipeline from the q2-phylogeny plugin.
+
+    Calls 'qiime phylogeny align-to-tree-mafft-iqtree'.
+
+    First, the pipeline uses the mafft program to perform a multiple sequence alignment of the sequences at input artifact (FeatureData[Sequence]) to create a FeatureData[AlignedSequence] QIIME 2 artifact. Next, the pipeline masks (or filters) the alignment to remove positions that are highly variable. These positions are generally considered to add noise to a resulting phylogenetic tree. Following that, the pipeline applies FastTree to generate a phylogenetic tree from the masked alignment. The FastTree program creates an unrooted tree, so in the final step in this section midpoint rooting is applied to place the root of the tree at the midpoint of the longest tip-to-tip distance in the unrooted tree.
+    :input rep_seqs: representative sequences, qiime artifact of type FeatureData[Sequence], e.g. reads/qiime/silva16S-rep-seqs-dn-99.qza
+    :output alignment: aligned sequences, qiime artifact of type FeatureData[AlignedSequence], e.g. reads/qiime/silva16S-rep-aligned-seqs-dn-99.qza
+    :output masked_alignment: masked aligned sequences, qiime artifact of type FeatureData[AlignedSequence], e.g. reads/qiime/silva16S-rep-masked-aligned-seqs-dn-99.qza
+    :output unrooted_tree: unrooted tree, qiime artifact of type Phylogeny[Unrooted], e.g. reads/qiime/silva16S-unrooted-tree-dn-99.qza
+    :output rooted_tree: rooted tree, qiime artifact of type Phylogeny[Rooted], e.g. reads/qiime/silva16S-rooted-tree-dn-99.qza
+    """
+    input:
+        rep_seqs  = 'reads/preprocess/denoise/{reference}_rep-seqs.qza'
+    output:
+        alignment = 'reads/analysis/alignment/{reference}_rep-aligned-seqs.qza',
+        masked_alignment = 'reads/analysis/alignment/{reference}_rep-masked-aligned-seqs.qza',
+        unrooted_tree = 'reads/analysis/alignment/{reference}_unrooted-tree.qza',
+        rooted_tree = 'reads/analysis/alignment/{reference}_rooted-tree.qza'
+    params:
+        max_gap_freq = method_config.get('max_gap_freq', 1.0),
+        min_conservation = method_config.get('min_conservation', 0.4),
+        substitution_model = method_config.get('substitution_model', 'MFP'),
+        fast_mode = '--p-fast' if method_config.get('fast_mode', 'False') else '--p-no-fast'    
+    log:
+        out = 'reads/analysis/alignment/log/{reference}_align_iqtree.out',
+        err = 'reads/analysis/alignment/log/{reference}_align_iqtree.err'
+    conda:
+        config['snakelines_dir'] + '/enviroments/qiime2.yaml'
+    threads:
+        int(config['threads'])
+    shell:
+        '''
+        qiime phylogeny align-to-tree-mafft-iqtree \
+            --i-sequences {input.rep_seqs} \
+            --o-alignment {output.alignment} \
+            --o-masked-alignment {output.masked_alignment} \
+            --o-tree {output.unrooted_tree} \
+            --o-rooted-tree {output.rooted_tree} \
+            --p-n-threads {threads} \
+            --p-mask-max-gap-frequency {params.max_gap_freq} \
+            --p-mask-min-conservation {params.min_conservation} \
+            --p-substitution-model {params.substitution_model} \
+            {params.fast_mode}
+        '''

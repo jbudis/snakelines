@@ -526,3 +526,327 @@ assembly:
                                   report_dir=config['report_dir'],
                                   sample=pipeline.samples)
 
+
+lineage:
+    output:
+        report:
+            from: expand('reference/{reference}/lineage_report.csv', reference=pipeline.references)
+            to: expand('{report_dir}/{reference}/lineage_report.csv', report_dir=config['report_dir'],reference=pipeline.references)
+
+qiime2:
+    import:
+        manifest:
+            output:
+                manifest:
+                    from: expand('reads/import/{reference}.manifest',
+                                        reference=pipeline.references)
+                    
+                    to:   expand('{report_dir}/{reference}/00_import_report/{reference}.manifest',
+                                        report_dir=config['report_dir'],
+                                        reference=pipeline.references)
+        data:    
+            output:
+                qza: expand('reads/import/{reference}.qza',
+                                        reference=pipeline.references)
+                metadata:
+                    from: expand('reads/import/sample-metadata.tsv')
+
+                    to:   expand('{report_dir}/{reference}/00_import_report/sample-metadata.tsv',
+                                        report_dir=config['report_dir'],
+                                        reference=pipeline.references)
+
+    preprocess:
+        demultiplex:
+            output:
+                qza: expand('reads/preprocess/demultiplex/{reference}.qza',
+                                        reference=pipeline.references)
+
+                qzv: expand('reads/preprocess/demultiplex/{reference}_quality.qzv',
+                                        reference=pipeline.references)
+        
+        quality_filter:
+            output:
+                qza: expand('reads/preprocess/qscore/{reference}.qza',
+                                        reference=pipeline.references)
+
+                stats: expand('reads/preprocess/qscore/{reference}_stats.qza',
+                                        reference=pipeline.references)
+        
+        denoise:
+            output:
+                qza: expand('reads/preprocess/denoise/{reference}_{type}.qza',
+                                        reference=pipeline.references,
+                                        type=['rep-seqs', 'table', 'denoising-stats'])
+
+                qzv: expand('reads/preprocess/denoise/{reference}_denoising-stats.qzv',
+                                        reference=pipeline.references)
+
+    filter:
+        output:
+            filtered_table:
+                from: expand('reads/preprocess/filtered/{label}_table.qza',
+                                        label=qiime2_filt_label)
+                to:   expand('{report_dir}/{reference}/filtered/{label}_table.qza',
+                                        report_dir=config['report_dir'],
+                                        reference=pipeline.references,
+                                        label=qiime2_filt_label)
+
+    analysis:
+        phylogeny:
+            output:
+                alignment: expand('reads/analysis/alignment/{reference}_{type}.qza', 
+                                        reference=pipeline.references, 
+                                        type=['rep-aligned-seqs','rep-masked-aligned-seqs','unrooted-tree','rooted-tree'])
+        rarefaction:
+            output:
+                qzv: expand('reads/analysis/rarefaction/{reference}_alpha.qzv',
+                                        reference=pipeline.references)
+        core_metrics:
+            output:
+                rarefied_table: expand('reads/analysis/core_metrics/{reference}_rarefied_table.qza',
+                                        reference=pipeline.references)
+                vector: expand('reads/analysis/core_metrics/{reference}_{type}_vector.qza',
+                                        reference=pipeline.references,
+                                        type=qiime2_alpha_types)
+                dist_matrix: expand('reads/analysis/core_metrics/{reference}_{type}_dist_matrix.qza',
+                                        reference=pipeline.references,
+                                        type=qiime2_beta_types)
+                pcoa: expand('reads/analysis/core_metrics/{reference}_{type}_pcoa.qza',
+                                        reference=pipeline.references,
+                                        type=qiime2_beta_types)
+                qzv: expand('reads/analysis/core_metrics/{reference}_{type}_emperor.qzv',
+                                        reference=pipeline.references,
+                                        type=qiime2_beta_types)
+        diversity:
+            alpha:
+                output:
+                    qzv: expand('reads/analysis/core_metrics/alpha/{reference}_{type}_group_significance.qzv',
+                                        reference=pipeline.references,
+                                        type=qiime2_alpha_types)
+            beta:
+                output:
+                    qzv: expand('reads/analysis/core_metrics/beta/{reference}_{type}_{column}_significance.qzv',
+                                        reference=pipeline.references,
+                                        type=qiime2_beta_types,
+                                        column=qiime2_beta_significance_columns)
+            pcoa_explore:
+                output:
+                    qzv: expand('reads/analysis/core_metrics/pcoa_explore/{reference}_{type}_{column}_emperor.qzv',
+                                        reference=pipeline.references,
+                                        type=qiime2_beta_types,
+                                        column=qiime2_pcoa_custom_columns)
+        taxonomy:
+            fit:
+                output:
+                    classifier: expand('reference/{reference}/qiime2/classifier.qza',
+                                        reference=pipeline.references)
+            classify:
+                output:
+                    classification: expand('reads/taxonomy/{reference}_tax.qza',
+                                        reference=pipeline.references)
+            taxa:
+                output:
+                    qzv: expand('reads/taxonomy/{reference}_{type}.qzv',
+                                        type=['taxa_features','barplot'],
+                                        reference=pipeline.references)
+        
+        differential_abundance:
+            lefse:
+                output:
+                    taxa_collapsed: expand('reads/taxonomy/{reference}_tax_collapsed.qza',
+                                        reference=pipeline.references)
+                    taxa_collapsed_rel: expand('reads/taxonomy/lefse/{reference}_tax_collapsed_relative.qza',
+                                        reference=pipeline.references)
+                    taxa_collapsed_table: expand('reads/taxonomy/lefse/{reference}_tax_collapsed_relative/',
+                                        reference=pipeline.references)   
+                    biom_table: expand('reads/taxonomy/lefse/{reference}_tax_collapsed_relative/feature-table.biom',
+                                        reference=pipeline.references)
+                    biom_txt: expand('reads/taxonomy/lefse/{reference}_tax_collapsed_relative/feature-table.tsv',
+                                        reference=pipeline.references)
+                    biom_txt: expand('reads/taxonomy/lefse/{reference}_tax_collapsed_relative/feature-table_corr.tsv',
+                                        reference=pipeline.references)                                          
+                    lefse_input: expand('reads/analysis/lefse/{reference}.in',
+                                        reference=pipeline.references)
+                    lefse_result: expand('reads/analysis/lefse/{reference}.res',
+                                        reference=pipeline.references)
+                    lefse_result_pdf: 
+                        from:   expand('reads/analysis/lefse/{reference}.pdf',
+                                        reference=pipeline.references)
+                        to:     expand('{report_dir}/{reference}/05_differential_abundance/lefse/result.pdf',
+                                        report_dir=config['report_dir'],
+                                        reference=pipeline.references)
+                    cladogram: 
+                        from:   expand('reads/analysis/lefse/{reference}.cladogram.pdf',
+                                        reference=pipeline.references)
+                        to:     expand('{report_dir}/{reference}/05_differential_abundance/lefse/cladogram.pdf',
+                                        report_dir=config['report_dir'],
+                                        reference=pipeline.references)
+                    features:
+                        from:   expand('reads/analysis/lefse/{reference}_features/',
+                                        reference=pipeline.references)
+                        to:     expand('{report_dir}/{reference}/05_differential_abundance/lefse/{reference}_features/',
+                                        report_dir=config['report_dir'],
+                                        reference=pipeline.references)
+            ancom:
+                output:
+                    feature_table_filt: expand('reads/analysis/ancom/{reference}_table_filt.qza',
+                                        reference=pipeline.references)
+                    feature_table_comp: expand('reads/analysis/ancom/{reference}_table_comp.qza',
+                                        reference=pipeline.references)
+                    ancom_qzv:  expand('reads/analysis/ancom/{reference}_{column}_ancom.qzv',
+                                        reference=pipeline.references,
+                                        column=qiime2_ancom_columns)
+            ancom_taxa:
+                output:
+                    taxa_collapsed: expand('reads/taxonomy/{reference}_level{level}_collapsed.qza',
+                                        reference=pipeline.references,
+                                        level=qiime2_ancom_taxa_lvls)
+                    feature_table_filt: expand('reads/analysis/ancom_taxa/{reference}_level{level}_table_filt.qza',
+                                        reference=pipeline.references,
+                                        level=qiime2_ancom_taxa_lvls)
+                    feature_table_comp: expand('reads/analysis/ancom_taxa/{reference}_level{level}_table_comp.qza',
+                                        reference=pipeline.references,
+                                        level=qiime2_ancom_taxa_lvls)
+                    ancom_taxa_qzv: expand('reads/analysis/ancom_taxa/{reference}_level{level}_{column}_ancom.qzv',
+                                        reference=pipeline.references,
+                                        level=qiime2_ancom_taxa_lvls,
+                                        column=qiime2_ancom_taxa_columns)
+
+    report:
+        core_features:
+            output:
+                qzv: expand('reads/preprocess/denoise/{reference}_core_features.qzv',
+                                        reference=pipeline.references)
+        feature_table:
+            output:
+                qzv: expand('reads/preprocess/denoise/{reference}_{type}.qzv',
+                                        reference=pipeline.references,
+                                        type=['rep-seqs', 'table'])
+                # filt_qzv: expand('reads/preprocess/filtered/{reference}_table.qzv',
+                #                        reference=pipeline.references)
+        feature_heatmap:
+            output:
+                qzv: expand('reads/preprocess/denoise/{reference}_{column}_heatmap.qzv',
+                                        reference=pipeline.references,
+                                        column=qiime2_heatmap_columns)
+
+        export:
+            output:
+                read_quality_report:
+                    from:   expand('reads/preprocess/demultiplex/{reference}_quality/',
+                                        reference=pipeline.references)
+                    to:     expand('{report_dir}/{reference}/01_preprocessing_report/read_quality/',
+                                        report_dir=config['report_dir'],
+                                        reference=pipeline.references)
+                preprocessing_report:
+                    from:   expand('reads/preprocess/denoise/{reference}_{type}/',
+                                        type=['rep-seqs', 'table', 'denoising-stats'],
+                                        reference=pipeline.references)
+                    to:     expand('{report_dir}/{reference}/01_preprocessing_report/{type}/',
+                                        report_dir=config['report_dir'],
+                                        type=['representative_sequences', 'feature_table', 'denoising_stats'],
+                                        reference=pipeline.references)
+                #filtering_report:
+                #    from:   expand('reads/preprocess/filtered/{reference}_table/',
+                #                        reference=pipeline.references)
+                #    to:     expand('{report_dir}/{reference}/filtered_report/table/',
+                #                        report_dir=config['report_dir'],
+                #                        reference=pipeline.references)
+                heatmap_report:
+                    from:   expand('reads/preprocess/denoise/{reference}_{column}_heatmap/',
+                                        reference=pipeline.references,
+                                        column=qiime2_heatmap_columns)
+                    to:     expand('{report_dir}/{reference}/01_preprocessing_report/feature_heatmap/{column}',
+                                        report_dir=config['report_dir'],
+                                        reference=pipeline.references,
+                                        column=qiime2_heatmap_columns)
+                beta_group_significance_reports:
+                    from:   expand('reads/analysis/core_metrics/beta/{reference}_{type}_{column}_significance/',
+                                        reference=pipeline.references,
+                                        type=qiime2_beta_types,
+                                        column=qiime2_beta_significance_columns)
+                    to:     expand('{report_dir}/{reference}/02_core_metrics_report/beta_group_significance/{column}/{type}_significance/',
+                                        report_dir=config['report_dir'],
+                                        reference=pipeline.references,
+                                        type=qiime2_beta_types,
+                                        column=qiime2_beta_significance_columns)                
+                rarefaction_report:
+                    from:   expand('reads/analysis/rarefaction/{reference}_alpha/',
+                                        reference=pipeline.references)
+                    to:     expand('{report_dir}/{reference}/02_core_metrics_report/rarefaction/',
+                                        report_dir=config['report_dir'],
+                                        reference=pipeline.references)
+                core_features_report:
+                    from:   expand('reads/preprocess/denoise/{reference}_core_features/',
+                                        reference=pipeline.references)
+                    to:     expand('{report_dir}/{reference}/01_preprocessing_report/core_features/',
+                                        report_dir=config['report_dir'],
+                                        reference=pipeline.references)
+
+                alpha_group_significance_reports:
+                    from:   expand('reads/analysis/core_metrics/alpha/{reference}_{type}_group_significance/',
+                                        reference=pipeline.references,
+                                        type=qiime2_alpha_types)
+                    to:     expand('{report_dir}/{reference}/02_core_metrics_report/alpha_group_significance/{type}_group_significance/',
+                                        report_dir=config['report_dir'],
+                                        reference=pipeline.references,
+                                        type=qiime2_alpha_types)
+
+                beta_group_significance_reports:
+                    from:   expand('reads/analysis/core_metrics/beta/{reference}_{type}_{column}_significance/',
+                                        reference=pipeline.references,
+                                        type=qiime2_beta_types,
+                                        column=qiime2_beta_significance_columns)
+                    to:     expand('{report_dir}/{reference}/02_core_metrics_report/beta_group_significance/{column}/{type}_significance/',
+                                        report_dir=config['report_dir'],
+                                        reference=pipeline.references,
+                                        type=qiime2_beta_types,
+                                        column=qiime2_beta_significance_columns)
+
+                emperor_plot_reports:
+                    from:   expand('reads/analysis/core_metrics/{reference}_{type}_emperor/',
+                                        reference=pipeline.references,
+                                        type=qiime2_beta_types)
+                    to:     expand('{report_dir}/{reference}/02_core_metrics_report/emperor_plots/{type}_emperor/',
+                                        report_dir=config['report_dir'],
+                                        reference=pipeline.references,
+                                        type=qiime2_beta_types)
+                
+                pcoa_explore_reports:
+                    from:   expand('reads/analysis/core_metrics/pcoa_explore/{reference}_{type}_{column}_emperor/',
+                                        reference=pipeline.references,
+                                        column=qiime2_pcoa_custom_columns,
+                                        type=qiime2_beta_types)
+                    to:     expand('{report_dir}/{reference}/02_core_metrics_report/pcoa_explore/{column}/{type}_emperor/',
+                                        report_dir=config['report_dir'],
+                                        reference=pipeline.references,
+                                        column=qiime2_pcoa_custom_columns,
+                                        type=qiime2_beta_types)
+                
+                taxa_reports:
+                    from:   expand('reads/taxonomy/{reference}_{type}/',
+                                        type=['taxa_features','barplot'],
+                                        reference=pipeline.references)
+                    to:     expand('{report_dir}/{reference}/03_taxonomy_report/{type}/',
+                                        report_dir=config['report_dir'],
+                                        reference=pipeline.references,
+                                        type=['taxa_features','barplot'])
+                ancom_reports:
+                    from:   expand('reads/analysis/ancom/{reference}_{column}_ancom/',
+                                        reference=pipeline.references,
+                                        column=qiime2_ancom_columns)
+                    to:     expand('{report_dir}/{reference}/05_differential_abundance/ancom/{column}/',
+                                        report_dir=config['report_dir'],
+                                        reference=pipeline.references,
+                                        column=qiime2_ancom_columns)
+
+                ancom_taxa_reports:
+                    from:   expand('reads/analysis/ancom_taxa/{reference}_level{level}_{column}_ancom/',
+                                        reference=pipeline.references,
+                                        level=qiime2_ancom_taxa_lvls,
+                                        column=qiime2_ancom_columns)
+                    to:     expand('{report_dir}/{reference}/05_differential_abundance/ancom_taxa/{column}_level{level}/',
+                                        report_dir=config['report_dir'],
+                                        reference=pipeline.references,
+                                        level=qiime2_ancom_taxa_lvls,
+                                        column=qiime2_ancom_columns)

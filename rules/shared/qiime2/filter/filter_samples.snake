@@ -1,0 +1,23 @@
+rule qiime2__filter_samples:
+    """
+    """
+    input:
+        feature_table = expand('reads/preprocess/denoise/{reference}_table.qza',reference=pipeline.references),
+        metadata = 'description/sample-metadata.tsv'
+    output:
+        filtered_table = 'reads/preprocess/filtered/{label}_table.qza'
+    conda:
+        config['snakelines_dir'] + '/enviroments/qiime2.yaml'
+    threads:
+        int(config['threads'])
+    params:
+        column = method_config.get('column', 0),
+        conditions = method_config.get('conditions', [])
+    shell:
+        '''
+        qiime feature-table filter-samples \
+            --i-table {input.feature_table} \
+            --m-metadata-file {input.metadata} \
+            --p-where "[year]='2019'" \
+            --o-filtered-table {output.filtered_table}
+        '''

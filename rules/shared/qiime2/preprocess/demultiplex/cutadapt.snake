@@ -1,0 +1,96 @@
+PRIMER_DEFINES = {
+    "16S": {
+        "f":["CCTACGGGNGGCWGCAG"], 
+        "r":["GACTACHVGGGTATCTAATCC"]
+        },
+    "ITS": {
+        "f":["GAGTCGAGTTGTTTGGGAAT"],
+        "r":["GGTCCGTGTTTCAAGACGG"]
+        },
+    "28S": {
+        "f":["GAGTCGAGTTGTTTGGGAAT"],
+        "r":["GGTCCGTGTTTCAAGACGG"]
+        }
+    }
+
+ADAPTER_DEFINES = {
+    "Illumina": {
+        "f":"TCGTCGGCAGCGTCAGATGTGTATAAGAGACAG",
+        "r":"GTCTCGTGGGCTCGGAGATGTGTATAAGAGACAG"
+    }
+}
+
+def get_adapters(adapter_set, primer_set, seq_end):
+    """
+    Prepare qiime2 call for adapter trimming using predefined sets chosen using config
+    :input adapter_set: Which set of adapters to use
+    :input primer_set: Which set of primers to use
+    :input seq_end: Defines whether sequencing end is paired or single end
+    :output qiime2_calls: Qiime2 calls for adapter trimming
+    """
+    f_adapter = ADAPTER_DEFINES[adapter_set]['f'] if adapter_set in ADAPTER_DEFINES else ''
+    r_adapter = ADAPTER_DEFINES[adapter_set]['r'] if adapter_set in ADAPTER_DEFINES else ''
+    f_primers = [f_adapter + i for i in PRIMER_DEFINES[primer_set]['f']] if primer_set in PRIMER_DEFINES else []
+    r_primers = [r_adapter + i for i in PRIMER_DEFINES[primer_set]['r']] if primer_set in PRIMER_DEFINES else []
+    qiime2_call_f = '--p-front-f '+' '.join(f_primers) if len(f_primers) else ''
+    qiime2_call_r = '--p-front-r '+' '.join(r_primers) if len(r_primers) else '' 
+    return qiime2_call_f+' '+qiime2_call_r
+
+rule qiime2__cutadapt_trim:
+    """
+    Cut adapters from reads (paired or single-end). Calls 'qiime cutadapt trim-paired' or 'qiime cutadapt trim-single'
+    :input demux_sequences: Imported demultiplexed sequences
+    :output trimmed_sequences: Sequences with cut adapters using qiime cutadapt
+    :params sequen: str, type of sequencing, either single-end or paired-end, derived from main config
+    :params minlen: int, required min length of sequences to be kept after cutting adapters
+    :params maxerr: float 0-1, maximum allowed error rate of sequence to be kept
+    """
+    input:
+        demux_sequences = 'reads/import/{reference}.qza'
+    output:
+        trimmed_sequences = 'reads/preprocess/demultiplex/{reference}.qza'
+    log:
+        out = 'reads/preprocess/demultiplex/log/{reference}.log',
+        err = 'reads/preprocess/demultiplex/log/{reference}.err'
+    threads:
+        int(config['threads'])
+    params:
+        sequen = config['sequencing'].split("_end")[0],
+        minlen = method_config.get('minlen', 1),
+        maxerr = method_config.get('max_error_rate', 0.1),
+        discard_untrimmed = '--p-discard-untrimmed' if method_config.get('discard_undetected',False) else '--p-no-discard-untrimmed',
+        adapter_call = get_adapters(method_config.get('adapter_set','None'),method_config.get('primer_set',''), config['sequencing'].split("_end")[0])
+
+    conda:
+        config['snakelines_dir'] + '/enviroments/qiime2.yaml'
+    shell:
+        '''
+        qiime cutadapt trim-{params.sequen} \
+            --i-demultiplexed-sequences {input.demux_sequences} \
+            --o-trimmed-sequences {output.trimmed_sequences} \
+            --p-cores {threads} \
+            --p-minimum-length {params.minlen} \
+            --p-error-rate {params.maxerr} \
+            {params.adapter_call} \
+            {params.discard_untrimmed}
+        '''
+
+rule qiime2__cutadapt_tabulate:
+    """
+    Summarize counts per sample for all samples, and visualize using `n` randomly selected sequences.
+    Calls 'qiime demux summarize'
+    :input demux_seqs: demultiplexed sequences with cut adapters
+    :output visualization: artifact of interactive positional quality plots
+    """
+    input:
+        demux_seqs = 'reads/preprocess/demultiplex/{reference}.qza'
+    output:
+        qzv = 'reads/preprocess/demultiplex/{reference}_quality.qzv'
+    conda:
+        config['snakelines_dir'] + '/enviroments/qiime2.yaml'
+    shell:
+        '''    
+        qiime demux summarize \
+            --i-data {input.demux_seqs} \
+            --o-visualization {output.qzv}
+        '''

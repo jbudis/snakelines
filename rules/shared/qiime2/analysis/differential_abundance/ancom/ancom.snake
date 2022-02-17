@@ -1,0 +1,96 @@
+rule qiime2__filter_features_ancom:
+    """
+    Before using ANCOM, filter features from table based on frequency and/or metadata. Any samples with a frequency of zero after feature filtering will also be removed.
+    
+    Calls 'qiime feature-table filter-features'.
+
+    :input feature_table: feature table to be used for ANCOM computation
+    :param min_frequency: the minimum total frequency that a feature must have to be retained. 
+    :param min_samples: the minimum number of samples that a feature must be observed in to be retained.
+    :output feature_table_filt:
+    """
+    input:
+        feature_table = 'reads/preprocess/denoise/{reference}_table.qza'
+    output:
+        feature_table_filt = 'reads/analysis/ancom/{reference}_table_filt.qza'
+    params:
+        min_samples = method_config.get('min_samples', 0),
+        min_frequency = method_config.get('min_frequency', 0)
+    log:
+        out = 'reads/analysis/ancom/log/{reference}_filt.out',
+        err = 'reads/analysis/ancom/log/{reference}_filt.err'
+    conda:
+        config['snakelines_dir'] + '/enviroments/qiime2.yaml'
+    shell:
+        '''
+        qiime feature-table filter-features \
+            --i-table {input.feature_table} \
+            --p-min-frequency {params.min_frequency} \
+            --p-min-samples {params.min_samples} \
+            --o-filtered-table {output.feature_table_filt}
+        '''
+
+rule qiime2__feature_table_pseudocount_ancom:
+    """
+    ANCOM fundamentally operates on a FeatureTable[Frequency], which contains the frequencies of features in each sample.
+    To remove the zeros from the table, this adds a pseudocount to the FeatureTable[Frequency] Artifact, creating a FeatureTable[Composition] in its place.
+    
+    Calls 'qiime composition add-pseudocount'.
+
+    :input feature_table_filt: feature table to be used for ANCOM computation
+    :output feature_table_comp: feature table of composition type with pseudocounts added
+    """
+    input:
+        feature_table_filt = 'reads/analysis/ancom/{reference}_table_filt.qza'
+    output:
+        feature_table_comp = 'reads/analysis/ancom/{reference}_table_comp.qza'
+    params:
+        min_samples = method_config.get('min_samples', 0),
+        min_frequency = method_config.get('min_frequency', 0)
+    log:
+        out = 'reads/analysis/ancom/log/{reference}_comp.out',
+        err = 'reads/analysis/ancom/log/{reference}_comp.err'    
+    conda:
+        config['snakelines_dir'] + '/enviroments/qiime2.yaml'
+    shell:
+        '''
+        qiime composition add-pseudocount \
+            --i-table {input.feature_table_filt} \
+            --o-composition-table {output.feature_table_comp}
+        '''
+
+rule qiime2__composition_ancom:
+    """
+    Apply Analysis of Composition of Microbiomes (ANCOM) to identify features that are differentially abundant across groups.
+
+    Calls 'qiime composition ancom'.
+
+    :input feature_table_comp: feature table to be used for ANCOM computation
+    :input metadata: samples' metadata filepath in TSV format (tab-separated value), e.g. description/sample-metadata.tsv
+    :param diff_function: method to visualize fold difference in feature abundances across groups for volcano plots.
+    :param transform_function: method applied to transform feature values before generating volcano plots. 
+    :output qzv: qiime visualization - ANCOM composition
+    """
+    input:
+        feature_table_comp = 'reads/analysis/ancom/{reference}_table_comp.qza',
+        metadata = 'description/sample-metadata.tsv'
+    output:
+        qzv = 'reads/analysis/ancom/{reference}_{column}_ancom.qzv'
+    params:
+        transform_function = str(method_config.get('transform_function', 'clr')),
+        diff_function = str(method_config.get('diff_function', 'mean_difference'))
+    log:
+        out = 'reads/analysis/ancom/log/{reference}_{column}_ancom.out',
+        err = 'reads/analysis/ancom/log/{reference}_{column}_ancom.err'    
+    conda:
+        config['snakelines_dir'] + '/enviroments/qiime2.yaml'
+    shell:
+        '''
+        qiime composition ancom \
+            --i-table {input.feature_table_comp} \
+            --m-metadata-file {input.metadata} \
+            --m-metadata-column {wildcards.column} \
+            --p-transform-function {params.transform_function} \
+            --p-difference-function {params.diff_function} \
+            --o-visualization {output.qzv}
+        '''

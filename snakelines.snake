@@ -50,7 +50,12 @@ def get_files(source_dict):
             'pipeline': pipeline, 'directory': directory, 'read_types_with_quality_report': read_types_with_quality_report,
             'multisample_references': multisample_references, 'tax_levels_count_table': tax_levels_count_table,
             'tax_levels_barplot': tax_levels_barplot, 'barplot_formats': barplot_formats, 'pca_formats': pca_formats,
-            'tax_levels_alphas': tax_levels_alphas,'map_types_with_quality_report': map_types_with_quality_report}
+            'tax_levels_alphas': tax_levels_alphas,'map_types_with_quality_report': map_types_with_quality_report,
+            'qiime2_alpha_types': qiime2_alpha_types, 'qiime2_beta_types': qiime2_beta_types, 
+            'qiime2_beta_significance_columns':qiime2_beta_significance_columns,
+            'qiime2_pcoa_custom_columns': qiime2_pcoa_custom_columns,'qiime2_filt_label':qiime2_filt_label,
+            'qiime2_heatmap_columns':qiime2_heatmap_columns, 'qiime2_ancom_columns':qiime2_ancom_columns,
+            'qiime2_ancom_taxa_lvls':qiime2_ancom_taxa_lvls, 'qiime2_ancom_taxa_columns':qiime2_ancom_taxa_columns}
 
     files_dict = {}
     for k,v in source_dict.items():

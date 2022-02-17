@@ -1,0 +1,41 @@
+rule qiime2__import_manifest:
+    """
+    Imports samples written down in metadata file, sequences should be paired-end. Calls 'qiime tools import'
+    :input manifest: TSV manifest file in format 'sample-id,forward-absolute-filepath,reverse-absolute-filepath'
+    :output qza: qiime artifact of type SampleData[{params.data_type}], e.g. reads/qiime/silva16S-imported.qza
+    :params data_type: SampleData type, possible values: PairedEndSequencesWithQuality
+    :params input_format: defines PHRED offset in quality scores used in samples
+    """
+    input:
+        manifest = 'reads/import/{reference}.manifest'
+    output:
+        qza = 'reads/import/{reference}.qza'
+    log:
+        out = 'reads/import/log/{reference}.log',
+        err = 'reads/import/log/{reference}.err'
+    params:
+        sequence_type = "'SampleData[PairedEndSequencesWithQuality]'",
+        input_format = 'PairedEndFastqManifestPhred' + str(method_config.get('PHRED_offset',33)) + 'V2'
+    conda:
+        config['snakelines_dir'] + '/enviroments/qiime2.yaml'
+    shell:
+        '''
+        qiime tools import \
+            --type {params.sequence_type} \
+            --input-path {input.manifest} \
+            --output-path {output.qza} \
+            --input-format {params.input_format}
+        '''
+
+rule copy_description_metadata:
+    """
+    Copies used description metadata
+    """
+    input:
+        metadata = 'description/sample-metadata.tsv'
+    output:
+        metadata = 'reads/import/sample-metadata.tsv'
+    shell:
+        '''
+        cp {input.metadata} {output.metadata}
+        '''

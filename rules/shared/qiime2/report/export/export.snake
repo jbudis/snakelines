@@ -1,0 +1,20 @@
+rule qiime2__report_export:
+    """
+    Exports qiime visualization (qzv) created during preprocessing to HTML.
+    :input qzv: qiime visualization
+    :output html: index.html of exported visualization
+    :output export_dir: directory of exported visualization
+    """
+    input:
+        qzv = 'reads/{step}/{visualization}.qzv'
+    output:
+        html = 'reads/{step}/{visualization}/index.html',
+        export_dir = directory('reads/{step}/{visualization}/')
+    conda:
+        config['snakelines_dir'] + '/enviroments/qiime2.yaml'
+    shell:
+        '''
+        qiime tools export \
+            --input-path {input.qzv} \
+            --output-path {output.export_dir}
+        '''

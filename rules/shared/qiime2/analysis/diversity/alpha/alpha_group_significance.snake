@@ -1,0 +1,27 @@
+rule qiime2__diversity__alpha_group_significance:
+    """
+    Creates visualization of associations between categorical metadata columns and alpha diversity data.
+
+    Calls 'qiime diversity alpha-group-significance'.
+
+    :input vector: sample data for alpha diversity, qiime artifact of type SampleData[AlphaDiversity]
+    :input metadata: samples' metadata filepath in TSV format
+    :output qzv: qiime visualization
+    """
+    input:
+        vector = 'reads/analysis/core_metrics/{reference}_{type}_vector.qza',
+        metadata = 'description/sample-metadata.tsv'
+    output:
+        qzv = 'reads/analysis/core_metrics/alpha/{reference}_{type}_group_significance.qzv'
+    log:
+        out = 'reads/analysis/core_metrics/log/{reference}_{type}_alpha.out',
+        err = 'reads/analysis/core_metrics/log/{reference}_{type}_alpha.err'      
+    conda:
+        config['snakelines_dir'] + '/enviroments/qiime2.yaml'
+    shell:
+        '''
+        qiime diversity alpha-group-significance \
+          --i-alpha-diversity {input.vector} \
+          --m-metadata-file {input.metadata} \
+          --o-visualization {output.qzv}
+        '''

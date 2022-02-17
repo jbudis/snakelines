@@ -1,5 +1,7 @@
 import sys
 import tempfile
+import parse as parser # new dependency
+import csv # new dependency
 from pipeline.samples import Pipeline
 from config.impute_process_types import impute_read_types, impute_mapping_types, impute_variant_types
 from config.load_imports import import_files_in_config
@@ -18,27 +20,135 @@ def configured_temp(output_file):
     return temp(output_file) if method_config.get('temporary', False) else output_file
 
 
+def parse_description_by_schema(sample, description, description_schema):
+    """
+    Parses sample metadata from config description and validates it using schema provided in config.
+
+    :param sample: name of the processing sample
+    :param description: parsed sample description
+    :param description_schema: parsing schema used for validation
+    :return: validated parsed sample metadata
+    """
+    metadata = {}
+    metadata["sample-id"] = sample
+    for attr in description_schema:
+        if attr in description:
+            
+            # convert parsed string into int if all description keys are integers, else use it as string
+            if 'values' in description_schema[attr] and len(description_schema[attr]['values'])>0:
+                types = list(set(type(k) for k in description_schema[attr]['values'].keys()))
+                if len(types)==1 and types[0] == int:
+                    attr_value = int(description[attr])
+                else:
+                    attr_value = description[attr]
+                
+            # recode input value using key in description values
+            if 'values' in description_schema[attr]:
+                try:
+                    metadata[attr] = description_schema[attr]['values'][attr_value]
+                except:
+                    raise KeyError("Unrecognized key '{}' found in '{}' for sample {}. Defined ones are: {}".format(attr_value, attr, sample, list(description_schema[attr]['values'].keys())))        
+            else:
+                metadata[attr] = attr_value
+
+        else:
+            raise ValueError("Missing attribute '{}' in {} for sample {}".format(attr, description.named, sample))
+    return metadata
+
+
+def write_metadata_to_file(metadata, desc_config, file_path):
+    """
+    Writes metadata of all samples into metadata file of .tsv format.
+
+    :param file_path: path to file where metadata will be written
+    :param metadata: list of sample metadata
+    """
+    colnames = list(metadata[0].keys())
+    with open(file_path, "w") as metadata_file:
+        writer = csv.DictWriter(metadata_file, fieldnames=colnames, delimiter='\t')
+        writer.writeheader()
+
+        # obtain second header row with qiime2 data types using description type
+        # if description type is missing, use empty string as type (used in Qiime2)
+        q2types_row = '#q2:types'
+        for i in colnames:
+            if i!="sample-id":
+                q2types_row += '\t'+desc_config[i].get('type','')
+
+        metadata_file.write(q2types_row+"\n")
+
+        for row in metadata:
+            writer.writerow(row)
+
+
+def load_metadata_from_file(file_path):
+    """
+    Loads metadata of all samples from file of .tsv format.
+
+    :param file_path: path to file from which metadata will be loaded
+    :return metadata: list of sample metadata
+    """
+    metadata = []
+    with open(file_path, "r") as metadata_file:
+        reader = csv.DictReader(metadata_file,delimiter='\t')
+        for row in reader:
+            metadata.append(row)
+    return metadata[1:] #remove second header defining q2types
+
+
 # create pipeline
 pipeline = Pipeline()
 
 DEFAULT_SAMPLE_CONFIGURATION = [{'name': '.*'}]
 default_read_names = {'single_end': '{}.fastq.gz', 'paired_end': '{}_R1.fastq.gz'}
 DEFAULT_SAMPLE_LOCATION = 'reads/original/' + default_read_names[config['sequencing']]
+DEFAULT_METADATA_LOCATION = 'description/sample-metadata.tsv'
 sample_configurations = config.get('samples', DEFAULT_SAMPLE_CONFIGURATION)
+
 for sample_configuration in sample_configurations:
 
     # Filter samples according to the user configuration
     samples = []
+    metadata = []
     if 'name' in sample_configuration:
         location = sample_configuration.get('location', DEFAULT_SAMPLE_LOCATION)
         location = location.replace('{}', '{sample, %s}' % sample_configuration['name'])
         wildcards = glob_wildcards(location)
         samples = wildcards.sample
         assert len(wildcards.sample) > 0, 'No samples in {} match configured pattern {}'.format(location, sample_configuration['name'])
-    
+        
+        if 'description' in sample_configuration:
+            desc_config = sample_configuration['description']
 
+            if desc_config['overwrite'] or os.path.exists(DEFAULT_METADATA_LOCATION) is False:
+                input_format = desc_config['format']
+                description_schema = desc_config.get('attributes',None)
+
+                parsing_results = [parser.parse(input_format, sample) for sample in samples]
+                not_parsed_samples = [samples[sample_idx] for sample_idx,result in enumerate(parsing_results) if result is None]
+                assert len(not_parsed_samples) == 0, 'Metadata for samples {} could not be parsed using format {}'.format(not_parsed_samples, input_format)                
+                
+                if description_schema is not None:
+                    metadata = [parse_description_by_schema(sample, res, description_schema) for sample,res in zip(samples, parsing_results)]
+                
+                    try:
+                        write_metadata_to_file(metadata, description_schema, DEFAULT_METADATA_LOCATION)
+                    except Exception as e:
+                        print("Error '{}' occured when writing metadata to file {}".format(e, DEFAULT_METADATA_LOCATION))
+                else:
+                    raise ValueError("Missing 'attributes' section in the description element of config")
+            
+            else:
+                try:
+                    metadata = load_metadata_from_file(DEFAULT_METADATA_LOCATION)
+                except Exception as e:
+                    print("Error '{}' occured when loading metadata from file {}".format(e, DEFAULT_METADATA_LOCATION))
+
+            assert len(metadata) == len(samples), 'Number of metadata rows and number of samples do not match'                 
+    
     reference = sample_configuration.get('reference', None)
     pipeline.add(samples,
+                metadata,
                 reference,
                 sample_configuration.get('panel', None),
                 sample_configuration.get('prebuilt', False),
@@ -96,3 +206,18 @@ barplot_formats = extract_from_config(config, ['classification', 'report', 'taxo
 tax_levels_alphas = extract_from_config(config, ['classification', 'report', 'taxonomic_counts', 'alpha_diversity', 'tax_levels'], [])
 
 pca_formats = extract_from_config(config, ['classification', 'report', 'transcripts', 'pca', 'formats'], ['svg', 'png'])
+
+
+# Which types use in qiime2 core-metrics analysis
+qiime2_alpha_types = extract_from_config(config, ['qiime2', 'analysis', 'core_metrics', 'alpha_types'], [])
+qiime2_beta_types = extract_from_config(config, ['qiime2', 'analysis', 'core_metrics', 'beta_types'], [])
+
+# Which columns from metadata use in beta-significance report
+qiime2_beta_significance_columns = extract_from_config(config, ['qiime2', 'analysis', 'diversity', 'beta','columns'], [])
+qiime2_pcoa_custom_columns = extract_from_config(config, ['qiime2', 'analysis', 'diversity', 'pcoa_explore','columns'], [])
+
+qiime2_filt_label = extract_from_config(config, ['qiime2', 'filter','label'], "")
+qiime2_heatmap_columns = extract_from_config(config, ['qiime2', 'report', 'feature_heatmap', 'columns'], [])
+qiime2_ancom_columns = extract_from_config(config, ['qiime2', 'analysis', 'differential_abundance', 'ancom', 'columns'], [])
+qiime2_ancom_taxa_lvls = extract_from_config(config, ['qiime2', 'analysis', 'differential_abundance', 'ancom_taxa', 'taxa_levels'], [])
+qiime2_ancom_taxa_columns = extract_from_config(config, ['qiime2', 'analysis', 'differential_abundance', 'ancom_taxa', 'columns'], [])
