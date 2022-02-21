@@ -1,0 +1,97 @@
+def process_filter_input(config_input, param):
+    if config_input is False or len(config_input)<1:
+        return ''
+    else:
+        return param+' '+config_input
+
+rule qiime2__taxa_filter_table:
+    """
+    This method filters features from a table based on their taxonomic annotations. Features can be retained in the resulting table by specifying one or more include search terms, and can be filtered out of the resulting table by specifying one or more exclude search terms.
+    If both include and exclude are provided, the inclusion critera will be applied before the exclusion critera. 
+    When no include or exclude criteria are provided, the input is copied to output.
+    Any samples that have a total frequency of zero after filtering will be removed from the resulting table.
+
+    Calls 'qiime taxa filter-table'
+
+    :input feature_table: feature table produced by dada2
+    :input taxonomy: taxonomic annotations for features in the provided feature table
+    :output filtered_table: resulting feature table after filtering
+    :params include: criteria that must hold to keep ASV
+    :params exclude: criteria that cannot hold to keep ASV
+    """
+    input:
+        feature_table = 'reads/preprocess/denoise/{reference}_table_all.qza',
+        taxonomy  = 'reads/taxonomy/{reference}_tax.qza'
+    output:
+        filtered_table = 'reads/preprocess/denoise/{reference}_table.qza'
+    log:
+        out = 'reads/preprocess/denoise/log/{reference}_filter_table.log',
+        err = 'reads/preprocess/denoise/log/{reference}_filter_table.err'
+    conda:
+        config['snakelines_dir'] + '/enviroments/qiime2.yaml'
+    threads:
+        int(config['threads'])
+    params:
+        include = process_filter_input(method_config.get('include', False), '--p-include'),
+        exclude = process_filter_input(method_config.get('exclude', False), '--p-exclude')
+    shell:
+        '''
+        if [ "{params.include}" == "" ] && [ "{params.exclude}" == "" ];
+        then
+            echo "Skipping taxonomy filtering as no filtering conditions are set"
+            cp {input.feature_table} {output.filtered_table}
+        else
+            qiime taxa filter-table \
+                --i-table {input.feature_table} \
+                --i-taxonomy {input.taxonomy} \
+                {params.include} \
+                {params.exclude} \
+                --o-filtered-table {output.filtered_table}
+        fi;
+        '''
+
+rule qiime2__taxa_filter_seqs:
+    """
+    This method filters sequences based on their taxonomic annotations. Features can be retained in the resulting table by specifying one or more include search terms, and can be filtered out of the resulting table by specifying one or more exclude search terms.
+    If both include and exclude are provided, the inclusion critera will be applied before the exclusion critera. 
+    When no include or exclude criteria are provided, the input is copied to output.
+    Any samples that have a total frequency of zero after filtering will be removed from the resulting table.
+
+    Calls 'qiime taxa filter-seqs'
+
+    :input rep_seqs: representative feature sequences as produced by dada2
+    :input taxonomy: taxonomic annotations for features in the provided feature sequences
+    :output filtered_seqs: resulting feature sequences after filtering
+    :params include: criteria that must hold to keep ASV
+    :params exclude: criteria that cannot hold to keep ASV
+    """
+    input:
+        rep_seqs = 'reads/preprocess/denoise/{reference}_rep-seqs_all.qza',
+        taxonomy  = 'reads/taxonomy/{reference}_tax.qza'
+    output:
+        filtered_seqs = 'reads/preprocess/denoise/{reference}_rep-seqs.qza'
+    log:
+        out = 'reads/preprocess/denoise/log/{reference}_filter_seqs.log',
+        err = 'reads/preprocess/denoise/log/{reference}_filter_seqs.err'
+    conda:
+        config['snakelines_dir'] + '/enviroments/qiime2.yaml'
+    threads:
+        int(config['threads'])
+    params:
+        include = process_filter_input(method_config.get('include', False), '--p-include'),
+        exclude = process_filter_input(method_config.get('exclude', False), '--p-exclude')
+    shell:
+        '''
+        if [ "{params.include}" == "" ] && [ "{params.exclude}" == "" ];
+        then
+            echo "Skipping taxonomy filtering as no filtering conditions are set"
+            cp {input.rep_seqs} {output.filtered_seqs}
+        else
+            qiime taxa filter-seqs \
+                --i-sequences {input.rep_seqs} \
+                --i-taxonomy {input.taxonomy} \
+                {params.include} \
+                {params.exclude} \
+                --o-filtered-sequences {output.filtered_seqs}
+        fi;
+        '''

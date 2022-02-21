@@ -13,8 +13,8 @@ rule qiime2__dada2_denoise:
     input:
         demux_sequences = 'reads/preprocess/demultiplex/{reference}.qza'
     output:
-        table = 'reads/preprocess/denoise/{reference}_table.qza',
-        rep_seqs = 'reads/preprocess/denoise/{reference}_rep-seqs.qza',
+        table = 'reads/preprocess/denoise/{reference}_table_all.qza',
+        rep_seqs = 'reads/preprocess/denoise/{reference}_rep-seqs_all.qza',
         stats = 'reads/preprocess/denoise/{reference}_denoising-stats.qza'
     log:
         out = 'reads/preprocess/denoise/log/{reference}.log',
