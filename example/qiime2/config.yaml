@@ -4,7 +4,7 @@ threads: 2                          # Number of threads to use in analysis
 
 samples:                            # List of sample categories to be analysed
     - name: .*                      # Use all reads in reads/original
-      reference: silva-16S-90-filtered       # Reference genome for reads in the category (reference/silva-16S-90-filtered/silva-16S-90-filtered.fa)
+      reference: unite-fungi       # Reference genome for reads in the category (reference/silva-16S-90-filtered/silva-16S-90-filtered.fa)
       description:                  # Creates metadata file (description/sample-metadata.tsv)
         overwrite: True             # Allowed True or False, defines whether to overwrite created metadata file
         format: '{year}-{wine}-{additive}-{material}-{rRNA}-{phase}-{biological_replica}-{technical_replica}' # napr. 2021-R-S_R1.fastq.gz
@@ -137,15 +137,31 @@ qiime2:
             substitution_model: MFP                 # Valid for 'iqtree' and 'raxml', not used in fasttree. Defines nucleotide substitution model (default: 'MFP' for iqtree, 'GTRGAMMA' for raxml)
             fast_mode: False                        # Valid for 'iqtree', defines whether to simulate fasttree search in iqtree (default: False)
         
+        # Reference must contains .fa and .tax, if reference is 'ref-16S-bac', there must be 'ref-16S-bac.fa' and 'ref-16S-bac.tax' in 'reference/ref-16S-bac/'
+        # In the future - extract reference reads to optimize -https://docs.qiime2.org/2021.8/tutorials/feature-classifier/
+        taxonomy:
+            fit:                                    # Trains a classifier using reference reads and taxonomy
+                method: naive_bayes                 # Allowed 'naive_bayes'
+                #reference_class_weights:
+            classify:
+                method: fitted_classifier           # Allowed 'fitted_classifier'
+                confidence_threshold: 0.7           # Taxonomy classification is limited at tax. depth where confidence is lower than this value (default: 0.7), either float from 0-1 range, or "disable" to disable confidence calculation, or '0' to calculate confidence but not apply it
+
+        # Taxa filtering - must be used always for snakelines to work. If you do not want to use taxa filtering set include and exclude to False
+        taxa_filter:
+            method: taxa_filter                     # Allowed 'taxa_filter'. Filter data using obtained taxonomy
+            include: False                          # Indicates which taxa should be included only. Else set to False or leave empty. If 'XY', then retained are only ASVs containing 'XY' in their taxa annotation. Depends on the names in .tax file
+            exclude: mitochondria,chloroplast       # Indicates which taxa should be excluded. Else set to False or leave empty. If 'XY', then filtered out all ASVs containing 'XY' in their taxa annotation. Depends on the names in .tax file
+
         # Use rarefaction to explore if data has uneven sequencing depth between sample
         # Rarefaction is a method for normalization via sub-sampling without replacement and is commonly used as a workaround for the issue of uneven sequencing depth. 
         # Rarefaction occurs in two steps: first, samples which are below the rarefaction depth are filtered out of the feature table. Then, all remaining samples are subsampled without replacement to get to the specified sequencing depth.
-        rarefaction:                            # Calculate the alpha diversity at various depths from 'min-depth' to 'max-depth'
-            method: alpha_rarefaction           # Allowed: 'alpha_rarefaction'
-            max-depth: 4000                     # Int, should be close to the maximum number of sequences
-            min-depth: 1                        # Int, defines the minimum depth 
-            steps: 10                           # Int, defines the number of rarefaction depths to include between min-depth and max-depth (default: 10)
-            iterations: 10                      # Int, defines the number of calculated tables to provide an error estimate (default: 10)
+        rarefaction:                                # Calculate the alpha diversity at various depths from 'min-depth' to 'max-depth'
+            method: alpha_rarefaction               # Allowed: 'alpha_rarefaction'
+            max_depth: 3500                         # Int, should be close to the maximum number of sequences
+            min_depth: 1                            # Int, defines the minimum depth
+            steps: 10                               # Int, defines the number of rarefaction depths to include between min-depth and max-depth (default: 10)
+            iterations: 10                          # Int, defines the number of calculated tables to provide an error estimate (default: 10)
         
         # To obtain best and most reliable results, 'sampling_depth' is crucial to set correctly. 
         # QIIME2 tutorials recommend check feature_table (01_preprocessing_report/feature_table) alpha_rarefaction results (02_core_metrics_report/rarefaction)
@@ -176,17 +192,6 @@ qiime2:
                 method: emperor                     # Allowed 'emperor', creates Emperor plots of the PCoA results to explore groups or time using numeric metadata column
                 columns:                            # Define columns from metadata, must be numeric, either set in metadata file as numeric type or empty type
                     - year
-
-        # Reference must contains .fa and .tax, if reference is 'ref-16S-bac', there must be 'ref-16S-bac.fa' and 'ref-16S-bac.tax' in 'reference/ref-16S-bac/'
-        # In the future - extract reference reads to optimize -https://docs.qiime2.org/2021.8/tutorials/feature-classifier/
-        taxonomy:
-            fit:                                    # Trains a classifier using reference reads and taxonomy
-                method: naive_bayes                 # Allowed 'naive_bayes'
-                #reference_class_weights:  
-            classify:
-                method: fitted_classifier           # Allowed 'fitted_classifier'
-                confidence_threshold: 0.7           # Taxonomy classification is limited at tax. depth where confidence is lower than this value (default: 0.7), either float from 0-1 range, or "disable" to disable confidence calculation, or '0' to calculate confidence but not apply it
-
 
         differential_abundance:
             lefse:

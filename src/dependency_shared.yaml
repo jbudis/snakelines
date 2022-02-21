@@ -571,7 +571,7 @@ qiime2:
             output:
                 qza: expand('reads/preprocess/denoise/{reference}_{type}.qza',
                                         reference=pipeline.references,
-                                        type=['rep-seqs', 'table', 'denoising-stats'])
+                                        type=['rep-seqs_all', 'table_all', 'denoising-stats'])
 
                 qzv: expand('reads/preprocess/denoise/{reference}_denoising-stats.qzv',
                                         reference=pipeline.references)
@@ -644,7 +644,11 @@ qiime2:
                     qzv: expand('reads/taxonomy/{reference}_{type}.qzv',
                                         type=['taxa_features','barplot'],
                                         reference=pipeline.references)
-        
+        taxa_filter:
+            output:
+                qza: expand('reads/preprocess/denoise/{reference}_{type}.qza',
+                                        reference=pipeline.references,
+                                        type=['rep-seqs', 'table'])
         differential_abundance:
             lefse:
                 output:
