@@ -1,0 +1,52 @@
+rule qiime2__taxonomy_fitted_classifier:
+    """
+    Assign taxonomy to query sequences using BLAST+. 
+    Performs BLAST+ local alignment between query and reference_reads, then assigns consensus taxonomy to each query sequence from among maxaccepts hits, min_consensus of which share that taxonomic assignment. 
+    Note that maxaccepts selects the first N hits with > perc_identity similarity to query, not the top N matches. 
+    For top N hits, use classify-consensus-vsearch.
+
+    Calls 'qiime feature-classifier classify-consensus-blast'.
+
+    :input rep_seqs: qiime artifact of representative sequences
+    :input ref_reads: qza artifact of reference sequences
+    :input ref_taxa: qza artifact of reference taxonomy labels
+    :output taxonomy: taxonomy of OTUs in samples, qiime artifact of type FeatureData[Taxonomy]
+    :params maxaccepts: Maximum number of hits to keep for each query. Must be in range [1, infinity]. BLAST will choose the first N hits in the reference database that exceed perc-identity similarity to query.
+    :params perc_identity: Reject match if percent identity to query is lower. Must be in range [0.0, 1.0]
+    :params query_cov: Reject match if query alignment coverage per high-scoring pair is lower
+    :params strand: Align against reference sequences in forward ("plus"), reverse ("minus"), or both directions ("both")
+    :params evalue: BLAST expectation value (E) threshold for saving hits
+    :params min-consensus: Minimum fraction of assignments must match top hit to be accepted as consensus assignment. Must be in range (0.5, 1.0].
+    """
+    input:
+        rep_seqs = 'reads/preprocess/denoise/{reference}_rep-seqs_all.qza',
+        ref_reads = 'reference/{reference}/qiime2/ref_reads.qza',
+        ref_taxa = 'reference/{reference}/qiime2/ref_tax.qza'
+    output:
+        taxonomy  = 'reads/taxonomy/{reference}_tax.qza'
+    params:
+        max_hits = method_config.get('blast_max_hits', 10),
+        min_identitity = method_config.get('blast_min_identitity', 0.8),
+        min_coverage = method_config.get('blast_min_coverage', 0.8),
+        strand = method_config.get('blast_strand', 'both'),
+        evalue = method_config.get('blast_evalue', 0.001),
+        min_consensus = method_config.get('blast_min_consensus', 0.51)
+    conda:
+        config['snakelines_dir'] + '/enviroments/qiime2.yaml'
+    log:
+        out = 'reads/taxonomy/log/{reference}_fitting.out',
+        err = 'reads/taxonomy/log/{reference}_fitting.err'    
+    shell:
+        '''
+        qiime feature-classifier classify-consensus-blast \
+          --i-query {input.rep_seqs} \
+          --i-reference-reads {input.ref_reads} \
+          --i-reference-taxonomy {input.ref_taxa} \
+          --o-classification {output.taxonomy} \
+          --p-maxaccepts {params.max_hits} \
+          --p-perc-identity {params.min_identitity} \
+          --p-query-cov {params.min_coverage} \
+          --p-strand {params.strand} \
+          --p-evalue {params.evalue} \
+          --p-min-consensus {params.min_consensus}
+        '''

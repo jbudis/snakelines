@@ -1,3 +1,28 @@
+rule qiime2__taxonomy_fit_naive_bayes:
+    """
+    Create a scikit-learn naive_bayes classifier for reads.
+
+    Calls 'qiime feature-classifier fit-classifier-naive-bayes'.
+    
+    :input ref_reads: qza artifact of imported reference sequences
+    :input ref_tax: qza artifact of imported reference taxonomy
+    :output classifier: qza artifact of trained classifier
+    """
+    input:
+        ref_reads = 'reference/{reference}/qiime2/ref_reads.qza',
+        ref_tax = 'reference/{reference}/qiime2/ref_tax.qza'
+    output:
+        classifier = 'reference/{reference}/qiime2/classifier.qza'
+    conda:
+        config['snakelines_dir'] + '/enviroments/qiime2.yaml'
+    shell:
+        '''
+        qiime feature-classifier fit-classifier-naive-bayes \
+            --i-reference-reads {input.ref_reads} \
+            --i-reference-taxonomy {input.ref_tax} \
+            --o-classifier {output.classifier} 
+        '''
+        
 rule qiime2__taxonomy_fitted_classifier:
     """
     Classify reads by taxon using a fitted classifier
@@ -31,52 +56,4 @@ rule qiime2__taxonomy_fitted_classifier:
           --p-n-jobs {threads} \
           --p-confidence {params.confidence} \
           --o-classification {output.taxonomy}
-        '''
-
-rule qiime2__taxonomy_barplot:
-    """
-    :input table:
-    :input taxonomy: produced taxonomy as qza
-    :input metadata: samples metadata filepath in TSV format (tab-separated value), e.g. description/silva16S-sample-metadata.tsv
-    """
-    input:
-        taxonomy = 'reads/taxonomy/{reference}_tax.qza',
-        feature_table = 'reads/preprocess/denoise/{reference}_table.qza',
-        metadata = 'description/sample-metadata.tsv'
-    output:
-        barplot = 'reads/taxonomy/{reference}_barplot.qzv'
-    log:
-        out = 'reads/taxonomy/log/{reference}_barplot.out',
-        err = 'reads/taxonomy/log/{reference}_barplot.err' 
-    conda:
-        config['snakelines_dir'] + '/enviroments/qiime2.yaml'
-    shell:
-        '''    
-        qiime taxa barplot \
-          --i-table {input.feature_table} \
-          --i-taxonomy {input.taxonomy} \
-          --m-metadata-file {input.metadata} \
-          --o-visualization {output.barplot}
-        '''
-
-rule qiime2__taxonomy_tabulate:
-    """
-    Visualize produced taxonomy classification
-
-    Calls 'qiime metadata tabulate'
-
-    :input taxonomy: produced taxonomy as qza
-    :output qzv: visualization of produced taxonomy in qzv
-    """
-    input:
-        taxonomy = 'reads/taxonomy/{reference}_tax.qza'
-    output:
-        qzv = 'reads/taxonomy/{reference}_taxa_features.qzv'
-    conda:
-        config['snakelines_dir'] + '/enviroments/qiime2.yaml'
-    shell:
-        '''
-        qiime metadata tabulate \
-          --m-input-file {input.taxonomy} \
-          --o-visualization {output.qzv}
         '''

@@ -631,15 +631,18 @@ qiime2:
                                         type=qiime2_beta_types,
                                         column=qiime2_pcoa_custom_columns)
         taxonomy:
-            fit:
+            import:
+                output: 
+                    ref_import: expand('reference/{reference}/qiime2/ref_{type}.qza'
+                                        reference=pipeline.references,
+                                        type=['reads', 'tax'])     
+            classify:
                 output:
                     classifier: expand('reference/{reference}/qiime2/classifier.qza',
                                         reference=pipeline.references)
-            classify:
-                output:
                     classification: expand('reads/taxonomy/{reference}_tax.qza',
                                         reference=pipeline.references)
-            taxa:
+            barplot:
                 output:
                     qzv: expand('reads/taxonomy/{reference}_{type}.qzv',
                                         type=['taxa_features','barplot'],

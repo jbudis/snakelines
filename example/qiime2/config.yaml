@@ -4,7 +4,7 @@ threads: 2                          # Number of threads to use in analysis
 
 samples:                            # List of sample categories to be analysed
     - name: .*                      # Use all reads in reads/original
-      reference: unite-fungi       # Reference genome for reads in the category (reference/silva-16S-90-filtered/silva-16S-90-filtered.fa)
+      reference: unite              # Reference genome for reads in the category (reference/silva-16S-90-filtered/silva-16S-90-filtered.fa)
       description:                  # Creates metadata file (description/sample-metadata.tsv)
         overwrite: True             # Allowed True or False, defines whether to overwrite created metadata file
         format: '{year}-{wine}-{additive}-{material}-{rRNA}-{phase}-{biological_replica}-{technical_replica}' # napr. 2021-R-S_R1.fastq.gz
@@ -140,12 +140,19 @@ qiime2:
         # Reference must contains .fa and .tax, if reference is 'ref-16S-bac', there must be 'ref-16S-bac.fa' and 'ref-16S-bac.tax' in 'reference/ref-16S-bac/'
         # In the future - extract reference reads to optimize -https://docs.qiime2.org/2021.8/tutorials/feature-classifier/
         taxonomy:
-            fit:                                    # Trains a classifier using reference reads and taxonomy
-                method: naive_bayes                 # Allowed 'naive_bayes'
-                #reference_class_weights:
+            import:                                 # Trains a classifier using reference reads and taxonomy
+                method: import_reference            # Allowed 'import_reference'
             classify:
-                method: fitted_classifier           # Allowed 'fitted_classifier'
+                method: consensus_blast             # Allowed 'fitted_classifier', 'consensus_blast'
                 confidence_threshold: 0.7           # Taxonomy classification is limited at tax. depth where confidence is lower than this value (default: 0.7), either float from 0-1 range, or "disable" to disable confidence calculation, or '0' to calculate confidence but not apply it
+                blast_max_hits: 10                  # Int, must be higher than 0. Valid for 'consensus_blast'. Defines the maximum number of hits to keep for each query. First N hits in the reference DB that exceed perc-identity similarity to query will be chosen (default: 10)
+                blast_min_identitity: 0.8           # Must be 0-1. Valid for 'consensus_blast'. Defines the minimum percent identity of match to query, if lower, match is discarded (default 0.8)
+                blast_min_coverage: 0.8             # Must be 0-1. Valid for 'consensus_blast'. Reject match if query alignment coverage per high-scoring pair is lower (default 0.8)
+                blast_strand: both                  # Allowed: 'both', 'plus', 'minus'. Valid for 'consensus_blast'. Defines the direction to use when aligning against reference DB (default 'both')
+                blast_evalue: 0.001                 # Valid for 'consensus_blast'. Defines expectation value (E) threshold which must be kept so hits will not be discarded (default 0.001)
+                blast_min_consensus: 0.51           # Must be 0.5-1. Valid for 'consensus_blast'. Minimum fraction of assignments must match top hit to be accepted as consensus assignment (default 0.51)
+            barplot:
+                method: barplot                     # Allowed 'barplot'. Defines the method of visualization of taxonomy assignments
 
         # Taxa filtering - must be used always for snakelines to work. If you do not want to use taxa filtering set include and exclude to False
         taxa_filter:
@@ -196,7 +203,7 @@ qiime2:
         differential_abundance:
             lefse:
                 method: lefse                           # Allowed 'lefse'
-                taxa_level: 7                           # Maximum taxonomic level that is of your interest
+                taxa_level: 4                           # Maximum taxonomic level that is of your interest
                 class_col: phase                        # Specify column from metadata file
 
             # ANCOM section 1 - without taxonomy
@@ -224,8 +231,8 @@ qiime2:
                 transform_function: clr                 # Allowed: 'sqrt', 'log', 'clr'. Defines method applied to transform feature values
                 diff_function: mean_difference          # Allowed: 'mean_difference', 'f_statistic'. Defines method applied to visualize fold difference in feature abundances across groups
                 taxa_levels:                            # Int, corresponding to taxonomic level. Performs a differential abundance test at a specific taxonomic level.
-                    - 7                                 
-                    - 6
+                    - 4                                 
+                    - 3
                 columns:                                # Categorical sample metadata column to test for differential abundance across
                     - phase
                     - additive

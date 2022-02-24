@@ -54,7 +54,7 @@ rule qiime2__taxonomy_fit_naive_bayes:
     """
     input:
         ref_reads = 'reference/{reference}/qiime2/ref_reads.qza',
-        ref_tax = 'reference/{reference}/qiime2/ref_tax.qza',
+        ref_tax = 'reference/{reference}/qiime2/ref_tax.qza'
     output:
         classifier = 'reference/{reference}/qiime2/classifier.qza'
     conda:
