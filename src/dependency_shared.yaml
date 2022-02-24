@@ -633,7 +633,7 @@ qiime2:
         taxonomy:
             import:
                 output: 
-                    ref_import: expand('reference/{reference}/qiime2/ref_{type}.qza'
+                    ref_import: expand('reference/{reference}/qiime2/ref_{type}.qza',
                                         reference=pipeline.references,
                                         type=['reads', 'tax'])     
             classify:

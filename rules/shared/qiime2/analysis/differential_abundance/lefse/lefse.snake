@@ -231,13 +231,12 @@ rule qiime2__lefse_cladogram:
         '''
         src=$(which lefse-plot_cladogram.py)
         echo Preparing lefse cladogram $src
-        cp $src "zaloha_$src"
-        sed -i 's/ax.bar(fr_0,/ax.bar((fr_0+fr_1)\*0.5,/g' $src
+        sed -i --follow-symlinks 's/ax.bar(fr_0,/ax.bar((fr_0+fr_1)\*0.5,/g' $src
         lefse-plot_cladogram.py \
             {input.lefse_result} \
             {output.cladogram_out} \
             --format pdf
-        mv "zaloha_$src" $src
+        sed -i --follow-symlinks 's/ax.bar((fr_0+fr_1)\*0.5,/ax.bar(fr_0,/g' $src
         '''
 
 rule qiime2__lefse_plot_features:
