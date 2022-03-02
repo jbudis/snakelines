@@ -13,8 +13,8 @@ rule qiime2__dada2_denoise:
     input:
         demux_sequences = 'reads/preprocess/demultiplex/{reference}.qza'
     output:
-        table = 'reads/preprocess/denoise/{reference}_table_all.qza',
-        rep_seqs = 'reads/preprocess/denoise/{reference}_rep-seqs_all.qza',
+        table = 'reads/preprocess/denoise/{reference}_table_denoised.qza',
+        rep_seqs = 'reads/preprocess/denoise/{reference}_rep-seqs_denoised.qza',
         stats = 'reads/preprocess/denoise/{reference}_denoising-stats.qza'
     log:
         out = 'reads/preprocess/denoise/log/{reference}.log',
@@ -77,4 +77,50 @@ rule qiime2__dada2_tabulate_stats:
         qiime metadata tabulate \
             --m-input-file {input.dada2_stats} \
             --o-visualization {output.vis_denoise_stats}
+        '''
+
+rule qiime2__rescript_orient_seqs:
+    """
+    Fix orientation of sequences by comparison to a reference sequence set known to be oriented in the correct direction.
+    
+    Calls 'qiime rescript orient-seqs'
+
+    :input rep_seqs: denoised sequences that can be in mixed orientation
+    :input ref_sequences: reference sequence set 
+    :params fix_orient: whether to fix orientation or not
+    :output orient_seqs_fixed:Set of read sequences in correct orientation
+    :output orient_seqs_discard: Set of read sequences in incorrect orientation
+    """
+    input:
+        rep_seqs = 'reads/preprocess/denoise/{reference}_rep-seqs_denoised.qza',
+        table = 'reads/preprocess/denoise/{reference}_table_denoised.qza',
+        ref_sequences = 'reference/{reference}/qiime2/ref_reads.qza'
+    output:
+        orient_seqs_fixed = 'reads/preprocess/denoise/{reference}_rep-seqs_all.qza',
+        orient_table = 'reads/preprocess/denoise/{reference}_table_all.qza'
+    params:
+        fix_orient = method_config.get('fix_seq_orientation', False),
+        orient_seqs_discard = 'reads/preprocess/denoise/{reference}_rep-seqs_unoriented.qza'
+    conda:
+        config['snakelines_dir'] + '/enviroments/qiime2_rescript.yaml'
+    shell:
+        '''
+        if [ "{params.fix_orient}" != "True" ];
+        then
+            echo "Skipping sequence orientation control as it was set to False";
+            cp {input.rep_seqs} {output.orient_seqs_fixed};
+            cp {input.table} {output.orient_table};
+        else
+            qiime rescript orient-seqs \
+                --i-sequences {input.rep_seqs} \
+                --i-reference-sequences {input.ref_sequences} \
+                --o-oriented-seqs {output.orient_seqs_fixed} \
+                --o-unmatched-seqs {params.orient_seqs_discard};
+
+            qiime feature-table filter-features \
+                --i-table {input.table} \
+                --m-metadata-file {params.orient_seqs_discard} \
+                --o-filtered-table {output.orient_table} \
+                --p-exclude-ids
+        fi;
         '''    
