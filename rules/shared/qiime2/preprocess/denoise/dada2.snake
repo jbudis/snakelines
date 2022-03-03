@@ -204,9 +204,9 @@ rule qiime2__alignment_filter:
 
             if [ "{params.align_how}" == "--p-exclude-ids" ];
             then
-                cp {params.hit_seqs} {output.filtered_seqs};
-            else
                 cp {params.missed_seqs} {output.filtered_seqs};
+            else
+                cp {params.hit_seqs} {output.filtered_seqs};
             fi;
 
             qiime feature-table tabulate-seqs \
