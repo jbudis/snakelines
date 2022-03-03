@@ -198,7 +198,7 @@ rule qiime2__alignment_filter:
 
             qiime feature-table filter-features \
                 --i-table {input.table} \
-                --m-metadata-file {params.missed_seqs} \
+                --m-metadata-file {params.hit_seqs} \
                 --o-filtered-table {output.filtered_table} \
                 {params.align_how};
 
