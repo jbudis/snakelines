@@ -1,4 +1,4 @@
-rule qiime2__taxonomy_fitted_classifier:
+rule qiime2__taxonomy_consensus_blast:
     """
     Assign taxonomy to query sequences using BLAST+. 
     Performs BLAST+ local alignment between query and reference_reads, then assigns consensus taxonomy to each query sequence from among maxaccepts hits, min_consensus of which share that taxonomic assignment. 
