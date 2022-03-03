@@ -102,10 +102,10 @@ qiime2:
             
             # post filtering
             fix_seq_orientation: False      # Defines whether to correct sequence orientation using reference sequences (default: False)
-            orient_reference: unite-eukaryotes
+            orient_reference: unite         # Name of reference fasta sequence(s) as 'reference/{name}/{name}.fa' i.e. 'reference/unite/unite.fa'
             
             alignment_filter: True          # Aligns feature sequences to a set of reference sequences to identify sequences that hit/miss the reference
-            alignment_reference: tomato     # Name of file in reference/ for example: 'reference/{name}.fa'
+            alignment_reference: tomato     # Name of reference fasta sequence(s) as 'reference/{name}/{name}.fa' i.e. 'reference/Solanum_lycopersicum/Solanum_lycopersicum.fa'
             alignment_filter_how: exclude   # Type of a filter, allowed: 'include', 'exclude' - whether to include or exclude sequences that were not aligned to reference
             alignment_min_identity: 0.97    # report match if percent identity to reference is equal or higher than this value
             alignment_min_query: 0.97       # report match if percent of aligned query sequence is higher than this value
