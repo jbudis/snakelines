@@ -210,11 +210,11 @@ rule qiime2__alignment_filter:
             fi;
 
             qiime feature-table tabulate-seqs \
-                --i-data {input.missed_seqs} \
-                --o-visualization {output.missed_seqs_qzv};
+                --i-data {params.missed_seqs} \
+                --o-visualization {params.missed_seqs_qzv};
             
             qiime feature-table tabulate-seqs \
-                --i-data {input.hit_seqs} \
-                --o-visualization {output.hit_seqs_qzv};
+                --i-data {params.hit_seqs} \
+                --o-visualization {params.hit_seqs_qzv};
         fi;
         '''
