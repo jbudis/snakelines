@@ -58,4 +58,4 @@ rule qiime2__tabulate_seqs_denoised:
         qiime feature-table tabulate-seqs \
             --i-data {input.rep_seqs} \
             --o-visualization {output.vis_rep_seqs}
-        '''   
+        '''

@@ -165,9 +165,11 @@ rule qiime2__alignment_filter:
         align_how = '--p-exclude-ids' if method_config.get('alignment_filter_how', 'exclude') == 'exclude' else '--p-no-exclude-ids',
         min_identity = method_config.get('alignment_min_identity',0.97),
         min_query = method_config.get('alignment_min_query',0.97),
-        ref_filter = 'reference/{reference}/qiime2/{params.align_reference}.qza',
+        ref_filter = 'reference/{reference}/qiime2/filter_reference.qza',
         missed_seqs = 'reads/preprocess/denoise/{reference}_rep-seqs_missed.qza',
-        hit_seqs = 'reads/preprocess/denoise/{reference}_rep-seqs_hits.qza'
+        hit_seqs = 'reads/preprocess/denoise/{reference}_rep-seqs_hits.qza',
+        missed_seqs_qzv = 'reads/preprocess/denoise/{reference}_rep-seqs_missed.qzv',
+        hit_seqs_qzv = 'reads/preprocess/denoise/{reference}_rep-seqs_hits.qzv'
     conda:
         config['snakelines_dir'] + '/enviroments/qiime2.yaml'
     threads:
@@ -206,5 +208,13 @@ rule qiime2__alignment_filter:
             else
                 cp {params.missed_seqs} {output.filtered_seqs};
             fi;
+
+            qiime feature-table tabulate-seqs \
+                --i-data {input.missed_seqs} \
+                --o-visualization {output.missed_seqs_qzv};
+            
+            qiime feature-table tabulate-seqs \
+                --i-data {input.hit_seqs} \
+                --o-visualization {output.hit_seqs_qzv};
         fi;
-        '''    
+        '''
