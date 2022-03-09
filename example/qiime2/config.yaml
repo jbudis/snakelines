@@ -4,7 +4,8 @@ threads: 2                          # Number of threads to use in analysis
 
 samples:                            # List of sample categories to be analysed
     - name: .*                      # Use all reads in reads/original
-      reference: unite-fungi       # Reference genome for reads in the category (reference/silva-16S-90-filtered/silva-16S-90-filtered.fa)
+      reference: unite-fungi              # Reference genome for reads in the category (reference/silva-16S-90-filtered/silva-16S-90-filtered.fa)
+      download: False                # Whether reference will be downloaded in analysis or not
       description:                  # Creates metadata file (description/sample-metadata.tsv)
         overwrite: True             # Allowed True or False, defines whether to overwrite created metadata file
         format: '{year}-{wine}-{additive}-{material}-{rRNA}-{phase}-{biological_replica}-{technical_replica}' # napr. 2021-R-S_R1.fastq.gz
@@ -73,13 +74,13 @@ qiime2:
     
     # Preprocessing section - consists of demultiplexing and sequence QC in order to obtain ASV
     preprocess:
-        demultiplex:
+        demultiplex:                    # Defines adapter trimming and initial filtering of sequences on length and error rate
             method: cutadapt            # Allowed 'cutadapt'. See https://docs.qiime2.org/2021.8/plugins/available/cutadapt/trim-paired/
             minlen: 35                  # Minimal length of trimmed read. Shorter reads would be removed. (Must be higher or equal to 1, default: 1)
             max_error_rate: 0.1         # Maximum allowed error rate (Must be from range 0-1, default: 0.1)
             primer_set: 16S             # Allowed '16S','ITS','28S'. Defines primer sequences that will be trimmed. Defined in rules/shared/qiime2/preprocess/demultiplex/cutadapt
             adapter_set: None           # Allowed 'Illumina' or 'None'. When set, sequencing adapters of that set are cut with primers, when 'None' trimmed are only primers
-            discard_undetected: False   # Whether to discard reads where adapter was not found, default: False
+            discard_undetected: False   # Whether to discard reads where adapter was not found (default: False)
 
         # DADA2 filters the forward and reverse reads jointly, outputting only those pairs of reads that both pass the filter. 
         # The first step in DADA2 is trimming using trim_left_f and trim_left_r. Then truncating happens, and at last DADA2 runs filtering using computed expected errors. 
@@ -98,6 +99,16 @@ qiime2:
             chimera_method: consensus       # Allowed 'consensus', 'pooled', 'none' (default: consensus)
             chimera_parent_abundance: 2.0   # When tested for chimeric, this gives the minimum abundance of parents. When higher, chimera detection is less rigorous (default: 1.0)
             num_reads_train: 1000000        # Number of reads used for training error model, lower number = faster, but less reliable model (default: 1000000)
+            
+            # post filtering
+            fix_seq_orientation: False      # Defines whether to correct sequence orientation using reference sequences (default: False)
+            orient_reference: unite         # Name of reference fasta sequence(s) as 'reference/{name}/{name}.fa' i.e. 'reference/unite/unite.fa'
+            
+            alignment_filter: True          # Aligns feature sequences to a set of reference sequences to identify sequences that hit/miss the reference
+            alignment_reference: tomato     # Name of reference fasta sequence(s) as 'reference/{name}/{name}.fa' i.e. 'reference/Solanum_lycopersicum/Solanum_lycopersicum.fa'
+            alignment_filter_how: exclude   # Type of a filter, allowed: 'include', 'exclude' - whether to include or exclude sequences that were not aligned to reference
+            alignment_min_identity: 0.97    # report match if percent identity to reference is equal or higher than this value
+            alignment_min_query: 0.97       # report match if percent of aligned query sequence is higher than this value
 
     # Report section - generates visualizations of constructed ASVs
     report:
@@ -140,12 +151,22 @@ qiime2:
         # Reference must contains .fa and .tax, if reference is 'ref-16S-bac', there must be 'ref-16S-bac.fa' and 'ref-16S-bac.tax' in 'reference/ref-16S-bac/'
         # In the future - extract reference reads to optimize -https://docs.qiime2.org/2021.8/tutorials/feature-classifier/
         taxonomy:
-            fit:                                    # Trains a classifier using reference reads and taxonomy
-                method: naive_bayes                 # Allowed 'naive_bayes'
-                #reference_class_weights:
+            import:                                 # Trains a classifier using reference reads and taxonomy
+                method: import_reference              # Allowed 'import_reference', 'silva_download', if download - set download to True on the eight line in this config
+                version: 138                        # Define Silva version if using 'silva_download'
+                type: SSURef_NR99                   # Define type for Silva DB if using 'silva_download'
+                include_species_labels: False       # Whether to include labels for species level when using 'silva_download'. Not recommended, as SILVA does not curate the species-level taxonomy
             classify:
-                method: fitted_classifier           # Allowed 'fitted_classifier'
+                method: fitted_classifier             # Allowed 'fitted_classifier', 'consensus_blast'
                 confidence_threshold: 0.7           # Taxonomy classification is limited at tax. depth where confidence is lower than this value (default: 0.7), either float from 0-1 range, or "disable" to disable confidence calculation, or '0' to calculate confidence but not apply it
+                blast_max_hits: 10                  # Int, must be higher than 0. Valid for 'consensus_blast'. Defines the maximum number of hits to keep for each query. First N hits in the reference DB that exceed perc-identity similarity to query will be chosen (default: 10)
+                blast_min_identitity: 0.8           # Must be 0-1. Valid for 'consensus_blast'. Defines the minimum percent identity of match to query, if lower, match is discarded (default 0.8)
+                blast_min_coverage: 0.8             # Must be 0-1. Valid for 'consensus_blast'. Reject match if query alignment coverage per high-scoring pair is lower (default 0.8)
+                blast_strand: both                  # Allowed: 'both', 'plus', 'minus'. Valid for 'consensus_blast'. Defines the direction to use when aligning against reference DB (default 'both')
+                blast_evalue: 0.001                 # Valid for 'consensus_blast'. Defines expectation value (E) threshold which must be kept so hits will not be discarded (default 0.001)
+                blast_min_consensus: 0.51           # Must be 0.5-1. Valid for 'consensus_blast'. Minimum fraction of assignments must match top hit to be accepted as consensus assignment (default 0.51)
+            barplot:
+                method: barplot                     # Allowed 'barplot'. Defines the method of visualization of taxonomy assignments
 
         # Taxa filtering - must be used always for snakelines to work. If you do not want to use taxa filtering set include and exclude to False
         taxa_filter:
@@ -196,7 +217,7 @@ qiime2:
         differential_abundance:
             lefse:
                 method: lefse                           # Allowed 'lefse'
-                taxa_level: 7                           # Maximum taxonomic level that is of your interest
+                taxa_level: 4                           # Maximum taxonomic level that is of your interest
                 class_col: phase                        # Specify column from metadata file
 
             # ANCOM section 1 - without taxonomy
@@ -224,8 +245,8 @@ qiime2:
                 transform_function: clr                 # Allowed: 'sqrt', 'log', 'clr'. Defines method applied to transform feature values
                 diff_function: mean_difference          # Allowed: 'mean_difference', 'f_statistic'. Defines method applied to visualize fold difference in feature abundances across groups
                 taxa_levels:                            # Int, corresponding to taxonomic level. Performs a differential abundance test at a specific taxonomic level.
-                    - 7                                 
-                    - 6
+                    - 4                                 
+                    - 3
                 columns:                                # Categorical sample metadata column to test for differential abundance across
                     - phase
                     - additive

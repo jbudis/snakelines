@@ -555,10 +555,8 @@ qiime2:
             output:
                 qza: expand('reads/preprocess/demultiplex/{reference}.qza',
                                         reference=pipeline.references)
-
                 qzv: expand('reads/preprocess/demultiplex/{reference}_quality.qzv',
                                         reference=pipeline.references)
-        
         quality_filter:
             output:
                 qza: expand('reads/preprocess/qscore/{reference}.qza',
@@ -631,15 +629,16 @@ qiime2:
                                         type=qiime2_beta_types,
                                         column=qiime2_pcoa_custom_columns)
         taxonomy:
-            fit:
-                output:
-                    classifier: expand('reference/{reference}/qiime2/classifier.qza',
-                                        reference=pipeline.references)
+            import:
+                output: 
+                    ref_import: expand('reference/{reference}/qiime2/ref_{type}.qza',
+                                        reference=pipeline.references,
+                                        type=['reads', 'tax'])     
             classify:
                 output:
                     classification: expand('reads/taxonomy/{reference}_tax.qza',
                                         reference=pipeline.references)
-            taxa:
+            barplot:
                 output:
                     qzv: expand('reads/taxonomy/{reference}_{type}.qzv',
                                         type=['taxa_features','barplot'],
@@ -739,11 +738,11 @@ qiime2:
                                         reference=pipeline.references)
                 preprocessing_report:
                     from:   expand('reads/preprocess/denoise/{reference}_{type}/',
-                                        type=['rep-seqs', 'table', 'denoising-stats'],
+                                        type=['rep-seqs_denoised','rep-seqs', 'table', 'denoising-stats'],
                                         reference=pipeline.references)
                     to:     expand('{report_dir}/{reference}/01_preprocessing_report/{type}/',
                                         report_dir=config['report_dir'],
-                                        type=['representative_sequences', 'feature_table', 'denoising_stats'],
+                                        type=['rep-seqs_denoised','representative_sequences', 'feature_table', 'denoising_stats'],
                                         reference=pipeline.references)
                 #filtering_report:
                 #    from:   expand('reads/preprocess/filtered/{reference}_table/',

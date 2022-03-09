@@ -1,4 +1,4 @@
 channels:
-- biobakery
+- bioconda
 dependencies:
-- lefse=1.1.2
+- lefse=1.0.8

@@ -147,12 +147,13 @@ for sample_configuration in sample_configurations:
             assert len(metadata) == len(samples), 'Number of metadata rows and number of samples do not match'                 
     
     reference = sample_configuration.get('reference', None)
+    would_be_dwnl = sample_configuration.get('download', False)
     pipeline.add(samples,
                 metadata,
                 reference,
                 sample_configuration.get('panel', None),
                 sample_configuration.get('prebuilt', False),
-                bool(extract_from_config(config, ['reference', 'download', reference], [])))
+                bool(extract_from_config(config, ['reference', 'download', reference], [])) or would_be_dwnl)
 
 if pipeline.is_empty():
     print('No samples to analyse', file=sys.stderr)
