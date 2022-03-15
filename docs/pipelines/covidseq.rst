@@ -61,7 +61,7 @@ Real-world examples can be also freely downloaded from the `ENA portal <https://
 
 Example configuration:
 
-.. literalinclude:: ../../example/covidseq/config_covidseq.yaml
+.. literalinclude:: ../../example/covseq/config_covseq.yaml
    :language: yaml
 
 Planned improvements

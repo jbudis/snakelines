@@ -11,22 +11,20 @@ reads:                              # Prepare reads and quality reports for down
 
         trimmed:                    # Remove low quality parts of reads
             method: cutadapt
-            temporary: True
+            temporary: False
             fasta: reference/sars_cov_2/adapters/artic.fa
-            minimum_length: 20      # shorter reads are discarded
-            quality_cutoff: 20,20    # cutoff on 3' end ("20") or cutoff on both 5' and 3' ends ("20,20")
-            length: 275             # truncate reads to this length
-            head_cut: 0            # number of bases that are removed from the beginning of each read
-            tail_cut: 0            # number of bases are removed from the end of each read
+            minimum_length: 45      # shorter reads are discarded
+            quality_cutoff: 20,20   # cutoff on 3' end ("20") or cutoff on both 5' and 3' ends ("20,20")
+            length: 500             # truncate reads to this length
+            head_cut: 15            # number of bases that are removed from the beginning of each read
+            tail_cut: 0             # number of bases are removed from the end of each read
 
-# Optional, but recommended step to eliminate fragments from host human genome first
-# Download human reference genome at first into reference/hg38/hg38.fa
-#        decontaminated:             # Eliminate fragments from known artificial source, e.g. contamination by human
-#            method: bowtie2         # Supported values: bowtie2
-#            temporary: True        # If True, generated files would be removed after successful analysis
-#            references:             # List of reference genomes
-#                - hg38
-#            keep: False              # Keep reads mapped to references (True) or remove them as contamination (False)
+        decontaminated:             # Eliminate fragments from known artificial source, e.g. contamination by human
+            method: bowtie2         # Supported values: bowtie2
+            temporary: False        # If True, generated files would be removed after successful analysis
+            references:             # List of reference genomes
+                - grch38_decoy
+            keep: False              # Keep reads mapped to references (True) or remove them as contamination (False)
 
     report:                         # Summary reports of read characteristics to assess their quality
         quality_report:             # HTML summary report of read quality
@@ -34,7 +32,7 @@ reads:                              # Prepare reads and quality reports for down
             read_types:             # List of preprocess steps for quality reports
                 - original
                 - trimmed
-#                - decontaminated
+                - decontaminated
 
 mapping:                            # Find the most similar genomic region to reads in reference (mapping process)
     mapper:                         # Method for mapping
@@ -47,10 +45,11 @@ mapping:                            # Find the most similar genomic region to re
     postprocess:                    # Successive steps to refine mapped reads
         sorted:
             method: samtools
-            temporary: True
+            temporary: False
 
         deduplicated:               # Mark duplicated reads (PCR duplicated)
             method: picard          # Supported values: picard
+
     report:                         # Summary reports of mapping process and results
         quality_report:             # HTML summary with quality of mappings
             method: qualimap        # Supported values: qualimap
@@ -60,14 +59,30 @@ mapping:                            # Find the most similar genomic region to re
 variant:                                    # Identify variation in reads given reference genome
     caller:                                 # Method for variant identification
         method: bcftools
-        min_base_quality: 0          # Minimum base quality for a base to be considered. [0]
+        min_base_quality: 0           # Minimum base quality for a base to be considered. [0]
         min_mapping_quality: 13       # Minimum mapping quality for an alignment to be used. [13]
-        all_alleles: False            # Report all alleles, not only those which are in called genotypes. [False]
-        haploid: True                 # Set predefined ploidy. [False]
+        keep_alts: True               # Report all alleles, not only those which are in called genotypes. [False]
+        haploid: False                 # Set predefined ploidy. [False]
+        redo_baq: True                # Recalculate base alignment quality on the fly [False]
+        adjust_mq: 50                 # Coefficient for downgrading mapping quality [0]
+        gap_frac: 0.05                # Minimum fraction of gapped reads [0.002]
+
+    postprocess:
+        normalized:
+            method: bcftools
+            multiallelic: True
+
+        filtered:
+            method: bcftools
+            snp_gap: 3
+            indel_gap: 10
+            set_gts: '.'
+            include: 'INFO/DP>=5 & GT="alt" & (DP4[2]+DP4[3])/DP>=0.50'
+            trim_alt_alleles: True
 
     report:
-#        calling:
-#            method: gatk
+        calling:
+            method: gatk
 
         summary:
             method: custom
@@ -75,7 +90,7 @@ variant:                                    # Identify variation in reads given 
 consensus:                          # consesnus sequence
     fasta:                          # create consesnus sequence based on vcf of a sample and reference fasta
         method: bcftools            # bcftools is the only option
-        mask_lte_coverage: 2        # mask bases with N where coverage is lower than or equal to parameter
+        mask_lte_coverage: 4        # mask bases with N where coverage is lower than or equal to parameter
 
     summary:
         method: cat                 # concatenate consensus sequences from the samples into a single file
@@ -95,4 +110,5 @@ misc:
             method: custom
             min_coverage: 9
 
-
+report:
+    multiqc: True
