@@ -80,13 +80,6 @@ variant:                                    # Identify variation in reads given 
             include: 'INFO/DP>=5 & GT="alt" & (DP4[2]+DP4[3])/DP>=0.50'
             trim_alt_alleles: True
 
-    report:
-        calling:
-            method: gatk
-
-        summary:
-            method: custom
-
 consensus:                          # consesnus sequence
     fasta:                          # create consesnus sequence based on vcf of a sample and reference fasta
         method: bcftools            # bcftools is the only option
