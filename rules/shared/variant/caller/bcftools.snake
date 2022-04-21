@@ -21,7 +21,8 @@ rule bcftools_call_germline_variants:
         keep_alts           = '--keep-alts' if method_config.get('keep_alts', False) else '',
         redo_baq            = '--redo-BAQ' if method_config.get('redo_baq', False) else '',
         adjust_mq           = method_config.get('adjust_mq', 0),
-        gap_frac            = method_config.get('gap_frac', 0.002)
+        gap_frac            = method_config.get('gap_frac', 0.002),
+        gvcf                = '' if method_config.get('gvcf', False) else '--variants-only'
     threads:
         int(config['threads'])
     log:
@@ -50,7 +51,7 @@ rule bcftools_call_germline_variants:
         bcftools call \
             --multiallelic-caller \
             --ploidy {params.ploidy} \
-            --variants-only \
+            {params.gvcf} \
             {params.keep_alts} \
             --format-fields GQ,GP \
             --output-type v \
