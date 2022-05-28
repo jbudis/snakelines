@@ -9,7 +9,6 @@ rule cutadapt__trim_reads:
     output:
         r1 = configured_temp('reads/trimmed/{sample}_R1.fastq.gz'),
         r2 = configured_temp('reads/trimmed/{sample}_R2.fastq.gz'),
-        info = 'reads/%s/stats/{sample}.cutadapt.tsv' % method_config['input_read_type'],
     params:
         overlap = method_config.get('overlap', 10),
         error_rate = method_config.get('error_rate', 0.1),
@@ -34,7 +33,6 @@ rule cutadapt__trim_reads:
             --paired-output {output.r2} \
             --action trim \
             --cores {threads} \
-            --info-file {output.info} \
             --report full \
             --overlap {params.overlap} \
             --error-rate {params.error_rate} \
