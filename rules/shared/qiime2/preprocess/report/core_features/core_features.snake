@@ -13,9 +13,9 @@ rule qiime2__core_features:
     :output visualization: core features as qzv
     """
     input:
-        table = 'reads/preprocess/denoise/{reference}_table.qza'
+        table = 'reads/preprocess/denoise/%s/{reference}_table.qza' % pipeline.qiime2_type
     output:
-        core_features = 'reads/preprocess/denoise/{reference}_core_features.qzv'
+        core_features = 'reads/preprocess/report/{reference}_core_features.qzv' 
     params:
         min_fraction = method_config.get('min_fraction',0.5),
         max_fraction = method_config.get('max_fraction',1.0),

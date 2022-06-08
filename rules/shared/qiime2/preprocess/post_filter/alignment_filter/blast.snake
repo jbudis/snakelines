@@ -1,0 +1,74 @@
+rule qiime2__denoise_postfilter_alignment_filter:
+    """
+    Fix orientation of sequences by comparison to a reference sequence set known to be oriented in the correct direction.
+
+    Calls 'qiime import' to import the set of reference sequences used in alignment filtering
+    Calls 'qiime quality-control exclude-seqs' to find sequences that mapped to the reference sequences
+    Calls 'qiime feature-table filter-features' to update feature table
+
+    :input rep_seqs: denoised sequences that can be in mixed orientation
+    :input table: feature table as obtained by DADA2
+    :output orient_seqs_fixed: Set of reference sequences in correct orientation and that also mapped to the reference sequences
+    :output orient_table: Feature table with excluded discarded sequences
+    :params ref_sequences: Set of reference sequences in the correct direction, imported in qza
+    :params fix_orient_name: Path to the reference sequences that will be used for fixing sequence orientation
+    :params orient_seqs_discard: Outputted qza artifact of discarded sequences in this process
+    :params fix_orient: whether to fix orientation or not
+    """
+    input:
+        rep_seqs = 'reads/preprocess/denoise/%s/{reference}_rep-seqs.qza' % method_config['input_qiime2_type'],
+        table = 'reads/preprocess/denoise/%s/{reference}_table.qza' % method_config['input_qiime2_type'],
+    output:
+        filtered_seqs = 'reads/preprocess/denoise/alignment_filter/{reference}_rep-seqs.qza',
+        filtered_table = 'reads/preprocess/denoise/alignment_filter/{reference}_table.qza'
+    params:
+        align_reference = 'reference/'+method_config.get('alignment_reference', 'None')+'/'+method_config.get('alignment_reference', 'None')+'.fa',
+        align_how = '--p-exclude-ids' if method_config.get('alignment_filter_how', 'exclude') == 'exclude' else '--p-no-exclude-ids',
+        min_identity = method_config.get('alignment_min_identity',0.97),
+        min_query = method_config.get('alignment_min_query',0.97),
+        ref_filter = 'reference/{reference}/qiime2/filter_reference.qza',
+        missed_seqs = 'reads/preprocess/denoise/alignment_filter/{reference}_rep-seqs_missed.qza',
+        hit_seqs = 'reads/preprocess/denoise/alignment_filter/{reference}_rep-seqs_hits.qza',
+        missed_seqs_qzv = 'reads/preprocess/denoise/alignment_filter/{reference}_rep-seqs_missed.qzv',
+        hit_seqs_qzv = 'reads/preprocess/denoise/alignment_filter/{reference}_rep-seqs_hits.qzv'
+    conda:
+        config['snakelines_dir'] + '/enviroments/qiime2.yaml'
+    threads:
+        int(config['threads'])
+    shell:
+        '''
+        qiime tools import \
+            --type 'FeatureData[Sequence]' \
+            --input-path {params.align_reference} \
+            --output-path {params.ref_filter}
+
+        qiime quality-control exclude-seqs \
+            --i-query-sequences {input.rep_seqs} \
+            --i-reference-sequences {params.ref_filter} \
+            --p-perc-identity {params.min_identity} \
+            --p-perc-query-aligned {params.min_query} \
+            --p-threads {threads} \
+            --o-sequence-hits {params.hit_seqs} \
+            --o-sequence-misses {params.missed_seqs};
+
+        qiime feature-table filter-features \
+            --i-table {input.table} \
+            --m-metadata-file {params.hit_seqs} \
+            --o-filtered-table {output.filtered_table} \
+            {params.align_how};
+
+        if [ "{params.align_how}" == "--p-exclude-ids" ];
+        then
+            cp {params.missed_seqs} {output.filtered_seqs};
+        else
+            cp {params.hit_seqs} {output.filtered_seqs};
+        fi;
+
+        qiime feature-table tabulate-seqs \
+            --i-data {params.missed_seqs} \
+            --o-visualization {params.missed_seqs_qzv};
+        
+        qiime feature-table tabulate-seqs \
+            --i-data {params.hit_seqs} \
+            --o-visualization {params.hit_seqs_qzv};
+        '''

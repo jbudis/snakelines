@@ -85,7 +85,7 @@ rule qiime2__cutadapt_tabulate:
     input:
         demux_seqs = 'reads/preprocess/demultiplex/{reference}.qza'
     output:
-        qzv = 'reads/preprocess/demultiplex/{reference}_quality.qzv'
+        qzv = 'reads/preprocess/report/{reference}_quality.qzv'
     conda:
         config['snakelines_dir'] + '/enviroments/qiime2.yaml'
     shell:

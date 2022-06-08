@@ -13,7 +13,7 @@ rule qiime2__phylogeny_align_to_tree_mafft_fasttree:
     :output rooted_tree: rooted tree, qiime artifact of type Phylogeny[Rooted], e.g. reads/qiime/silva16S-rooted-tree-dn-99.qza
     """
     input:
-        rep_seqs  = 'reads/preprocess/denoise/{reference}_rep-seqs.qza'
+        rep_seqs  = 'reads/preprocess/denoise/%s/{reference}_rep-seqs.qza' % pipeline.qiime2_type
     output:
         alignment = 'reads/analysis/alignment/{reference}_rep-aligned-seqs.qza',
         masked_alignment = 'reads/analysis/alignment/{reference}_rep-masked-aligned-seqs.qza',

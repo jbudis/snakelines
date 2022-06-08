@@ -5,7 +5,7 @@ rule qiime2__taxonomy_collapse:
     :output taxa_collapsed: feature table collapsed at specified taxa level 
     """
     input:
-        feature_table = 'reads/preprocess/denoise/{reference}_table.qza',
+        feature_table = 'reads/preprocess/denoise/%s/{reference}_table.qza' % pipeline.qiime2_post_taxa,
         taxonomy = 'reads/taxonomy/{reference}_tax.qza'
     output:
         taxa_collapsed = 'reads/taxonomy/{reference}_tax_collapsed.qza'

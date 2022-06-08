@@ -1,0 +1,48 @@
+rule qiime2__denoise_postfilter_fix_orient:
+    """
+    Fix orientation of sequences by comparison to a reference sequence set known to be oriented in the correct direction.
+    
+    Calls 'qiime import' to import the set of reference sequences in correct orientation
+    Calls 'qiime rescript orient-seqs' to find sequences that mapped to the reference sequences in correct orientation
+    Calls 'qiime feature-table filter-features' to update feature table
+
+    :input rep_seqs: denoised sequences that can be in mixed orientation
+    :input table: feature table as obtained by DADA2
+    :output orient_seqs_fixed: Set of reference sequences in correct orientation and that also mapped to the reference sequences
+    :output orient_table: Feature table with excluded discarded sequences
+    :params ref_sequences: Set of reference sequences in the correct direction, imported in qza
+    :params fix_orient_name: Path to the reference sequences that will be used for fixing sequence orientation
+    :params orient_seqs_discard: Outputted qza artifact of discarded sequences in this process
+    :params fix_orient: whether to fix orientation or not
+    """
+    input:
+        rep_seqs = 'reads/preprocess/denoise/%s/{reference}_rep-seqs.qza' % method_config['input_qiime2_type'],
+        table = 'reads/preprocess/denoise/%s/{reference}_table.qza' % method_config['input_qiime2_type']
+    output:
+        orient_seqs_fixed = 'reads/preprocess/denoise/fix_seq_orientation/{reference}_rep-seqs.qza',
+        orient_table = 'reads/preprocess/denoise/fix_seq_orientation/{reference}_table.qza'
+    params:
+        ref_sequences = 'reference/{reference}/qiime2/ref_orient_seqs.qza',
+        ref_orient_name = 'reference/'+method_config.get('orient_reference', 'None')+'/'+method_config.get('orient_reference', 'None')+'.fa',
+        orient_seqs_discard = 'reads/preprocess/denoise/fix_seq_orientation/{reference}_rep-seqs_unoriented.qza'
+    conda:
+        config['snakelines_dir'] + '/enviroments/qiime2_rescript.yaml'
+    shell:
+        '''
+        qiime tools import \
+            --type 'FeatureData[Sequence]' \
+            --input-path {params.ref_orient_name} \
+            --output-path {params.ref_sequences}
+
+        qiime rescript orient-seqs \
+            --i-sequences {input.rep_seqs} \
+            --i-reference-sequences {params.ref_sequences} \
+            --o-oriented-seqs {output.orient_seqs_fixed} \
+            --o-unmatched-seqs {params.orient_seqs_discard};
+
+        qiime feature-table filter-features \
+            --i-table {input.table} \
+            --m-metadata-file {params.orient_seqs_discard} \
+            --o-filtered-table {output.orient_table} \
+            --p-exclude-ids
+        '''
