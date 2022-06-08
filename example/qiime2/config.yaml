@@ -100,40 +100,40 @@ qiime2:
             chimera_parent_abundance: 2.0   # When tested for chimeric, this gives the minimum abundance of parents. When higher, chimera detection is less rigorous (default: 1.0)
             num_reads_train: 1000000        # Number of reads used for training error model, lower number = faster, but less reliable model (default: 1000000)
 
-        #post_filter:    
-            # Defines whether to correct sequence orientation using reference sequences (default: False)
-            #fix_seq_orientation:
-            #    method: fix_seq_orientation     # allowed: 'fix_seq_orientation'
-            #    orient_reference: unite         # Name of reference fasta sequence(s) as 'reference/{name}/{name}.fa' i.e. 'reference/unite/unite.fa'
+        # Define optional post-filtering steps (in any order) of results produced by DADA2
+        post_filter:   
+            fix_seq_orientation:
+                method: fix_seq_orientation     # allowed: 'fix_seq_orientation'
+                orient_reference: unite         # Name of reference fasta sequence(s) as 'reference/{name}/{name}.fa' i.e. 'reference/unite/unite.fa'
             
             # Aligns feature sequences to a set of reference sequences to identify sequences that hit/miss the reference
-            # alignment_filter:
-            #     method: blast                   # allowed: 'blast'
-            #     alignment_reference: tomato     # Name of reference fasta sequence(s) as 'reference/{name}/{name}.fa' i.e. 'reference/Solanum_lycopersicum/Solanum_lycopersicum.fa'
-            #     alignment_filter_how: exclude   # Type of a filter, allowed: 'include', 'exclude' - whether to include or exclude sequences that were not aligned to reference
-            #     alignment_min_identity: 0.97    # report match if percent identity to reference is equal or higher than this value
-            #     alignment_min_query: 0.97       # report match if percent of aligned query sequence is higher than this value
+            alignment_filter:
+                method: blast                   # allowed: 'blast'
+                alignment_reference: tomato     # Name of reference fasta sequence(s) as 'reference/{name}/{name}.fa' i.e. 'reference/Solanum_lycopersicum/Solanum_lycopersicum.fa'
+                alignment_filter_how: exclude   # Type of a filter, allowed: 'include', 'exclude' - whether to include or exclude sequences that were not aligned to reference
+                alignment_min_identity: 0.97    # report match if percent identity to reference is equal or higher than this value
+                alignment_min_query: 0.97       # report match if percent of aligned query sequence is higher than this value
 
         # Report section - generates visualizations of constructed ASVs
         report:
-            core_features:                  # Identifies core features, which are features observed in a user-defined fraction of the samples
-                method: core_features       # Allowed: 'core_features'
-                min_fraction: 0.5           # Minimum fraction of samples, must be 0-1 (default 0.5)
-                max_fraction: 1             # Maximum fraction of samples, must be 0-1 and greater or equal than min-fraction (default 1.0)
-                steps: 11                   # Number of steps to take between `min-fraction` and `max-fraction` for core features calculations (default: 11)            
-            feature_table:                  # Generates table of features and associated sequences
-                method: feature_table       # Allowed: 'feature_table'
-            feature_heatmap:                # Generate a heatmap representation of a feature table with optional clustering on both the sample and feature axes
-                method: feature_heatmap     # Allowed 'heatmap'
-                normalize: True             # Allowed 'True' or 'False'. Whether to normalize counts of features. Default: True
-                metric: euclidean           # See doc for allowed metrics. Default: 'euclidean'. Defines metric used for calculating distance between features
-                linkage: average            # See doc for allowed values. Default: 'average'. Defines how to calculate distance between clusters
-                cluster_ax: both            # Allowed 'both', 'features', 'samples', 'none'. Default: 'both'. Defines which axes to cluster.
+            core_features:                      # Identifies core features, which are features observed in a user-defined fraction of the samples
+                method: core_features           # Allowed: 'core_features'
+                min_fraction: 0.5               # Minimum fraction of samples, must be 0-1 (default 0.5)
+                max_fraction: 1                 # Maximum fraction of samples, must be 0-1 and greater or equal than min-fraction (default 1.0)
+                steps: 11                       # Number of steps to take between `min-fraction` and `max-fraction` for core features calculations (default: 11)            
+            feature_table:                      # Generates table of features and associated sequences
+                method: feature_table           # Allowed: 'feature_table'
+            feature_heatmap:                    # Generate a heatmap representation of a feature table with optional clustering on both the sample and feature axes
+                method: feature_heatmap         # Allowed 'heatmap'
+                normalize: True                 # Allowed 'True' or 'False'. Whether to normalize counts of features. Default: True
+                metric: euclidean               # See doc for allowed metrics. Default: 'euclidean'. Defines metric used for calculating distance between features
+                linkage: average                # See doc for allowed values. Default: 'average'. Defines how to calculate distance between clusters
+                cluster_ax: both                # Allowed 'both', 'features', 'samples', 'none'. Default: 'both'. Defines which axes to cluster.
                 columns:
                     - additive
                     - phase
             export:
-                method: export              # Allowed 'export'. DO NOT TOUCH. This tells snakelines to export each .qzv into human readable .html form
+                method: export                  # Allowed 'export'. DO NOT TOUCH. This tells snakelines to export each .qzv into human readable .html form
 
 
     analysis:
@@ -148,12 +148,12 @@ qiime2:
         # In the future - extract reference reads to optimize -https://docs.qiime2.org/2021.8/tutorials/feature-classifier/
         taxonomy:
             import:                                 # Trains a classifier using reference reads and taxonomy
-                method: import_reference              # Allowed 'import_reference', 'silva_download', if download - set download to True on the eight line in this config
+                method: import_reference            # Allowed 'import_reference', 'silva_download', if download - set download to True on the eight line in this config
                 version: 138                        # Define Silva version if using 'silva_download'
                 type: SSURef_NR99                   # Define type for Silva DB if using 'silva_download'
                 include_species_labels: False       # Whether to include labels for species level when using 'silva_download'. Not recommended, as SILVA does not curate the species-level taxonomy
             classify:
-                method: fitted_classifier             # Allowed 'fitted_classifier', 'consensus_blast'
+                method: fitted_classifier           # Allowed 'fitted_classifier', 'consensus_blast'
                 confidence_threshold: 0.7           # Taxonomy classification is limited at tax. depth where confidence is lower than this value (default: 0.7), either float from 0-1 range, or "disable" to disable confidence calculation, or '0' to calculate confidence but not apply it
                 blast_max_hits: 10                  # Int, must be higher than 0. Valid for 'consensus_blast'. Defines the maximum number of hits to keep for each query. First N hits in the reference DB that exceed perc-identity similarity to query will be chosen (default: 10)
                 blast_min_identitity: 0.8           # Must be 0-1. Valid for 'consensus_blast'. Defines the minimum percent identity of match to query, if lower, match is discarded (default 0.8)
@@ -164,7 +164,8 @@ qiime2:
             barplot:
                 method: barplot                     # Allowed 'barplot'. Defines the method of visualization of taxonomy assignments
 
-        # Taxa filtering - filtered table will be then used in further analysis steps below
+        # Taxa filtering
+        # !!! produced filtered table will be then used in further analysis steps below
         taxa_filter:
             method: taxa_filter                     # Allowed 'taxa_filter'. Filter data using obtained taxonomy
             include: False                          # Indicates which taxa should be included only. Else set to False or leave empty. If 'XY', then retained are only ASVs containing 'XY' in their taxa annotation. Depends on the names in .tax file
@@ -175,11 +176,11 @@ qiime2:
         # Rarefaction occurs in two steps: first, samples which are below the rarefaction depth are filtered out of the feature table. Then, all remaining samples are subsampled without replacement to get to the specified sequencing depth.
         rarefaction:                                # Calculate the alpha diversity at various depths from 'min-depth' to 'max-depth'
             rarefaction:
-                method: alpha_rarefaction               # Allowed: 'alpha_rarefaction'
-                max_depth: 3500                         # Int, should be close to the maximum number of sequences
-                min_depth: 1                            # Int, defines the minimum depth
-                steps: 10                               # Int, defines the number of rarefaction depths to include between min-depth and max-depth (default: 10)
-                iterations: 10                          # Int, defines the number of calculated tables to provide an error estimate (default: 10)
+                method: alpha_rarefaction           # Allowed: 'alpha_rarefaction'
+                max_depth: 3500                     # Int, should be close to the maximum number of sequences
+                min_depth: 1                        # Int, defines the minimum depth
+                steps: 10                           # Int, defines the number of rarefaction depths to include between min-depth and max-depth (default: 10)
+                iterations: 10                      # Int, defines the number of calculated tables to provide an error estimate (default: 10)
     
         # To obtain best and most reliable results, 'sampling_depth' is crucial to set correctly. 
         # QIIME2 tutorials recommend check feature_table (01_preprocessing_report/feature_table) alpha_rarefaction results (02_core_metrics_report/rarefaction)
@@ -210,10 +211,11 @@ qiime2:
                 method: emperor                     # Allowed 'emperor', creates Emperor plots of the PCoA results to explore groups or time using numeric metadata column
                 columns:                            # Define columns from metadata, must be numeric, either set in metadata file as numeric type or empty type
                     - year
-
+        
+        # Differential abundance - using lefse
         differential_abundance:
             method: lefse                           # Allowed 'lefse'
-            taxa_level: 4                           # Maximum taxonomic level that is of your interest
+            taxa_level: 4                           # Maximum taxonomic level that is of your interest - check taxonomy results
             class_col: phase                        # Specify column from metadata file
 
         # ANCOM section 1 - without taxonomy

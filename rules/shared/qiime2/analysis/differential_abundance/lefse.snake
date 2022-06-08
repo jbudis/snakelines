@@ -221,7 +221,7 @@ rule qiime2__lefse_cladogram:
     input:
         lefse_result = 'reads/analysis/lefse/{reference}.res'
     output:
-        cladogram_out = 'reads/analysis/lefse/{reference}.cladogram.pdf'
+        cladogram_out = 'reads/analysis/lefse/{reference}_cladogram.pdf'
     log:
         out = 'reads/analysis/lefse/log/{reference}_lefse_cladogram.out',
         err = 'reads/analysis/lefse/log/{reference}_lefse_cladogram.err'

@@ -771,7 +771,7 @@ qiime2:
                                     report_dir=config['report_dir'],
                                     reference=pipeline.references)
                 cladogram: 
-                    from:   expand('reads/analysis/lefse/{reference}.cladogram.pdf',
+                    from:   expand('reads/analysis/lefse/{reference}_cladogram.pdf',
                                     reference=pipeline.references)
                     to:     expand('{report_dir}/{reference}/05_differential_abundance/lefse/cladogram.pdf',
                                     report_dir=config['report_dir'],
