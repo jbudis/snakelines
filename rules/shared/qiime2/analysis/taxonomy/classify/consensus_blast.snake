@@ -19,7 +19,7 @@ rule qiime2__taxonomy_consensus_blast:
     :params min-consensus: Minimum fraction of assignments must match top hit to be accepted as consensus assignment. Must be in range (0.5, 1.0].
     """
     input:
-        rep_seqs = 'reads/preprocess/denoise/{reference}_rep-seqs_all.qza',
+        rep_seqs = 'reads/preprocess/denoise/%s/{reference}_rep-seqs.qza' % pipeline.qiime2_type,
         ref_reads = 'reference/{reference}/qiime2/ref_reads.qza',
         ref_taxa = 'reference/{reference}/qiime2/ref_tax.qza'
     output:

@@ -36,7 +36,7 @@ rule qiime2__diversity_core_metrics_phylogenetic:
     """
     input:
         rooted_tree = 'reads/analysis/alignment/{reference}_rooted-tree.qza',
-        table       = 'reads/preprocess/denoise/{reference}_table.qza',
+        table       = 'reads/preprocess/denoise/%s/{reference}_table.qza' % pipeline.qiime2_post_taxa,
         metadata    = 'description/sample-metadata.tsv'
     output:
         rarefied_table = 'reads/analysis/core_metrics/{reference}_rarefied_table.qza',

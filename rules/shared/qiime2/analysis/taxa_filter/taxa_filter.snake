@@ -20,13 +20,13 @@ rule qiime2__taxa_filter_table:
     :params exclude: criteria that cannot hold to keep ASV
     """
     input:
-        feature_table = 'reads/preprocess/denoise/{reference}_table_all.qza',
+        feature_table = 'reads/preprocess/denoise/%s/{reference}_table.qza' % pipeline.qiime2_type,
         taxonomy  = 'reads/taxonomy/{reference}_tax.qza'
     output:
-        filtered_table = 'reads/preprocess/denoise/{reference}_table.qza'
+        filtered_table = 'reads/preprocess/denoise/taxa_filter/{reference}_table.qza'
     log:
-        out = 'reads/preprocess/denoise/log/{reference}_filter_table.log',
-        err = 'reads/preprocess/denoise/log/{reference}_filter_table.err'
+        out = 'reads/preprocess/denoise/taxa_filter/log/{reference}_filter_table.log',
+        err = 'reads/preprocess/denoise/taxa_filter/log/{reference}_filter_table.err'
     conda:
         config['snakelines_dir'] + '/enviroments/qiime2.yaml'
     threads:
@@ -66,10 +66,10 @@ rule qiime2__taxa_filter_seqs:
     :params exclude: criteria that cannot hold to keep ASV
     """
     input:
-        rep_seqs = 'reads/preprocess/denoise/{reference}_rep-seqs_all.qza',
+        rep_seqs = 'reads/preprocess/denoise/%s/{reference}_rep-seqs.qza' % pipeline.qiime2_type,
         taxonomy  = 'reads/taxonomy/{reference}_tax.qza'
     output:
-        filtered_seqs = 'reads/preprocess/denoise/{reference}_rep-seqs.qza'
+        filtered_seqs = 'reads/preprocess/denoise/taxa_filter/{reference}_rep-seqs.qza'
     log:
         out = 'reads/preprocess/denoise/log/{reference}_filter_seqs.log',
         err = 'reads/preprocess/denoise/log/{reference}_filter_seqs.err'

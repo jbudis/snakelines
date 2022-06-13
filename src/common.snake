@@ -3,7 +3,7 @@ import tempfile
 import parse as parser # new dependency
 import csv # new dependency
 from pipeline.samples import Pipeline
-from config.impute_process_types import impute_read_types, impute_mapping_types, impute_variant_types
+from config.impute_process_types import impute_read_types, impute_mapping_types, impute_variant_types, impute_dada2_types
 from config.load_imports import import_files_in_config
 from config.values_retrieval import extract_from_config
 
@@ -162,6 +162,7 @@ if pipeline.is_empty():
 impute_read_types(pipeline, config)
 impute_mapping_types(pipeline, config)
 impute_variant_types(pipeline, config)
+impute_dada2_types(pipeline, config)
 
 # add tmp dir:
 if not 'tmp_dir' in config:
@@ -217,8 +218,7 @@ qiime2_beta_types = extract_from_config(config, ['qiime2', 'analysis', 'core_met
 qiime2_beta_significance_columns = extract_from_config(config, ['qiime2', 'analysis', 'diversity', 'beta','columns'], [])
 qiime2_pcoa_custom_columns = extract_from_config(config, ['qiime2', 'analysis', 'diversity', 'pcoa_explore','columns'], [])
 
-qiime2_filt_label = extract_from_config(config, ['qiime2', 'filter','label'], "")
 qiime2_heatmap_columns = extract_from_config(config, ['qiime2', 'report', 'feature_heatmap', 'columns'], [])
-qiime2_ancom_columns = extract_from_config(config, ['qiime2', 'analysis', 'differential_abundance', 'ancom', 'columns'], [])
-qiime2_ancom_taxa_lvls = extract_from_config(config, ['qiime2', 'analysis', 'differential_abundance', 'ancom_taxa', 'taxa_levels'], [])
-qiime2_ancom_taxa_columns = extract_from_config(config, ['qiime2', 'analysis', 'differential_abundance', 'ancom_taxa', 'columns'], [])
+qiime2_ancom_columns = extract_from_config(config, ['qiime2', 'analysis', 'composition_analysis', 'columns'], [])
+qiime2_ancom_taxa_lvls = extract_from_config(config, ['qiime2', 'analysis', 'composition_analysis_taxa', 'taxa_levels'], [])
+qiime2_ancom_taxa_columns = extract_from_config(config, ['qiime2', 'analysis', 'composition_analysis_taxa', 'columns'], [])

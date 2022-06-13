@@ -53,7 +53,7 @@ def get_files(source_dict):
             'tax_levels_alphas': tax_levels_alphas,'map_types_with_quality_report': map_types_with_quality_report,
             'qiime2_alpha_types': qiime2_alpha_types, 'qiime2_beta_types': qiime2_beta_types, 
             'qiime2_beta_significance_columns':qiime2_beta_significance_columns,
-            'qiime2_pcoa_custom_columns': qiime2_pcoa_custom_columns,'qiime2_filt_label':qiime2_filt_label,
+            'qiime2_pcoa_custom_columns': qiime2_pcoa_custom_columns,
             'qiime2_heatmap_columns':qiime2_heatmap_columns, 'qiime2_ancom_columns':qiime2_ancom_columns,
             'qiime2_ancom_taxa_lvls':qiime2_ancom_taxa_lvls, 'qiime2_ancom_taxa_columns':qiime2_ancom_taxa_columns}
 

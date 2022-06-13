@@ -6,10 +6,10 @@ rule qiime2__summarize_feature_table:
     :output visualization:
     """
     input:
-        table = 'reads/preprocess/{type}/{reference}_table.qza',
+        table = 'reads/preprocess/denoise/%s/{reference}_table.qza' % pipeline.qiime2_type,
         metadata    = 'description/sample-metadata.tsv'
     output:
-        vis_table = 'reads/preprocess/{type}/{reference}_table.qzv'
+        vis_table = 'reads/preprocess/report/{reference}_table.qzv'
     conda:
         config['snakelines_dir'] + '/enviroments/qiime2.yaml'
     shell:
@@ -28,29 +28,9 @@ rule qiime2__tabulate_seqs:
     :output visualization: qiime2 visualization artifact
     """
     input:
-        rep_seqs = 'reads/preprocess/{type}/{reference}_rep-seqs.qza'
+        rep_seqs = 'reads/preprocess/denoise/%s/{reference}_rep-seqs.qza' % pipeline.qiime2_type
     output:
-        vis_rep_seqs = 'reads/preprocess/{type}/{reference}_rep-seqs.qzv'
-    conda:
-        config['snakelines_dir'] + '/enviroments/qiime2.yaml'
-    shell:
-        '''    
-        qiime feature-table tabulate-seqs \
-            --i-data {input.rep_seqs} \
-            --o-visualization {output.vis_rep_seqs}
-        '''
-
-rule qiime2__tabulate_seqs_denoised:
-    """
-    Generate tabular view of feature identifier to sequence mapping, including  links to BLAST each sequence against the NCBI nt database.
-    Calls 'qiime feature-table tabulate-seqs'
-    :input dada2_rep_seqs: resulting dada2 representative sequences
-    :output visualization: qiime2 visualization artifact
-    """
-    input:
-        rep_seqs = 'reads/preprocess/{type}/{reference}_rep-seqs_denoised.qza'
-    output:
-        vis_rep_seqs = 'reads/preprocess/{type}/{reference}_rep-seqs_denoised.qzv'
+        vis_rep_seqs = 'reads/preprocess/report/{reference}_rep-seqs.qzv'
     conda:
         config['snakelines_dir'] + '/enviroments/qiime2.yaml'
     shell:

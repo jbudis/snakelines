@@ -35,7 +35,7 @@ rule qiime2__taxonomy_fitted_classifier:
     :params tmp_dir: path to temporary directory, because job requires temporary a lot of free disk space, default /tmp might not be enough and path to mounted storage might be used instead
     """
     input:
-        rep_seqs = 'reads/preprocess/denoise/{reference}_rep-seqs_all.qza',
+        rep_seqs = 'reads/preprocess/denoise/%s/{reference}_rep-seqs.qza' % pipeline.qiime2_type,
         classifier = 'reference/{reference}/qiime2/classifier.qza'
     output:
         taxonomy  = 'reads/taxonomy/{reference}_tax.qza'
