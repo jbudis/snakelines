@@ -39,10 +39,10 @@ rule trimmomatic__trim_reads:
         r1 = 'reads/trimmed/{sample}_R1.fastq',
         r2 = 'reads/trimmed/{sample}_R2.fastq',
         additional = method_config.get('additional_params', ''),
-        quality = 'SLIDINGWINDOW:5:%s' % method_config.get('quality', ''),
-        headcrop = 'HEADCROP:%s' % method_config.get('headcrop', ''),
-        crop = 'CROP:%s' % method_config.get('crop', ''),
-        minlen = 'MINLEN:%s' % method_config.get('minlen', ''),
+        quality = 'SLIDINGWINDOW:5:%s' % method_config['quality'] if 'quality' in method_config else '',
+        headcrop = 'HEADCROP:%s' % method_config['headcrop'] if 'headcrop' in method_config else '',
+        crop = 'CROP:%s' % method_config['crop'] if 'crop' in method_config else '',
+        minlen = 'MINLEN:%s' % method_config['minlen'] if 'minlen' in method_config else '',
         illuminaclip = get_illuminaclip()
     threads:
         int(config['threads'])

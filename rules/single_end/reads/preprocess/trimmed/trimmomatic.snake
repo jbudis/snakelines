@@ -20,10 +20,10 @@ rule trimmomatic__trim_reads:
     params:
         r1 = 'reads/trimmed/{sample}.fastq',
         additional = method_config.get('additional_params', ''),
-        quality = 'SLIDINGWINDOW:5:%s' % method_config.get('quality', ''),
-        headcrop = 'HEADCROP:%s' % method_config.get('headcrop', ''),
-        crop = 'CROP:%s' % method_config.get('crop', ''),
-        minlen = 'MINLEN:%s' % method_config.get('minlen', '100')
+        quality = 'SLIDINGWINDOW:5:%s' % method_config['quality'] if 'quality' in method_config else '',
+        headcrop = 'HEADCROP:%s' % method_config['headcrop'] if 'headcrop' in method_config else '',
+        crop = 'CROP:%s' % method_config['crop'] if 'crop' in method_config else '',
+        minlen = 'MINLEN:%s' % method_config['minlen'] if 'minlen' in method_config else ''
     threads:
         int(config['threads'])
     log:
