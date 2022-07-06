@@ -49,7 +49,7 @@ Snakelines requires several Python3 modules to be installed prior to Snakelines.
 
 .. code:: bash
 
-    mamba create --name snakelines-env numpy==1.19.2 oyaml==0.9 pandas==1.1.3 seaborn==0.11.0 bs4==4.9.3 weasyprint==51 jinja2==2.11.2 snakemake==6.15.5 multiqc==1.10.1
+    mamba create --name snakelines-env numpy==1.19.2 oyaml==0.9 pandas==1.1.3 seaborn==0.11.0 bs4==4.9.3 weasyprint==51 jinja2==2.11.2 snakemake==6.15.5 multiqc==1.10.1 parse==1.19.0
 
 Sources codes for SnakeLines pipelines are stored at `GitHub repository <https://github.com/jbudis/snakelines>`_.
 You may download them directly or clone them using git.
