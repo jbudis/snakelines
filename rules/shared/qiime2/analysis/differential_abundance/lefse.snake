@@ -194,7 +194,7 @@ rule qiime2__pdf_lefse_result:
     input:
         lefse_result = 'reads/analysis/lefse/{reference}.res'
     output:
-        lefse_result_pdf = 'reads/analysis/lefse/{reference}.pdf'
+        lefse_result_pdf = 'reads/analysis/lefse/result/{reference}.pdf'
     log:
         out = 'reads/analysis/lefse/log/{reference}_lefse_plot.out',
         err = 'reads/analysis/lefse/log/{reference}_lefse_plot.err'
@@ -221,7 +221,7 @@ rule qiime2__lefse_cladogram:
     input:
         lefse_result = 'reads/analysis/lefse/{reference}.res'
     output:
-        cladogram_out = 'reads/analysis/lefse/{reference}_cladogram.pdf'
+        cladogram_out = 'reads/analysis/lefse/cladogram/{reference}.pdf'
     log:
         out = 'reads/analysis/lefse/log/{reference}_lefse_cladogram.out',
         err = 'reads/analysis/lefse/log/{reference}_lefse_cladogram.err'
