@@ -45,6 +45,7 @@ rule bcftools_call_germline_variants:
             --max-depth 9999 \
             --max-idepth 9999 \
             --output-type u \
+            --annotate FORMAT/AD,FORMAT/ADF,FORMAT/ADR,FORMAT/DP \
             {input.bam} \
             2> {log.err} \
         | \

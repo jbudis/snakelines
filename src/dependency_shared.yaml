@@ -212,11 +212,11 @@ variant:
                         expand('{report_dir}/{sr.sample}/annotated-{sr.reference}-{sr.panel}.vcf',
                                report_dir=config['report_dir'], sr=pipeline.sample_references)
 
-                tsv:
-                    from: expand('variant/{sr.reference}-{sr.panel}/annotated/{sr.sample}.tsv',
+                csv:
+                    from: expand('variant/{sr.reference}-{sr.panel}/annotated/{sr.sample}.csv',
                                   sr=pipeline.sample_references)
 
-                    to: expand('{report_dir}/{sr.sample}/annotated-{sr.reference}-{sr.panel}.tsv',
+                    to: expand('{report_dir}/{sr.sample}/annotated-{sr.reference}-{sr.panel}.csv',
                         report_dir=config['report_dir'], sr=pipeline.sample_references)
 
                 html:
@@ -294,6 +294,17 @@ lineage:
                     type=['summary.csv', "subtotal.tsv"])
         depends:
             - lineage/caller
+
+mixture_composition:
+    caller:
+        output:
+            report:
+                from: expand('consensus/{sr.reference}-{sr.panel}/{sr.sample}.mixture_comp.csv',
+                            sr=pipeline.sample_references)
+                to: expand('{report_dir}/{sr.sample}/mixture_comp-{sr.reference}-{sr.panel}.csv',
+                            report_dir=config['report_dir'], sr=pipeline.sample_references)
+        depends:
+            - variant/caller
 
 misc:
     mixed_positions:

@@ -1,0 +1,39 @@
+rule snpeff__run_annotate:
+    """
+        Annotate vcf using snpEff.
+    """
+    input:
+        vcf = 'variant/{reference}-{panel}/%s/{sample}.vcf' % method_config['input_variant_type']
+    output:
+        annotated_vcf = 'variant/{reference}-{panel}/annotated/{sample}.vcf',
+        csv_stats = 'variant/{reference}-{panel}/annotated/{sample}.csv'
+    params:
+        assembly = method_config.get('assembly'),
+        canon = '-canon' if method_config.get('canon','True') else '',
+        amino_annotation = '-{}'.format(method_config.get('amino_annotation','hgvs1LetterAa'))
+    conda:
+        config['snakelines_dir'] + '/enviroments/snpeff.yaml'
+    shell:
+        """
+            database_installed=$(snpEff databases | grep {params.assembly} | wc -l)
+            if [ "$database_installed" -eq "0" ]; then
+                snpEff download \
+                    -v {params.assembly}
+                exit;
+            fi;
+
+            snpEff ann \
+                -no-upstream \
+                -no-downstream \
+                {params.canon} \
+                -o vcf \
+                {params.amino_annotation} \
+                -i vcf \
+                -csvStats {output.csv_stats} \
+                {params.assembly} \
+                {input.vcf} \
+            > {output.annotated_vcf}
+
+        """
+
+

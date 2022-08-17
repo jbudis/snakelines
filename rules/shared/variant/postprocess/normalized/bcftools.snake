@@ -2,6 +2,14 @@
 #include: config['snakelines_dir'] + '/rules/shared/reference/index/fai/samtools.snake'
 #include: config['snakelines_dir'] + '/rules/shared/reference/index/dict/picard.snake'
 
+def decode_multiallelic(multiallelic):
+    arg = '--multiallelics '
+    if multiallelic:
+        arg += '+any'
+    else:
+        arg += '-any'
+    return arg
+
 
 rule bcftools__normalize_vcf:
     """
@@ -17,7 +25,7 @@ rule bcftools__normalize_vcf:
     output:
         vcf   = 'variant/{reference}-{panel}/normalized/{sample}.vcf',
     params:
-        multiallelic = '-any' if method_config.get('multiallelic', False) == False else '+any',
+        multiallelic = decode_multiallelic(method_config.get('multiallelic')) if 'multiallelic' in method_config else ''
     log:
         out = 'variant/{reference}-{panel}/normalized/log/{sample}.vcf.out',
         err = 'variant/{reference}-{panel}/normalized/log/{sample}.vcf.err'
@@ -31,7 +39,7 @@ rule bcftools__normalize_vcf:
         """
         bcftools norm \
             {input.vcf} \
-            --multiallelics {params.multiallelic} \
+            {params.multiallelic} \
             --check-ref w \
             --fasta-ref {input.fasta} \
             --threads {threads} \
