@@ -48,6 +48,7 @@ rule fasta_summary__blast:
             {input.blast}\
             {params.min_query_coverage}\
             {params.max_target_seqs}\
+            {wildcards.reference}\
             {output.tsv}
         """
         
