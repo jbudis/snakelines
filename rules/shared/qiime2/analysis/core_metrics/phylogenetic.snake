@@ -37,7 +37,8 @@ rule qiime2__diversity_core_metrics_phylogenetic:
     input:
         rooted_tree = 'reads/analysis/alignment/{reference}_rooted-tree.qza',
         table       = 'reads/preprocess/denoise/%s/{reference}_table.qza' % pipeline.qiime2_post_taxa,
-        metadata    = 'description/sample-metadata.tsv'
+        metadata    = 'description/sample-metadata.tsv',
+        denoise_stats = 'reads/preprocess/report/{reference}_table/'
     output:
         rarefied_table = 'reads/analysis/core_metrics/{reference}_rarefied_table.qza',
         faith_vector = 'reads/analysis/core_metrics/{reference}_faith_pd_vector.qza',
@@ -58,7 +59,7 @@ rule qiime2__diversity_core_metrics_phylogenetic:
         bray_curtis_emperor = 'reads/analysis/core_metrics/{reference}_bray_curtis_emperor.qzv'
     params:
         sampling_depth = str(method_config.get('sampling_depth','auto')),
-        sample_freqs_csv = 'reads/preprocess/denoise/{reference}_table/sample-frequency-detail.csv'
+        sample_freqs_csv = 'sample-frequency-detail.csv'
     threads:
         int(config['threads'])
     log:
@@ -69,7 +70,7 @@ rule qiime2__diversity_core_metrics_phylogenetic:
     shell:
         '''
         if [ {params.sampling_depth} = "auto" ]; then
-            min="tail {params.sample_freqs_csv} -n 1 | sed -E 's/.*,([0-9]*)\\..*/\\1/'";
+            min="tail {input.denoise_stats}{params.sample_freqs_csv} -n 1 | sed -E 's/.*,([0-9]*)\\..*/\\1/'";
             min=$(eval $min);
             if [[ $min -lt 1 ]]; then
                 min=1;
