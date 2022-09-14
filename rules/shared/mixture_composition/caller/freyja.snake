@@ -1,0 +1,49 @@
+rule samtools_mpileup_depth:
+    '''
+    Builds .depth file
+    '''
+    input:
+        bam   = 'mapping/{{reference}}/{map_type}/{{sample}}.bam'.format(map_type=pipeline.postprocessed_map_type),
+        fasta = 'reference/{reference}/{reference}.fa',
+    output:
+        depth   = 'mapping/{reference}-{panel}/freyja/{sample}_freyja.depth'
+    log:
+        out = 'consensus/{reference}-{panel}/log/{sample}.samtools_depth.log',
+        err = 'consensus/{reference}-{panel}/log/{sample}.samtools_depth.err'
+    conda:
+        config['snakelines_dir'] + '/enviroments/samtools.yaml'
+    shell:
+        '''
+        samtools mpileup -aa -A -d 600000 -Q 20 -q 0 -B -f {input.fasta} {input.bam} | cut -f1-4 > {output.depth}
+        '''
+
+rule mixture_composition_freyja:
+    '''
+    Outputs mixture composition using freyja
+    '''
+    input:
+        fasta = 'reference/{reference}/{reference}.fa',
+        fai   = 'reference/{reference}/{reference}.fa.fai',
+        bam   = 'mapping/{{reference}}/{map_type}/{{sample}}.bam'.format(map_type=pipeline.postprocessed_map_type),
+        depth = 'mapping/{reference}-{panel}/freyja/{sample}_freyja.depth',
+    output:
+        composition_tsv  = 'consensus/{reference}-{panel}/{sample}.mixture_comp.csv'
+    log:
+        out = 'consensus/{reference}-{panel}/log/{sample}.mixture_comp.log',
+        err = 'consensus/{reference}-{panel}/log/{sample}.mixture_comp.err'
+    params:
+        tsv     = 'consensus/{reference}-{panel}/{sample}_freyja.tsv',
+        demix   = 'consensus/{reference}-{panel}/{sample}_freyja.demix',
+        script_tsv = srcdir("convert_demixed_to_tsv.py"),
+        script_variants = srcdir("freyja_variants.sh"),
+        script_demix = srcdir("freyja_demix.sh"),
+        sif_freyja = '/home_pfs/tools/snakelines/repos/latest2_miniconda_freya_image.sif',
+        sample_name = '{sample}',
+        project_dir = '/home_pfs/data/'
+    shell:
+        '''
+        resolved=$(readlink -f "{input.fasta}"); # due to singularity
+        singularity exec --bind {params.project_dir} {params.sif_freyja} bash {params.script_variants} {input.bam} {params.tsv} {input.depth} $resolved;
+        singularity exec --bind {params.project_dir} {params.sif_freyja} bash {params.script_demix} {params.tsv} {input.depth} {params.demix};
+        python3 {params.script_tsv} {params.demix} {params.sample_name} {output.composition_tsv};
+        '''

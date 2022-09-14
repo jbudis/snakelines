@@ -1,4 +1,4 @@
-rule mixture_composition:
+rule mixture_composition_daria:
     '''
     Outputs mixture composition
     '''
