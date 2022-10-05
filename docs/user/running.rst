@@ -39,7 +39,7 @@ Installation as a Conda package
    conda install mamba -n base -c conda-forge
   
    mamba create --name snakelines-env -c bioconda snakelines
-   conda activate snakelines-env
+   mamba activate snakelines-env
    
 
 Installation from Github repository

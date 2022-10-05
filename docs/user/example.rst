@@ -29,7 +29,7 @@ Installation as a Conda package
    conda install mamba -n base -c conda-forge
   
    mamba create --name snakelines-env -c bioconda snakelines
-   conda activate snakelines-env
+   mamba activate snakelines-env
    
 
 Alternately you may `download sources directly <running.html#installation>`_.
@@ -47,7 +47,7 @@ Toy example read files and references are stored at the `/example` directory of 
 
 .. code-block:: bash
 
-   conda activate snakelines-env
+   mamba activate snakelines-env
    
    cd snakelines-examples/genomic
 
@@ -55,5 +55,4 @@ Toy example read files and references are stored at the `/example` directory of 
       --configfile config_variant_calling.yaml \
       --use-conda \ 
       --cores 2
-      
-Please be aware that installation of some conda packages during Snakelines run might take up to several hours (especially `Qualimap <http://qualimap.conesalab.org/implementation>`_ might take up to 24 hours). This is a known issue of conda implementation in snakemake workflow and it is beyond our reach.
+ 

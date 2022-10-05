@@ -776,13 +776,13 @@ qiime2:
                 lefse_result: expand('reads/analysis/lefse/{reference}.res',
                                     reference=pipeline.references)
                 lefse_result_pdf: 
-                    from:   expand('reads/analysis/lefse/{reference}.pdf',
+                    from:   expand('reads/analysis/lefse/result/{reference}.pdf',
                                     reference=pipeline.references)
                     to:     expand('{report_dir}/{reference}/05_differential_abundance/lefse/result.pdf',
                                     report_dir=config['report_dir'],
                                     reference=pipeline.references)
                 cladogram: 
-                    from:   expand('reads/analysis/lefse/{reference}_cladogram.pdf',
+                    from:   expand('reads/analysis/lefse/cladogram/{reference}.pdf',
                                     reference=pipeline.references)
                     to:     expand('{report_dir}/{reference}/05_differential_abundance/lefse/cladogram.pdf',
                                     report_dir=config['report_dir'],
