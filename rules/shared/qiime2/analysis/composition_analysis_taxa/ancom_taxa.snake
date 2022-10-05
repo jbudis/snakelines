@@ -20,7 +20,9 @@ rule qiime2__taxonomy_collapse_ancom:
             --i-table {input.feature_table} \
             --o-collapsed-table {output.taxa_collapsed} \
             --p-level {wildcards.level} \
-            --i-taxonomy {input.taxonomy}
+            --i-taxonomy {input.taxonomy} \
+            1> {log.out} \
+            2> {log.err}
         '''
 
 rule qiime2__filter_features_ancom_taxa:
@@ -52,7 +54,9 @@ rule qiime2__filter_features_ancom_taxa:
             --i-table {input.taxa_collapsed} \
             --p-min-frequency {params.min_frequency} \
             --p-min-samples {params.min_samples} \
-            --o-filtered-table {output.feature_table_filt}
+            --o-filtered-table {output.feature_table_filt} \
+            1> {log.out} \
+            2> {log.err}
         '''
 
 rule qiime2__feature_table_pseudocount_ancom_taxa:
@@ -81,7 +85,9 @@ rule qiime2__feature_table_pseudocount_ancom_taxa:
         '''
         qiime composition add-pseudocount \
             --i-table {input.feature_table_filt} \
-            --o-composition-table {output.feature_table_comp}
+            --o-composition-table {output.feature_table_comp} \
+            1> {log.out} \
+            2> {log.err}
         '''
 
 rule qiime2__composition_ancom_taxa:
@@ -117,5 +123,7 @@ rule qiime2__composition_ancom_taxa:
             --m-metadata-column {wildcards.column} \
             --p-transform-function {params.transform_function} \
             --p-difference-function {params.diff_function} \
-            --o-visualization {output.qzv}
+            --o-visualization {output.qzv} \
+            1> {log.out} \
+            2> {log.err}
         '''

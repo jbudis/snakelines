@@ -24,10 +24,12 @@ rule qiime2__diversity__beta_group_significance:
     shell:
         '''
         qiime diversity beta-group-significance \
-          --i-distance-matrix {input.dist_matrix} \
-          --m-metadata-file {input.metadata} \
-          --m-metadata-column {wildcards.column} \
-          --o-visualization {output.qzv} \
-          {params.pairwise} \
-          --p-method {params.test_method}
+            --i-distance-matrix {input.dist_matrix} \
+            --m-metadata-file {input.metadata} \
+            --m-metadata-column {wildcards.column} \
+            --o-visualization {output.qzv} \
+            {params.pairwise} \
+            --p-method {params.test_method} \
+            1> {log.out} \
+            2> {log.err}
         '''

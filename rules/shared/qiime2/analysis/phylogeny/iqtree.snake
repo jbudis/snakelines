@@ -43,5 +43,7 @@ rule qiime2__phylogeny_align_to_tree_mafft_iqtree:
             --p-mask-max-gap-frequency {params.max_gap_freq} \
             --p-mask-min-conservation {params.min_conservation} \
             --p-substitution-model {params.substitution_model} \
-            {params.fast_mode}
+            {params.fast_mode} \
+            1> {log.out} \
+            2> {log.err}
         '''

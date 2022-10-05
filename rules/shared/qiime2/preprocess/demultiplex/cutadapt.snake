@@ -72,7 +72,9 @@ rule qiime2__cutadapt_trim:
             --p-minimum-length {params.minlen} \
             --p-error-rate {params.maxerr} \
             {params.adapter_call} \
-            {params.discard_untrimmed}
+            {params.discard_untrimmed} \
+            1> {log.out} \
+            2> {log.err}
         '''
 
 rule qiime2__cutadapt_tabulate:

@@ -102,4 +102,6 @@ rule qiime2__diversity_core_metrics_phylogenetic:
             --o-weighted-unifrac-emperor {output.weighted_unifrac_emperor} \
             --o-jaccard-emperor {output.jaccard_emperor} \
             --o-bray-curtis-emperor {output.bray_curtis_emperor} \
+            1> {log.out} \
+            2> {log.err}
         '''

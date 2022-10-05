@@ -34,19 +34,21 @@ rule qiime2__taxonomy_consensus_blast:
     conda:
         config['snakelines_dir'] + '/enviroments/qiime2.yaml'
     log:
-        out = 'reads/taxonomy/log/{reference}_fitting.out',
-        err = 'reads/taxonomy/log/{reference}_fitting.err'    
+        out = 'reads/taxonomy/log/{reference}_consensus_blast.out',
+        err = 'reads/taxonomy/log/{reference}_consensus_blast.err'    
     shell:
         '''
         qiime feature-classifier classify-consensus-blast \
-          --i-query {input.rep_seqs} \
-          --i-reference-reads {input.ref_reads} \
-          --i-reference-taxonomy {input.ref_taxa} \
-          --o-classification {output.taxonomy} \
-          --p-maxaccepts {params.max_hits} \
-          --p-perc-identity {params.min_identitity} \
-          --p-query-cov {params.min_coverage} \
-          --p-strand {params.strand} \
-          --p-evalue {params.evalue} \
-          --p-min-consensus {params.min_consensus}
+            --i-query {input.rep_seqs} \
+            --i-reference-reads {input.ref_reads} \
+            --i-reference-taxonomy {input.ref_taxa} \
+            --o-classification {output.taxonomy} \
+            --p-maxaccepts {params.max_hits} \
+            --p-perc-identity {params.min_identitity} \
+            --p-query-cov {params.min_coverage} \
+            --p-strand {params.strand} \
+            --p-evalue {params.evalue} \
+            --p-min-consensus {params.min_consensus} \
+            1> {log.out} \
+            2> {log.err}
         '''

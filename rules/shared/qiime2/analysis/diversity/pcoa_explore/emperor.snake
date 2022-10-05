@@ -26,6 +26,7 @@ rule qiime2__emperor__plot:
             --i-pcoa {input.pcoa_results} \
             --m-metadata-file {input.metadata} \
             --p-custom-axes {wildcards.column} \
-            --o-visualization {output.qzv}
+            --o-visualization {output.qzv} \
+            1> {log.out} \
+            2> {log.err}
         '''
-

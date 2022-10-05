@@ -13,6 +13,9 @@ rule qiime2__taxonomy_fit_naive_bayes:
         ref_tax = 'reference/{reference}/qiime2/ref_tax.qza'
     output:
         classifier = 'reference/{reference}/qiime2/classifier.qza'
+    log:
+        out = 'reads/taxonomy/log/{reference}_fit_nb.out',
+        err = 'reads/taxonomy/log/{reference}_fit_nb.err'   
     conda:
         config['snakelines_dir'] + '/enviroments/qiime2.yaml'
     shell:
@@ -20,9 +23,11 @@ rule qiime2__taxonomy_fit_naive_bayes:
         qiime feature-classifier fit-classifier-naive-bayes \
             --i-reference-reads {input.ref_reads} \
             --i-reference-taxonomy {input.ref_tax} \
-            --o-classifier {output.classifier} 
+            --o-classifier {output.classifier} \
+            1> {log.out} \
+            2> {log.err}
         '''
-        
+
 rule qiime2__taxonomy_fitted_classifier:
     """
     Classify reads by taxon using a fitted classifier
@@ -44,16 +49,18 @@ rule qiime2__taxonomy_fitted_classifier:
     conda:
         config['snakelines_dir'] + '/enviroments/qiime2.yaml'
     log:
-        out = 'reads/taxonomy/log/{reference}_fitting.out',
-        err = 'reads/taxonomy/log/{reference}_fitting.err'    
+        out = 'reads/taxonomy/log/{reference}_classify.out',
+        err = 'reads/taxonomy/log/{reference}_classify.err'    
     threads:
         int(config['threads'])
     shell:
         '''
         qiime feature-classifier classify-sklearn \
-          --i-classifier {input.classifier} \
-          --i-reads {input.rep_seqs} \
-          --p-n-jobs {threads} \
-          --p-confidence {params.confidence} \
-          --o-classification {output.taxonomy}
+            --i-classifier {input.classifier} \
+            --i-reads {input.rep_seqs} \
+            --p-n-jobs {threads} \
+            --p-confidence {params.confidence} \
+            --o-classification {output.taxonomy} \
+            1> {log.out} \
+            2> {log.err}
         '''

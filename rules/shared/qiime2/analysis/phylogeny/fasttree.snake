@@ -39,6 +39,7 @@ rule qiime2__phylogeny_align_to_tree_mafft_fasttree:
             --o-rooted-tree {output.rooted_tree} \
             --p-n-threads {threads} \
             --p-mask-max-gap-frequency {params.max_gap_freq} \
-            --p-mask-min-conservation {params.min_conservation}
-
+            --p-mask-min-conservation {params.min_conservation} \
+            1> {log.out} \
+            2> {log.err}
         '''
