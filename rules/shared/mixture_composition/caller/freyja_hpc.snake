@@ -1,0 +1,77 @@
+import os
+
+def prepare_arg(base:str, arg:str, file:str) -> str:
+    """Prepare optional argument for freyja"""
+    if base is None:
+        return ''
+    path = os.path.join(base, file)
+    return f'{arg} {path}'
+
+rule samtools_mpileup_depth:
+    '''
+    Builds .depth file
+    '''
+    input:
+        bam   = 'mapping/{{reference}}/{map_type}/{{sample}}.bam'.format(map_type=pipeline.postprocessed_map_type),
+        fasta = 'reference/{reference}/{reference}.fa',
+    output:
+        depth   = 'mapping/{reference}-{panel}/freyja/{sample}_freyja.depth'
+    conda:
+        config['snakelines_dir'] + '/enviroments/samtools.yaml'
+    shell:
+        '''
+        samtools mpileup -aa -A -d 600000 -Q 20 -q 0 -B -f {input.fasta} {input.bam} | cut -f1-4 > {output.depth}
+        '''
+
+
+rule mixture_composition_freyja:
+    '''
+    Outputs mixture composition using freyja
+    '''
+    input:
+        fasta = 'reference/{reference}/{reference}.fa',
+        fai   = 'reference/{reference}/{reference}.fa.fai',
+        bam   = 'mapping/{{reference}}/{map_type}/{{sample}}.bam'.format(map_type=pipeline.postprocessed_map_type),
+        depth = 'mapping/{reference}-{panel}/freyja/{sample}_freyja.depth',
+    output:
+        composition_tsv  = 'consensus/{reference}-{panel}/{sample}.mixture_comp.csv'
+    log:
+        out_var = 'consensus/{reference}-{panel}/log/{sample}.freyja_variants.log',
+        err_var = 'consensus/{reference}-{panel}/log/{sample}.freyja_variants.err'
+        out_demix = 'consensus/{reference}-{panel}/log/{sample}.freyja_demix.log',
+        err_demix = 'consensus/{reference}-{panel}/log/{sample}.freyja_demix.err'
+        out = 'consensus/{reference}-{panel}/log/{sample}.mixture_comp.log',
+        err = 'consensus/{reference}-{panel}/log/{sample}.mixture_comp.err'
+    params:
+        tsv     = 'consensus/{reference}-{panel}/{sample}_freyja.tsv',
+        demix   = 'consensus/{reference}-{panel}/{sample}_freyja.demix',
+        script_tsv = srcdir("freyja_scripts/convert_demixed_to_tsv.py"),
+        script_variants = srcdir("freyja_scripts/freyja_variants.sh"),
+        script_demix = srcdir("freyja_scripts/freyja_demix.sh"),
+        sif_freyja = method_config.get('sif_path', None),
+        project_dir = method_config.get('singularity_bind', None),
+        lineages = prepare_arg(method_config.get('updating_dir',None),'--meta','curated_lineages.json'),
+        barcodes = prepare_arg(method_config.get('updating_dir',None),'--barcodes','usher_barcodes.csv'),
+    shell:
+        '''
+        resolved=$(readlink -f "{input.fasta}"); # due to singularity
+        singularity exec --bind {params.project_dir} {params.sif_freyja} \
+            bash {params.script_variants} \
+            {input.bam} \
+            {params.tsv} \
+            {input.depth} \
+            $resolved;
+
+        singularity exec --bind {params.project_dir} {params.sif_freyja} \
+            bash {params.script_demix} \
+            {params.tsv} \
+            {input.depth} \
+            {params.demix} \
+            {params.lineages} \
+            {params.barcodes};
+
+        python3 {params.script_tsv} \
+            {params.demix} \
+            {wildcards.sample} \
+            {output.composition_tsv};
+        '''

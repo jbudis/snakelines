@@ -219,12 +219,12 @@ variant:
                     to: expand('{report_dir}/{sr.sample}/annotated-{sr.reference}-{sr.panel}.csv',
                         report_dir=config['report_dir'], sr=pipeline.sample_references)
 
-                html:
-                    from: expand('variant/{sr.reference}-{sr.panel}/annotated/{sr.sample}.report.html',
-                        sr=pipeline.sample_references)
+                # html:
+                #    from: expand('variant/{sr.reference}-{sr.panel}/annotated/{sr.sample}.report.html',
+                #        sr=pipeline.sample_references)
 
-                    to: expand('{report_dir}/{sr.sample}/annotated-{sr.reference}-{sr.panel}.report.html',
-                        report_dir=config['report_dir'], sr=pipeline.sample_references)
+                #    to: expand('{report_dir}/{sr.sample}/annotated-{sr.reference}-{sr.panel}.report.html',
+                #        report_dir=config['report_dir'], sr=pipeline.sample_references)
 
     report:
         calling:

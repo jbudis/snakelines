@@ -1,0 +1,73 @@
+variant_name	variant_type	variant_number	nonsynonymous_mutation	genomic_position	ref:alt
+delta	delta	21I, 21J	S:T19R	21618	C:G
+delta	delta	21I, 21J	S:E156-	22028	GAGTTCA:G
+delta	delta	21I, 21J	S:F157-	22028	GAGTTCA:G
+delta	delta	21I, 21J	S:R158G	22028	GAGTTCA:G
+delta	delta	21I	S:A222V	22227	C:T
+delta	delta	21I, 21J	S:L452R	22917	T:G
+delta	delta	21I, 21J	S:D950N	24410	G:A
+delta	delta	21I	ORF1a:P1640L	5184	C:T
+delta	delta	21I	ORF1a:A3209V	9891	C:T
+delta	delta	21I	ORF1a:V3718A	11418	T:C
+delta	delta	21I	ORF1a:T3750I	11514	C:T
+delta	delta	21I, 21J	ORF1b:G662S	15451	G:A
+delta	delta	21I, 21J	ORF1b:P1000L	16466	C:T
+delta	delta	21I, 21J	M:I82T	26767	T:C
+delta	delta	21I, 21J	N:D63G	28461	A:G
+delta	delta	21I, 21J	N:D377Y	29402	G:T
+delta	delta	21I, 21J	ORF3a:S26L	25469	C:T
+delta	delta	21I, 21J	ORF7a:V82A	27638	T:C
+delta	delta	21I, 21J	ORF7a:T120I	27752	C:T
+delta	delta	21I, 21J	ORF8:D119-	28247	AGATTTC:A
+delta	delta	21I, 21J	ORF8:F120-	28247	AGATTTC:A
+delta	delta	21I, 21J	ORF9b:T60A	28461	A:G
+delta	delta	21J	ORF1a:A1306S	4181	G:T
+delta	delta	21J	ORF1a:V2930L	9053	G:T
+delta	delta	21J	ORF1a:T3646A	11201	A:G
+delta	delta	21J	ORF1b:A1918V	19220	C:T
+delta	delta	21J	N:G215C	28916	G:T
+delta	delta	21J	ORF7b:T40I	27874	C:T
+omicron	omicron (21K)	21K	S:H69-	21764	ATACATG:A
+omicron	omicron (21K)	21K	S:V70-	21764	ATACATG:A
+omicron	omicron (21K)	21K	S:T95I	21846	C:T
+omicron	omicron (21K)	21K	S:G142-	21986	GGTGTTTATT:G
+omicron	omicron (21K)	21K	S:V143-	21986	GGTGTTTATT:G
+omicron	omicron (21K)	21K	S:Y144-	21986	GGTGTTTATT:G
+omicron	omicron (21K)	21K	S:Y145D	21986	GGTGTTTATT:G
+omicron	omicron (21K)	21K	S:N211-	22193	AATT:A
+omicron	omicron (21K)	21K	S:L212I	22193	AATT:A
+omicron	omicron (21K)	21K	S:G446S	22898	G:A
+omicron	omicron (21K)	21K	S:G496S	23048	G:A
+omicron	omicron (21K)	21K	S:T547K	23202	C:A
+omicron	omicron (21K)	21K	S:N856K	24130	C:A
+omicron	omicron (21K)	21K	S:L981F	24503	C:T
+omicron	omicron (21K)	21K	ORF1a:K856R	2832	A:G
+omicron	omicron (21K)	21K	ORF1a:S2083-	6512	AGTTA:A
+omicron	omicron (21K)	21K	ORF1a:L2084I	6512	AGTTA:A
+omicron	omicron (21K)	21K	ORF1a:A2710T	8393	G:A
+omicron	omicron (21K)	21K	ORF1a:L3674-	11282	AGTTTGTCTGG:AG
+omicron	omicron (21K)	21K	ORF1a:I3758V	11537	A:G
+omicron	omicron (21K)	21K	M:D3G	26530	A:G
+omicron	omicron (21L)	21L	S:L24-	21632	TTACCCCCTG:T
+omicron	omicron (21L)	21L	S:P25-	21632	TTACCCCCTG:T
+omicron	omicron (21L)	21L	S:P26-	21632	TTACCCCCTG:T
+omicron	omicron (21L)	21L	S:A27S	21632	TTACCCCCTG:T
+omicron	omicron (21L)	21L	S:G142D	21987	G:A
+omicron	omicron (21L)	21L	S:V213G	22200	T:G
+omicron	omicron (21L)	21L	S:S375F	22686	C:T
+omicron	omicron (21L)	21L	S:T376A	22688	A:G
+omicron	omicron (21L)	21L	S:D405N	22775	G:A
+omicron	omicron (21L)	21L	S:R408S	22786	A:C
+omicron	omicron (21L)	21L	N:S413R	29510	A:C
+omicron	omicron (21L)	21L	ORF1a:S135R	670	T:G
+omicron	omicron (21L)	21L	ORF1a:T842I	2790	C:T
+omicron	omicron (21L)	21L	ORF1a:G1307S	4184	G:A
+omicron	omicron (21L)	21L	ORF1a:L3027F	9344	C:T
+omicron	omicron (21L)	21L	ORF1a:T3090I	9534	C:T
+omicron	omicron (21L)	21L	ORF1a:L3201F	9866	C:T
+omicron	omicron (21L)	21L	ORF1b:R1315C	17410	C:T
+omicron	omicron (21L)	21L	ORF1b:T2163I	19955	C:T
+omicron	omicron (21L)	21L	ORF3a:T223I	26060	C:T
+omicron	omicron (21L)	21L	ORF6:D61L	27382	G:C
+omicron	omicron (21L)	21L	ORF6:D61L	27383	A:T
+omicron	omicron (21L)	21L	ORF6:D61L	27384	T:C

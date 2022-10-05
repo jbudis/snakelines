@@ -1,0 +1,103 @@
+sequencing: paired_end
+samples:                            # List of sample categories to be analysed
+    - name: .*                      # Regex expression of sample names to be analysed (reads/original/example.*_R1.fastq.gz)
+      reference: sars_cov_2         # Reference genome for reads in the category (reference/mhv/mhv.fa)
+
+report_dir: report/public/01-mixture_darcall # Generated reports and essential output files would be stored there
+threads: 16                         # Number of threads to use in analysis
+
+reads:                              # Prepare reads and quality reports for downstream analysis
+    preprocess:                     # Pre-process of reads, eliminate sequencing artifacts, contamination ...
+
+        trimmed:                    # Remove low quality parts of reads
+            method: cutadapt
+            temporary: True
+            fasta: reference/sars_cov_2/adapters/artic_v4.fa
+            minimum_length: 45      # shorter reads are discarded
+            quality_cutoff: 20,20   # cutoff on 3' end ("20") or cutoff on both 5' and 3' ends ("20,20")
+            length: 500             # truncate reads to this length
+            head_cut: 15            # number of bases that are removed from the beginning of each read
+            tail_cut: 0             # number of bases are removed from the end of each read
+
+        decontaminated:             # Eliminate fragments from known artificial source, e.g. contamination by human
+            method: bowtie2         # Supported values: bowtie2
+            temporary: True         # If True, generated files would be removed after successful analysis
+            references:             # List of reference genomes
+                - grch38_decoy
+            keep: False             # Keep reads mapped to references (True) or remove them as contamination (False)
+
+    report:                         # Summary reports of read characteristics to assess their quality
+        quality_report:             # HTML summary report of read quality
+            method: fastqc          # Supported values: fastqc
+            read_types:             # List of preprocess steps for quality reports
+                - original
+                - trimmed
+                - decontaminated
+
+mapping:                            # Find the most similar genomic region to reads in reference (mapping process)
+    mapper:                         # Method for mapping
+        method: bwa                 # Supported values: bowtie2, bwa
+        temporary: True
+
+    index:                          # Generate .bai index for mapped reads in .bam files
+        method: samtools            # Supported values: samtools
+
+    postprocess:                    # Successive steps to refine mapped reads
+        sorted:
+            method: samtools
+            temporary: True
+
+        deduplicated:               # Mark duplicated reads (PCR duplicated)
+            method: picard          # Supported values: picard
+
+    report:                         # Summary reports of mapping process and results
+        quality_report:             # HTML summary with quality of mappings
+            method: qualimap        # Supported values: qualimap
+            map_types:              # List of post-process steps for quality reports
+                - deduplicated
+
+variant:                            # Identify variation in reads given reference genome
+    caller:                         # Method for variant identification
+        method: bcftools
+        min_base_quality: 0         # Minimum base quality for a base to be considered [0]
+        min_mapping_quality: 13     # Minimum mapping quality for an alignment to be used [13]
+        keep_alts: True             # Report all alleles, not only those which are in called genotypes [False]
+        haploid: False              # Set predefined ploidy [False]
+        redo_baq: True              # Recalculate base alignment quality on the fly [False]
+        adjust_mq: 50               # Coefficient for downgrading mapping quality [0]
+        gap_frac: 0.05              # Minimum fraction of gapped reads [0.002]
+        gvcf: True                  # Create vcf files only [False] or create gvcf files only [True]
+
+    postprocess:
+        normalized:
+            method: bcftools
+            multiallelic: False
+
+        annotated:
+            method: snpeff
+            assembly: NC_045512.2
+
+        filtered:
+            method: bcftools
+            snp_gap: 3
+            indel_gap: 10
+            set_gts: '.'
+
+    report:
+        summary:
+            method: custom
+
+consensus:                          # consesnus sequence
+    fasta:                          # create consesnus sequence based on vcf of a sample and reference fasta
+        method: bcftools            # bcftools is the only option
+        mask_lte_coverage: 4        # mask bases with N where coverage is lower than or equal to parameter
+
+    summary:
+        method: cat                 # concatenate consensus sequences from the samples into a single file
+
+mixture_composition:                # obtain composition of variants in percentage for each sample
+    caller:
+        method: darcall               # will support more methods in the future
+
+report:
+    multiqc: True
