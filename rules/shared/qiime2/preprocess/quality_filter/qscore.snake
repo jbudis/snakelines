@@ -1,0 +1,59 @@
+rule qiime2__qscore_filter:
+    """
+    Filters input qza based on quality. Calls 'qiime quality-filter q-score'
+
+    :input joined_sequences: Joined and trimmed sequences
+    :output qscore_sequences: Sequences passing quality filtering
+    :params min_quality: int, scores less than this value are considered low 
+    :params window_size: int, low score succession longer than this value are truncated from read
+    :params min_length_fraction: float 0-1, read is not kept if fraction of truncated read length to input read length is less this value
+    :params max_ambiguous: int, how many ambiguous bases can occur in truncated read at max
+    """
+    input:
+        joined_sequences = 'reads/preprocess/joining/{reference}.qza',
+    output:
+        qscore_sequences = 'reads/preprocess/qscore/{reference}.qza',
+        qscore_stats = 'reads/preprocess/qscore/{reference}_stats.qza',
+    log:
+        out = 'reads/preprocess/qscore/log/{reference}.log',
+        err = 'reads/preprocess/qscore/log/{reference}.err'
+    params:
+        min_quality = method_config.get('min_quality', 4),
+        window_size = method_config.get('window_size', 3),
+        min_length_fraction = method_config.get('min_length_fraction', 0.75),
+        max_ambiguous = method_config.get('max_ambiguous', 0),
+    conda:
+        config['snakelines_dir'] + '/enviroments/qiime2.yaml'
+    shell:
+        '''
+        qiime quality-filter q-score \
+            --i-demux {input.trimmed_sequences} \
+            --o-filtered-sequences {output.qscore_sequences} \
+            --o-filter-stats {output.qscore_stats} \
+            --p-min-quality {params.min_quality} \
+            --p-quality-window {params.window_size} \
+            --p-min-length-fraction {params.min_length_fraction} \
+            --p-max-ambiguous {params.max_ambiguous} \
+            1> {log.out} \
+            2> {log.err}
+        '''
+
+rule qiime2__qscore_tabulate_stats:
+    """
+    Generates a tabular view of resulting quality score filtering stats.
+    Calls 'qiime metadata tabulate'
+    :input dada2stats: dada2 stats artifact
+    :output visualization: visualization of dada2 stats artifact
+    """
+    input:
+        qscore_stats = 'reads/preprocess/qscore/{reference}_stats.qza',
+    output:
+        qscore_stats_qzv = 'reads/preprocess/qscore/{reference}_stats.qzv',
+    conda:
+        config['snakelines_dir'] + '/enviroments/qiime2.yaml'
+    shell:
+        '''    
+        qiime metadata tabulate \
+            --m-input-file {input.qscore_stats} \
+            --o-visualization {output.qscore_stats_qzv}
+        '''

@@ -557,6 +557,30 @@ qiime2:
                                         reference=pipeline.references)
                 qzv: expand('reads/preprocess/report/{reference}_quality.qzv',
                                         reference=pipeline.references)
+        joining:
+            output:
+                qza: expand('reads/preprocess/joining/{reference}.qza',
+                                        reference=pipeline.references)
+                qzv: expand('reads/preprocess/joining/{reference}_quality.qzv',
+                                        reference=pipeline.references)
+                stats:
+                    from: expand('reads/preprocess/joining/{reference}_quality/',
+                                            reference=pipeline.references)
+                    to: expand('{report_dir}/{reference}/01_preprocessing_report/joining/',
+                                            report_dir=config['report_dir'],
+                                            reference=pipeline.references)
+        quality_filter:
+            output: 
+                qza: expand('reads/preprocess/qscore/{reference}.qza',
+                                        reference=pipeline.references)
+                qzv: expand('reads/preprocess/qscore/{reference}_stats.qzv',
+                                        reference=pipeline.references)
+                stats:
+                    from: expand('reads/preprocess/qscore/{reference}_stats/',
+                                            reference=pipeline.references)
+                    to: expand('{report_dir}/{reference}/01_preprocessing_report/quality_filter/',
+                                            report_dir=config['report_dir'],
+                                            reference=pipeline.references)
         denoise:
             output:
                 qza: expand('reads/preprocess/denoise/original/{reference}_{type}.qza',
