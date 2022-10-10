@@ -185,19 +185,19 @@ qiime2:
         # To obtain best and most reliable results, 'sampling_depth' is crucial to set correctly. 
         # QIIME2 tutorials recommend check feature_table (01_preprocessing_report/feature_table) alpha_rarefaction results (02_core_metrics_report/rarefaction)
         core_metrics:                               # Produces a collection of diversity metrics to constructed feature table
-            method: phylogenetic                    # Allowed 'phylogenetic' # 'nonphylogenetic' - not done
+            method: phylogenetic                    # Allowed 'phylogenetic' and 'non_phylogenetic'
             sampling_depth: auto                    # Frequency that each sample should be rarefied to prior to computing diversity metrics. Either an integer value, or 'auto', where the lowest count of sequences is used (default: auto)
 
         diversity:
-            alpha:                                  # Uses alpha_types list from core_metrics above
+            alpha:
                 method: alpha_group_significance    # Allowed 'alpha_group_significance'
-            beta:                                   # Uses beta_types list from core_metrics above
+            beta:
                 method: beta_group_significance     # Allowed 'beta_group_significance'
                 pairwise_tests: True                # When set to true, do tests between all pairs of groups in addition to the test across all groups
                 test_method: permanova              # Defines which group significance test to apply, allowed 'permanova', 'anosim', 'permdisp', (default: 'permanova')
                 columns:                            # Define columns from metadata
                     - additive
-            pcoa_explore:                           # Uses beta_types list from core_metrics above
+            pcoa_explore:
                 method: emperor                     # Allowed 'emperor', creates Emperor plots of the PCoA results to explore groups or time using numeric metadata column
                 columns:                            # Define columns from metadata, must be numeric, either set in metadata file as numeric type or empty type
                     - year

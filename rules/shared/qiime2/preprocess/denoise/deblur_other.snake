@@ -29,7 +29,7 @@ rule qiime2__deblur_other:
     threads:
         int(config['threads'])
     params:
-        ref_seqs = 'reference/'+method_config.get('filter_ref', 'None')+'/'+method_config.get('alignment_reference', 'None')+'.fa',
+        ref_seqs = 'reference/'+method_config.get('filter_ref', 'None')+'/'+method_config.get('filter_ref', 'None')+'.fa',
         ref_filter = 'reference/{reference}/qiime2/filter_reference.qza',
         trim_length = method_config.get('trim_length', 120),
         left_trim_len = method_config.get('left_trim_len', 0),
