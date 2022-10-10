@@ -199,7 +199,7 @@ qiime2:
         # To obtain best and most reliable results, 'sampling_depth' is crucial to set correctly. 
         # QIIME2 tutorials recommend check feature_table (01_preprocessing_report/feature_table) alpha_rarefaction results (02_core_metrics_report/rarefaction)
         core_metrics:                               # Produces a collection of diversity metrics to constructed feature table
-            method: phylogenetic                    # Allowed 'phylogenetic' and 'nonphylogenetic'
+            method: phylogenetic                    # Allowed 'phylogenetic' and 'non_phylogenetic'
             sampling_depth: auto                    # Frequency that each sample should be rarefied to prior to computing diversity metrics. Either an integer value, or 'auto', where the lowest count of sequences is used (default: auto)
 
         diversity:
