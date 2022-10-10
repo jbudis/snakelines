@@ -627,7 +627,7 @@ qiime2:
                     dada2_report:
                         from:   expand('reads/preprocess/report/{reference}_denoising-stats/',
                                             reference=pipeline.references)
-                        to:     expand('{report_dir}/{reference}/01_preprocessing_report/dada2_stats/',
+                        to:     expand('{report_dir}/{reference}/01_preprocessing_report/denoise_stats/',
                                             report_dir=config['report_dir'],
                                             reference=pipeline.references)
                     preprocessing_report:

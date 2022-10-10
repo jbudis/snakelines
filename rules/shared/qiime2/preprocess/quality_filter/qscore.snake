@@ -27,7 +27,7 @@ rule qiime2__qscore_filter:
     shell:
         '''
         qiime quality-filter q-score \
-            --i-demux {input.trimmed_sequences} \
+            --i-demux {input.joined_sequences} \
             --o-filtered-sequences {output.qscore_sequences} \
             --o-filter-stats {output.qscore_stats} \
             --p-min-quality {params.min_quality} \
