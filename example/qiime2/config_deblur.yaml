@@ -105,7 +105,7 @@ qiime2:
         # Deblur workflow as the sequence quality control using reference fasta files as a positive filter
         denoise:
             method: deblur_16S          # Allowed 'deblur_16S', 'deblur_other'. When using 'deblur_other', specify reference which will be used as a filter. 
-            # reference: tomato         # Valid for 'deblur_other'. Name of reference fasta sequence(s) as 'reference/{name}/{name}.fa'
+            # filter_ref: tomato         # Valid for 'deblur_other'. Name of reference fasta sequence(s) as 'reference/{name}/{name}.fa'
             trim_length: 120            # int. Trim reads at this length, set to -1 to disable.
             left_trim_len: 0            # int, how many bases to trim from the 5' end. Set to 0 to disable.
             mean_error: 0.005           # float, estimate per nucleotide error
@@ -201,16 +201,6 @@ qiime2:
         core_metrics:                               # Produces a collection of diversity metrics to constructed feature table
             method: phylogenetic                    # Allowed 'phylogenetic' # 'nonphylogenetic' - not done
             sampling_depth: auto                    # Frequency that each sample should be rarefied to prior to computing diversity metrics. Either an integer value, or 'auto', where the lowest count of sequences is used (default: auto)
-            alpha_types:                            # Allowed: 'evenness', 'shannon', 'observed', 'faith_pd' (invalid in nonphylogenetic)
-                - evenness
-                - faith_pd
-                - observed
-                - shannon
-            beta_types:                             # Allowed: 'bray_curtis', 'jaccard', 'unweighted_unifrac' and 'weighted_unifrac' (both invalid in nonphylogenetic)
-                - bray_curtis
-                - jaccard
-                - unweighted_unifrac
-                - weighted_unifrac
 
         diversity:
             alpha:                                  # Uses alpha_types list from core_metrics above

@@ -1,3 +1,5 @@
+include: config['snakelines_dir'] + '/rules/shared/qiime2/preprocess/denoise/deblur_stats.snake'
+
 rule qiime2__deblur16S:
     """
     Run Deblur workflow with a 16S reference as a positive filter.
@@ -53,24 +55,4 @@ rule qiime2__deblur16S:
             --o-stats {output.stats} \
             1> {log.out} \
             2> {log.err}
-        '''
-
-rule qiime2__deblur_stats:
-    """
-    Generates a tabular view of resulting dada2 stats. Calls 'qiime metadata tabulate'
-
-    :input dada2stats: dada2 stats artifact
-    :output visualization: visualization of dada2 stats artifact
-    """
-    input:
-        stats = 'reads/preprocess/denoise/original/{reference}_denoising-stats.qza'
-    output:
-        vis_denoise_stats = 'reads/preprocess/report/{reference}_denoising-stats.qzv'
-    conda:
-        config['snakelines_dir'] + '/enviroments/qiime2.yaml'
-    shell:
-        '''
-        qiime deblur visualize-stats \
-            --i-deblur-stats {input.stats} \
-            --o-visualization {output.vis_denoise_stats}
         '''
