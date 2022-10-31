@@ -38,7 +38,8 @@ rule qiime2__taxa_filter_table:
         '''
         if [ "{params.include}" == "" ] && [ "{params.exclude}" == "" ];
         then
-            echo "Skipping taxonomy filtering as no filtering conditions are set"
+            echo "Skipping taxonomy filtering as no filtering conditions are set" \
+            > {log.out}
             cp {input.feature_table} {output.filtered_table}
         else
             qiime taxa filter-table \
@@ -46,7 +47,9 @@ rule qiime2__taxa_filter_table:
                 --i-taxonomy {input.taxonomy} \
                 {params.include} \
                 {params.exclude} \
-                --o-filtered-table {output.filtered_table}
+                --o-filtered-table {output.filtered_table} \
+                1> {log.out} \
+                2> {log.err}
         fi;
         '''
 
@@ -84,7 +87,8 @@ rule qiime2__taxa_filter_seqs:
         '''
         if [ "{params.include}" == "" ] && [ "{params.exclude}" == "" ];
         then
-            echo "Skipping taxonomy filtering as no filtering conditions are set"
+            echo "Skipping taxonomy filtering as no filtering conditions are set" \
+            > {log.out}
             cp {input.rep_seqs} {output.filtered_seqs}
         else
             qiime taxa filter-seqs \
@@ -92,6 +96,8 @@ rule qiime2__taxa_filter_seqs:
                 --i-taxonomy {input.taxonomy} \
                 {params.include} \
                 {params.exclude} \
-                --o-filtered-sequences {output.filtered_seqs}
+                --o-filtered-sequences {output.filtered_seqs} \
+                1> {log.out} \
+                2> {log.err}
         fi;
         '''

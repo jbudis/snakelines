@@ -18,10 +18,12 @@ rule qiime2__taxonomy_barplot:
     shell:
         '''    
         qiime taxa barplot \
-          --i-table {input.feature_table} \
-          --i-taxonomy {input.taxonomy} \
-          --m-metadata-file {input.metadata} \
-          --o-visualization {output.barplot}
+            --i-table {input.feature_table} \
+            --i-taxonomy {input.taxonomy} \
+            --m-metadata-file {input.metadata} \
+            --o-visualization {output.barplot} \
+            1> {log.out} \
+            2> {log.err}
         '''
 
 rule qiime2__taxonomy_tabulate:
@@ -42,6 +44,6 @@ rule qiime2__taxonomy_tabulate:
     shell:
         '''
         qiime metadata tabulate \
-          --m-input-file {input.taxonomy} \
-          --o-visualization {output.qzv}
+            --m-input-file {input.taxonomy} \
+            --o-visualization {output.qzv}
         '''

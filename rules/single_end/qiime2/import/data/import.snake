@@ -24,7 +24,9 @@ rule qiime2__import_manifest:
             --type {params.sequence_type} \
             --input-path {input.manifest} \
             --output-path {output.qza} \
-            --input-format {params.input_format}
+            --input-format {params.input_format} \
+            1> {log.out} \
+            2> {log.err}
         '''
 
 rule copy_description_metadata:

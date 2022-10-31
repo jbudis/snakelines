@@ -36,7 +36,9 @@ rule qiime2__rescript_taxonomy_download:
             --p-target {params.target_type} \
             {params.species_labels} \
             --o-silva-sequences {params.ref_reads_rna} \
-            --o-silva-taxonomy {output.ref_tax}
+            --o-silva-taxonomy {output.ref_tax} \
+            1> {log.out} \
+            2> {log.err}
 
         qiime rescript reverse-transcribe \
             --i-rna-sequences {params.ref_reads_rna} \

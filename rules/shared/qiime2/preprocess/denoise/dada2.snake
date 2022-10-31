@@ -17,8 +17,8 @@ rule qiime2__dada2_denoise:
         rep_seqs = 'reads/preprocess/denoise/original/{reference}_rep-seqs.qza',
         stats = 'reads/preprocess/denoise/original/{reference}_denoising-stats.qza'
     log:
-        out = 'reads/preprocess/denoise/log/{reference}.log',
-        err = 'reads/preprocess/denoise/log/{reference}.err'
+        out = 'reads/preprocess/denoise/log/dada2_{reference}.log',
+        err = 'reads/preprocess/denoise/log/dada2_{reference}.err'
     threads:
         int(config['threads'])
     params:
@@ -56,7 +56,9 @@ rule qiime2__dada2_denoise:
             --p-pooling-method {params.denoise_pooling} \
             --p-chimera-method {params.chimera_method} \
             --p-min-fold-parent-over-abundance {params.chimera_parent_abundance} \
-            --p-n-reads-learn {params.num_reads_train}
+            --p-n-reads-learn {params.num_reads_train} \
+            1> {log.out} \
+            2> {log.err}
         '''
 
 rule qiime2__dada2_tabulate_stats:

@@ -1,0 +1,67 @@
+include: config['snakelines_dir'] + '/rules/shared/qiime2/preprocess/denoise/deblur_stats.snake'
+
+rule qiime2__deblur_other:
+    """
+    Run Deblur workflow with a custom reference as a positive filter.
+
+    :input qscore_sequences: Quality filtered demultiplexed sequences with cut adapters
+    :input ref_seqs: Custom database of fasta sequences used for filtering.
+    :output table: resulting feature table of qiime2 deblur call
+    :output rep_seqs: resulting feature sequences
+    :output stats: stats per sample as given by denoise deblur
+    :params trim_length: int, sequence trim length, set to -1 to disable.
+    :params left_trim_len: int, sequence trimming from the 5' end. Set to 0 to disable.
+    :params mean_error: float, estimate per nucleotide error
+    :params indel_prob: float, indel probability
+    :params indel_max: int, max number of indels
+    :params min_reads: int, min number of reads (across all samples) with a feature to keep it
+    :params min_size: int, min number of reads in one sample with a feature to keep it for a sample
+    """
+    input:
+        qscore_sequences = 'reads/preprocess/qscore/{reference}.qza',
+    output:
+        table = 'reads/preprocess/denoise/original/{reference}_table.qza',
+        rep_seqs = 'reads/preprocess/denoise/original/{reference}_rep-seqs.qza',
+        stats = 'reads/preprocess/denoise/original/{reference}_denoising-stats.qza'
+    log:
+        out = 'reads/preprocess/denoise/log/deblur_{reference}.log',
+        err = 'reads/preprocess/denoise/log/deblur_{reference}.err'
+    threads:
+        int(config['threads'])
+    params:
+        ref_seqs = 'reference/'+method_config.get('filter_ref', 'None')+'/'+method_config.get('filter_ref', 'None')+'.fa',
+        ref_filter = 'reference/{reference}/qiime2/filter_reference.qza',
+        trim_length = method_config.get('trim_length', 120),
+        left_trim_len = method_config.get('left_trim_len', 0),
+        mean_error = method_config.get('mean_error', 0.005),
+        indel_prob = method_config.get('indel_prob', 0.01),
+        indel_max = method_config.get('indel_max', 3),
+        min_reads = method_config.get('min_reads', 10),
+        min_size = method_config.get('min_size', 2),
+    conda:
+        config['snakelines_dir'] + '/enviroments/qiime2.yaml'
+    shell:
+        '''
+        qiime tools import \
+            --type 'FeatureData[Sequence]' \
+            --input-path {params.ref_seqs} \
+            --output-path {params.ref_filter}
+
+        qiime deblur denoise-other \
+            --i-demultiplexed-seqs {input.qscore_sequences} \
+            --i-reference-seqs {params.ref_filter} \
+            --p-trim-length {params.trim_length} \
+            --p-left-trim-len {params.left_trim_len} \
+            --p-sample-stats \
+            --p-mean-error {params.mean_error} \
+            --p-indel-prob {params.indel_prob} \
+            --p-indel-max {params.indel_max} \
+            --p-min-reads {params.min_reads} \
+            --p-min-size {params.min_size} \
+            --p-jobs-to-start {threads} \
+            --o-representative-sequences {output.rep_seqs} \
+            --o-table {output.table} \
+            --o-stats {output.stats} \
+            1> {log.out} \
+            2> {log.err}
+        '''

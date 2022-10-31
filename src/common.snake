@@ -33,7 +33,7 @@ def parse_description_by_schema(sample, description, description_schema):
     metadata["sample-id"] = sample
     for attr in description_schema:
         if attr in description:
-            
+
             # convert parsed string into int if all description keys are integers, else use it as string
             if 'values' in description_schema[attr] and len(description_schema[attr]['values'])>0:
                 types = list(set(type(k) for k in description_schema[attr]['values'].keys()))
@@ -41,13 +41,13 @@ def parse_description_by_schema(sample, description, description_schema):
                     attr_value = int(description[attr])
                 else:
                     attr_value = description[attr]
-                
+
             # recode input value using key in description values
             if 'values' in description_schema[attr]:
                 try:
                     metadata[attr] = description_schema[attr]['values'][attr_value]
                 except:
-                    raise KeyError("Unrecognized key '{}' found in '{}' for sample {}. Defined ones are: {}".format(attr_value, attr, sample, list(description_schema[attr]['values'].keys())))        
+                    raise KeyError("Unrecognized key '{}' found in '{}' for sample {}. Defined ones are: {}".format(attr_value, attr, sample, list(description_schema[attr]['values'].keys())))
             else:
                 metadata[attr] = attr_value
 
@@ -211,8 +211,15 @@ pca_formats = extract_from_config(config, ['classification', 'report', 'transcri
 
 
 # Which types use in qiime2 core-metrics analysis
-qiime2_alpha_types = extract_from_config(config, ['qiime2', 'analysis', 'core_metrics', 'alpha_types'], [])
-qiime2_beta_types = extract_from_config(config, ['qiime2', 'analysis', 'core_metrics', 'beta_types'], [])
+core_metrics = extract_from_config(config, ['qiime2', 'analysis', 'core_metrics', 'method'], None)
+if core_metrics == 'phylogenetic':
+    qiime2_alpha_types = ['evenness', 'faith_pd', 'observed', 'shannon']
+    qiime2_beta_types = ['bray_curtis', 'jaccard', 'unweighted_unifrac', 'weighted_unifrac']
+elif core_metrics == 'non_phylogenetic':
+    qiime2_alpha_types = ['evenness', 'observed', 'shannon']
+    qiime2_beta_types = ['bray_curtis', 'jaccard']
+else:
+    raise ValueError('Only "phylogenetic" and "non_phylogenetic" are accepted in qiime2-analysis-core_metrics-method')
 
 # Which columns from metadata use in beta-significance report
 qiime2_beta_significance_columns = extract_from_config(config, ['qiime2', 'analysis', 'diversity', 'beta','columns'], [])

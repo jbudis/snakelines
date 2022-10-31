@@ -1,0 +1,260 @@
+sequencing: paired_end              # Currently only 'paired_end' is supported
+report_dir: report                  # Generated reports and essential output files would be stored there
+threads: 2                          # Number of threads to use in analysis
+
+samples:                            # List of sample categories to be analysed
+    - name: .*                      # Use all reads in reads/original
+      reference: unite-fungi              # Reference genome for reads in the category (reference/silva-16S-90-filtered/silva-16S-90-filtered.fa)
+      download: False                # Whether reference will be downloaded in analysis or not
+      description:                  # Creates metadata file (description/sample-metadata.tsv)
+        overwrite: True             # Allowed True or False, defines whether to overwrite created metadata file
+        format: '{year}-{wine}-{additive}-{material}-{rRNA}-{phase}-{biological_replica}-{technical_replica}' # napr. 2021-R-S_R1.fastq.gz
+        attributes:                 # Define type for each attribute ('int','categorical' or left empty) and specify value mapping
+            year:
+                # type: int # if not set, qiime2 infers type automatically
+                values:
+                    17: 2017
+                    18: 2018
+                    19: 2019
+                    20: 2020
+            wine:
+                type: categorical
+                values:
+                    rb: rulandske biele
+            additive:
+                type: categorical
+                values:
+                    noth: nothing added
+                    ctrl: control - commercial Saccharomyces cerevisiae only
+                    sace: Saccharomyces serevisiae
+                    mesa: Metschnikowia pulcherrima and Saccharomyces cerevisiae
+                    lasa: Lachancea thermotolerans and Saccharomyces cerevisiae
+                    must: initial must
+            material:
+                type: categorical
+                values:
+                    dna: DNA
+                    rna: RNA
+            rRNA:
+                type: categorical
+                values:
+                    16S: 16S
+                    28S: 28S
+            phase:
+                type: categorical
+                values:
+                    m0: initial must
+                    m1: must
+                    m2: fermented must
+                    m3: young wine
+                    m4: wine before filtration
+                    m5: wine after filtration
+            biological_replica:
+                type: categorical
+                values:
+                    repA: first replica
+                    repB: second replica
+                    repC: third replica
+            technical_replica:
+                type: categorical
+                values:
+                    1: 1
+                    2: 2
+                    3: 3
+
+
+qiime2:
+    # Importing section of QIIME2 - input data are converted into .qza, unique QIIME2 format
+    import:
+        manifest:
+            method: create_manifest     # Allowed: 'create_manifest'. This creates a manifest tsv file with all input reads
+        data:
+            method: import              # Allowed: 'import'. This creates a qza from all reads that are in the created tsv manifest file
+            PHRED_offset: 33            # Allowed: '33' or '64' (33 used in Sanger and Illumina1.8, 64 used in Illumina 1.3), default: 33
+    
+    # Preprocessing section - consists of demultiplexing and sequence QC in order to obtain ASV
+    preprocess:
+        demultiplex:                    # Defines adapter trimming and initial filtering of sequences on length and error rate
+            method: cutadapt            # Allowed 'cutadapt'. See https://docs.qiime2.org/2021.8/plugins/available/cutadapt/trim-paired/
+            minlen: 35                  # Minimal length of trimmed read. Shorter reads would be removed. (Must be higher or equal to 1, default: 1)
+            max_error_rate: 0.1         # Maximum allowed error rate (Must be from range 0-1, default: 0.1)
+            primer_set: 16S             # Allowed '16S','ITS','28S'. Defines primer sequences that will be trimmed. Defined in rules/shared/qiime2/preprocess/demultiplex/cutadapt
+            adapter_set: None           # Allowed 'Illumina' or 'None'. When set, sequencing adapters of that set are cut with primers, when 'None' trimmed are only primers
+            discard_undetected: False   # Whether to discard reads where adapter was not found (default: False)
+
+        # DADA2 filters the forward and reverse reads jointly, outputting only those pairs of reads that both pass the filter. 
+        # The first step in DADA2 is trimming using trim_left_f and trim_left_r. Then truncating happens, and at last DADA2 runs filtering using computed expected errors. 
+        # It is recommended to check report/01_preprocessing_report/read_quality to estimate the best parameters of DADA2
+        denoise:                        # For dada2 API see https://docs.qiime2.org/2021.8/plugins/available/dada2/denoise-paired/
+            method: dada2               # Allowed 'dada2'
+            trunc_len_f: 0              # Defines position where truncation starts on forward, discard read if shorter. If set to 0, dont do truncation. After this parameter is applied there must still be at least a 12 nucleotide overlap between the forward and reverse reads.
+            trunc_len_r: 0              # Defines position where truncation starts on reverse, discard read if shorter. If set to 0, dont do truncation. After this parameter is applied there must still be at least a 12 nucleotide overlap between the forward and reverse reads.
+            trim_left_f: 0              # How many bases will be trimmed from start on forward, set to 0 for no trimming (default: 0)
+            trim_left_r: 0              # How many bases will be trimmed from start on reverse, set to 0 for no trimming (default: 0)
+            trunc_start_qual: 5         # truncate read from the first occurence of quality lower than this value, (default: 2) If the resulting read is then shorter than `trunc-len-f` or `trunc-len-r`, it is discarded
+            max_ee_f: 4.0               # After trunc and trim, forward reads with expected error rate (calculated by dada2) higher than this value are discarded (default: 2.0)
+            max_ee_r: 4.0               # After trunc and trim, reverse reads with expected error rate (calculated by dada2) higher than this value are discarded (default: 2.0)
+            min_overlap: 12             # Minimal length of overlap required when merging forward and reverse reads (default: 12)
+            denoise_pooling: independent    # Allowed 'independent', 'pseudo'; denoise samples independently, or use pseudo-pooling (default: independent)
+            chimera_method: consensus       # Allowed 'consensus', 'pooled', 'none' (default: consensus)
+            chimera_parent_abundance: 2.0   # When tested for chimeric, this gives the minimum abundance of parents. When higher, chimera detection is less rigorous (default: 1.0)
+            num_reads_train: 1000000        # Number of reads used for training error model, lower number = faster, but less reliable model (default: 1000000)
+
+        # Define optional post-filtering steps (in any order) of results produced by DADA2
+        post_filter:   
+            fix_seq_orientation:
+                method: fix_seq_orientation     # allowed: 'fix_seq_orientation'
+                orient_reference: unite         # Name of reference fasta sequence(s) as 'reference/{name}/{name}.fa' i.e. 'reference/unite/unite.fa'
+            
+            # Aligns feature sequences to a set of reference sequences to identify sequences that hit/miss the reference
+            alignment_filter:
+                method: blast                   # allowed: 'blast'
+                alignment_reference: tomato     # Name of reference fasta sequence(s) as 'reference/{name}/{name}.fa' i.e. 'reference/Solanum_lycopersicum/Solanum_lycopersicum.fa'
+                alignment_filter_how: exclude   # Type of a filter, allowed: 'include', 'exclude' - whether to include or exclude sequences that were not aligned to reference
+                alignment_min_identity: 0.97    # report match if percent identity to reference is equal or higher than this value
+                alignment_min_query: 0.97       # report match if percent of aligned query sequence is higher than this value
+
+        # Report section - generates visualizations of constructed ASVs
+        report:
+            core_features:                      # Identifies core features, which are features observed in a user-defined fraction of the samples
+                method: core_features           # Allowed: 'core_features'
+                min_fraction: 0.5               # Minimum fraction of samples, must be 0-1 (default 0.5)
+                max_fraction: 1                 # Maximum fraction of samples, must be 0-1 and greater or equal than min-fraction (default 1.0)
+                steps: 11                       # Number of steps to take between `min-fraction` and `max-fraction` for core features calculations (default: 11)            
+            feature_table:                      # Generates table of features and associated sequences
+                method: feature_table           # Allowed: 'feature_table'
+            feature_heatmap:                    # Generate a heatmap representation of a feature table with optional clustering on both the sample and feature axes
+                method: feature_heatmap         # Allowed 'heatmap'
+                normalize: True                 # Allowed 'True' or 'False'. Whether to normalize counts of features. Default: True
+                metric: euclidean               # See doc for allowed metrics. Default: 'euclidean'. Defines metric used for calculating distance between features
+                linkage: average                # See doc for allowed values. Default: 'average'. Defines how to calculate distance between clusters
+                cluster_ax: both                # Allowed 'both', 'features', 'samples', 'none'. Default: 'both'. Defines which axes to cluster.
+                columns:
+                    - additive
+                    - phase
+            export:
+                method: export                  # Allowed 'export'. DO NOT TOUCH. This tells snakelines to export each .qzv into human readable .html form
+
+
+    analysis:
+        phylogeny:                                  # Constructs phylogeny tree
+            method: fasttree                        # Allowed: 'fasttree', 'iqtree', 'raxml'
+            max_gap_freq: 1.0                       # Valid for all methods, must be float 0-1. Defines max frequency of gap characters in a column for the column to be retained (if 1 - retains all, default: 1.0)
+            min_conservation: 0.4                   # Valid for all methods, must be float 0-1. Defines min relative frequency of at least one non-gap character in a column for that column to be retained (if 0.4, column must contain a gapless character occuring at least 40% of sequences, default: 0.4)
+            substitution_model: MFP                 # Valid for 'iqtree' and 'raxml', not used in fasttree. Defines nucleotide substitution model (default: 'MFP' for iqtree, 'GTRGAMMA' for raxml)
+            fast_mode: False                        # Valid for 'iqtree', defines whether to simulate fasttree search in iqtree (default: False)
+        
+        # Reference must contains .fa and .tax, if reference is 'ref-16S-bac', there must be 'ref-16S-bac.fa' and 'ref-16S-bac.tax' in 'reference/ref-16S-bac/'
+        # In the future - extract reference reads to optimize -https://docs.qiime2.org/2021.8/tutorials/feature-classifier/
+        taxonomy:
+            import:                                 # Trains a classifier using reference reads and taxonomy
+                method: import_reference            # Allowed 'import_reference', 'silva_download', if download - set download to True on the eight line in this config
+                version: 138                        # Define Silva version if using 'silva_download'
+                type: SSURef_NR99                   # Define type for Silva DB if using 'silva_download'
+                include_species_labels: False       # Whether to include labels for species level when using 'silva_download'. Not recommended, as SILVA does not curate the species-level taxonomy
+            classify:
+                method: fitted_classifier           # Allowed 'fitted_classifier', 'consensus_blast'
+                confidence_threshold: 0.7           # Taxonomy classification is limited at tax. depth where confidence is lower than this value (default: 0.7), either float from 0-1 range, or "disable" to disable confidence calculation, or '0' to calculate confidence but not apply it
+                blast_max_hits: 10                  # Int, must be higher than 0. Valid for 'consensus_blast'. Defines the maximum number of hits to keep for each query. First N hits in the reference DB that exceed perc-identity similarity to query will be chosen (default: 10)
+                blast_min_identitity: 0.8           # Must be 0-1. Valid for 'consensus_blast'. Defines the minimum percent identity of match to query, if lower, match is discarded (default 0.8)
+                blast_min_coverage: 0.8             # Must be 0-1. Valid for 'consensus_blast'. Reject match if query alignment coverage per high-scoring pair is lower (default 0.8)
+                blast_strand: both                  # Allowed: 'both', 'plus', 'minus'. Valid for 'consensus_blast'. Defines the direction to use when aligning against reference DB (default 'both')
+                blast_evalue: 0.001                 # Valid for 'consensus_blast'. Defines expectation value (E) threshold which must be kept so hits will not be discarded (default 0.001)
+                blast_min_consensus: 0.51           # Must be 0.5-1. Valid for 'consensus_blast'. Minimum fraction of assignments must match top hit to be accepted as consensus assignment (default 0.51)
+            barplot:
+                method: barplot                     # Allowed 'barplot'. Defines the method of visualization of taxonomy assignments
+
+        # Taxa filtering
+        # !!! produced filtered table will be then used in further analysis steps below
+        taxa_filter:
+            method: taxa_filter                     # Allowed 'taxa_filter'. Filter data using obtained taxonomy
+            include: False                          # Indicates which taxa should be included only. Else set to False or leave empty. If 'XY', then retained are only ASVs containing 'XY' in their taxa annotation. Depends on the names in .tax file
+            exclude: mitochondria,chloroplast       # Indicates which taxa should be excluded. Else set to False or leave empty. If 'XY', then filtered out all ASVs containing 'XY' in their taxa annotation. Depends on the names in .tax file
+
+        # Use rarefaction to explore if data has uneven sequencing depth between sample
+        # Rarefaction is a method for normalization via sub-sampling without replacement and is commonly used as a workaround for the issue of uneven sequencing depth. 
+        # Rarefaction occurs in two steps: first, samples which are below the rarefaction depth are filtered out of the feature table. Then, all remaining samples are subsampled without replacement to get to the specified sequencing depth.
+        rarefaction:                                # Calculate the alpha diversity at various depths from 'min-depth' to 'max-depth'
+            rarefaction:
+                method: alpha_rarefaction           # Allowed: 'alpha_rarefaction'
+                max_depth: 3500                     # Int, should be close to the maximum number of sequences
+                min_depth: 1                        # Int, defines the minimum depth
+                steps: 10                           # Int, defines the number of rarefaction depths to include between min-depth and max-depth (default: 10)
+                iterations: 10                      # Int, defines the number of calculated tables to provide an error estimate (default: 10)
+    
+        # To obtain best and most reliable results, 'sampling_depth' is crucial to set correctly. 
+        # QIIME2 tutorials recommend check feature_table (01_preprocessing_report/feature_table) alpha_rarefaction results (02_core_metrics_report/rarefaction)
+        core_metrics:                               # Produces a collection of diversity metrics to constructed feature table
+            method: phylogenetic                    # Allowed 'phylogenetic' and 'non_phylogenetic'
+            sampling_depth: auto                    # Frequency that each sample should be rarefied to prior to computing diversity metrics. Either an integer value, or 'auto', where the lowest count of sequences is used (default: auto)
+
+        diversity:
+            alpha:
+                method: alpha_group_significance    # Allowed 'alpha_group_significance'
+            beta:
+                method: beta_group_significance     # Allowed 'beta_group_significance'
+                pairwise_tests: True                # When set to true, do tests between all pairs of groups in addition to the test across all groups
+                test_method: permanova              # Defines which group significance test to apply, allowed 'permanova', 'anosim', 'permdisp', (default: 'permanova')
+                columns:                            # Define columns from metadata
+                    - additive
+            pcoa_explore:
+                method: emperor                     # Allowed 'emperor', creates Emperor plots of the PCoA results to explore groups or time using numeric metadata column
+                columns:                            # Define columns from metadata, must be numeric, either set in metadata file as numeric type or empty type
+                    - year
+        
+        # Differential abundance - using lefse
+        differential_abundance:
+            method: lefse                           # Allowed 'lefse'
+            taxa_level: 4                           # Maximum taxonomic level that is of your interest - check taxonomy results
+            class_col: phase                        # Specify column from metadata file
+
+        # ANCOM section 1 - without taxonomy
+        # Identifies ASV features that are differentially abundant across sample groups
+        # Care! Low abundance ASVs should be filtered out. A feature that shows up with 10 counts could be a real feature that is present only in that sample; a feature that’s present in several samples but only got amplified and sequenced in one sample because PCR is a somewhat stochastic process; or it may be noise. 
+
+        # When you open the ANCOM visualizations, you’ll see a volcano plot on top, which relates the ANCOM W statistic to 'transform_function' for the groups. 
+        # The W statistic is the number of ANCOM subhypotheses that have passed for each individual taxon, indicating that the ratios of that taxon’s relative abundance to the relative abundances of W other taxa were detected to be significantly different (typically FDR-adjusted p < 0.05). 
+        # Because differential abundance in ANCOM is based on the ratio between tests, it does not produce a traditional p-value.
+        composition_analysis:
+            method: ancom                           # Allowed 'ancom'
+            min_frequency: 1                        # Int, defines the minimum total frequency that a feature must have to be retained (default: 0)
+            min_samples: 1                          # Int, defines the minimum number of samples that a feature must be observed in to be retained (default: 0)
+            transform_function: clr                 # Allowed: 'sqrt', 'log', 'clr'. Defines method applied to transform feature values
+            diff_function: mean_difference          # Allowed: 'mean_difference', 'f_statistic'. Defines method applied to visualize fold difference in feature abundances across groups
+            columns:                                # Categorical sample metadata column to test for differential abundance across
+                - phase
+                - additive
+
+        # ANCOM section 2 - with taxonomy
+        # ASV feature counts are pooled across taxonomically similar ASVs, for instance allowing exact species substitution between samples             
+        composition_analysis_taxa:
+            method: ancom_taxa                      # Allowed: 'ancom_taxa'
+            min_frequency: 1                        # Int, defines the minimum total frequency that a feature must have to be retained (default: 0)
+            min_samples: 1                          # Int, defines the minimum number of samples that a feature must be observed in to be retained (default: 0)
+            transform_function: clr                 # Allowed: 'sqrt', 'log', 'clr'. Defines method applied to transform feature values
+            diff_function: mean_difference          # Allowed: 'mean_difference', 'f_statistic'. Defines method applied to visualize fold difference in feature abundances across groups
+            taxa_levels:                            # Int, corresponding to taxonomic level. Performs a differential abundance test at a specific taxonomic level.
+                - 4                                 
+                - 3
+            columns:                                # Categorical sample metadata column to test for differential abundance across
+                - phase
+                - additive
+            
+        #https://docs.qiime2.org/2020.2/tutorials/gneiss/
+
+        #longitudinal: https://docs.qiime2.org/2021.8/tutorials/longitudinal/
+            #pairwise-differences
+                #method: pairwise-differences
+            #pairwise-distances:
+                #method: pairwise-distances
+            #effect_model:
+                #method: linear-mixed-effects
+            #volatility
+            #feature_volatility
+            #maturity_index
+
+        
+        #quality_evaluation https://docs.qiime2.org/2021.8/tutorials/quality-control/
+        #*** ak je k dispozicii mock, alebo znama kompozicia
+
+        #predictions? https://docs.qiime2.org/2021.8/tutorials/sample-classifier/    

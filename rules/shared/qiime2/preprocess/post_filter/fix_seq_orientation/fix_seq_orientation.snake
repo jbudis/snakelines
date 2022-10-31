@@ -25,6 +25,9 @@ rule qiime2__denoise_postfilter_fix_orient:
         ref_sequences = 'reference/{reference}/qiime2/ref_orient_seqs.qza',
         ref_orient_name = 'reference/'+method_config.get('orient_reference', 'None')+'/'+method_config.get('orient_reference', 'None')+'.fa',
         orient_seqs_discard = 'reads/preprocess/denoise/fix_seq_orientation/{reference}_rep-seqs_unoriented.qza'
+    log:
+        out = 'reads/preprocess/denoise/fix_seq_orientation/log/{reference}.log',
+        err = 'reads/preprocess/denoise/fix_seq_orientation/log/{reference}.err'
     conda:
         config['snakelines_dir'] + '/enviroments/qiime2_rescript.yaml'
     shell:
@@ -38,7 +41,9 @@ rule qiime2__denoise_postfilter_fix_orient:
             --i-sequences {input.rep_seqs} \
             --i-reference-sequences {params.ref_sequences} \
             --o-oriented-seqs {output.orient_seqs_fixed} \
-            --o-unmatched-seqs {params.orient_seqs_discard};
+            --o-unmatched-seqs {params.orient_seqs_discard} \
+            1> {log.out} \
+            2> {log.err};
 
         qiime feature-table filter-features \
             --i-table {input.table} \

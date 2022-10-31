@@ -42,5 +42,7 @@ rule qiime2__diversity_alpha_rarefaction:
             --p-min-depth {params.min_depth} \
             --p-steps {params.steps} \
             --p-iterations {params.iterations} \
-            --o-visualization {output.qzv}
+            --o-visualization {output.qzv} \
+            1> {log.out} \
+            2> {log.err}
         '''

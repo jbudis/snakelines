@@ -1,0 +1,75 @@
+rule qiime2__vsearch_join_paired:
+    """
+    Joins paired-end reads. Calls 'qiime vsearch join-pairs'
+
+    :input trimmed_sequences: Sequences with cut adapters using qiime cutadapt
+    :output joined_sequences: Joined sequences, qza [JoinedSequencesWithQuality]
+    :params trunc_qual: int, truncate sequence at the first occurence of lower quality score.
+    :params min_len: int, discard shorter sequences than this.
+    :params max_n_bases: int, discard sequences with N than this.
+    :params allow_stagger: bool, allow joining of staggered read pairs or not.
+    :params min_overlap: int, minimum length of overlap required to join reads
+    :params max_mismatches: int, max mismatches in read overlap allowed for joining.
+    :params min_merged_len: int, discard joined reads shorter than this
+    :params max_merged_len: int, discard joined reads longer than this
+    :params max_exp_err: float, discard joined reads with more expected errors than this
+    """
+    input:
+        trimmed_sequences = 'reads/preprocess/demultiplex/{reference}.qza',
+    output:
+        joined_sequences = 'reads/preprocess/joining/{reference}.qza',
+    params:
+        trunc_qual = '--p-truncqual %d' % method_config['trunc_qual'] if 'trunc_qual' in method_config else '',
+        seq_min_len = method_config.get('seq_min_len', 1),
+        max_n_bases = '--p-maxns %d' % method_config['max_n_bases'] if 'max_n_bases' in method_config else '',
+        allow_stagger = '--p-allowmergestagger' if method_config.get('allow_stagger', False) else '--p-no-allowmergestagger',
+        min_overlap = method_config.get('min_overlap', 10),
+        max_mismatches = method_config.get('max_mismatches', 10),
+        min_merged_len = '--p-minmergelen %d' % method_config['min_merged_len'] if 'min_merged_len' in method_config else '',
+        max_merged_len = '--p-maxmergelen %d' % method_config['max_merged_len'] if 'max_merged_len' in method_config else '',
+        max_exp_err = '--p-maxee %f' % method_config['max_exp_err'] if 'max_exp_err' in method_config else '',
+    log:
+        out = 'reads/preprocess/joining/log/{reference}.log',
+        err = 'reads/preprocess/joining/log/{reference}.err'
+    threads:
+        int(config['threads']),
+    shell:
+        '''
+        qiime vsearch join-pairs \
+            --i-demultiplexed-seqs {input.trimmed_sequences} \
+            --o-joined-sequences {output.joined_sequences} \
+            {params.trunc_qual} \
+            --p-minlen {params.seq_min_len} \
+            {params.max_n_bases} \
+            {params.allow_stagger} \
+            --p-minovlen {params.min_overlap} \
+            --p-maxdiffs {params.max_mismatches} \
+            {params.min_merged_len} \
+            {params.max_merged_len} \
+            {params.max_exp_err} \
+            --p-threads {threads} \
+            1> {log.out} \
+            2> {log.err}
+        '''
+
+rule qiime2__tabulate_joined_reads:
+    """
+    Summarize counts per sample for all samples, and visualize using `n` randomly selected sequences.
+
+    Calls 'qiime demux summarize'
+
+    :input joined_sequences: joined demux sequences
+    :output visualization: artifact of interactive positional quality plots
+    """
+    input:
+        joined_sequences = 'reads/preprocess/joining/{reference}.qza',
+    output:
+        qzv = 'reads/preprocess/joining/{reference}_quality.qzv',
+    conda:
+        config['snakelines_dir'] + '/enviroments/qiime2.yaml'
+    shell:
+        '''    
+        qiime demux summarize \
+            --i-data {input.joined_sequences} \
+            --o-visualization {output.qzv}
+        '''

@@ -21,7 +21,9 @@ rule qiime2__diversity__alpha_group_significance:
     shell:
         '''
         qiime diversity alpha-group-significance \
-          --i-alpha-diversity {input.vector} \
-          --m-metadata-file {input.metadata} \
-          --o-visualization {output.qzv}
+            --i-alpha-diversity {input.vector} \
+            --m-metadata-file {input.metadata} \
+            --o-visualization {output.qzv} \
+            1> {log.out} \
+            2> {log.err}
         '''
