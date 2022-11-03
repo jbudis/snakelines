@@ -218,6 +218,9 @@ if core_metrics == 'phylogenetic':
 elif core_metrics == 'non_phylogenetic':
     qiime2_alpha_types = ['evenness', 'observed', 'shannon']
     qiime2_beta_types = ['bray_curtis', 'jaccard']
+elif core_metrics is None:
+    qiime2_alpha_types = []
+    qiime2_beta_types = []
 else:
     raise ValueError('Only "phylogenetic" and "non_phylogenetic" are accepted in qiime2-analysis-core_metrics-method')
 
