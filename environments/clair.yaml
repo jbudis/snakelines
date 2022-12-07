@@ -1,8 +1,8 @@
 channels:
-  - bioconda
-  - conda-forge
-  - defaults
+- conda-forge
+- bioconda
+- defaults
 dependencies:
-  - clair=2.1.1
-  - samtools=1.9
+- clair=2.1.1
+- samtools=1.9
 

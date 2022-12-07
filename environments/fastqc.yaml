@@ -1,6 +1,7 @@
 channels:
-- main
+- conda-forge
 - bioconda
+- main
 dependencies:
 - python=3.7.6
 - fastqc=0.11.9

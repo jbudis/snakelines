@@ -1,6 +1,7 @@
 channels:
-- bioconda
 - conda-forge
+- bioconda
+- nodefaults
 dependencies:
 - salmon=0.12.0
 - tbb=2020.2

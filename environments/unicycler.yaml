@@ -1,4 +1,6 @@
 channels:
+- conda-forge
 - bioconda
+- nodefaults
 dependencies:
 - unicycler=0.3.0

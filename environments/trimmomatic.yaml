@@ -1,5 +1,7 @@
 channels:
+- conda-forge
 - bioconda
+- nodefaults
 dependencies:
 - python=3.6.9
 - trimmomatic=0.39

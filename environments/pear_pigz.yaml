@@ -1,6 +1,8 @@
 channels:
+- conda-forge
 - bioconda
 - g2554711
+- nodefaults
 dependencies:
 - pear=0.9.6
 - pigz=2.3.4-0

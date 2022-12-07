@@ -1,4 +1,5 @@
 channels:
 - g2554711
+- nodefaults
 dependencies:
 - r-virfinder=1.1
