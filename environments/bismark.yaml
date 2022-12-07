@@ -1,4 +1,6 @@
 channels:
+- conda-forge
 - bioconda
+- nodefaults
 dependencies:
 - bismark=0.23.0

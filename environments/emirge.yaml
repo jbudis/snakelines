@@ -1,4 +1,6 @@
 channels:
+- conda-forge
 - bioconda
+- nodefaults
 dependencies:
 - emirge=0.61.1

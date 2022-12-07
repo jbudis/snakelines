@@ -1,6 +1,7 @@
 channels:
-- bioconda
 - conda-forge
+- bioconda
+- nodefaults
 dependencies:
 - expansionhunter=4.0.2
 

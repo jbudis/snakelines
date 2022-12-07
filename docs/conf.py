@@ -26,7 +26,7 @@ author = u'Jaroslav Budis'
 # The short X.Y version
 version = u''
 # The full version, including alpha/beta/rc tags
-release = u'1.1.5'
+release = u'1.1.6'
 
 
 # -- General configuration ---------------------------------------------------

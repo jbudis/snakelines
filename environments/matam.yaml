@@ -1,4 +1,5 @@
 channels:
 - bonsai-team
+- nodefaults
 dependencies:
 - matam=1.5.2

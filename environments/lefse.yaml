@@ -1,4 +1,6 @@
 channels:
+- conda-forge
 - bioconda
+- nodefaults
 dependencies:
 - lefse=1.0.8

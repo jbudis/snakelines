@@ -1,4 +1,5 @@
 channels:
 - conda-forge
+- nodefaults
 dependencies:
 - blast=2.7.1

@@ -1,4 +1,6 @@
 channels:
+- conda-forge
 - bioconda
+- nodefaults
 dependencies:
 - soapdenovo2=2.40

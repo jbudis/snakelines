@@ -1,7 +1,9 @@
 channels:
+- conda-forge
 - bioconda
 - agbiome
 - bonsai-team
 - g2554711
+- nodefaults
 dependencies:
 - metaxa=2.2

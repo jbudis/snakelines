@@ -1,6 +1,8 @@
 channels:
+- conda-forge
 - bioconda
 - r
+- nodefaults
 dependencies:
 - vardict=2019.06.04
 - r=3.6.0
