@@ -20,7 +20,7 @@ rule gatk__prepare_vcf:
         out = 'variant/{reference}-{panel}/original/log/{sample}.out',
         err = 'variant/{reference}-{panel}/original/log/{sample}.err'
     conda:
-        config['snakelines_dir'] + '/enviroments/gatk4.yaml'
+        config['snakelines_dir'] + '/environments/gatk4.yaml'
     shell:
         """
         gatk SelectVariants \
@@ -79,7 +79,7 @@ rule vardict__call_germline_variants:
     threads:
         int(config['threads'])
     conda:
-        config['snakelines_dir'] + '/enviroments/vardict-java.yaml'
+        config['snakelines_dir'] + '/environments/vardict-java.yaml'
     shell:
         """
         vardict-java \
@@ -110,7 +110,7 @@ rule vardict__test_strand_bias:
     log:
         err = 'variant/{reference}-{panel}/original/log/{sample}.test_strand_bias.err'
     conda:
-        config['snakelines_dir'] + '/enviroments/vardict.yaml'
+        config['snakelines_dir'] + '/environments/vardict.yaml'
     shell:
         """
         cat {input.vdc} \
@@ -134,7 +134,7 @@ rule vardict__tsb_to_vcf:
         read_depth             = method_config.get('soft_filter', {}).get('read_depth', 10),
         min_nonref_allele_freq = method_config.get('soft_filter', {}).get('min_nonref_allele_freq', 0.2)
     conda:
-        config['snakelines_dir'] + '/enviroments/vardict.yaml'
+        config['snakelines_dir'] + '/environments/vardict.yaml'
     shell:
         """
         var2vcf_valid.pl \

@@ -25,7 +25,7 @@ rule bowtie2__filter_reads_from_reference:
     log:
         prefix = 'reads/decontaminated/log/{sample}'
     conda:
-        config['snakelines_dir'] + '/enviroments/bowtie2.yaml'
+        config['snakelines_dir'] + '/environments/bowtie2.yaml'
     shell:
         """
         R_IN={input.reads}

@@ -16,7 +16,7 @@ rule custom__infer_read_groups:
     params:
         infer_script = srcdir("scripts/infer_read_groups.py")
     conda:
-        config['snakelines_dir'] + '/enviroments/samtools.yaml'
+        config['snakelines_dir'] + '/environments/samtools.yaml'
     shell:
         '''
         samtools view \

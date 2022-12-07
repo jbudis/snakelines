@@ -32,7 +32,7 @@ rule picard__bed_to_interval_list:
         out = 'reference/{reference}/annotation/{panel}/log/bed_to_interval_list.out',
         err = 'reference/{reference}/annotation/{panel}/log/bed_to_interval_list.err',
     conda:
-        config['snakelines_dir'] + '/enviroments/picard.yaml'
+        config['snakelines_dir'] + '/environments/picard.yaml'
     shell:
         """
         picard BedToIntervalList \

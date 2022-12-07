@@ -23,7 +23,7 @@ rule expansionhunter_call_germline_variants:
     benchmark:
         'variant/{reference}-{panel}/original/log/{sample}.vcf.benchmark',
     conda:
-        config['snakelines_dir'] + '/enviroments/expansionhunter.yaml'
+        config['snakelines_dir'] + '/environments/expansionhunter.yaml'
     shell:
         """
         vcf={output.vcf}
@@ -54,7 +54,7 @@ rule gatk__prepare_vcf:
         out = 'variant/{reference}-{panel}/original/log/{sample}.out',
         err = 'variant/{reference}-{panel}/original/log/{sample}.err',
     conda:
-        config['snakelines_dir'] + '/enviroments/gatk4.yaml'
+        config['snakelines_dir'] + '/environments/gatk4.yaml'
     shell:
         """
         gatk SelectVariants \

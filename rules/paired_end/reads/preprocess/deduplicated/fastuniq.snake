@@ -21,7 +21,7 @@ rule fastuniq__deduplicate_reads:
         unzipped_r1 = temp('reads/deduplicated/{sample}_R1.fastq'),
         unzipped_r2 = temp('reads/deduplicated/{sample}_R2.fastq')
     conda:
-        config['snakelines_dir'] + '/enviroments/fastuniq.yaml'
+        config['snakelines_dir'] + '/environments/fastuniq.yaml'
     shell:
         """
         echo "{input.r1}\n{input.r2}" > {output.pair_description}

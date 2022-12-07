@@ -29,7 +29,7 @@ rule bcftools__filter_vcf:
     benchmark:
           'variant/{reference}-{panel}/filtered/log/{sample}.vcf.benchmark',
     conda:
-        config['snakelines_dir'] + '/enviroments/bcftools.yaml'
+        config['snakelines_dir'] + '/environments/bcftools.yaml'
     shell:
         """
         snp_gap=''

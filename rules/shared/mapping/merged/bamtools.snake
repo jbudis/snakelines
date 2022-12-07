@@ -18,7 +18,7 @@ rule bamtools__merge_bams_into_single_bam_file:
     log:
         err   = 'mapping/{reference}/merged/log/merged.err'
     conda:
-        config['snakelines_dir'] + '/enviroments/bamtools.yaml'
+        config['snakelines_dir'] + '/environments/bamtools.yaml'
     shell:
         """
         echo {input.bams} | tr ' ' '\n' > {output.list}

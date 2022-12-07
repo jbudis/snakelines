@@ -26,7 +26,7 @@ rule unicycler__assemble_reads_into_contigs:
         out = 'assembly/{sample}/log/unicycler.log',
         err = 'assembly/{sample}/log/unicycler.err'
     conda:
-        config['snakelines_dir'] + '/enviroments/unicycler.yaml'
+        config['snakelines_dir'] + '/environments/unicycler.yaml'
     shell:
         """
         unicycler \

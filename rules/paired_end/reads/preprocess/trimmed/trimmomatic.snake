@@ -50,7 +50,7 @@ rule trimmomatic__trim_reads:
         out = 'reads/trimmed/log/{sample}.log',
         err = 'reads/trimmed/log/{sample}.err'
     conda:
-        config['snakelines_dir'] + '/enviroments/trimmomatic.yaml'
+        config['snakelines_dir'] + '/environments/trimmomatic.yaml'
     shell:
         """
         trimmomatic PE \

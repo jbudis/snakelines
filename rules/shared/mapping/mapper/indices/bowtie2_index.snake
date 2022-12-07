@@ -22,7 +22,7 @@ rule bowtie2__prepare_index:
     threads:
         int(config['threads'])
     conda:
-        config['snakelines_dir'] + '/enviroments/bowtie2.yaml'
+        config['snakelines_dir'] + '/environments/bowtie2.yaml'
     shell:
         """
         bowtie2-build \

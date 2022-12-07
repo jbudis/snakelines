@@ -21,7 +21,7 @@ rule edger__identify_transcripts_with_changed_expression:
         group_by = method_config['group_by'],
         batch = method_config.get('batch', '')
     conda:
-        config['snakelines_dir'] + '/enviroments/edger.yaml'
+        config['snakelines_dir'] + '/environments/edger.yaml'
     shell:
         '''
         Rscript {input.edger} \

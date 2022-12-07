@@ -9,7 +9,7 @@ rule tabix__index_vcf_gz:
     output:
         '{path}/{sample}.vcf.gz.tbi'
     conda:
-        config['snakelines_dir'] + '/enviroments/samtools.yaml'
+        config['snakelines_dir'] + '/environments/samtools.yaml'
     shell:
         """
         tabix \
@@ -31,7 +31,7 @@ rule tabix__index_vcf_bgz:
     output:
         '{path}/{sample}.vcf.bgz.tbi'
     conda:
-        config['snakelines_dir'] + '/enviroments/samtools.yaml'
+        config['snakelines_dir'] + '/environments/samtools.yaml'
     shell:
         """
         tabix \

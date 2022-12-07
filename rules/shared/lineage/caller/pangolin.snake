@@ -10,7 +10,7 @@ rule pangolin__assign_lineage:
         out = 'consensus/{reference}-{panel}/log/{sample}.pangolin.log',
         err = 'consensus/{reference}-{panel}/log/{sample}.pangolin.err'
     conda:
-       config['snakelines_dir'] + '/enviroments/pangolin.yaml'
+       config['snakelines_dir'] + '/environments/pangolin.yaml'
     shell:
         '''
         pangolin {input.ref} \

@@ -17,7 +17,7 @@ rule iqtree__infer_phylogeny:
     threads:
         int(config['threads'])
     conda:
-        config['snakelines_dir'] + '/enviroments/iqtree.yaml'
+        config['snakelines_dir'] + '/environments/iqtree.yaml'
     shell:
         '''
         iqtree \

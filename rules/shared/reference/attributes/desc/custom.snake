@@ -15,7 +15,7 @@ rule custom__prepare_description_file:
     params:
         script_path = srcdir('scripts/prepare_description.py')
 #    conda:
-#        config['snakelines_dir'] + '/enviroments/description_preparation.yaml'
+#        config['snakelines_dir'] + '/environments/description_preparation.yaml'
     shell:
         """
         python3 {params.script_path}\

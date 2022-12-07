@@ -15,7 +15,7 @@ rule qiime2__taxonomy_collapse:
         out = 'reads/taxonomy/log/lefse/{reference}_taxonomy_collapse.out',
         err = 'reads/taxonomy/log/lefse/{reference}_taxonomy_collapse.err'
     conda:
-        config['snakelines_dir'] + '/enviroments/qiime2.yaml'
+        config['snakelines_dir'] + '/environments/qiime2.yaml'
     shell:
         '''
         qiime taxa collapse \
@@ -40,7 +40,7 @@ rule qiime2__taxonomy_convert_to_relative_frequency:
         out = 'reads/taxonomy/log/lefse/{reference}_relative_freq.out',
         err = 'reads/taxonomy/log/lefse/{reference}_relative_freq.err'
     conda:
-        config['snakelines_dir'] + '/enviroments/qiime2.yaml'
+        config['snakelines_dir'] + '/environments/qiime2.yaml'
     shell:
         '''    
         qiime feature-table relative-frequency \
@@ -62,7 +62,7 @@ rule qiime2__report_export_qza:
         biom_file = 'reads/taxonomy/lefse/{reference}_tax_collapsed_relative/feature-table.biom',
         export_dir = directory('reads/taxonomy/lefse/{reference}_tax_collapsed_relative/')
     conda:
-        config['snakelines_dir'] + '/enviroments/qiime2.yaml'
+        config['snakelines_dir'] + '/environments/qiime2.yaml'
     shell:
         '''
         qiime tools export \
@@ -86,7 +86,7 @@ rule qiime2__biom_convert_to_txt:
         out = 'reads/taxonomy/log/lefse/{reference}_biom_convert.out',
         err = 'reads/taxonomy/log/lefse/{reference}_biom_convert.err'
     conda:
-        config['snakelines_dir'] + '/enviroments/biom_format.yaml'
+        config['snakelines_dir'] + '/environments/biom_format.yaml'
     shell:
         '''
         biom convert \
@@ -154,7 +154,7 @@ rule qiime2__prepare_lefse_input:
         out = 'reads/analysis/lefse/log/{reference}_lefse_format.out',
         err = 'reads/analysis/lefse/log/{reference}_lefse_format.err'
     conda:
-        config['snakelines_dir'] + '/enviroments/lefse.yaml'
+        config['snakelines_dir'] + '/environments/lefse.yaml'
     shell:
         '''
         lefse-format_input.py \
@@ -183,7 +183,7 @@ rule qiime2__run_lefse:
         out = 'reads/analysis/lefse/log/{reference}_lefse_run.out',
         err = 'reads/analysis/lefse/log/{reference}_lefse_run.err'
     conda:
-        config['snakelines_dir'] + '/enviroments/lefse.yaml'
+        config['snakelines_dir'] + '/environments/lefse.yaml'
     shell:
         '''
         run_lefse.py \
@@ -211,7 +211,7 @@ rule qiime2__pdf_lefse_result:
         out = 'reads/analysis/lefse/log/{reference}_lefse_plot.out',
         err = 'reads/analysis/lefse/log/{reference}_lefse_plot.err'
     conda:
-        config['snakelines_dir'] + '/enviroments/lefse.yaml'
+        config['snakelines_dir'] + '/environments/lefse.yaml'
     shell:
         '''
         lefse-plot_res.py \
@@ -240,7 +240,7 @@ rule qiime2__lefse_cladogram:
         out = 'reads/analysis/lefse/log/{reference}_lefse_cladogram.out',
         err = 'reads/analysis/lefse/log/{reference}_lefse_cladogram.err'
     conda:
-        config['snakelines_dir'] + '/enviroments/lefse.yaml'
+        config['snakelines_dir'] + '/environments/lefse.yaml'
     shell:
         '''
         src=$(which lefse-plot_cladogram.py)
@@ -274,7 +274,7 @@ rule qiime2__lefse_plot_features:
         out = 'reads/analysis/lefse/log/{reference}_lefse_features.out',
         err = 'reads/analysis/lefse/log/{reference}_lefse_features.err' 
     conda:
-        config['snakelines_dir'] + '/enviroments/lefse.yaml'
+        config['snakelines_dir'] + '/environments/lefse.yaml'
     shell:
         '''
         lefse-plot_features.py \

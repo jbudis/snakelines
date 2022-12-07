@@ -41,7 +41,7 @@ rule fasta_summary__blast:
         min_query_coverage = method_config.get('min_query_coverage', 0),
         max_target_seqs = method_config.get('max_target_seqs', 999999999)
     conda:
-        config['snakelines_dir'] + '/enviroments/fasta_summary.yaml'
+        config['snakelines_dir'] + '/environments/fasta_summary.yaml'
     shell:
         """
         python3 {params.script_path}\
@@ -66,7 +66,7 @@ rule fasta_summary__coverage:
     params:
         script_path = srcdir('scripts/fasta_summary_blast.py'),
     conda:
-        config['snakelines_dir'] + '/enviroments/fasta_summary.yaml'
+        config['snakelines_dir'] + '/environments/fasta_summary.yaml'
     shell:
         """
         python3 {params.script_path}\
@@ -89,7 +89,7 @@ rule fasta_summary__mapped_reads:
     output:
         tsv = '{indir}/annotation/{name}/attributes/mapped_reads.tsv'
     conda:
-        config['snakelines_dir'] + '/enviroments/samtools.yaml'
+        config['snakelines_dir'] + '/environments/samtools.yaml'
     shell:
         """
         echo -e '\tMapped reads' > {output.tsv}
@@ -104,7 +104,7 @@ rule fasta_summary__virfinder:
     params:
         script_path = srcdir('scripts/fasta_summary_virfinder.py')
     conda:
-        config['snakelines_dir'] + '/enviroments/fasta_summary.yaml'
+        config['snakelines_dir'] + '/environments/fasta_summary.yaml'
     shell:
         """
         python3 {params.script_path}\
@@ -131,7 +131,7 @@ rule fasta_summary__copy_contigs:
         script_path = srcdir('scripts/fasta_summary_contigs.py'),
         fasta     = '{indir}/annotation/{name}/sequences/all_contigs.fa',
     conda:
-        config['snakelines_dir'] + '/enviroments/fasta_summary.yaml'
+        config['snakelines_dir'] + '/environments/fasta_summary.yaml'
     shell:
         """
         python3 {params.script_path}\

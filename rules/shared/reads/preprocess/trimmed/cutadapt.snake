@@ -23,7 +23,7 @@ rule cutadapt__trim_reads:
         out = 'reads/trimmed/log/{sample}.cutadapt.log',
         err = 'reads/trimmed/log/{sample}.cutadapt.err'
     conda:
-        config['snakelines_dir'] + '/enviroments/cutadapt.yaml'
+        config['snakelines_dir'] + '/environments/cutadapt.yaml'
     shell:
         """
         cutadapt \

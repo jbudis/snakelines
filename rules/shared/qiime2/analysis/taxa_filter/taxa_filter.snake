@@ -28,7 +28,7 @@ rule qiime2__taxa_filter_table:
         out = 'reads/preprocess/denoise/taxa_filter/log/{reference}_filter_table.log',
         err = 'reads/preprocess/denoise/taxa_filter/log/{reference}_filter_table.err'
     conda:
-        config['snakelines_dir'] + '/enviroments/qiime2.yaml'
+        config['snakelines_dir'] + '/environments/qiime2.yaml'
     threads:
         int(config['threads'])
     params:
@@ -77,7 +77,7 @@ rule qiime2__taxa_filter_seqs:
         out = 'reads/preprocess/denoise/log/{reference}_filter_seqs.log',
         err = 'reads/preprocess/denoise/log/{reference}_filter_seqs.err'
     conda:
-        config['snakelines_dir'] + '/enviroments/qiime2.yaml'
+        config['snakelines_dir'] + '/environments/qiime2.yaml'
     threads:
         int(config['threads'])
     params:

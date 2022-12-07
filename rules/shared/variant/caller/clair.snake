@@ -29,7 +29,7 @@ rule clair__variant_call_mapped_reads:
     threads:
         int(config['threads'])
     conda:
-        config['snakelines_dir'] + '/enviroments/clair.yaml'
+        config['snakelines_dir'] + '/environments/clair.yaml'
     shell:
         """
         CLAIR=`which clair.py`

@@ -23,7 +23,7 @@ rule qiime2__qscore_filter:
         min_length_fraction = method_config.get('min_length_fraction', 0.75),
         max_ambiguous = method_config.get('max_ambiguous', 0),
     conda:
-        config['snakelines_dir'] + '/enviroments/qiime2.yaml'
+        config['snakelines_dir'] + '/environments/qiime2.yaml'
     shell:
         '''
         qiime quality-filter q-score \
@@ -50,7 +50,7 @@ rule qiime2__qscore_tabulate_stats:
     output:
         qscore_stats_qzv = 'reads/preprocess/qscore/{reference}_stats.qzv',
     conda:
-        config['snakelines_dir'] + '/enviroments/qiime2.yaml'
+        config['snakelines_dir'] + '/environments/qiime2.yaml'
     shell:
         '''    
         qiime metadata tabulate \

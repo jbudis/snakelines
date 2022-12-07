@@ -16,7 +16,7 @@ Installation as a Conda package
 
 .. code:: bash
    
-   # In order for SnakeLines Conda virtual enviroments to work, user has to add several Anaconda repository channels to Conda.
+   # In order for SnakeLines Conda virtual environments to work, user has to add several Anaconda repository channels to Conda.
    
    conda config --add channels bioconda
    conda config --add channels g2554711
