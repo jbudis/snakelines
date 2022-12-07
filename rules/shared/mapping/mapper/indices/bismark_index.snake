@@ -19,7 +19,7 @@ rule bismark__prepare_index:
     threads:
         int(config['threads'])
     conda:
-        config['snakelines_dir'] + '/enviroments/bismark.yaml'
+        config['snakelines_dir'] + '/environments/bismark.yaml'
     shell:
         '''
         bismark_genome_preparation \

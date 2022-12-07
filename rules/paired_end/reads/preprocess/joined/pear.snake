@@ -35,7 +35,7 @@ rule pear__join_read_pairs:
         out = 'reads/joined/log/{sample}.log',
         err = 'reads/joined/log/{sample}.err',
     conda:
-        config['snakelines_dir'] + '/enviroments/pear_pigz.yaml'
+        config['snakelines_dir'] + '/environments/pear_pigz.yaml'
     shell:
         """
         pear \
@@ -79,7 +79,7 @@ rule pear__concat_joined_with_single:
     	n_ambiguous_bases = int(method_config.get('n_ambiguous_bases', 0)),
     	script_path = srcdir('scripts/concat_joined_with_single.py')
     conda:
-        config['snakelines_dir'] + '/enviroments/pear_custom_concat.yaml'
+        config['snakelines_dir'] + '/environments/pear_custom_concat.yaml'
     shell:
         """
         python3  {params.script_path}\

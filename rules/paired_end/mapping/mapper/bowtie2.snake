@@ -30,7 +30,7 @@ rule bowtie2__map_reads_to_reference:
     threads:
         int(config['threads'])
     conda:
-        config['snakelines_dir'] + '/enviroments/bowtie2_samtools.yaml'
+        config['snakelines_dir'] + '/environments/bowtie2_samtools.yaml'
     shell:
         """
         bowtie2 \

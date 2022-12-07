@@ -30,7 +30,7 @@ rule qualimap__mapping_quality_report_across_reference:
         out    = '{mapper}/{reference}/{map_type}/stats-wgs/samples/{sample}/log/analysis.log',
         err    = '{mapper}/{reference}/{map_type}/stats-wgs/samples/{sample}/log/analysis.err',
     conda:
-        config['snakelines_dir'] + '/enviroments/qualimap.yaml'
+        config['snakelines_dir'] + '/environments/qualimap.yaml'
     shell:
         """
         unset DISPLAY
@@ -77,7 +77,7 @@ rule qualimap__mapping_quality_report_across_panel:
         out    = '{mapper}/{reference}/{map_type}/stats-{panel}/samples/{sample}/log/analysis.log',
         err    = '{mapper}/{reference}/{map_type}/stats-{panel}/samples/{sample}/log/analysis.err',
     conda:
-        config['snakelines_dir'] + '/enviroments/qualimap.yaml'
+        config['snakelines_dir'] + '/environments/qualimap.yaml'
     shell:
         """
         unset DISPLAY
@@ -127,7 +127,7 @@ rule qualimap__summarize_quality_reports:
         out         = '{mapper}/{reference}/{map_type}/stats-{panel}/summary/log/analysis.log',
         err         = '{mapper}/{reference}/{map_type}/stats-{panel}/summary/log/analysis.err',
     conda:
-        config['snakelines_dir'] + '/enviroments/qualimap.yaml'
+        config['snakelines_dir'] + '/environments/qualimap.yaml'
     shell:
         """
         unset DISPLAY

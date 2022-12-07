@@ -28,7 +28,7 @@ rule fastqc__html_summary_for_joined_reads:
     params:
         summary_script = srcdir("scripts/fastqc-summary.py")
     conda:
-        config['snakelines_dir'] + '/enviroments/fastqc.yaml'
+        config['snakelines_dir'] + '/environments/fastqc.yaml'
     shell:
         """
         python {params.summary_script} \
@@ -52,7 +52,7 @@ rule fastqc__html_summary_for_paired_reads:
     params:
         summary_script = srcdir("scripts/fastqc-summary.py")
     conda:
-        config['snakelines_dir'] + '/enviroments/fastqc.yaml'
+        config['snakelines_dir'] + '/environments/fastqc.yaml'
     shell:
         """
         python {params.summary_script} \
@@ -80,7 +80,7 @@ rule fastqc__quality_report:
         out = 'reads/{read_type}/stat{stats_type}/log/{fastq}.log',
         err = 'reads/{read_type}/stat{stats_type}/log/{fastq}.err',
     conda:
-        config['snakelines_dir'] + '/enviroments/fastqc.yaml'
+        config['snakelines_dir'] + '/environments/fastqc.yaml'
     shell:
         """
         fastqc \

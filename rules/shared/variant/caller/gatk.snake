@@ -27,7 +27,7 @@ rule gatk__call_germline_variants:
     benchmark:
         'variant/{reference}-{panel}/original/log/{sample}.vcf.benchmark',
     conda:
-        config['snakelines_dir'] + '/enviroments/gatk4.yaml'
+        config['snakelines_dir'] + '/environments/gatk4.yaml'
     shell:
         """
         gatk HaplotypeCaller \

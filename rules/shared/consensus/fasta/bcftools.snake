@@ -31,7 +31,7 @@ rule bcftools__create_consensus_fasta:
         use_iupac = 'true' if method_config.get('use_iupac', False) else 'false',
         iupac_script = srcdir('scripts/add_iupac_codes.py')
     conda:
-        config['snakelines_dir'] + '/enviroments/create_consensus_fasta.yaml'
+        config['snakelines_dir'] + '/environments/create_consensus_fasta.yaml'
     shell:
         """
         mask=''

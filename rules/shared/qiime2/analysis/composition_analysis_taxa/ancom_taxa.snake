@@ -13,7 +13,7 @@ rule qiime2__taxonomy_collapse_ancom:
         out = 'reads/taxonomy/log/ancom/{reference}_level{level}_collapse.out',
         err = 'reads/taxonomy/log/ancom/{reference}_level{level}_collapse.err'
     conda:
-        config['snakelines_dir'] + '/enviroments/qiime2.yaml'
+        config['snakelines_dir'] + '/environments/qiime2.yaml'
     shell:
         '''   
         qiime taxa collapse \
@@ -47,7 +47,7 @@ rule qiime2__filter_features_ancom_taxa:
         out = 'reads/analysis/ancom_taxa/log/{reference}_level{level}_filt.out',
         err = 'reads/analysis/ancom_taxa/log/{reference}_level{level}_filt.err'
     conda:
-        config['snakelines_dir'] + '/enviroments/qiime2.yaml'
+        config['snakelines_dir'] + '/environments/qiime2.yaml'
     shell:
         '''
         qiime feature-table filter-features \
@@ -80,7 +80,7 @@ rule qiime2__feature_table_pseudocount_ancom_taxa:
         out = 'reads/analysis/ancom_taxa/log/{reference}_level{level}_comp.out',
         err = 'reads/analysis/ancom_taxa/log/{reference}_level{level}_comp.err'
     conda:
-        config['snakelines_dir'] + '/enviroments/qiime2.yaml'
+        config['snakelines_dir'] + '/environments/qiime2.yaml'
     shell:
         '''
         qiime composition add-pseudocount \
@@ -114,7 +114,7 @@ rule qiime2__composition_ancom_taxa:
         out = 'reads/analysis/ancom_taxa/log/{reference}_level{level}_{column}_ancom.out',
         err = 'reads/analysis/ancom_taxa/log/{reference}_level{level}_{column}_ancom.err'
     conda:
-        config['snakelines_dir'] + '/enviroments/qiime2.yaml'
+        config['snakelines_dir'] + '/environments/qiime2.yaml'
     shell:
         '''
         qiime composition ancom \

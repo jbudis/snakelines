@@ -55,7 +55,7 @@ rule fast_virome_explorer__estimate_virome_composition:
         co = '{}'.format(genome_coverage),
         cn = '{}'.format(mapped_reads)
     conda:
-        config['snakelines_dir'] + '/enviroments/fast-virome-explorer.yaml'
+        config['snakelines_dir'] + '/environments/fast-virome-explorer.yaml'
     shell:
         '''
         fast_virome_explorer \

@@ -24,7 +24,7 @@ rule raven__create_assembly:
     log:
         err = 'assembly/{sample}/log/raven.err'
     conda:
-        config['snakelines_dir'] + '/enviroments/raven.yaml'
+        config['snakelines_dir'] + '/environments/raven.yaml'
     shell:
         """
         mkdir {params.outdir}

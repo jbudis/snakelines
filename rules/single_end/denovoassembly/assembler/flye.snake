@@ -38,7 +38,7 @@ rule flye__create_assembly:
         out = 'assembly/{sample}/log/flye.log',
         err = 'assembly/{sample}/log/flye.err'
     conda:
-        config['snakelines_dir'] + '/enviroments/flye.yaml'
+        config['snakelines_dir'] + '/environments/flye.yaml'
     shell:
         """
         flye \

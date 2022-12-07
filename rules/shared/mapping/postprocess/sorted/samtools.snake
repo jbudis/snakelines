@@ -18,7 +18,7 @@ rule samtools__sort_mapped_reads:
     threads:
         int(config['threads'])
     conda:
-        config['snakelines_dir'] + '/enviroments/samtools.yaml'
+        config['snakelines_dir'] + '/environments/samtools.yaml'
     shell:
         """
         samtools sort \

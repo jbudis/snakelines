@@ -13,7 +13,7 @@ rule entrez__download_sequences_by_genbank_id:
         email = method_config['email'],
 	script_path = srcdir('scripts/entrez.py'),
     conda:
-        config['snakelines_dir'] + '/enviroments/entrez.yaml'        
+        config['snakelines_dir'] + '/environments/entrez.yaml'
     shell:
         """
         python3 {params.script_path}\

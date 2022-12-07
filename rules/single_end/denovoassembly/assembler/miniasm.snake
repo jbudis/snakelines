@@ -28,7 +28,7 @@ rule miniasm__create_assembly:
     log:
         err = 'assembly/{sample}/log/miniasm.err'
     conda:
-        config['snakelines_dir'] + '/enviroments/miniasm.yaml'
+        config['snakelines_dir'] + '/environments/miniasm.yaml'
     shell:
         """
         mkdir -p {params.outdir}

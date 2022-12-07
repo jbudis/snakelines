@@ -21,7 +21,7 @@ rule bedtools_bedgraph:
     output:
         bedgraph = 'mapping/{reference}/%s/bed/{sample}.bedgraph' % pipeline.postprocessed_map_type
     conda:
-        config['snakelines_dir'] + '/enviroments/bedtools.yaml'
+        config['snakelines_dir'] + '/environments/bedtools.yaml'
     shell:
         """
         bedtools genomecov -ibam {input.bam} -bg > {output.bedgraph}
@@ -36,7 +36,7 @@ rule bedtools_merge_bam:
     output:
         bed = 'mapping/{reference}/%s/bed/{sample}.merge.bed' % pipeline.postprocessed_map_type
     conda:
-        config['snakelines_dir'] + '/enviroments/merge_bam.yaml'
+        config['snakelines_dir'] + '/environments/merge_bam.yaml'
     shell:
         """
             bedtools merge -i <(samtools view -b -F 4 {input.bam}) > {output.bed}
@@ -52,7 +52,7 @@ rule bedtools_complement_bam:
     output:
         bed = 'mapping/{reference}/%s/bed/{sample}.complement.bed' % pipeline.postprocessed_map_type
     conda:
-        config['snakelines_dir'] + '/enviroments/bedtools.yaml'
+        config['snakelines_dir'] + '/environments/bedtools.yaml'
     shell:
         """
             bedtools complement -i {input.bed} -g {input.genome} > {output.bed}

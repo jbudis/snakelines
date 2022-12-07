@@ -31,7 +31,7 @@ rule megahit__assemble_reads_into_contigs:
         out = 'log/assembly/{sample}/megahit.log',
         err = 'log/assembly/{sample}/megahit.err'
     conda:
-        config['snakelines_dir'] + '/enviroments/megahit.yaml'
+        config['snakelines_dir'] + '/environments/megahit.yaml'
     shell:
         """
         rm -r {params.outdir}
@@ -69,7 +69,7 @@ rule megahit__generate_contig_graph:
     log:
         err = 'assembly/{sample}/log/convert_to_fastg.err'
     conda:
-        config['snakelines_dir'] + '/enviroments/megahit.yaml'
+        config['snakelines_dir'] + '/environments/megahit.yaml'
     shell:
         """
         megahit_toolkit contig2fastg \

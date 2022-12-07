@@ -19,7 +19,7 @@ rule medaka__variant_call_mapped_reads:
     threads:
         int(config['threads'])
     conda:
-        config['snakelines_dir'] + '/enviroments/medaka.yaml'
+        config['snakelines_dir'] + '/environments/medaka.yaml'
     shell:
         """
         medaka_variant \

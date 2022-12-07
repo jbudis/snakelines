@@ -22,7 +22,7 @@ rule rdp__classify_reads:
     params:
         confidence = method_config.get('confidence', RDP_DEFAULT_CONFIDENCE)
     conda:
-        config['snakelines_dir'] + '/enviroments/rdptools.yaml'
+        config['snakelines_dir'] + '/environments/rdptools.yaml'
     shell:
         '''
         rdp_classifier classify \

@@ -14,5 +14,5 @@ rule custom__alpha_diversity:
     params:
         script_path = srcdir('scripts/alpha_diversity.py')
     conda:
-        config['snakelines_dir'] + '/enviroments/alpha_diversity.yaml'
+        config['snakelines_dir'] + '/environments/alpha_diversity.yaml'
     shell: "python3 {params.script_path} {input.tax_level_abs} {output.alpha_div}"

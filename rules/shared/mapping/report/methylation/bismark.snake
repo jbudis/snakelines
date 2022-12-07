@@ -29,7 +29,7 @@ rule bismark__methylation_extractor:
         out                  = 'mapping/{reference}/original/bismark/log/{sample}.methylation_extractor.log',
         err                  = 'mapping/{reference}/original/bismark/log/{sample}.methylation_extractor.err'
     conda:
-        config['snakelines_dir'] + '/enviroments/bismark.yaml'
+        config['snakelines_dir'] + '/environments/bismark.yaml'
     shell:
         '''
         bismark_methylation_extractor \
@@ -60,7 +60,7 @@ rule bismark__summary_report:
         out              = 'mapping/{reference}/original/bismark/log/{sample}.html.log',
         err              = 'mapping/{reference}/original/bismark/log/{sample}.html.err'
     conda:
-        config['snakelines_dir'] + '/enviroments/bismark.yaml'
+        config['snakelines_dir'] + '/environments/bismark.yaml'
     shell:
         '''
         bismark2report \

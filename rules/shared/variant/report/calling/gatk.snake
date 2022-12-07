@@ -25,7 +25,7 @@ rule gatk__collect_variant_calling_metrics:
     threads:
         int(config['threads'])
     conda:
-        config['snakelines_dir'] + '/enviroments/gatk4.yaml'
+        config['snakelines_dir'] + '/environments/gatk4.yaml'
     shell:
         """
         gatk CollectVariantCallingMetrics \

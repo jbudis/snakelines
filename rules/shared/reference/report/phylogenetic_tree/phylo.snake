@@ -18,7 +18,7 @@ rule phylo__visualise_phylogenetic_tree:
     params:
         script_path = srcdir('scripts/visualise_phylogenetic_tree.py')
     conda:
-        config['snakelines_dir'] + '/enviroments/phylo_custom.yaml'
+        config['snakelines_dir'] + '/environments/phylo_custom.yaml'
     shell:
         """
         python3 {params.script_path}\
