@@ -1,0 +1,36 @@
+platform: nanopore
+sequencing: single_end
+
+samples:
+      - name: example_.*
+        reference: k2_viral # name of the (symlinked) kraken DB in reference/
+
+report_dir: report/example
+threads: 4
+
+reads:
+    preprocess:
+        trimmed:
+            method: trimmomatic
+            temporary: False
+            crop: 500
+            quality: 20
+            headcrop: 20
+            minlen: 35
+
+    report:
+        quality_report:
+            method: fastqc
+            read_types:
+                - original
+
+classification:
+    read_based:
+        method: kraken
+        read_type: trimmed
+
+    report:
+        taxonomic_counts:
+            pieplot:
+                method: krona
+

@@ -1,0 +1,18 @@
+# input function for the rule aggregate
+def aggregate_input(wildcards):
+    checkpoint_output = checkpoints.kraken__classify_reads.get(**wildcards).output[0]
+    print(checkpoint_output)
+    return expand("classification/report/krona/individual/%s/{i}.krn" % pipeline.preprocessed_read_type,
+                i=glob_wildcards(os.path.join(checkpoint_output, "{i}.krn")).i)
+
+
+rule krona__make_graph:
+    input:
+        aggregate_input
+    output:
+        "classification/report/summary/aggregated.html"
+    conda:
+        config['snakelines_dir'] + '/enviroments/krakentools.yaml'
+    shell:
+        "ktImportText {input} -o {output}"
+

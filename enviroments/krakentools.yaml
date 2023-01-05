@@ -1,0 +1,4 @@
+channels:
+- bioconda
+dependencies:
+- krakentools=1.2
