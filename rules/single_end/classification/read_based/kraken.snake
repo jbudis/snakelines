@@ -26,7 +26,7 @@ rule kraken__classify_reads:
         out = 'classification/{reference}/report/kraken/individual/{sample}.log',
         err = 'classification/{reference}/report/kraken/individual/{sample}.err',
     conda:
-       config['snakelines_dir'] + '/enviroments/kraken2.yaml'
+       config['snakelines_dir'] + '/environments/kraken2.yaml'
     shell:
         '''
         kraken2 \
@@ -47,7 +47,7 @@ rule krona__convert_report:
         out = 'classification/{reference}/report/krona/individual/{sample}.log',
         err = 'classification/{reference}/report/krona/individual/{sample}.err',
     conda:
-       config['snakelines_dir'] + '/enviroments/krakentools.yaml'
+       config['snakelines_dir'] + '/environments/krakentools.yaml'
     shell:
         '''
         kreport2krona.py \

@@ -17,7 +17,7 @@ rule krona__single_sample_pieplot:
         out   = '{path}/report/krona/individual/log/{sample}.log',
         err   = '{path}/report/krona/individual/log/{sample}.err'
     conda:
-        config['snakelines_dir'] + '/enviroments/krona.yaml'
+        config['snakelines_dir'] + '/environments/krona.yaml'
     shell:
         """
         ktImportText \
@@ -53,7 +53,7 @@ rule krona__multi_sample_pieplot:
         out   = '{analysis_dir}/{reference}/report/krona/log/krona.log',
         err   = '{analysis_dir}/{reference}/report/krona/log/krona.err'
     conda:
-        config['snakelines_dir'] + '/enviroments/krona.yaml'
+        config['snakelines_dir'] + '/environments/krona.yaml'
     shell:
         """
         ktImportText \
