@@ -1,0 +1,62 @@
+#checkpoint kraken__download_taxonomy:
+#    output:
+#        db_path = directory(method_config.get('db_path'))
+#    conda:
+#        config['snakelines_dir'] + '/enviroments/kraken2.yaml'
+#    params:
+#        database = method_config.get('database')
+#    shell:
+#        '''
+#        kraken2-build \
+#            --download-taxonomy\
+#            --db "{output.db_path}"
+#        '''
+
+
+rule kraken__classify_reads:
+    """
+    @TODO
+    """
+    input:
+        r1           = 'reads/%s/{sample}_R1.fastq.gz' % pipeline.preprocessed_read_type,
+        r2           = 'reads/%s/{sample}_R2.fastq.gz' % pipeline.preprocessed_read_type,
+        database = directory('reference/{reference}'),
+    output:
+        'classification/{reference}/report/kraken/individual/{sample}.report'
+    log:
+        out = 'classification/{reference}/report/kraken/individual/{sample}.log',
+        err = 'classification/{reference}/report/kraken/individual/{sample}.err',
+    conda:
+       config['snakelines_dir'] + '/environments/kraken2.yaml'
+    shell:
+        '''
+        kraken2 \
+            --gzip-compressed \
+            --db {input.database} \
+            --report {output} \
+            --paired \
+            {input.r1} \
+            {input.r2} \
+            2> {log.err} \
+            1> {log.out}
+        '''
+
+rule krona__convert_report:
+    input:
+        'classification/{reference}/report/kraken/individual/{sample}.report'
+    output:
+        'classification/{reference}/report/krona/individual/{sample}.krn'
+    log:
+        out = 'classification/{reference}/report/krona/individual/{sample}.log',
+        err = 'classification/{reference}/report/krona/individual/{sample}.err',
+    conda:
+       config['snakelines_dir'] + '/environments/krakentools.yaml'
+    shell:
+        '''
+        kreport2krona.py \
+            --report {input} \
+            --output {output} \
+            2> {log.err} \
+            1> {log.out}
+        '''
+
