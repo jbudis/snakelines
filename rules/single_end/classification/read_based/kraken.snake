@@ -29,6 +29,8 @@ rule kraken__classify_reads:
        config['snakelines_dir'] + '/environments/kraken2.yaml'
     threads:
         int(config['threads'])
+    resources:
+        mem_mb=500000
     shell:
         '''
         kraken2 \
