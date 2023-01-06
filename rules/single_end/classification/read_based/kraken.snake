@@ -27,11 +27,14 @@ rule kraken__classify_reads:
         err = 'classification/{reference}/report/kraken/individual/{sample}.err',
     conda:
        config['snakelines_dir'] + '/environments/kraken2.yaml'
+    threads:
+        int(config['threads'])
     shell:
         '''
         kraken2 \
             --gzip-compressed \
             --db {input.database} \
+            --threads {threads} \
             --report {output} \
             {input.sample} \
             2> {log.err} \
