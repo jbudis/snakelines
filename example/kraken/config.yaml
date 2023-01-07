@@ -32,5 +32,6 @@ classification:
     report:
         taxonomic_counts:
             pieplot:
-                method: krona
+                summary:
+                    method: krona
 

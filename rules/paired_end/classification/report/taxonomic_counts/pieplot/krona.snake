@@ -62,3 +62,22 @@ rule krona__multi_sample_pieplot:
         >  {log.out} \
         2> {log.err}
         """
+
+rule krona__multi_sample_pieplot_for_all_samples:
+    input:
+        'classification/{reference}/report/krona/all_samples.krn'
+    output:
+        krona = 'classification/{reference}/report/krona/taxonomic_counts.html'
+    log:
+        out   = 'classification/{reference}/report/krona/log/krona.log',
+        err   = 'classification/{reference}/report/krona/log/krona.err'
+    conda:
+        config['snakelines_dir'] + '/environments/krona.yaml'
+    shell:
+        """
+        ktImportText \
+            -o {output.krona} \
+            {input} \
+        >  {log.out} \
+        2> {log.err}
+        """

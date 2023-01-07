@@ -13,19 +13,25 @@
 #        '''
 
 
+def individual_samples(wildcards):
+    print(wildcards)
+    return expand('reads/%s/{sample}_{parity}.fastq.gz' % pipeline.preprocessed_read_type,
+                    sample=wildcards.sample,
+                    parity=['R1', 'R2'])
+
+
 rule kraken__classify_reads:
     """
     @TODO
     """
     input:
-        r1           = 'reads/%s/{sample}_R1.fastq.gz' % pipeline.preprocessed_read_type,
-        r2           = 'reads/%s/{sample}_R2.fastq.gz' % pipeline.preprocessed_read_type,
+        samples = individual_samples(wildcards),
         database = directory('reference/{reference}'),
     output:
-        'classification/{reference}/report/kraken/individual/{sample}.report'
+        'classification/{reference}/report/kraken/out.report'
     log:
-        out = 'classification/{reference}/report/kraken/individual/{sample}.log',
-        err = 'classification/{reference}/report/kraken/individual/{sample}.err',
+        out = 'classification/{reference}/report/kraken/log/kraken__classify_reads.log',
+        err = 'classification/{reference}/report/kraken/log/kraken__classify_reads.err',
     conda:
        config['snakelines_dir'] + '/environments/kraken2.yaml'
     threads:
@@ -40,20 +46,19 @@ rule kraken__classify_reads:
             --threads {threads} \
             --report {output} \
             --paired \
-            {input.r1} \
-            {input.r2} \
+            {input.samples} \
             2> {log.err} \
             1> {log.out}
         '''
 
 rule krona__convert_report:
     input:
-        'classification/{reference}/report/kraken/individual/{sample}.report'
+        'classification/{reference}/report/kraken/out.report'
     output:
-        'classification/{reference}/report/krona/individual/{sample}.krn'
+        'classification/{reference}/report/krona/all_samples.krn'
     log:
-        out = 'classification/{reference}/report/krona/individual/{sample}.log',
-        err = 'classification/{reference}/report/krona/individual/{sample}.err',
+        out = 'classification/{reference}/report/krona/log/krona__convert_report.log',
+        err = 'classification/{reference}/report/krona/log/krona__convert_report.err',
     conda:
        config['snakelines_dir'] + '/environments/krakentools.yaml'
     shell:

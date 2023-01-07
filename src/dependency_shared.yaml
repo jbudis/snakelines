@@ -325,8 +325,7 @@ misc:
 classification:
     read_based:
         output:
-            kronas: expand('classification/{sr.reference}/report/krona/individual/{sr.sample}.krn',
-                            sr=pipeline.sample_references)
+            kronas: expand('classification/{reference}/report/krona/all_samples.krn', reference=pipeline.references)
         depends:
             - reads/preprocess
             - reads/report
@@ -384,21 +383,27 @@ classification:
                     - classification/read_based
 
             pieplot:
-                output:
-                    summary_html:
-                        from: expand('classification/{reference}/report/krona/taxonomic_counts.html',
-                                      reference=pipeline.references)
+                summary:
+                    output:
+                        summary_html:
+                            from: expand('classification/{reference}/report/krona/taxonomic_counts.html',
+                                          reference=pipeline.references)
 
-                        to:   expand('{report_dir}/_summary/taxonomy-{reference}/taxonomic_counts.html',
-                                      report_dir=config['report_dir'], reference=pipeline.references)
+                            to:   expand('{report_dir}/_summary/taxonomy-{reference}/taxonomic_counts.html',
+                                          report_dir=config['report_dir'], reference=pipeline.references)
 
-                    krona:
-                        from: expand('classification/{sr.reference}/report/krona/individual/{sr.sample}.html',
-                                      sr=pipeline.sample_references)
+                depends:
+                    - classification/read_based
 
-                        to:   expand('{report_dir}/{sr.sample}/taxonomic_counts-{sr.reference}.html',
-                                      report_dir=config['report_dir'],
-                                      sr=pipeline.sample_references)
+                individual:
+                    output:
+                        krona:
+                            from: expand('classification/{sr.reference}/report/krona/individual/{sr.sample}.html',
+                                          sr=pipeline.sample_references)
+
+                            to:   expand('{report_dir}/{sr.sample}/taxonomic_counts-{sr.reference}.html',
+                                          report_dir=config['report_dir'],
+                                          sr=pipeline.sample_references)
 
                 depends:
                     - classification/read_based
