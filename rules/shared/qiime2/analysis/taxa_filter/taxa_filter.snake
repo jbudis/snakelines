@@ -122,7 +122,7 @@ rule qiime2__taxonomy_barplot_filtered:
         out = 'reads/taxonomy/log/{reference}_barplot_filtered.out',
         err = 'reads/taxonomy/log/{reference}_barplot_filtered.err'
     conda:
-        config['snakelines_dir'] + '/enviroments/qiime2.yaml'
+        config['snakelines_dir'] + '/environments/qiime2.yaml'
     shell:
         '''
         qiime taxa barplot \

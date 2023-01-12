@@ -29,7 +29,7 @@ rule qiime2__vsearch_join_paired:
         max_merged_len = '--p-maxmergelen %d' % method_config['max_merged_len'] if 'max_merged_len' in method_config else '',
         max_exp_err = '--p-maxee %f' % method_config['max_exp_err'] if 'max_exp_err' in method_config else '',
     conda:
-        config['snakelines_dir'] + '/enviroments/qiime2.yaml'
+        config['snakelines_dir'] + '/environments/qiime2.yaml'
     log:
         out = 'reads/preprocess/joining/log/{reference}.log',
         err = 'reads/preprocess/joining/log/{reference}.err'
