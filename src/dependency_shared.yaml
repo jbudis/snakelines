@@ -535,11 +535,11 @@ qiime2:
                 manifest:
                     from: expand('reads/import/{reference}.manifest',
                                         reference=pipeline.references)
-                    
+
                     to:   expand('{report_dir}/{reference}/00_import_report/{reference}.manifest',
                                         report_dir=config['report_dir'],
                                         reference=pipeline.references)
-        data:    
+        data:
             output:
                 qza: expand('reads/import/{reference}.qza',
                                         reference=pipeline.references)
@@ -570,7 +570,7 @@ qiime2:
                                             report_dir=config['report_dir'],
                                             reference=pipeline.references)
         quality_filter:
-            output: 
+            output:
                 qza: expand('reads/preprocess/qscore/{reference}.qza',
                                         reference=pipeline.references)
                 qzv: expand('reads/preprocess/qscore/{reference}_stats.qzv',
@@ -656,8 +656,8 @@ qiime2:
     analysis:
         phylogeny:
             output:
-                alignment: expand('reads/analysis/alignment/{reference}_{type}.qza', 
-                                        reference=pipeline.references, 
+                alignment: expand('reads/analysis/alignment/{reference}_{type}.qza',
+                                        reference=pipeline.references,
                                         type=['rep-aligned-seqs','rep-masked-aligned-seqs','unrooted-tree','rooted-tree'])
         rarefaction:
             rarefaction:
@@ -741,13 +741,13 @@ qiime2:
                                         reference=pipeline.references,
                                         column=qiime2_pcoa_custom_columns,
                                         type=qiime2_beta_types)
-      
+
         taxonomy:
             import:
-                output: 
+                output:
                     ref_import: expand('reference/{reference}/qiime2/ref_{type}.qza',
                                         reference=pipeline.references,
-                                        type=['reads', 'tax'])     
+                                        type=['reads', 'tax'])
             classify:
                 output:
                     classification: expand('reads/taxonomy/{reference}_tax.qza',
@@ -769,7 +769,15 @@ qiime2:
             output:
                 qza: expand('reads/preprocess/denoise/taxa_filter/{reference}_{type}.qza',
                                         reference=pipeline.references,
-                                        type=['rep-seqs', 'table'])            
+                                        type=['rep-seqs', 'table'])
+                barplot: expand('reads/taxonomy/{reference}_barplot_filtered.qzv',
+                                        reference=pipeline.references)
+                report:
+                        from:   expand('reads/taxonomy/{reference}_barplot_filtered/',
+                                        reference=pipeline.references)
+                        to:     expand('{report_dir}/{reference}/03_taxonomy_report/barplot_filtered/',
+                                        report_dir=config['report_dir'],
+                                        reference=pipeline.references)
         differential_abundance:
             output:
                 taxa_collapsed: expand('reads/taxonomy/{reference}_tax_collapsed.qza',
@@ -777,24 +785,24 @@ qiime2:
                 taxa_collapsed_rel: expand('reads/taxonomy/lefse/{reference}_tax_collapsed_relative.qza',
                                     reference=pipeline.references)
                 taxa_collapsed_table: expand('reads/taxonomy/lefse/{reference}_tax_collapsed_relative/',
-                                    reference=pipeline.references)   
+                                    reference=pipeline.references)
                 biom_table: expand('reads/taxonomy/lefse/{reference}_tax_collapsed_relative/feature-table.biom',
                                     reference=pipeline.references)
                 biom_txt: expand('reads/taxonomy/lefse/{reference}_tax_collapsed_relative/feature-table.tsv',
                                     reference=pipeline.references)
-                biom_txt: expand('reads/taxonomy/lefse/{reference}_tax_collapsed_relative/feature-table_corr.tsv',
-                                    reference=pipeline.references)                                          
+                biom_corr_txt: expand('reads/taxonomy/lefse/{reference}_tax_collapsed_relative/feature-table_corr.tsv',
+                                    reference=pipeline.references)
                 lefse_input: expand('reads/analysis/lefse/{reference}.in',
                                     reference=pipeline.references)
                 lefse_result: expand('reads/analysis/lefse/{reference}.res',
                                     reference=pipeline.references)
-                lefse_result_pdf: 
+                lefse_result_pdf:
                     from:   expand('reads/analysis/lefse/result/{reference}.pdf',
                                     reference=pipeline.references)
                     to:     expand('{report_dir}/{reference}/05_differential_abundance/lefse/result.pdf',
                                     report_dir=config['report_dir'],
                                     reference=pipeline.references)
-                cladogram: 
+                cladogram:
                     from:   expand('reads/analysis/lefse/cladogram/{reference}.pdf',
                                     reference=pipeline.references)
                     to:     expand('{report_dir}/{reference}/05_differential_abundance/lefse/cladogram.pdf',

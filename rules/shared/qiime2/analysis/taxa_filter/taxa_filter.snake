@@ -1,13 +1,17 @@
+include: config['snakelines_dir'] + '/rules/shared/qiime2/preprocess/report/export/export.snake'
+
+
 def process_filter_input(config_input, param):
     if config_input is False or len(config_input)<1:
         return ''
     else:
         return param+' '+config_input
 
+
 rule qiime2__taxa_filter_table:
     """
     This method filters features from a table based on their taxonomic annotations. Features can be retained in the resulting table by specifying one or more include search terms, and can be filtered out of the resulting table by specifying one or more exclude search terms.
-    If both include and exclude are provided, the inclusion critera will be applied before the exclusion critera. 
+    If both include and exclude are provided, the inclusion critera will be applied before the exclusion critera.
     When no include or exclude criteria are provided, the input is copied to output.
     Any samples that have a total frequency of zero after filtering will be removed from the resulting table.
 
@@ -23,7 +27,7 @@ rule qiime2__taxa_filter_table:
         feature_table = 'reads/preprocess/denoise/%s/{reference}_table.qza' % pipeline.qiime2_type,
         taxonomy  = 'reads/taxonomy/{reference}_tax.qza'
     output:
-        filtered_table = 'reads/preprocess/denoise/taxa_filter/{reference}_table.qza'
+        filtered_table = 'reads/preprocess/denoise/%s/{reference}_table.qza' % pipeline.qiime2_post_taxa
     log:
         out = 'reads/preprocess/denoise/taxa_filter/log/{reference}_filter_table.log',
         err = 'reads/preprocess/denoise/taxa_filter/log/{reference}_filter_table.err'
@@ -56,7 +60,7 @@ rule qiime2__taxa_filter_table:
 rule qiime2__taxa_filter_seqs:
     """
     This method filters sequences based on their taxonomic annotations. Features can be retained in the resulting table by specifying one or more include search terms, and can be filtered out of the resulting table by specifying one or more exclude search terms.
-    If both include and exclude are provided, the inclusion critera will be applied before the exclusion critera. 
+    If both include and exclude are provided, the inclusion critera will be applied before the exclusion critera.
     When no include or exclude criteria are provided, the input is copied to output.
     Any samples that have a total frequency of zero after filtering will be removed from the resulting table.
 
@@ -100,4 +104,32 @@ rule qiime2__taxa_filter_seqs:
                 1> {log.out} \
                 2> {log.err}
         fi;
+        '''
+
+rule qiime2__taxonomy_barplot_filtered:
+    """
+    :input filtered_table: feature table filtered using taxonomy
+    :input taxonomy: produced taxonomy as qza
+    :input metadata: samples metadata filepath in TSV format (tab-separated value), e.g. description/silva16S-sample-metadata.tsv
+    """
+    input:
+        taxonomy = 'reads/taxonomy/{reference}_tax.qza',
+        filtered_table = 'reads/preprocess/denoise/taxa_filter/{reference}_table.qza',
+        metadata = 'description/sample-metadata.tsv',
+    output:
+        barplot = 'reads/taxonomy/{reference}_barplot_filtered.qzv'
+    log:
+        out = 'reads/taxonomy/log/{reference}_barplot_filtered.out',
+        err = 'reads/taxonomy/log/{reference}_barplot_filtered.err'
+    conda:
+        config['snakelines_dir'] + '/enviroments/qiime2.yaml'
+    shell:
+        '''
+        qiime taxa barplot \
+            --i-table {input.filtered_table} \
+            --i-taxonomy {input.taxonomy} \
+            --m-metadata-file {input.metadata} \
+            --o-visualization {output.barplot} \
+            1> {log.out} \
+            2> {log.err}
         '''
