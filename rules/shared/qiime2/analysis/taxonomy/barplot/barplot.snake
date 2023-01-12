@@ -6,13 +6,13 @@ rule qiime2__taxonomy_barplot:
     """
     input:
         taxonomy = 'qiime2/taxonomy/{reference}_tax.qza',
-        feature_table = 'qiime2/preprocess/denoise/%s/{reference}_table.qza' % pipeline.qiime2_type,
+        feature_table = 'qiime2/preprocess/denoise/{type}/{reference}_table.qza'
         metadata = 'description/sample-metadata.tsv'
     output:
-        barplot = 'qiime2/taxonomy/{reference}_barplot.qzv'
+        barplot = 'qiime2/{reference}/taxonomy/barplot/{processing_step}.qzv'
     log:
-        out = 'qiime2/taxonomy/log/{reference}_barplot.out',
-        err = 'qiime2/taxonomy/log/{reference}_barplot.err'
+        out = 'qiime2/{reference}/taxonomy/barplot/log/{processing_step}.out',
+        err = 'qiime2/{reference}/taxonomy/barplot/log/{processing_step}.err'
     conda:
         config['snakelines_dir'] + '/environments/qiime2.yaml'
     shell:
@@ -33,12 +33,15 @@ rule qiime2__taxonomy_tabulate:
     Calls 'qiime metadata tabulate'
 
     :input taxonomy: produced taxonomy as qza
-    :output qzv: visualization of produced taxonomy in qzv
+    :output qzv: visualization of taxa features in qzv
     """
     input:
         taxonomy = 'qiime2/taxonomy/{reference}_tax.qza'
     output:
-        qzv = 'qiime2/taxonomy/{reference}_taxa_features.qzv'
+        qzv = 'qiime2/{reference}/taxonomy/features/{processing_step}.qzv'
+    log:
+        out = 'qiime2/{reference}/taxonomy/features/log/{processing_step}.out',
+        err = 'qiime2/{reference}/taxonomy/features/log/{processing_step}.err'
     conda:
         config['snakelines_dir'] + '/environments/qiime2.yaml'
     shell:
