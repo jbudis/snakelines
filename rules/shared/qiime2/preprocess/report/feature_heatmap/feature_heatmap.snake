@@ -1,22 +1,22 @@
 rule qiime2__heatmap_feature_table:
     """
     Generate a heatmap representation of a feature table with optional clustering on both the sample and feature axes.
-  
+
     Calls 'qiime feature-table heatmap'
 
     :input table: feature table qza artifact
     :input metadata: samples' metadata filepath in TSV format (tab-separated value), e.g. description/silva16S-sample-metadata.tsv
-    :params cluster: str, which axes to cluster 
+    :params cluster: str, which axes to cluster
     :params cluster_method: str, how to calculate distance between clusters
     :params metric: str, defines distance metric
     :params normalize: boolean, defines whether to normalize feature table counts
     :output visualization: heatmap visualization as qzv
     """
     input:
-        table = 'reads/preprocess/denoise/%s/{reference}_table.qza' % pipeline.qiime2_type,
+        table = 'qiime2/preprocess/denoise/%s/{reference}_table.qza' % pipeline.qiime2_type,
         metadata = 'description/sample-metadata.tsv'
     output:
-        heatmap = 'reads/preprocess/report/{reference}_{column}_heatmap.qzv'
+        heatmap = 'qiime2/preprocess/report/{reference}_{column}_heatmap.qzv'
     params:
         metric = method_config.get('metric','euclidean'),
         linkage = method_config.get('linkage','average'),

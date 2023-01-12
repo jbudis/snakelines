@@ -15,9 +15,9 @@ rule qiime2__vsearch_join_paired:
     :params max_exp_err: float, discard joined reads with more expected errors than this
     """
     input:
-        trimmed_sequences = 'reads/preprocess/demultiplex/{reference}.qza',
+        trimmed_sequences = 'qiime2/preprocess/demultiplex/{reference}.qza',
     output:
-        joined_sequences = 'reads/preprocess/joining/{reference}.qza',
+        joined_sequences = 'qiime2/preprocess/joining/{reference}.qza',
     params:
         trunc_qual = '--p-truncqual %d' % method_config['trunc_qual'] if 'trunc_qual' in method_config else '',
         seq_min_len = method_config.get('seq_min_len', 1),
@@ -31,8 +31,8 @@ rule qiime2__vsearch_join_paired:
     conda:
         config['snakelines_dir'] + '/environments/qiime2.yaml'
     log:
-        out = 'reads/preprocess/joining/log/{reference}.log',
-        err = 'reads/preprocess/joining/log/{reference}.err'
+        out = 'qiime2/preprocess/joining/log/{reference}.log',
+        err = 'qiime2/preprocess/joining/log/{reference}.err'
     threads:
         int(config['threads']),
     shell:
@@ -64,9 +64,9 @@ rule qiime2__tabulate_joined_reads:
     :output visualization: artifact of interactive positional quality plots
     """
     input:
-        joined_sequences = 'reads/preprocess/joining/{reference}.qza',
+        joined_sequences = 'qiime2/preprocess/joining/{reference}.qza',
     output:
-        qzv = 'reads/preprocess/joining/{reference}_quality.qzv',
+        qzv = 'qiime2/preprocess/joining/{reference}_quality.qzv',
     conda:
         config['snakelines_dir'] + '/environments/qiime2.yaml'
     shell:

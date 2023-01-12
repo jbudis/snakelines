@@ -1,6 +1,6 @@
 PRIMER_DEFINES = {
     "16S": {
-        "f":["CCTACGGGNGGCWGCAG"], 
+        "f":["CCTACGGGNGGCWGCAG"],
         "r":["GACTACHVGGGTATCTAATCC"]
         },
     "ITS": {
@@ -33,7 +33,7 @@ def get_adapters(adapter_set, primer_set, seq_end):
     f_primers = [f_adapter + i for i in PRIMER_DEFINES[primer_set]['f']] if primer_set in PRIMER_DEFINES else []
     r_primers = [r_adapter + i for i in PRIMER_DEFINES[primer_set]['r']] if primer_set in PRIMER_DEFINES else []
     qiime2_call_f = '--p-front-f '+' '.join(f_primers) if len(f_primers) else ''
-    qiime2_call_r = '--p-front-r '+' '.join(r_primers) if len(r_primers) else '' 
+    qiime2_call_r = '--p-front-r '+' '.join(r_primers) if len(r_primers) else ''
     return qiime2_call_f+' '+qiime2_call_r
 
 rule qiime2__cutadapt_trim:
@@ -46,12 +46,12 @@ rule qiime2__cutadapt_trim:
     :params maxerr: float 0-1, maximum allowed error rate of sequence to be kept
     """
     input:
-        demux_sequences = 'reads/import/{reference}.qza'
+        demux_sequences = 'qiime2/import/{reference}.qza'
     output:
-        trimmed_sequences = 'reads/preprocess/demultiplex/{reference}.qza'
+        trimmed_sequences = 'qiime2/preprocess/demultiplex/{reference}.qza'
     log:
-        out = 'reads/preprocess/demultiplex/log/{reference}.log',
-        err = 'reads/preprocess/demultiplex/log/{reference}.err'
+        out = 'qiime2/preprocess/demultiplex/log/{reference}.log',
+        err = 'qiime2/preprocess/demultiplex/log/{reference}.err'
     threads:
         int(config['threads'])
     params:
@@ -85,13 +85,13 @@ rule qiime2__cutadapt_tabulate:
     :output visualization: artifact of interactive positional quality plots
     """
     input:
-        demux_seqs = 'reads/preprocess/demultiplex/{reference}.qza'
+        demux_seqs = 'qiime2/preprocess/demultiplex/{reference}.qza'
     output:
-        qzv = 'reads/preprocess/report/{reference}_quality.qzv'
+        qzv = 'qiime2/preprocess/report/{reference}_quality.qzv'
     conda:
         config['snakelines_dir'] + '/environments/qiime2.yaml'
     shell:
-        '''    
+        '''
         qiime demux summarize \
             --i-data {input.demux_seqs} \
             --o-visualization {output.qzv}

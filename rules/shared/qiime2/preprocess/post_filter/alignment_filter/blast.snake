@@ -16,21 +16,21 @@ rule qiime2__denoise_postfilter_alignment_filter:
     :params fix_orient: whether to fix orientation or not
     """
     input:
-        rep_seqs = 'reads/preprocess/denoise/%s/{reference}_rep-seqs.qza' % method_config['input_qiime2_type'],
-        table = 'reads/preprocess/denoise/%s/{reference}_table.qza' % method_config['input_qiime2_type'],
+        rep_seqs = 'qiime2/preprocess/denoise/%s/{reference}_rep-seqs.qza' % method_config['input_qiime2_type'],
+        table = 'qiime2/preprocess/denoise/%s/{reference}_table.qza' % method_config['input_qiime2_type'],
     output:
-        filtered_seqs = 'reads/preprocess/denoise/alignment_filter/{reference}_rep-seqs.qza',
-        filtered_table = 'reads/preprocess/denoise/alignment_filter/{reference}_table.qza'
+        filtered_seqs = 'qiime2/preprocess/denoise/alignment_filter/{reference}_rep-seqs.qza',
+        filtered_table = 'qiime2/preprocess/denoise/alignment_filter/{reference}_table.qza'
     params:
         align_reference = 'reference/'+method_config.get('alignment_reference', 'None')+'/'+method_config.get('alignment_reference', 'None')+'.fa',
         align_how = '--p-exclude-ids' if method_config.get('alignment_filter_how', 'exclude') == 'exclude' else '--p-no-exclude-ids',
         min_identity = method_config.get('alignment_min_identity',0.97),
         min_query = method_config.get('alignment_min_query',0.97),
         ref_filter = 'reference/{reference}/qiime2/filter_reference.qza',
-        missed_seqs = 'reads/preprocess/denoise/alignment_filter/{reference}_rep-seqs_missed.qza',
-        hit_seqs = 'reads/preprocess/denoise/alignment_filter/{reference}_rep-seqs_hits.qza',
-        missed_seqs_qzv = 'reads/preprocess/denoise/alignment_filter/{reference}_rep-seqs_missed.qzv',
-        hit_seqs_qzv = 'reads/preprocess/denoise/alignment_filter/{reference}_rep-seqs_hits.qzv'
+        missed_seqs = 'qiime2/preprocess/denoise/alignment_filter/{reference}_rep-seqs_missed.qza',
+        hit_seqs = 'qiime2/preprocess/denoise/alignment_filter/{reference}_rep-seqs_hits.qza',
+        missed_seqs_qzv = 'qiime2/preprocess/denoise/alignment_filter/{reference}_rep-seqs_missed.qzv',
+        hit_seqs_qzv = 'qiime2/preprocess/denoise/alignment_filter/{reference}_rep-seqs_hits.qzv'
     conda:
         config['snakelines_dir'] + '/environments/qiime2.yaml'
     threads:
@@ -67,7 +67,7 @@ rule qiime2__denoise_postfilter_alignment_filter:
         qiime feature-table tabulate-seqs \
             --i-data {params.missed_seqs} \
             --o-visualization {params.missed_seqs_qzv};
-        
+
         qiime feature-table tabulate-seqs \
             --i-data {params.hit_seqs} \
             --o-visualization {params.hit_seqs_qzv};

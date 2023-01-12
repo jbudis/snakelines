@@ -17,19 +17,19 @@ rule qiime2__diversity_alpha_rarefaction:
     :output qzv: qiime visualization - alpha rarefaction curves
     """
     input:
-        feature_table = 'reads/preprocess/denoise/%s/{reference}_table.qza' % pipeline.qiime2_post_taxa,
-        phylogeny = 'reads/analysis/alignment/{reference}_rooted-tree.qza',
+        feature_table = 'qiime2/preprocess/denoise/%s/{reference}_table.qza' % pipeline.qiime2_post_taxa,
+        phylogeny = 'qiime2/analysis/alignment/{reference}_rooted-tree.qza',
         metadata = 'description/sample-metadata.tsv'
     output:
-        qzv = 'reads/analysis/rarefaction/{reference}_alpha.qzv'
+        qzv = 'qiime2/analysis/rarefaction/{reference}_alpha.qzv'
     params:
         max_depth = method_config.get('max_depth', 4000),
         min_depth = method_config.get('min_depth', 1),
         steps = method_config.get('steps', 10),
         iterations = method_config.get('iterations', 10)
     log:
-        out = 'reads/analysis/rarefaction/log/{reference}_alpha.out',
-        err = 'reads/analysis/rarefaction/log/{reference}_alpha.err'
+        out = 'qiime2/analysis/rarefaction/log/{reference}_alpha.out',
+        err = 'qiime2/analysis/rarefaction/log/{reference}_alpha.err'
     conda:
         config['snakelines_dir'] + '/environments/qiime2.yaml'
     shell:

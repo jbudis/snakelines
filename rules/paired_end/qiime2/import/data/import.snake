@@ -7,12 +7,12 @@ rule qiime2__import_manifest:
     :params input_format: defines PHRED offset in quality scores used in samples
     """
     input:
-        manifest = 'reads/import/{reference}.manifest'
+        manifest = 'qiime2/import/{reference}.manifest'
     output:
-        qza = 'reads/import/{reference}.qza'
+        qza = 'qiime2/import/{reference}.qza'
     log:
-        out = 'reads/import/log/{reference}.log',
-        err = 'reads/import/log/{reference}.err'
+        out = 'qiime2/import/log/{reference}.log',
+        err = 'qiime2/import/log/{reference}.err'
     params:
         sequence_type = "'SampleData[PairedEndSequencesWithQuality]'",
         input_format = 'PairedEndFastqManifestPhred' + str(method_config.get('PHRED_offset',33)) + 'V2'
@@ -36,7 +36,7 @@ rule copy_description_metadata:
     input:
         metadata = 'description/sample-metadata.tsv'
     output:
-        metadata = 'reads/import/sample-metadata.tsv'
+        metadata = 'qiime2/import/sample-metadata.tsv'
     shell:
         '''
         cp {input.metadata} {output.metadata}

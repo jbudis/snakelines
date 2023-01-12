@@ -15,45 +15,45 @@ rule qiime2__diversity_core_metrics_nonphylogenetic:
         * Jaccard distance (a qualitative measure of community dissimilarity)
         * Bray-Curtis distance (a quantitative measure of community dissimilarity)
 
-    An important parameter for this script is --p-sampling-depth, which is the even sampling (i.e. rarefaction) depth. In this pipeline, sampling depth is set as Minimum of sequences count (e.g. we have 3 samples, first with 3500 sequences, 2nd with 3000 sequences and 3rd with 4500 sequences). Minimum is 3000. Value is taken from exported qzv file, exactly from reads/qiime/silva16S-imported/overview.html.
+    An important parameter for this script is --p-sampling-depth, which is the even sampling (i.e. rarefaction) depth. In this pipeline, sampling depth is set as Minimum of sequences count (e.g. we have 3 samples, first with 3500 sequences, 2nd with 3000 sequences and 3rd with 4500 sequences).
 
     Note:
     Because most diversity metrics are sensitive to different sampling depths across different samples, this script will randomly subsample the counts from each sample to the value provided for this parameter. For example, if you provide --p-sampling-depth 500, this step will subsample the counts in each sample without replacement so that each sample in the resulting table has a total count of 500. If the total count for any sample(s) are smaller than this value, those samples will be dropped from the diversity analysis. Choosing this value is tricky.
 
-    :input rooted_tree: rooted tree, qiime artifact of type Phylogeny[Rooted], e.g. reads/qiime/silva16S-rooted-tree-dn-99.qza
-    :input table: qiime artifact of type FeatureTable[Frequency], e.g. reads/qiime/silva16S-table-dn-99.qza
-    :input metadata: samples metadata filepath in TSV format (tab-separated value), e.g. description/silva16S-sample-metadata.tsv
+    :input rooted_tree: rooted tree, qiime artifact of type Phylogeny[Rooted]
+    :input table: qiime artifact of type FeatureTable[Frequency]
+    :input metadata: samples metadata filepath in TSV format (tab-separated value)
     :param sample_freqs_csv: sample_frequencies.csv obtained in report of input feature table, used for auto calculation of sampling depth
-    
-    :output rarefied_table: qiime artifact of type FeatureTable[Frequency], e.g. reads/qiime/silva16S-core-metrics-results-dn-99/rarefied_table.qza
-    :output vector: sample data for alpha diversity, qiime artifact of type SampleData[AlphaDiversity], e.g. reads/qiime/silva16S-core-metrics-results-dn-99/shannon_vector.qza
-    :output distance_matrix: distance matrix for beta diversity, qiime artifact of type DistanceMatrix, e.g. reads/qiime/silva16S-core-metrics-results-dn-99/bray_curtis_distance_matrix.qza
-    :output emperor_plots: Emperor visualization of distance matrix, e.g reads/qiime/silva16S-core-metrics-results-dn-99/bray_curtis_emperor.qzv
+
+    :output rarefied_table: qiime artifact of type FeatureTable[Frequency]
+    :output vector: sample data for alpha diversity, qiime artifact of type SampleData[AlphaDiversity]
+    :output distance_matrix: distance matrix for beta diversity, qiime artifact of type DistanceMatrix
+    :output emperor_plots: Emperor visualization of distance matrix
 
     """
     input:
-        table       = 'reads/preprocess/denoise/%s/{reference}_table.qza' % pipeline.qiime2_post_taxa,
+        table       = 'qiime2/preprocess/denoise/%s/{reference}_table.qza' % pipeline.qiime2_post_taxa,
         metadata    = 'description/sample-metadata.tsv',
-        denoise_stats = 'reads/preprocess/report/{reference}_table/'
+        denoise_stats = 'qiime2/preprocess/report/{reference}_table/'
     output:
-        rarefied_table = 'reads/analysis/core_metrics/{reference}_rarefied_table.qza',
-        observed_vector = 'reads/analysis/core_metrics/{reference}_observed_vector.qza',
-        shannon_vector = 'reads/analysis/core_metrics/{reference}_shannon_vector.qza',
-        evenness_vector = 'reads/analysis/core_metrics/{reference}_evenness_vector.qza',
-        jaccard_dist_matrix = 'reads/analysis/core_metrics/{reference}_jaccard_dist_matrix.qza',
-        bray_curtis_dist_matrix = 'reads/analysis/core_metrics/{reference}_bray_curtis_dist_matrix.qza',
-        jaccard_pcoa = 'reads/analysis/core_metrics/{reference}_jaccard_pcoa.qza',
-        bray_curtis_pcoa = 'reads/analysis/core_metrics/{reference}_bray_curtis_pcoa.qza',
-        jaccard_emperor = 'reads/analysis/core_metrics/{reference}_jaccard_emperor.qzv',
-        bray_curtis_emperor = 'reads/analysis/core_metrics/{reference}_bray_curtis_emperor.qzv'
+        rarefied_table = 'qiime2/analysis/core_metrics/{reference}_rarefied_table.qza',
+        observed_vector = 'qiime2/analysis/core_metrics/{reference}_observed_vector.qza',
+        shannon_vector = 'qiime2/analysis/core_metrics/{reference}_shannon_vector.qza',
+        evenness_vector = 'qiime2/analysis/core_metrics/{reference}_evenness_vector.qza',
+        jaccard_dist_matrix = 'qiime2/analysis/core_metrics/{reference}_jaccard_dist_matrix.qza',
+        bray_curtis_dist_matrix = 'qiime2/analysis/core_metrics/{reference}_bray_curtis_dist_matrix.qza',
+        jaccard_pcoa = 'qiime2/analysis/core_metrics/{reference}_jaccard_pcoa.qza',
+        bray_curtis_pcoa = 'qiime2/analysis/core_metrics/{reference}_bray_curtis_pcoa.qza',
+        jaccard_emperor = 'qiime2/analysis/core_metrics/{reference}_jaccard_emperor.qzv',
+        bray_curtis_emperor = 'qiime2/analysis/core_metrics/{reference}_bray_curtis_emperor.qzv'
     params:
         sampling_depth = str(method_config.get('sampling_depth','auto')),
         sample_freqs_csv = 'sample-frequency-detail.csv'
     threads:
         int(config['threads'])
     log:
-        out = 'reads/analysis/core_metrics/log/{reference}_core_metrics.out',
-        err = 'reads/analysis/core_metrics/log/{reference}_core_metrics.err'   
+        out = 'qiime2/analysis/core_metrics/log/{reference}_core_metrics.out',
+        err = 'qiime2/analysis/core_metrics/log/{reference}_core_metrics.err'
     conda:
         config['snakelines_dir'] + '/environments/qiime2.yaml'
     shell:
@@ -63,11 +63,11 @@ rule qiime2__diversity_core_metrics_nonphylogenetic:
             min=$(eval $min);
             if [[ $min -lt 1 ]]; then
                 min=1;
-            fi; 
+            fi;
         else
             min={params.sampling_depth};
         fi;
-        
+
         qiime diversity core-metrics \
             --i-table {input.table} \
             --p-sampling-depth $min \

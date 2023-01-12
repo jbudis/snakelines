@@ -17,14 +17,14 @@ rule qiime2__deblur16S:
     :params min_size: int, min number of reads in one sample with a feature to keep it for a sample
     """
     input:
-        qscore_sequences = 'reads/preprocess/qscore/{reference}.qza',
+        qscore_sequences = 'qiime2/preprocess/qscore/{reference}.qza',
     output:
-        table = 'reads/preprocess/denoise/original/{reference}_table.qza',
-        rep_seqs = 'reads/preprocess/denoise/original/{reference}_rep-seqs.qza',
-        stats = 'reads/preprocess/denoise/original/{reference}_denoising-stats.qza'
+        table = 'qiime2/preprocess/denoise/original/{reference}_table.qza',
+        rep_seqs = 'qiime2/preprocess/denoise/original/{reference}_rep-seqs.qza',
+        stats = 'qiime2/preprocess/denoise/original/{reference}_denoising-stats.qza'
     log:
-        out = 'reads/preprocess/denoise/log/deblur_{reference}.log',
-        err = 'reads/preprocess/denoise/log/deblur_{reference}.err'
+        out = 'qiime2/preprocess/denoise/log/deblur_{reference}.log',
+        err = 'qiime2/preprocess/denoise/log/deblur_{reference}.err'
     threads:
         int(config['threads'])
     params:

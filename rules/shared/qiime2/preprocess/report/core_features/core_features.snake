@@ -1,21 +1,21 @@
 rule qiime2__core_features:
     """
-    Identify "core" features, which are features observed in a user-defined fraction of the samples. 
-    Since the core features are a function of the fraction of samples that the feature must be observed in to be considered core, 
+    Identify "core" features, which are features observed in a user-defined fraction of the samples.
+    Since the core features are a function of the fraction of samples that the feature must be observed in to be considered core,
     this is computed over a range of fractions defined by the `min_fraction`, `max_fraction`, and `steps` parameters.
-  
+
     Calls 'qiime feature-table core-features'
 
     :input table: feature table qza artifact
-    :params min_fraction: float 0-1, The minimum fraction of samples that a feature must be observed in for that feature to be considered a core feature 
-    :params max_fraction: float 0-1, The maximum fraction of samples that a feature must be observed in for that feature to be considered a core feature 
+    :params min_fraction: float 0-1, The minimum fraction of samples that a feature must be observed in for that feature to be considered a core feature
+    :params max_fraction: float 0-1, The maximum fraction of samples that a feature must be observed in for that feature to be considered a core feature
     :params steps: int, The number of steps to take between `min-fraction` and `max-fraction` for core features calculations.
     :output visualization: core features as qzv
     """
     input:
-        table = 'reads/preprocess/denoise/%s/{reference}_table.qza' % pipeline.qiime2_type
+        table = 'qiime2/preprocess/denoise/%s/{reference}_table.qza' % pipeline.qiime2_type
     output:
-        core_features = 'reads/preprocess/report/{reference}_core_features.qzv' 
+        core_features = 'qiime2/preprocess/report/{reference}_core_features.qzv'
     params:
         min_fraction = method_config.get('min_fraction',0.5),
         max_fraction = method_config.get('max_fraction',1.0),
