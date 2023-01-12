@@ -6,7 +6,7 @@ rule qiime2__taxonomy_barplot:
     """
     input:
         taxonomy = 'qiime2/taxonomy/{reference}_tax.qza',
-        feature_table = 'qiime2/preprocess/denoise/{type}/{reference}_table.qza'
+        feature_table = 'qiime2/preprocess/denoise/{type}/{reference}_table.qza',
         metadata = 'description/sample-metadata.tsv'
     output:
         barplot = 'qiime2/{reference}/taxonomy/barplot/{processing_step}.qzv'
