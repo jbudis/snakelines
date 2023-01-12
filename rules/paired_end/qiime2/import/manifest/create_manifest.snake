@@ -7,7 +7,7 @@ rule qiime2__create_manifest:
     :output manifest: TSV paired-end manifest file in format containing: sample-id,forward-absolute-filepath,reverse-absolute-filepath'
     """
     input:
-        rm = expand('qiime2/original/{sample}_R1.fastq.gz',
+        rm = expand('reads/original/{sample}_R1.fastq.gz',
                         sample=pipeline.samples)
     output:
         manifest = 'qiime2/import/{reference}.manifest'
