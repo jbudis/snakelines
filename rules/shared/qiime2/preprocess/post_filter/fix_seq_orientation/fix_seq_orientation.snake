@@ -1,7 +1,7 @@
 rule qiime2__denoise_postfilter_fix_orient:
     """
     Fix orientation of sequences by comparison to a reference sequence set known to be oriented in the correct direction.
-    
+
     Calls 'qiime import' to import the set of reference sequences in correct orientation
     Calls 'qiime rescript orient-seqs' to find sequences that mapped to the reference sequences in correct orientation
     Calls 'qiime feature-table filter-features' to update feature table
@@ -16,18 +16,18 @@ rule qiime2__denoise_postfilter_fix_orient:
     :params fix_orient: whether to fix orientation or not
     """
     input:
-        rep_seqs = 'reads/preprocess/denoise/%s/{reference}_rep-seqs.qza' % method_config['input_qiime2_type'],
-        table = 'reads/preprocess/denoise/%s/{reference}_table.qza' % method_config['input_qiime2_type']
+        rep_seqs = 'qiime2/preprocess/denoise/%s/{reference}_rep-seqs.qza' % method_config['input_qiime2_type'],
+        table = 'qiime2/preprocess/denoise/%s/{reference}_table.qza' % method_config['input_qiime2_type']
     output:
-        orient_seqs_fixed = 'reads/preprocess/denoise/fix_seq_orientation/{reference}_rep-seqs.qza',
-        orient_table = 'reads/preprocess/denoise/fix_seq_orientation/{reference}_table.qza'
+        orient_seqs_fixed = 'qiime2/preprocess/denoise/fix_seq_orientation/{reference}_rep-seqs.qza',
+        orient_table = 'qiime2/preprocess/denoise/fix_seq_orientation/{reference}_table.qza'
     params:
         ref_sequences = 'reference/{reference}/qiime2/ref_orient_seqs.qza',
         ref_orient_name = 'reference/'+method_config.get('orient_reference', 'None')+'/'+method_config.get('orient_reference', 'None')+'.fa',
-        orient_seqs_discard = 'reads/preprocess/denoise/fix_seq_orientation/{reference}_rep-seqs_unoriented.qza'
+        orient_seqs_discard = 'qiime2/preprocess/denoise/fix_seq_orientation/{reference}_rep-seqs_unoriented.qza'
     log:
-        out = 'reads/preprocess/denoise/fix_seq_orientation/log/{reference}.log',
-        err = 'reads/preprocess/denoise/fix_seq_orientation/log/{reference}.err'
+        out = 'qiime2/preprocess/denoise/fix_seq_orientation/log/{reference}.log',
+        err = 'qiime2/preprocess/denoise/fix_seq_orientation/log/{reference}.err'
     conda:
         config['snakelines_dir'] + '/environments/qiime2_rescript.yaml'
     shell:

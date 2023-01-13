@@ -4,10 +4,11 @@ def process_filter_input(config_input, param):
     else:
         return param+' '+config_input
 
+
 rule qiime2__taxa_filter_table:
     """
     This method filters features from a table based on their taxonomic annotations. Features can be retained in the resulting table by specifying one or more include search terms, and can be filtered out of the resulting table by specifying one or more exclude search terms.
-    If both include and exclude are provided, the inclusion critera will be applied before the exclusion critera. 
+    If both include and exclude are provided, the inclusion critera will be applied before the exclusion critera.
     When no include or exclude criteria are provided, the input is copied to output.
     Any samples that have a total frequency of zero after filtering will be removed from the resulting table.
 
@@ -20,13 +21,13 @@ rule qiime2__taxa_filter_table:
     :params exclude: criteria that cannot hold to keep ASV
     """
     input:
-        feature_table = 'reads/preprocess/denoise/%s/{reference}_table.qza' % pipeline.qiime2_type,
-        taxonomy  = 'reads/taxonomy/{reference}_tax.qza'
+        feature_table = 'qiime2/preprocess/denoise/%s/{reference}_table.qza' % pipeline.qiime2_type,
+        taxonomy  = 'qiime2/taxonomy/{reference}_tax.qza'
     output:
-        filtered_table = 'reads/preprocess/denoise/taxa_filter/{reference}_table.qza'
+        filtered_table = 'qiime2/preprocess/denoise/%s/{reference}_table.qza' % pipeline.qiime2_post_taxa
     log:
-        out = 'reads/preprocess/denoise/taxa_filter/log/{reference}_filter_table.log',
-        err = 'reads/preprocess/denoise/taxa_filter/log/{reference}_filter_table.err'
+        out = 'qiime2/preprocess/denoise/taxa_filter/log/{reference}_filter_table.log',
+        err = 'qiime2/preprocess/denoise/taxa_filter/log/{reference}_filter_table.err'
     conda:
         config['snakelines_dir'] + '/environments/qiime2.yaml'
     threads:
@@ -56,7 +57,7 @@ rule qiime2__taxa_filter_table:
 rule qiime2__taxa_filter_seqs:
     """
     This method filters sequences based on their taxonomic annotations. Features can be retained in the resulting table by specifying one or more include search terms, and can be filtered out of the resulting table by specifying one or more exclude search terms.
-    If both include and exclude are provided, the inclusion critera will be applied before the exclusion critera. 
+    If both include and exclude are provided, the inclusion critera will be applied before the exclusion critera.
     When no include or exclude criteria are provided, the input is copied to output.
     Any samples that have a total frequency of zero after filtering will be removed from the resulting table.
 
@@ -69,13 +70,13 @@ rule qiime2__taxa_filter_seqs:
     :params exclude: criteria that cannot hold to keep ASV
     """
     input:
-        rep_seqs = 'reads/preprocess/denoise/%s/{reference}_rep-seqs.qza' % pipeline.qiime2_type,
-        taxonomy  = 'reads/taxonomy/{reference}_tax.qza'
+        rep_seqs = 'qiime2/preprocess/denoise/%s/{reference}_rep-seqs.qza' % pipeline.qiime2_type,
+        taxonomy  = 'qiime2/taxonomy/{reference}_tax.qza'
     output:
-        filtered_seqs = 'reads/preprocess/denoise/taxa_filter/{reference}_rep-seqs.qza'
+        filtered_seqs = 'qiime2/preprocess/denoise/taxa_filter/{reference}_rep-seqs.qza'
     log:
-        out = 'reads/preprocess/denoise/log/{reference}_filter_seqs.log',
-        err = 'reads/preprocess/denoise/log/{reference}_filter_seqs.err'
+        out = 'qiime2/preprocess/denoise/log/{reference}_filter_seqs.log',
+        err = 'qiime2/preprocess/denoise/log/{reference}_filter_seqs.err'
     conda:
         config['snakelines_dir'] + '/environments/qiime2.yaml'
     threads:

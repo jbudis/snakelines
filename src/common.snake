@@ -116,7 +116,7 @@ for sample_configuration in sample_configurations:
         wildcards = glob_wildcards(location)
         samples = wildcards.sample
         assert len(wildcards.sample) > 0, 'No samples in {} match configured pattern {}'.format(location, sample_configuration['name'])
-        
+
         if 'description' in sample_configuration:
             desc_config = sample_configuration['description']
 
@@ -126,26 +126,26 @@ for sample_configuration in sample_configurations:
 
                 parsing_results = [parser.parse(input_format, sample) for sample in samples]
                 not_parsed_samples = [samples[sample_idx] for sample_idx,result in enumerate(parsing_results) if result is None]
-                assert len(not_parsed_samples) == 0, 'Metadata for samples {} could not be parsed using format {}'.format(not_parsed_samples, input_format)                
-                
+                assert len(not_parsed_samples) == 0, 'Metadata for samples {} could not be parsed using format {}'.format(not_parsed_samples, input_format)
+
                 if description_schema is not None:
                     metadata = [parse_description_by_schema(sample, res, description_schema) for sample,res in zip(samples, parsing_results)]
-                
+
                     try:
                         write_metadata_to_file(metadata, description_schema, DEFAULT_METADATA_LOCATION)
                     except Exception as e:
                         print("Error '{}' occured when writing metadata to file {}".format(e, DEFAULT_METADATA_LOCATION))
                 else:
                     raise ValueError("Missing 'attributes' section in the description element of config")
-            
+
             else:
                 try:
                     metadata = load_metadata_from_file(DEFAULT_METADATA_LOCATION)
                 except Exception as e:
                     print("Error '{}' occured when loading metadata from file {}".format(e, DEFAULT_METADATA_LOCATION))
 
-            assert len(metadata) == len(samples), 'Number of metadata rows and number of samples do not match'                 
-    
+            assert len(metadata) == len(samples), 'Number of metadata rows and number of samples do not match'
+
     reference = sample_configuration.get('reference', None)
     would_be_dwnl = sample_configuration.get('download', False)
     pipeline.add(samples,
