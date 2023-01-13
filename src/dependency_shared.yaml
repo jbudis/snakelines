@@ -754,16 +754,20 @@ qiime2:
                                         reference=pipeline.references)
             barplot:
                 output:
+                    features:
+                        from:   expand('qiime2/analysis/taxonomy/{reference}_features/',
+                                        reference=pipeline.references)
+                        to:     expand('{report_dir}/{reference}/03_taxonomy_report/features/',
+                                        report_dir=config['report_dir'],
+                                        reference=pipeline.references)
                     plot:
-                        from:   expand('qiime2/{reference}/taxonomy/{type}/{processing_step}/',
-                                        type=['taxa_features','barplot'],
+                        from:   expand('qiime2/analysis/taxonomy/{processing_step}/{reference}_barplot/',
                                         processing_step=set([pipeline.qiime2_type, pipeline.qiime2_post_taxa]),
                                         reference=pipeline.references)
-                        to:     expand('{report_dir}/{reference}/03_taxonomy_report/{type}/{processing_step}/',
+                        to:     expand('{report_dir}/{reference}/03_taxonomy_report/{processing_step}/barplot/',
                                         report_dir=config['report_dir'],
                                         reference=pipeline.references,
-                                        processing_step=set([pipeline.qiime2_type, pipeline.qiime2_post_taxa]),
-                                        type=['taxa_features','barplot'])
+                                        processing_step=set([pipeline.qiime2_type, pipeline.qiime2_post_taxa]))
                 depends:
                     - qiime2/preprocess/report/export
 
