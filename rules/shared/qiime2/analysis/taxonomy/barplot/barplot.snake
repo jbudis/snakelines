@@ -11,8 +11,8 @@ rule qiime2__taxonomy_barplot:
     output:
         barplot = 'qiime2/analysis/taxonomy/{processing_step}/{reference}_barplot.qzv'
     log:
-        out = 'qiime2/analysis/taxonomy/{processing_step}/log/{reference}_barplot.out,
-        err = 'qiime2/analysis/taxonomy/{processing_step}/log/{reference}_barplot.err,
+        out = 'qiime2/analysis/taxonomy/{processing_step}/log/{reference}_barplot.out',
+        err = 'qiime2/analysis/taxonomy/{processing_step}/log/{reference}_barplot.err',
     conda:
         config['snakelines_dir'] + '/environments/qiime2.yaml'
     shell:
@@ -40,8 +40,8 @@ rule qiime2__taxonomy_tabulate:
     output:
         qzv = 'qiime2/analysis/taxonomy/{reference}_features.qzv'
     log:
-        out = 'qiime2/analysis/taxonomy/log/{reference}_features.out,
-        err = 'qiime2/analysis/taxonomy/log/{reference}_features.err,
+        out = 'qiime2/analysis/taxonomy/log/{reference}_features.out',
+        err = 'qiime2/analysis/taxonomy/log/{reference}_features.err'',
     conda:
         config['snakelines_dir'] + '/environments/qiime2.yaml'
     shell:
