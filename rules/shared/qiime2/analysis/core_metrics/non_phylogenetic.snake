@@ -59,7 +59,7 @@ rule qiime2__diversity_core_metrics_nonphylogenetic:
     shell:
         '''
         if [ {params.sampling_depth} = "auto" ]; then
-            min="tail {input.denoise_stats}{params.sample_freqs_csv} -n 1 | sed -E 's/.*,([0-9]*)\\..*/\\1/'";
+            min="tail {input.denoise_stats}/{params.sample_freqs_csv} -n 1 | sed -E 's/.*,([0-9]*)\\..*/\\1/'";
             min=$(eval $min);
             if [[ $min -lt 1 ]]; then
                 min=1;
