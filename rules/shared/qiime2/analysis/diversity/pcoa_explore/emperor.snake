@@ -4,20 +4,20 @@ rule qiime2__emperor__plot:
 
     Calls 'qiime emperor plot'.
 
-    :input pcoa_results: principal coordinates, qiime artifact of type PCoAResults, e.g. reads/qiime/silva16S-core-metrics-results-dn-99/bray_curtis_pcoa_results.qza
-    :input metadata: samples' metadata filepath in TSV format (tab-separated value), e.g. description/silva16S-sample-metadata.tsv
-    :output qzv: qiime visualization, e.g. reads/qiime/silva16S-core-metrics-results-dn-99/custom_axes/bray_curtis_emperor_days.qzv
+    :input pcoa_results: principal coordinates, qiime artifact of type PCoAResults
+    :input metadata: samples' metadata filepath in TSV format (tab-separated value)
+    :output qzv: qiime visualization
 
     Note: column used for custom axes must be numerical, not categorical.
     """
     input:
-        pcoa_results = 'reads/analysis/core_metrics/{reference}_{type}_pcoa.qza',
+        pcoa_results = 'qiime2/analysis/core_metrics/{reference}_{type}_pcoa.qza',
         metadata = 'description/sample-metadata.tsv'
     output:
-        qzv = 'reads/analysis/core_metrics/pcoa_explore/{reference}_{type}_{column}_emperor.qzv'
+        qzv = 'qiime2/analysis/core_metrics/pcoa_explore/{reference}_{type}_{column}_emperor.qzv'
     log:
-        out = 'reads/analysis/core_metrics/log/{reference}_{type}_{column}_emperor.out',
-        err = 'reads/analysis/core_metrics/log/{reference}_{type}_{column}_emperor.err'    
+        out = 'qiime2/analysis/core_metrics/log/{reference}_{type}_{column}_emperor.out',
+        err = 'qiime2/analysis/core_metrics/log/{reference}_{type}_{column}_emperor.err'
     conda:
         config['snakelines_dir'] + '/environments/qiime2.yaml'
     shell:

@@ -1,8 +1,8 @@
 rule qiime2__taxonomy_consensus_blast:
     """
-    Assign taxonomy to query sequences using BLAST+. 
-    Performs BLAST+ local alignment between query and reference_reads, then assigns consensus taxonomy to each query sequence from among maxaccepts hits, min_consensus of which share that taxonomic assignment. 
-    Note that maxaccepts selects the first N hits with > perc_identity similarity to query, not the top N matches. 
+    Assign taxonomy to query sequences using BLAST+.
+    Performs BLAST+ local alignment between query and reference_reads, then assigns consensus taxonomy to each query sequence from among maxaccepts hits, min_consensus of which share that taxonomic assignment.
+    Note that maxaccepts selects the first N hits with > perc_identity similarity to query, not the top N matches.
     For top N hits, use classify-consensus-vsearch.
 
     Calls 'qiime feature-classifier classify-consensus-blast'.
@@ -19,11 +19,11 @@ rule qiime2__taxonomy_consensus_blast:
     :params min-consensus: Minimum fraction of assignments must match top hit to be accepted as consensus assignment. Must be in range (0.5, 1.0].
     """
     input:
-        rep_seqs = 'reads/preprocess/denoise/%s/{reference}_rep-seqs.qza' % pipeline.qiime2_type,
+        rep_seqs = 'qiime2/preprocess/denoise/%s/{reference}_rep-seqs.qza' % pipeline.qiime2_type,
         ref_reads = 'reference/{reference}/qiime2/ref_reads.qza',
         ref_taxa = 'reference/{reference}/qiime2/ref_tax.qza'
     output:
-        taxonomy  = 'reads/taxonomy/{reference}_tax.qza'
+        taxonomy  = 'qiime2/taxonomy/{reference}_tax.qza'
     params:
         max_hits = method_config.get('blast_max_hits', 10),
         min_identitity = method_config.get('blast_min_identitity', 0.8),
@@ -34,8 +34,8 @@ rule qiime2__taxonomy_consensus_blast:
     conda:
         config['snakelines_dir'] + '/environments/qiime2.yaml'
     log:
-        out = 'reads/taxonomy/log/{reference}_consensus_blast.out',
-        err = 'reads/taxonomy/log/{reference}_consensus_blast.err'    
+        out = 'qiime2/taxonomy/log/{reference}_consensus_blast.out',
+        err = 'qiime2/taxonomy/log/{reference}_consensus_blast.err'
     shell:
         '''
         qiime feature-classifier classify-consensus-blast \

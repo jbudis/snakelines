@@ -10,7 +10,7 @@ rule qiime2__create_manifest:
         rm = expand('reads/original/{sample}_R1.fastq.gz',
                         sample=pipeline.samples)
     output:
-        manifest = 'reads/import/{reference}.manifest'
+        manifest = 'qiime2/import/{reference}.manifest'
     params:
         pwd = '$PWD'
     run:
@@ -22,4 +22,3 @@ rule qiime2__create_manifest:
                 abs_reverse = os.path.join(params.pwd,reverse)
                 abs_forward = os.path.join(params.pwd,read_file)
                 out.write('{sample_name}\t{forward}\t{reverse}\n'.format(sample_name=sample_name,forward=abs_forward,reverse=abs_reverse))
-
