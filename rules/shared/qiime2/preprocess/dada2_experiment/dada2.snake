@@ -1,3 +1,8 @@
+def use_experimental_or_config(wildcards, experiment_settings, method_config, parameter, default_val):
+    if wildcards.label in experiment_settings and parameter in experiment_settings[wildcards.label]:
+        return experiment_settings[wildcards.label][wildcards.label]
+    return method_config.get(parameter, default_val)
+
 rule qiime2__dada2_denoise_experiment:
     """
     Denoises sequences, dereplicates them, and filters chimeras.
@@ -23,18 +28,18 @@ rule qiime2__dada2_denoise_experiment:
         int(config['threads'])
     params:
         sequen = config['sequencing'].split("_end")[0],
-        trunc_len_f = method_config.get('trunc_len_f', 0),
-        trunc_len_r = method_config.get('trunc_len_r', 0),
-        trim_left_f = method_config.get('trim_left_f', 0),
-        trim_left_r = method_config.get('trim_left_r', 0),
-        max_ee_f = method_config.get('max_ee_f', 2.0),
-        max_ee_r = method_config.get('max_ee_r', 2.0),
-        trunc_q = method_config.get('trunc_start_qual', 2),
-        min_overlap = method_config.get('min_overlap', 12),
-        denoise_pooling = method_config.get('denoise_pooling', 'independent'),
-        chimera_method = method_config.get('chimera_method', 'consensus'),
-        chimera_parent_abundance = method_config.get('chimera_parent_abundance', 1.0),
-        num_reads_train = method_config.get('num_reads_train', 1000000)
+        trunc_len_f = use_experimental_or_config(pipeline.qiime2_dada2_experiment, method_config, 'trunc_len_f', 0),
+        trunc_len_r = use_experimental_or_config(pipeline.qiime2_dada2_experiment, method_config, 'trunc_len_r', 0),
+        trim_left_f = use_experimental_or_config(pipeline.qiime2_dada2_experiment, method_config, 'trim_left_f', 0),
+        trim_left_r = use_experimental_or_config(pipeline.qiime2_dada2_experiment, method_config, 'trim_left_r', 0),
+        max_ee_f = use_experimental_or_config(pipeline.qiime2_dada2_experiment, method_config, 'max_ee_f', 2.0),
+        max_ee_r = use_experimental_or_config(pipeline.qiime2_dada2_experiment, method_config, 'max_ee_r', 2.0),
+        trunc_q = use_experimental_or_config(pipeline.qiime2_dada2_experiment, method_config, 'trunc_q', 2),
+        min_overlap = use_experimental_or_config(pipeline.qiime2_dada2_experiment, method_config, 'min_overlap', 12),
+        denoise_pooling = use_experimental_or_config(pipeline.qiime2_dada2_experiment, method_config, 'denoise_pooling', 'independent'),
+        chimera_method = use_experimental_or_config(pipeline.qiime2_dada2_experiment, method_config, 'chimera_method', 'consensus'),
+        chimera_parent_abundance = use_experimental_or_config(pipeline.qiime2_dada2_experiment, method_config, 'chimera_parent_abundance', 1.0),
+        num_reads_train = use_experimental_or_config(pipeline.qiime2_dada2_experiment, method_config, 'num_reads_train', 1000000),
     conda:
         config['snakelines_dir'] + '/environments/qiime2.yaml'
     shell:

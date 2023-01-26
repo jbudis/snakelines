@@ -13,7 +13,7 @@ rule qiime2__heatmap_feature_table:
     :output visualization: heatmap visualization as qzv
     """
     input:
-        table = 'qiime2/preprocess/dada2_experiment/{label}/{reference}_table.qza'
+        table = 'qiime2/preprocess/dada2_experiment/{label}/{reference}_table.qza',
         metadata = 'description/sample-metadata.tsv'
     output:
         heatmap = 'qiime2/preprocess/dada2_experiment/{label}/{reference}_{column}_heatmap.qzv'

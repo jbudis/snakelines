@@ -55,7 +55,7 @@ def get_files(source_dict):
             'qiime2_beta_significance_columns':qiime2_beta_significance_columns,
             'qiime2_pcoa_custom_columns': qiime2_pcoa_custom_columns,
             'qiime2_heatmap_columns':qiime2_heatmap_columns, 'qiime2_ancom_columns':qiime2_ancom_columns,
-            'qiime2_ancom_taxa_lvls':qiime2_ancom_taxa_lvls, 'qiime2_ancom_taxa_columns':qiime2_ancom_taxa_columns
+            'qiime2_ancom_taxa_lvls':qiime2_ancom_taxa_lvls, 'qiime2_ancom_taxa_columns':qiime2_ancom_taxa_columns,
             'qiime2_dada2_experiment':qiime2_dada2_experiment}
 
     files_dict = {}

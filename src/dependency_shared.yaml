@@ -685,8 +685,7 @@ qiime2:
             export:
                 output:
                     read_quality_report:
-                        from:   expand('qiime2/preprocess/dada2_experiment/{label}/{reference}_quality/',
-                                            label=list(qiime2_dada2_experiment.keys()),
+                        from:   expand('qiime2/preprocess/report/{reference}_quality/',
                                             reference=pipeline.references)
                         to:     expand('{report_dir}/{reference}/01_preprocessing_report/read_quality/',
                                             report_dir=config['report_dir'],
