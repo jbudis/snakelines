@@ -773,11 +773,11 @@ qiime2:
             summary:
                 output:
                     merged_table: expand('qiime2/preprocess/denoise/{processing_step}/{reference}_table_transposed.qza',
-                                        processing_step=set([pipeline.qiime2_type, pipeline.qiime2_post_taxa])),
+                                        processing_step=set([pipeline.qiime2_type, pipeline.qiime2_post_taxa]),
                                         reference=pipeline.references)
                     qzv:
-                        from:   expand('qiime2/preprocess/denoise/{processing_step}/{reference}_table_transposed/',
-                                        processing_step=set([pipeline.qiime2_type, pipeline.qiime2_post_taxa])),
+                        from:   expand('qiime2/analysis/taxonomy/{processing_step}/{reference}_merged_table/',
+                                        processing_step=set([pipeline.qiime2_type, pipeline.qiime2_post_taxa]),
                                         reference=pipeline.references)
                         to:     expand('{report_dir}/{reference}/03_taxonomy_report/{processing_step}/merged_table/',
                                         report_dir=config['report_dir'],
