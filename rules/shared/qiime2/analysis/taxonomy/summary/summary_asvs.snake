@@ -37,7 +37,7 @@ rule qiime2__feature_table_taxa_summary:
     shell:
         '''
         qiime metadata tabulate \
-            --m-input-file {input.rep_seqs]} \
+            --m-input-file {input.rep_seqs} \
             --m-input-file {input.taxonomy} \
             --m-input-file {input.transposed_table} \
             --o-visualization {output.merged_table}
