@@ -1,0 +1,119 @@
+sequencing: paired_end              # Currently only 'paired_end' is supported
+report_dir: report_test                  # Generated reports and essential output files would be stored there
+threads: 2                          # Number of threads to use in analysis
+
+samples:                            # List of sample categories to be analysed
+    - name: .*                      # Use all reads in reads/original
+      reference: unite-fungi              # Reference genome for reads in the category (reference/silva-16S-90-filtered/silva-16S-90-filtered.fa)
+      download: False                # Whether reference will be downloaded in analysis or not
+      description:                  # Creates metadata file (description/sample-metadata.tsv)
+        overwrite: True             # Allowed True or False, defines whether to overwrite created metadata file
+        format: '{year}-{wine}-{additive}-{material}-{rRNA}-{phase}-{biological_replica}-{technical_replica}' # napr. 2021-R-S_R1.fastq.gz
+        attributes:                 # Define type for each attribute ('int','categorical' or left empty) and specify value mapping
+            year:
+                # type: int # if not set, qiime2 infers type automatically
+                values:
+                    17: 2017
+                    18: 2018
+                    19: 2019
+                    20: 2020
+            wine:
+                type: categorical
+                values:
+                    rb: rulandske biele
+            additive:
+                type: categorical
+                values:
+                    noth: nothing added
+                    ctrl: control - commercial Saccharomyces cerevisiae only
+                    sace: Saccharomyces serevisiae
+                    mesa: Metschnikowia pulcherrima and Saccharomyces cerevisiae
+                    lasa: Lachancea thermotolerans and Saccharomyces cerevisiae
+                    must: initial must
+            material:
+                type: categorical
+                values:
+                    dna: DNA
+                    rna: RNA
+            rRNA:
+                type: categorical
+                values:
+                    16S: 16S
+                    28S: 28S
+            phase:
+                type: categorical
+                values:
+                    m0: initial must
+                    m1: must
+                    m2: fermented must
+                    m3: young wine
+                    m4: wine before filtration
+                    m5: wine after filtration
+            biological_replica:
+                type: categorical
+                values:
+                    repA: first replica
+                    repB: second replica
+                    repC: third replica
+            technical_replica:
+                type: categorical
+                values:
+                    1: 1
+                    2: 2
+                    3: 3
+
+
+qiime2_experiment:
+    dada2:
+        test1:              # label of experimental settings
+            trunc_len_f: 0    # set parameters, unset parameters are set to default values
+        test2:
+            trunc_len_f: 1
+        test3:
+            trunc_len_f: 1
+
+
+# pridat do
+qiime2:
+    import:
+        manifest:
+            method: create_manifest     # Allowed: 'create_manifest'. This creates a manifest tsv file with all input reads
+        data:
+            method: import              # Allowed: 'import'. This creates a qza from all reads that are in the created tsv manifest file
+            PHRED_offset: 33            # Allowed: '33' or '64' (33 used in Sanger and Illumina1.8, 64 used in Illumina 1.3), default: 33
+
+    preprocess:
+        demultiplex:                    # Defines adapter trimming and initial filtering of sequences on length and error rate
+            method: cutadapt            # Allowed 'cutadapt'. See https://docs.qiime2.org/2021.8/plugins/available/cutadapt/trim-paired/
+            minlen: 35                  # Minimal length of trimmed read. Shorter reads would be removed. (Must be higher or equal to 1, default: 1)
+            max_error_rate: 0.1         # Maximum allowed error rate (Must be from range 0-1, default: 0.1)
+            primer_set: 16S             # Allowed '16S','ITS','28S'. Defines primer sequences that will be trimmed. Defined in rules/shared/qiime2/preprocess/demultiplex/cutadapt
+            adapter_set: None           # Allowed 'Illumina' or 'None'. When set, sequencing adapters of that set are cut with primers, when 'None' trimmed are only primers
+            discard_undetected: False   # Whether to discard reads where adapter was not found (default: False)
+
+        dada2_experiment:               # For dada2 API see https://docs.qiime2.org/2021.8/plugins/available/dada2/denoise-paired/
+            method: dada2               # Allowed 'dada2'
+            trunc_len_f: 0              # Defines position where truncation starts on forward, discard read if shorter. If set to 0, dont do truncation. After this parameter is applied there must still be at least a 12 nucleotide overlap between the forward and reverse reads.
+            trunc_len_r: 0              # Defines position where truncation starts on reverse, discard read if shorter. If set to 0, dont do truncation. After this parameter is applied there must still be at least a 12 nucleotide overlap between the forward and reverse reads.
+            trim_left_f: 0              # How many bases will be trimmed from start on forward, set to 0 for no trimming (default: 0)
+            trim_left_r: 0              # How many bases will be trimmed from start on reverse, set to 0 for no trimming (default: 0)
+            trunc_start_qual: 5         # truncate read from the first occurence of quality lower than this value, (default: 2) If the resulting read is then shorter than `trunc-len-f` or `trunc-len-r`, it is discarded
+            max_ee_f: 4.0               # After trunc and trim, forward reads with expected error rate (calculated by dada2) higher than this value are discarded (default: 2.0)
+            max_ee_r: 4.0               # After trunc and trim, reverse reads with expected error rate (calculated by dada2) higher than this value are discarded (default: 2.0)
+            min_overlap: 12             # Minimal length of overlap required when merging forward and reverse reads (default: 12)
+            denoise_pooling: independent    # Allowed 'independent', 'pseudo'; denoise samples independently, or use pseudo-pooling (default: independent)
+            chimera_method: consensus       # Allowed 'consensus', 'pooled', 'none' (default: consensus)
+            chimera_parent_abundance: 2.0   # When tested for chimeric, this gives the minimum abundance of parents. When higher, chimera detection is less rigorous (default: 1.0)
+            num_reads_train: 1000000        # Number of reads used for training error model, lower number = faster, but less reliable model (default: 1000000)
+
+        # Report section - generates visualizations of constructed ASVs
+        report_experiment:
+            core_features:                      # Identifies core features, which are features observed in a user-defined fraction of the samples
+                method: core_features           # Allowed: 'core_features'
+                min_fraction: 0.5               # Minimum fraction of samples, must be 0-1 (default 0.5)
+                max_fraction: 1                 # Maximum fraction of samples, must be 0-1 and greater or equal than min-fraction (default 1.0)
+                steps: 11                       # Number of steps to take between `min-fraction` and `max-fraction` for core features calculations (default: 11)
+            feature_table:                      # Generates table of features and associated sequences
+                method: feature_table           # Allowed: 'feature_table'
+            export:
+                method: export                  # Allowed 'export'. DO NOT TOUCH. This tells snakelines to export each .qzv into human readable .html form
