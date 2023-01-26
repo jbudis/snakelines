@@ -2,8 +2,8 @@ def parse_trunc_len_f(wildcards):
     label = wildcards.label
     parameter = 'trunc_len_f'
 
-    if label in config['qiime2_experiment'] and parameter in config['qiime2_experiment'][label]:
-        return config['qiime2_experiment'][label][parameter]
+    if label in config['qiime2_experiment']['dada2'] and parameter in config['qiime2_experiment']['dada2'][label]:
+        return config['qiime2_experiment']['dada2'][label][parameter]
 
     method_input = config['qiime2']['preprocess']['dada2_experiment']
     return method_input.get(parameter, 0)

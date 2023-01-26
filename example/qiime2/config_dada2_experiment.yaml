@@ -66,11 +66,11 @@ samples:                            # List of sample categories to be analysed
 qiime2_experiment:
     dada2:
         test1:              # label of experimental settings
-            trunc_len_f: 0    # set parameters, unset parameters are set to default values
+            trunc_len_f: 200    # set parameters, unset parameters are set to default values
         test2:
-            trunc_len_f: 1
+            trunc_len_f: 190
         test3:
-            trunc_len_f: 1
+            trunc_len_f: 180
 
 
 # pridat do

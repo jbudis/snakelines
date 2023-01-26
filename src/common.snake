@@ -234,4 +234,4 @@ qiime2_ancom_taxa_lvls = extract_from_config(config, ['qiime2', 'analysis', 'com
 qiime2_ancom_taxa_columns = extract_from_config(config, ['qiime2', 'analysis', 'composition_analysis_taxa', 'columns'], [])
 
 dada2_experiment = extract_from_config(config, ['qiime2_experiment', 'dada2'], [])
-qiime2_dada2_experiment = list(dada2_experiment.keys()
+qiime2_dada2_experiment = list(dada2_experiment.keys())
