@@ -232,5 +232,3 @@ qiime2_heatmap_columns = extract_from_config(config, ['qiime2', 'report', 'featu
 qiime2_ancom_columns = extract_from_config(config, ['qiime2', 'analysis', 'composition_analysis', 'columns'], [])
 qiime2_ancom_taxa_lvls = extract_from_config(config, ['qiime2', 'analysis', 'composition_analysis_taxa', 'taxa_levels'], [])
 qiime2_ancom_taxa_columns = extract_from_config(config, ['qiime2', 'analysis', 'composition_analysis_taxa', 'columns'], [])
-
-qiime2_dada2_experiment = extract_from_config(config, ['qiime2_experiment', 'dada2'], [])

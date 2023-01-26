@@ -555,11 +555,11 @@ qiime2:
             output:
                 qza: expand('qiime2/preprocess/dada2_experiment/{label}/{reference}_{type}.qza',
                                         reference=pipeline.references,
-                                        label=list(qiime2_dada2_experiment.keys()),
+                                        label=list(pipeline.dada2_experiment.keys()),
                                         type=['rep-seqs', 'table', 'denoising-stats'])
 
                 qzv: expand('qiime2/preprocess/dada2_experiment/{label}/{reference}_denoising-stats.qzv',
-                                        label=list(qiime2_dada2_experiment.keys()),
+                                        label=list(pipeline.dada2_experiment.keys()),
                                         reference=pipeline.references)
 
         demultiplex:
@@ -668,18 +668,18 @@ qiime2:
             core_features:
                 output:
                     qzv: expand('qiime2/preprocess/dada2_experiment/{label}/{reference}_core_features.qzv',
-                                            label=list(qiime2_dada2_experiment.keys()),
+                                            label=list(pipeline.dada2_experiment.keys()),
                                             reference=pipeline.references)
             feature_table:
                 output:
                     qzv: expand('qiime2/preprocess/dada2_experiment/{label}/{reference}_{type}.qzv',
-                                            label=list(qiime2_dada2_experiment.keys()),
+                                            label=list(pipeline.dada2_experiment.keys()),
                                             reference=pipeline.references,
                                             type=['rep-seqs', 'table'])
             feature_heatmap:
                 output:
                     qzv: expand('qiime2/preprocess/dada2_experiment/{label}/{reference}_{column}_heatmap.qzv',
-                                            label=list(qiime2_dada2_experiment.keys()),
+                                            label=list(pipeline.dada2_experiment.keys()),
                                             reference=pipeline.references,
                                             column=qiime2_heatmap_columns)
             export:
@@ -692,28 +692,28 @@ qiime2:
                                             reference=pipeline.references)
                     denoise_report:
                         from:   expand('qiime2/preprocess/dada2_experiment/{label}/{reference}_denoising-stats/',
-                                            label=list(qiime2_dada2_experiment.keys()),
+                                            label=list(pipeline.dada2_experiment.keys()),
                                             reference=pipeline.references)
                         to:     expand('{report_dir}/{reference}/01_preprocessing_report/{label}/denoise_stats/',
-                                            label=list(qiime2_dada2_experiment.keys()),
+                                            label=list(pipeline.dada2_experiment.keys()),
                                             report_dir=config['report_dir'],
                                             reference=pipeline.references)
                     preprocessing_report:
                         from:   expand('qiime2/preprocess/dada2_experiment/{label}/{reference}_{type}/',
-                                            label=list(qiime2_dada2_experiment.keys()),
+                                            label=list(pipeline.dada2_experiment.keys()),
                                             type=['rep-seqs', 'table'],
                                             reference=pipeline.references)
                         to:     expand('{report_dir}/{reference}/01_preprocessing_report/{label}/features/{type}/',
-                                            label=list(qiime2_dada2_experiment.keys()),
+                                            label=list(pipeline.dada2_experiment.keys()),
                                             report_dir=config['report_dir'],
                                             type=['representative_sequences', 'table'],
                                             reference=pipeline.references)
                     core_features_report:
                         from:   expand('qiime2/preprocess/dada2_experiment/{label}/{reference}_core_features/',
-                                            label=list(qiime2_dada2_experiment.keys()),
+                                            label=list(pipeline.dada2_experiment.keys()),
                                             reference=pipeline.references)
                         to:     expand('{report_dir}/{reference}/01_preprocessing_report/{label}/core/',
-                                            label=list(qiime2_dada2_experiment.keys()),
+                                            label=list(pipeline.dada2_experiment.keys()),
                                             report_dir=config['report_dir'],
                                             reference=pipeline.references)
 
