@@ -178,7 +178,7 @@ qiime2:
             barplot:
                 method: barplot                     # Allowed 'barplot'. Defines the method of visualization of taxonomy assignments
             summary:
-                method: summary_asvs                # Allowed 'summary_asvs'. Puts ASV sequences with taxa information and read frequencies in one table
+                method: seq_taxa_frequencies        # Allowed 'summary_asvs'. Puts ASV sequences with taxa information and read frequencies in one table
 
         # Taxa filtering
         # !!! produced filtered table will be then used in further analysis steps below
