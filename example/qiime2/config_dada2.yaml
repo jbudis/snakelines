@@ -102,6 +102,22 @@ qiime2:
 
         # Define optional post-filtering steps (in any order) of results produced by DADA2
         post_filter:
+            filter_features:
+                method: filter_features         # Filter features from table based on frequency. Any samples with a frequency of zero after feature filtering will also be removed.
+                min_frequency: 0                # The minimum total frequency that a feature must have to be retained (default: 0).
+                min_samples: 2                  # The minimum number of samples that a feature must have to be retained (default: 0).
+                # max_frequency:                # The maximum total frequency that a feature can have to be retained. Comment out or set a very large number to skip this. (no default value).
+                # max_samples:                  # The maximum number of samples that a feature can have to be retained. Comment out or set a very large number to skip this. (no default value).
+                # remove_empty_samples: True    # (default: True)
+
+            filter_samples:
+                method: filter_samples          # Filter samples from table based on frequency. Any features with a frequency of zero after sample filtering will also be removed.
+                min_frequency:                  # The minimum total frequency that a sample must have to be retained (default: 0).
+                min_features:                   # The minimum number of features that a sample must have to be retained (default: 0).
+                # max_frequency:                # The maximum total frequency that a sample can have to be retained. Comment out or set a very large number to skip this. (no default value).
+                # max_features:                 # The maximum number of features that a sample can have to be retained. Comment out or set a very large number to skip this. (no default value).
+                # remove_empty_features: True   # (default: True)
+
             fix_seq_orientation:
                 method: fix_seq_orientation     # allowed: 'fix_seq_orientation'
                 orient_reference: unite         # Name of reference fasta sequence(s) as 'reference/{name}/{name}.fa' i.e. 'reference/unite/unite.fa'

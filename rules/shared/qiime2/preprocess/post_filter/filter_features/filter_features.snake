@@ -1,0 +1,75 @@
+def handle_optional_param(param, value):
+    if value:
+        return f'{param} {value}'
+    return ''
+
+rule qiime2__denoise_postfilter_filter_features_table:
+    """
+    Filter feature table on the features axis.
+
+    Calls 'qiime feature-table filter-features'.
+    Filter features from table based on frequency. Any samples with a frequency of zero after feature filtering will also be removed.
+
+    :input table: feature table in a current postfilter stage (or original by DADA2, if this is the first step)
+    :output filt_table: Feature table filtered on the sampe axis using input params
+    :params max_frequency: The maximum total frequency that a feature can have to be retained.
+    :params min_frequency: The minimum total frequency that a feature must have to be retained.
+    :params max_samples:  The maximum number of samples that a feature can have to be retained.
+    :params min_samples: The minimum number of samples that a feature must have to be retained.
+    """
+    input:
+        table = 'qiime2/preprocess/denoise/%s/{reference}_table.qza' % method_config['input_qiime2_type']
+    output:
+        filt_table = 'qiime2/preprocess/denoise/filter_features/{reference}_table.qza'
+    params:
+        max_frequency_arg = handle_optional_param('--p-max-frequency', method_config.get('max_frequency', None)),
+        min_frequency = method_config.get('min_frequency', 0),
+        min_samples = method_config.get('min_samples', 0),
+        max_samples_arg = handle_optional_param('--p-max-samples', method_config.get('max_samples', None)),
+        remove_empty_samples = '-p-filter-empty-samples' if method_config.get('remove_empty_samples',True) else '--p-no-filter-empty-samples'
+    log:
+        out = 'qiime2/preprocess/denoise/filter_features/log/filter_table_{reference}.log',
+        err = 'qiime2/preprocess/denoise/filter_features/log/filter_table_{reference}.err'
+    conda:
+        config['snakelines_dir'] + '/environments/qiime2.yaml'
+    shell:
+        '''
+        qiime feature-table filter-features \
+            --i-table {input.table} \
+            {params.max_frequency_arg} \
+            --p-min-frequency {params.min_frequency} \
+            --p-min-samples {params.min_samples} \
+            {params.max_samples_arg} \
+            {params.remove_empty_samples} \
+            --o-filtered-table {output.filt_table}
+
+        '''
+
+rule qiime2__denoise_postfilter_filter_features_seqs:
+    """
+    Filter feature sequences using a feature table
+
+    Calls 'qiime feature-table filter-seqs'
+    Use filtered feature table to keep only the matching sequences.
+
+    :input rep_seqs: The sequences from which features should be filtered.
+    :input table: Table containing feature ids used for id-based filtering.
+    :output filt_seqs: Filtered sequences that are not in the table.
+    """
+    input:
+        rep_seqs = 'qiime2/preprocess/denoise/%s/{reference}_rep-seqs.qza' % method_config['input_qiime2_type'],
+        table = 'qiime2/preprocess/denoise/filter_features/{reference}_table.qza',
+    output:
+        seqs = 'qiime2/preprocess/denoise/filter_features/{reference}_rep-seqs.qza',
+    log:
+        out = 'qiime2/preprocess/denoise/filter_features/log/filter_seqs_{reference}.log',
+        err = 'qiime2/preprocess/denoise/filter_features/log/filter_seqs_{reference}.err'
+    conda:
+        config['snakelines_dir'] + '/environments/qiime2.yaml'
+    shell:
+        '''
+        qiime feature-table filter-seqs \
+            --i-data {input.rep_seqs} \
+            --i-table {input.table} \
+            --o-filtered-data {output.seqs}
+        '''
