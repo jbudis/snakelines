@@ -104,7 +104,7 @@ qiime2:
         post_filter:
             asv_length_filter:
                 method: asv_length_filter       # Filters ASVs based on their length. The feature table is then synchronized.
-                min_length: 4                   # Minimum length of ASV sequence. If X, than ASV shorter than X are removed (default: 0)
+                min_length: 300                 # Minimum length of ASV sequence. If X, than ASV shorter than X are removed (default: 0)
 
             filter_features:
                 method: filter_features         # Filter features from table based on frequency. Any samples with a frequency of zero after feature filtering will also be removed.

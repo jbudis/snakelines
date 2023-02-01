@@ -52,6 +52,8 @@ rule qiime2__denoise_postfilter_filter_seqs_length_table:
         '''
         qiime feature-table filter-features \
             --i-table {input.table} \
-            --m-metadata-file {input.seqs}
-            --o-filtered-table {output.filt_table}
+            --m-metadata-file {input.seqs} \
+            --o-filtered-table {output.filt_table} \
+            1> {log.out} \
+            2> {log.err};
         '''

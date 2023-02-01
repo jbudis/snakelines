@@ -27,7 +27,7 @@ rule qiime2__denoise_postfilter_filter_samples_table:
         min_frequency = method_config.get('min_frequency', 0),
         min_features = method_config.get('min_features', 0),
         max_features_arg = handle_optional_param('--p-max-features', method_config.get('max_features', None)),
-        remove_empty_features = '-p-filter-empty-features' if method_config.get('remove_empty_features',True) else '--p-no-filter-empty-features'
+        remove_empty_features = '--p-filter-empty-features' if method_config.get('remove_empty_features',True) else '--p-no-filter-empty-features'
     log:
         out = 'qiime2/preprocess/denoise/filter_samples/log/filter_table_{reference}.log',
         err = 'qiime2/preprocess/denoise/filter_samples/log/filter_table_{reference}.err'
@@ -71,5 +71,7 @@ rule qiime2__denoise_postfilter_filter_samples_seqs:
         qiime feature-table filter-seqs \
             --i-data {input.rep_seqs} \
             --i-table {input.table} \
-            --o-filtered-data {output.seqs}
+            --o-filtered-data {output.seqs} \
+            1> {log.out} \
+            2> {log.err};
         '''
