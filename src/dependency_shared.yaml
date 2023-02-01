@@ -591,11 +591,13 @@ qiime2:
                                         reference=pipeline.references)
         post_filter:
             filter_features:
-                output: expand('qiime2/preprocess/denoise/filter_features/{reference}_{type}.qza',
+                output:
+                    feature_table: expand('qiime2/preprocess/denoise/filter_features/{reference}_{type}.qza',
                                         reference=pipeline.references,
                                         type=['rep-seqs', 'table'])
             filter_samples:
-                output: expand('qiime2/preprocess/denoise/filter_features/{reference}_{type}.qza',
+                output:
+                    feature_table: expand('qiime2/preprocess/denoise/filter_features/{reference}_{type}.qza',
                                         reference=pipeline.references,
                                         type=['rep-seqs', 'table'])
             alignment_filter:
