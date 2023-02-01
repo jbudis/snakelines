@@ -1,0 +1,58 @@
+rule qiime2__denoise_postfilter_filter_seqs_length:
+    """
+    Filter ASV sequences based on their length.
+
+    Calls 'qiime feature-table filter-seqs'.
+
+    :input rep_seqs: The sequences from which features should be filtered.
+    :input table: Table containing feature ids used for id-based filtering.
+    :params min_length: The minimum length of ASV required to be retained.
+    :output filt_seqs: Filtered sequences that are not in the table.
+    """
+    input:
+        rep_seqs = 'qiime2/preprocess/denoise/%s/{reference}_rep-seqs.qza' % method_config['input_qiime2_type'],
+    output:
+        seqs = 'qiime2/preprocess/denoise/asv_length_filter/{reference}_rep-seqs.qza',
+    params:
+        min_length = method_config.get('min_length', 0),
+    log:
+        out = 'qiime2/preprocess/denoise/asv_length_filter/log/filter_seqs_{reference}.log',
+        err = 'qiime2/preprocess/denoise/asv_length_filter/log/filter_seqs_{reference}.err'
+    conda:
+        config['snakelines_dir'] + '/environments/qiime2.yaml'
+    shell:
+        '''
+        qiime feature-table filter-seqs \
+            --i-data {input.rep_seqs} \
+            --m-metadata-file {input.rep_seqs} \
+            --p-where 'length(sequence) >= {params.min_length}' \
+            --o-filtered-data {output.seqs}
+        '''
+
+rule qiime2__denoise_postfilter_filter_seqs_length_table:
+    """
+    Filter feature table using length-filtered sequences
+
+    Calls 'qiime feature-table filter-features'.
+
+    :input table: feature table in a current postfilter stage (or original by DADA2, if this is the first step)
+    :input seqs: filtered ASVs to use for filtering the table, i.e. to synchronize
+    :output filt_table: Feature table filtered on the sampe axis using input params
+    """
+    input:
+        table = 'qiime2/preprocess/denoise/%s/{reference}_table.qza' % method_config['input_qiime2_type'],
+        seqs = 'qiime2/preprocess/denoise/asv_length_filter/{reference}_rep-seqs.qza',
+    output:
+        filt_table = 'qiime2/preprocess/denoise/asv_length_filter/{reference}_table.qza'
+    log:
+        out = 'qiime2/preprocess/denoise/asv_length_filter/log/filter_table_{reference}.log',
+        err = 'qiime2/preprocess/denoise/asv_length_filter/log/filter_table_{reference}.err'
+    conda:
+        config['snakelines_dir'] + '/environments/qiime2.yaml'
+    shell:
+        '''
+        qiime feature-table filter-features \
+            --i-table {input.table} \
+            --m-metadata-file {input.seqs}
+            --o-filtered-table {output.filt_table}
+        '''

@@ -16,6 +16,7 @@ rule qiime2__denoise_postfilter_filter_samples_table:
     :params min_frequency: The minimum total frequency that a sample must have to be retained.
     :params max_features:  The maximum number of features that a sample can have to be retained.
     :params min_features: The minimum number of features that a sample must have to be retained.
+    :params remove_empty_features: Whether to remove features that no longer have any samples.
     """
     input:
         table = 'qiime2/preprocess/denoise/%s/{reference}_table.qza' % method_config['input_qiime2_type']

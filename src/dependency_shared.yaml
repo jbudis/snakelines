@@ -590,6 +590,11 @@ qiime2:
                 qzv: expand('qiime2/preprocess/report/{reference}_denoising-stats.qzv',
                                         reference=pipeline.references)
         post_filter:
+            asv_length_filter:
+                output:
+                    feature_table: expand('qiime2/preprocess/denoise/asv_length_filter/{reference}_{type}.qza',
+                                        reference=pipeline.references,
+                                        type=['rep-seqs', 'table'])
             filter_features:
                 output:
                     feature_table: expand('qiime2/preprocess/denoise/filter_features/{reference}_{type}.qza',
@@ -597,7 +602,7 @@ qiime2:
                                         type=['rep-seqs', 'table'])
             filter_samples:
                 output:
-                    feature_table: expand('qiime2/preprocess/denoise/filter_features/{reference}_{type}.qza',
+                    feature_table: expand('qiime2/preprocess/denoise/filter_samples/{reference}_{type}.qza',
                                         reference=pipeline.references,
                                         type=['rep-seqs', 'table'])
             alignment_filter:
