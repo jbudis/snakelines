@@ -5,9 +5,8 @@ rule qiime2__denoise_postfilter_filter_seqs_length:
     Calls 'qiime feature-table filter-seqs'.
 
     :input rep_seqs: The sequences from which features should be filtered.
-    :input table: Table containing feature ids used for id-based filtering.
     :params min_length: The minimum length of ASV required to be retained.
-    :output filt_seqs: Filtered sequences that are not in the table.
+    :output seqs: Filtered sequences that are not in the table.
     """
     input:
         rep_seqs = 'qiime2/preprocess/denoise/%s/{reference}_rep-seqs.qza' % method_config['input_qiime2_type'],
