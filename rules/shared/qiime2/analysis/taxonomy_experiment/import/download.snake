@@ -1,0 +1,46 @@
+rule qiime2__rescript_taxonomy_download:
+    """
+    Download prepared silva dataset
+
+    Calls 'qiime rescript get-silva-data'
+
+    :input rep_seqs: qiime artifact of representative sequences
+    :input classifier: qza artifact of trained classifier
+    :output taxonomy: taxonomy of OTUs in samples, qiime artifact of type FeatureData[Taxonomy]
+    :params tmp_dir: path to temporary directory, because job requires temporary a lot of free disk space, default /tmp might not be enough and path to mounted storage might be used instead
+    """
+    output:
+        ref_reads = 'reference/{reference}/qiime2/ref_reads.qza',
+        ref_tax = 'reference/{reference}/qiime2/ref_tax.qza'
+    params:
+        ref_dir = directory('reference/{reference}/'),
+        ref_reads_rna = 'reference/{reference}/qiime2/ref_reads_rna.qza',
+        ref_qiime2_dir = directory('reference/{reference}/qiime2/'),
+        version = method_config.get('version', 138),
+        target_type = method_config.get('type', 'SSURef_NR99'),
+        species_labels = '--p-include-species-labels' if method_config.get('include_species_labels', False) else ''
+    conda:
+        config['snakelines_dir'] + '/environments/qiime2_rescript.yaml'
+    log:
+        out = 'qiime2/taxonomy/log/{reference}_download.out',
+        err = 'qiime2/taxonomy/log/{reference}_download.err'
+    threads:
+        int(config['threads'])
+    shell:
+        '''
+        mkdir -p {params.ref_dir};
+        mkdir -p {params.ref_qiime2_dir};
+
+        qiime rescript get-silva-data \
+            --p-version {params.version} \
+            --p-target {params.target_type} \
+            {params.species_labels} \
+            --o-silva-sequences {params.ref_reads_rna} \
+            --o-silva-taxonomy {output.ref_tax} \
+            1> {log.out} \
+            2> {log.err}
+
+        qiime rescript reverse-transcribe \
+            --i-rna-sequences {params.ref_reads_rna} \
+            --o-dna-sequences {output.ref_reads}
+        '''

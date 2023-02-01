@@ -1,0 +1,43 @@
+rule qiime2__taxonomy_import_ref_reads:
+    """
+    Import reference reads to obtain the qza artifact.
+
+    :input ref_reads: fasta reference file, e.g. reference/silva-16S/silva-16S.fa
+    :output ref_reads: qiime artifact of imported fasta file
+    """
+    input:
+        ref_reads = 'reference/{reference}/{reference}.fa'
+    output:
+        ref_reads = 'reference/{reference}/qiime2/ref_reads.qza'
+    conda:
+        config['snakelines_dir'] + '/environments/qiime2.yaml'
+    shell:
+        '''
+        qiime tools import \
+            --type 'FeatureData[Sequence]' \
+            --input-path {input.ref_reads} \
+            --output-path {output.ref_reads}
+        '''
+
+
+rule qiime2__taxonomy_import_ref_tax:
+    """
+    Import reference taxonomy to obtain the qza artifact.
+
+    :input ref_tax: taxonomy reference file, e.g. reference/silva-16S/silva-16S.tax
+    :output ref_tax: qiime artifact of imported reference taxonomy
+    """
+    input:
+        ref_tax = 'reference/{reference}/{reference}.tax'
+    output:
+        ref_tax = 'reference/{reference}/qiime2/ref_tax.qza'
+    conda:
+        config['snakelines_dir'] + '/environments/qiime2.yaml'
+    shell:
+        '''
+        qiime tools import \
+            --type 'FeatureData[Taxonomy]' \
+            --input-format HeaderlessTSVTaxonomyFormat \
+            --input-path {input.ref_tax} \
+            --output-path {output.ref_tax}
+        '''

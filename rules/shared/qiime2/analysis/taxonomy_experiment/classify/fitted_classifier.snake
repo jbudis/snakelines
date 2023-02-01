@@ -1,0 +1,66 @@
+rule qiime2__taxonomy_fit_naive_bayes:
+    """
+    Create a scikit-learn naive_bayes classifier for reads.
+
+    Calls 'qiime feature-classifier fit-classifier-naive-bayes'.
+
+    :input ref_reads: qza artifact of imported reference sequences
+    :input ref_tax: qza artifact of imported reference taxonomy
+    :output classifier: qza artifact of trained classifier
+    """
+    input:
+        ref_reads = 'reference/{reference}/qiime2/ref_reads.qza',
+        ref_tax = 'reference/{reference}/qiime2/ref_tax.qza'
+    output:
+        classifier = 'reference/{reference}/qiime2/classifier.qza'
+    log:
+        out = 'qiime2/taxonomy/log/{reference}_fit_nb.out',
+        err = 'qiime2/taxonomy/log/{reference}_fit_nb.err'
+    conda:
+        config['snakelines_dir'] + '/environments/qiime2.yaml'
+    shell:
+        '''
+        qiime feature-classifier fit-classifier-naive-bayes \
+            --i-reference-reads {input.ref_reads} \
+            --i-reference-taxonomy {input.ref_tax} \
+            --o-classifier {output.classifier} \
+            1> {log.out} \
+            2> {log.err}
+        '''
+
+rule qiime2__taxonomy_fitted_classifier:
+    """
+    Classify reads by taxon using a fitted classifier
+
+    Calls 'qiime feature-classifier classify-sklearn'.
+
+    :input rep_seqs: qiime artifact of representative sequences
+    :input classifier: qza artifact of trained classifier
+    :output taxonomy: taxonomy of OTUs in samples, qiime artifact of type FeatureData[Taxonomy]
+    :params tmp_dir: path to temporary directory, because job requires temporary a lot of free disk space, default /tmp might not be enough and path to mounted storage might be used instead
+    """
+    input:
+        rep_seqs = 'qiime2/dada2_experiment/preprocess/{label}/{reference}_rep-seqs.qza',
+        classifier = 'reference/{reference}/qiime2/classifier.qza'
+    output:
+        taxonomy  = 'qiime2/dada2_experiment/taxonomy/{label}/{reference}_tax.qza'
+    params:
+        confidence = method_config.get('confidence_threshold', 0.7)
+    conda:
+        config['snakelines_dir'] + '/environments/qiime2.yaml'
+    log:
+        out = 'qiime2/dada2_experiment/taxonomy/{label}/log/{reference}_classify.out',
+        err = 'qiime2/dada2_experiment/taxonomy/{label}/log/{reference}_classify.err'
+    threads:
+        int(config['threads'])
+    shell:
+        '''
+        qiime feature-classifier classify-sklearn \
+            --i-classifier {input.classifier} \
+            --i-reads {input.rep_seqs} \
+            --p-n-jobs {threads} \
+            --p-confidence {params.confidence} \
+            --o-classification {output.taxonomy} \
+            1> {log.out} \
+            2> {log.err}
+        '''

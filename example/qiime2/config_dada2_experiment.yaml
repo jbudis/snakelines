@@ -107,13 +107,9 @@ qiime2:
             num_reads_train: 1000000        # Number of reads used for training error model, lower number = faster, but less reliable model (default: 1000000)
 
         # Report section - generates visualizations of constructed ASVs
-        report_experiment:
-            core_features:                      # Identifies core features, which are features observed in a user-defined fraction of the samples
-                method: core_features           # Allowed: 'core_features'
-                min_fraction: 0.5               # Minimum fraction of samples, must be 0-1 (default 0.5)
-                max_fraction: 1                 # Maximum fraction of samples, must be 0-1 and greater or equal than min-fraction (default 1.0)
-                steps: 11                       # Number of steps to take between `min-fraction` and `max-fraction` for core features calculations (default: 11)
-            feature_table:                      # Generates table of features and associated sequences
-                method: feature_table           # Allowed: 'feature_table'
+        report:
             export:
                 method: export                  # Allowed 'export'. DO NOT TOUCH. This tells snakelines to export each .qzv into human readable .html form
+
+    analysis:
+        taxonomy_experiment:

@@ -6,10 +6,10 @@ rule qiime2__summarize_feature_table:
     :output visualization:
     """
     input:
-        table = 'qiime2/preprocess/dada2_experiment/{label}/{reference}_table.qza',
+        table = 'qiime2/dada2_experiment/preprocess/{label}/{reference}_table.qza',
         metadata = 'description/sample-metadata.tsv'
     output:
-        vis_table = 'qiime2/preprocess/dada2_experiment/{label}/{reference}_table.qzv'
+        vis_table = 'qiime2/dada2_experiment/preprocess/{label}/{reference}_table.qzv'
     conda:
         config['snakelines_dir'] + '/environments/qiime2.yaml'
     shell:
@@ -28,9 +28,9 @@ rule qiime2__tabulate_seqs:
     :output visualization: qiime2 visualization artifact
     """
     input:
-        rep_seqs = 'qiime2/preprocess/dada2_experiment/{label}/{reference}_rep-seqs.qza'
+        rep_seqs = 'qiime2/dada2_experiment/preprocess/{label}/{reference}_rep-seqs.qza'
     output:
-        vis_rep_seqs = 'qiime2/preprocess/dada2_experiment/{label}/{reference}_rep-seqs.qzv'
+        vis_rep_seqs = 'qiime2/dada2_experiment/preprocess/{label}/{reference}_rep-seqs.qzv'
     conda:
         config['snakelines_dir'] + '/environments/qiime2.yaml'
     shell:

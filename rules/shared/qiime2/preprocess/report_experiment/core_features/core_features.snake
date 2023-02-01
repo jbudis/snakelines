@@ -13,9 +13,9 @@ rule qiime2__core_features:
     :output visualization: core features as qzv
     """
     input:
-        table = 'qiime2/preprocess/dada2_experiment/{label}/{reference}_table.qza'
+        table = 'qiime2/dada2_experiment/preprocess/{label}/{reference}_table.qza'
     output:
-        core_features = 'qiime2/preprocess/dada2_experiment/{label}/{reference}_core_features.qzv'
+        core_features = 'qiime2/dada2_experiment/preprocess/{label}/{reference}_core_features.qzv'
     params:
         min_fraction = method_config.get('min_fraction',0.5),
         max_fraction = method_config.get('max_fraction',1.0),
