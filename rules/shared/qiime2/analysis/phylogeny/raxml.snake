@@ -13,7 +13,7 @@ rule qiime2__phylogeny_align_to_tree_mafft_raxml:
     :output rooted_tree: rooted tree, qiime artifact of type Phylogeny[Rooted]
     """
     input:
-        rep_seqs  = 'qiime2/preprocess/denoise/%s/{reference}_rep-seqs.qza' % pipeline.qiime2_type
+        rep_seqs  = 'qiime2/preprocess/denoise/%s/{reference}_rep-seqs.qza' % pipeline.qiime2_post_taxa
     output:
         alignment = 'qiime2/analysis/alignment/{reference}_rep-aligned-seqs.qza',
         masked_alignment = 'qiime2/analysis/alignment/{reference}_rep-masked-aligned-seqs.qza',
