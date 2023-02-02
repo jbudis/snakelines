@@ -6,74 +6,19 @@ samples:                            # List of sample categories to be analysed
     - name: .*                      # Use all reads in reads/original
       reference: unite-fungi              # Reference genome for reads in the category (reference/silva-16S-90-filtered/silva-16S-90-filtered.fa)
       download: False                # Whether reference will be downloaded in analysis or not
-      description:                  # Creates metadata file (description/sample-metadata.tsv)
-        overwrite: True             # Allowed True or False, defines whether to overwrite created metadata file
-        format: '{year}-{wine}-{additive}-{material}-{rRNA}-{phase}-{biological_replica}-{technical_replica}' # napr. 2021-R-S_R1.fastq.gz
-        attributes:                 # Define type for each attribute ('int','categorical' or left empty) and specify value mapping
-            year:
-                # type: int # if not set, qiime2 infers type automatically
-                values:
-                    17: 2017
-                    18: 2018
-                    19: 2019
-                    20: 2020
-            wine:
-                type: categorical
-                values:
-                    rb: rulandske biele
-            additive:
-                type: categorical
-                values:
-                    noth: nothing added
-                    ctrl: control - commercial Saccharomyces cerevisiae only
-                    sace: Saccharomyces serevisiae
-                    mesa: Metschnikowia pulcherrima and Saccharomyces cerevisiae
-                    lasa: Lachancea thermotolerans and Saccharomyces cerevisiae
-                    must: initial must
-            material:
-                type: categorical
-                values:
-                    dna: DNA
-                    rna: RNA
-            rRNA:
-                type: categorical
-                values:
-                    16S: 16S
-                    28S: 28S
-            phase:
-                type: categorical
-                values:
-                    m0: initial must
-                    m1: must
-                    m2: fermented must
-                    m3: young wine
-                    m4: wine before filtration
-                    m5: wine after filtration
-            biological_replica:
-                type: categorical
-                values:
-                    repA: first replica
-                    repB: second replica
-                    repC: third replica
-            technical_replica:
-                type: categorical
-                values:
-                    1: 1
-                    2: 2
-                    3: 3
 
 
 qiime2_experiment:
     dada2:
         test1:                  # label of experimental settings, this denotes a separate subfolder in report directory
             trunc_len_f: 200    # set parameters, unset parameters uses values from dada2_experiment below (or default if not set).
+            max_ee_f: 3.0
         test2:
-            trunc_len_f: 190
+            max_ee_f: 2.0
         test3:
-            trunc_len_f: 180
+            chimera_parent_abundance: 1.0
 
 
-# pridat do
 qiime2:
     import:
         manifest:
