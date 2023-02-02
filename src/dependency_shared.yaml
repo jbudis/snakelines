@@ -543,12 +543,6 @@ qiime2:
             output:
                 qza: expand('qiime2/import/{reference}.qza',
                                         reference=pipeline.references)
-                metadata:
-                    from: expand('qiime2/import/sample-metadata.tsv')
-
-                    to:   expand('{report_dir}/{reference}/00_import_report/sample-metadata.tsv',
-                                        report_dir=config['report_dir'],
-                                        reference=pipeline.references)
 
     preprocess:
         dada2_experiment:

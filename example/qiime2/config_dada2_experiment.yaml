@@ -52,7 +52,7 @@ qiime2:
             num_reads_train: 1000000        # Number of reads used for training error model, lower number = faster, but less reliable model (default: 1000000)
 
         # Report section - generates visualizations of constructed ASVs
-        report:
+        report_experiment:
             export:
                 method: export                  # Allowed 'export'. DO NOT TOUCH. This tells snakelines to export each .qzv into human readable .html form
 
