@@ -65,8 +65,8 @@ samples:                            # List of sample categories to be analysed
 
 qiime2_experiment:
     dada2:
-        test1:              # label of experimental settings
-            trunc_len_f: 200    # set parameters, unset parameters are set to default values
+        test1:                  # label of experimental settings, this denotes a separate subfolder in report directory
+            trunc_len_f: 200    # set parameters, unset parameters uses values from dada2_experiment below (or default if not set).
         test2:
             trunc_len_f: 190
         test3:
@@ -113,3 +113,19 @@ qiime2:
 
     analysis:
         taxonomy_experiment:
+            import:                                 # Trains a classifier using reference reads and taxonomy
+                method: import_reference            # Allowed 'import_reference', 'silva_download', if download - set download to True on the eight line in this config
+                version: 138                        # Define Silva version if using 'silva_download'
+                type: SSURef_NR99                   # Define type for Silva DB if using 'silva_download'
+                include_species_labels: False       # Whether to include labels for species level when using 'silva_download'. Not recommended, as SILVA does not curate the species-level taxonomy
+            classify:
+                method: fitted_classifier           # Allowed 'fitted_classifier'
+                confidence_threshold: 0.7           # Taxonomy classification is limited at tax. depth where confidence is lower than this value (default: 0.7), either float from 0-1 range, or "disable" to disable confidence calculation, or '0' to calculate confidence but not apply it
+                blast_max_hits: 10                  # Int, must be higher than 0. Valid for 'consensus_blast'. Defines the maximum number of hits to keep for each query. First N hits in the reference DB that exceed perc-identity similarity to query will be chosen (default: 10)
+                blast_min_identitity: 0.8           # Must be 0-1. Valid for 'consensus_blast'. Defines the minimum percent identity of match to query, if lower, match is discarded (default 0.8)
+                blast_min_coverage: 0.8             # Must be 0-1. Valid for 'consensus_blast'. Reject match if query alignment coverage per high-scoring pair is lower (default 0.8)
+                blast_strand: both                  # Allowed: 'both', 'plus', 'minus'. Valid for 'consensus_blast'. Defines the direction to use when aligning against reference DB (default 'both')
+                blast_evalue: 0.001                 # Valid for 'consensus_blast'. Defines expectation value (E) threshold which must be kept so hits will not be discarded (default 0.001)
+                blast_min_consensus: 0.51           # Must be 0.5-1. Valid for 'consensus_blast'. Minimum fraction of assignments must match top hit to be accepted as consensus assignment (default 0.51)
+            barplot:
+                method: barplot                     # Allowed 'barplot'. Defines the method of visualization of taxonomy assignments
