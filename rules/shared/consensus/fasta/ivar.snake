@@ -21,8 +21,9 @@ rule ivar__create_consensus_fasta:
             -d 0 \
             -Q 0 \
             {input.bam} \
+            2> {log.err} \
         | ivar consensus \
             -p {params.out_prefix} \
         1> {log.out} \
-        2> {log.err}
+        2>> {log.err}
         """
