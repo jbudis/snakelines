@@ -15,5 +15,14 @@ rule ivar__create_consensus_fasta:
         config['snakelines_dir'] + '/environments/ivar_consensus.yaml'
     shell:
         """
-        samtools mpileup -aa -A -d 0 -Q 0 {input.bam} | ivar consensus -p {params.out_prefix}
+        samtools mpileup \
+            -aa \
+            -A \
+            -d 0 \
+            -Q 0 \
+            {input.bam} \
+        | ivar consensus \
+            -p {params.out_prefix} \
+        1> {log.out} \
+        2> {log.err}
         """
