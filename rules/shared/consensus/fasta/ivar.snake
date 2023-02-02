@@ -1,0 +1,19 @@
+rule ivar__create_consensus_fasta:
+    """
+    Create consensus sequence using samtools and ivar
+    """
+    input:
+        bam   = 'mapping/{{reference}}/{map_type}/{{sample}}.bam'.format(map_type=pipeline.postprocessed_map_type),
+    output:
+        fasta = 'consensus/{reference}-{panel}/{sample}.fa'
+    params:
+        out_prefix = 'consensus/{reference}-{panel}/{sample}'
+    log:
+        out = 'consensus/{reference}-{panel}/log/{sample}.fa.out',
+        err = 'consensus/{reference}-{panel}/log/{sample}.fa.err'
+    conda:
+        config['snakelines_dir'] + '/environments/ivar_consensus.yaml'
+    shell:
+        """
+        samtools mpileup -aa -A -d 0 -Q 0 {input.bam} | ivar consensus -p {params.out_prefix}
+        """
