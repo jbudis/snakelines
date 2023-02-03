@@ -85,10 +85,17 @@ variant:                                    # Identify variation in reads given 
         summary:
             method: custom
 
-consensus:                          # consesnus sequence
-    fasta:                          # create consesnus sequence based on vcf of a sample and reference fasta
-        method: bcftools            # Allowed: 'bcftools' 'ivar'
-        mask_lte_coverage: 2        # mask bases with N where coverage is lower than or equal to parameter. Valid for 'bcftools'
+consensus:                              # consensus sequence
+    fasta:                              # create consesnus sequence based on vcf of a sample and reference fasta
+        method: bcftools                # Allowed: 'bcftools', 'ivar'
+        mask_lte_coverage: 4            # Valid for 'bcftools'. Mask bases with N where coverage is lower than or equal to parameter.
+        count_orphans: False            # Valid for ivar. True or False (def: False), whether to count anomalous read pairs in variant calling/
+        max_depth: 8000                 # Valid for ivar. Int (def: 8000), limits the number of reads to load in memory per input file. Setting to 0 removes the limit.
+        min_mapping_quality: 0          # Valid for ivar. Int (def: 0), minimum mapping quality for an alignment to be used.
+        min_base_quality: 13            # Valid for ivar. Int (def: 13), minimum base quality for a base to be considered. Setting to 0 make the overlapping bases reappear, albeit with 0 quality.
+        ivar_quality_threshold: 20      # Valid for ivar. Int, (def: 20), minimum quality score threshold to count base.
+        ivar_frequency_threshold: 0     # Valid for ivar. Float, range [0-1] (default: 0), minimum frequency threshold to call consensus.
+        ivar_min_depth: 10              # Valid for ivar. Int (def: 10), minimum depth to call consensus.
 
     summary:
         method: cat                 # concatenate consensus sequences from the samples into a single file
