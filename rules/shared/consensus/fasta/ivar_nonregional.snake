@@ -1,11 +1,10 @@
-rule ivar__create_consensus_fasta:
+rule ivar__create_consensus_fasta_nonregional:
     """
     Create consensus sequence using samtools and ivar
 
     Calls 'samtools mpileup' piped into 'ivar consensus'.
 
     :input bam: mapping output in the final postprocessed stage.
-    :input fai: indexed fasta to obtain regions.
     :param count_orphans: True or False (def: False), whether to count anomalous read pairs in variant calling
     :param no_base_alignment_quality: True or False (def: False), disable base alignment quality.
     :param max_depth: Int (def: 8000), limits the number of reads to load in memory per input file. Setting to 0 removes the limit.
@@ -18,7 +17,6 @@ rule ivar__create_consensus_fasta:
     """
     input:
         bam   = 'mapping/{{reference}}/{map_type}/{{sample}}.bam'.format(map_type=pipeline.postprocessed_map_type),
-        fai   = 'reference/{reference}/{reference}.fa.fai',
     output:
         fasta = 'consensus/{reference}-{panel}/{sample}.fa'
     params:
@@ -26,8 +24,8 @@ rule ivar__create_consensus_fasta:
         count_orphans = '--count-orphans' if method_config.get('count_orphans', False) else '',
         max_depth = method_config.get('max_depth', 8000),
         min_mapping_quality = method_config.get('min_mapping_quality', 0),
-        min_base_quality = method_config.get('min_base_quality', 13),
         no_base_alignment_quality = '--no-BAQ' if method_config.get('no_base_alignment_quality', False) else '',
+        min_base_quality = method_config.get('min_base_quality', 13),
         ivar_quality_threshold = method_config.get('ivar_quality_threshold', 20),
         ivar_frequency_threshold = method_config.get('ivar_frequency_threshold', 0),
         ivar_min_depth = method_config.get('ivar_min_depth', 10),
@@ -37,31 +35,21 @@ rule ivar__create_consensus_fasta:
     conda:
         config['snakelines_dir'] + '/environments/ivar_consensus.yaml'
     shell:
-        '''
-        for REF in `cut -f 1 {input.fai}`; do \
-            samtools mpileup \
-                --region $REF \
-                {params.no_base_alignment_quality} \
-                -aa \
-                {params.count_orphans} \
-                --max-depth {params.max_depth} \
-                --min-MQ {params.min_mapping_quality} \
-                --min-BQ {params.min_base_quality} \
-                {input.bam} \
-                2> {log.err} \
-            | ivar consensus \
-                -p {params.out_prefix}_$REF \
-                -i {wildcards.sample}_$REF \
-                -q {params.ivar_quality_threshold} \
-                -t {params.ivar_frequency_threshold} \
-                -m {params.ivar_min_depth} \
-                1> {log.out} \
-                2>> {log.err}; \
-            OUT_FILE="{params.out_prefix}_$REF".fa; \
-            QUAL_FILE="{params.out_prefix}_$REF".qual.txt; \
-            cat $OUT_FILE \
-                >> {output.fasta}; \
-            rm $OUT_FILE; \
-            rm $QUAL_FILE; \
-        done;
-        '''
+        """
+        samtools mpileup \
+            {params.no_base_alignment_quality} \
+            -aa \
+            {params.count_orphans} \
+            --max-depth {params.max_depth} \
+            --min-MQ {params.min_mapping_quality} \
+            --min-BQ {params.min_base_quality} \
+            {input.bam} \
+            2> {log.err} \
+        | ivar consensus \
+            -p {params.out_prefix} \
+            -q {params.ivar_quality_threshold} \
+            -t {params.ivar_frequency_threshold} \
+            -m {params.ivar_min_depth} \
+        1> {log.out} \
+        2>> {log.err}
+        """
