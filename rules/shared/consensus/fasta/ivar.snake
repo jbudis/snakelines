@@ -50,7 +50,7 @@ rule ivar__create_consensus_fasta:
                 2> {log.err} \
             | ivar consensus \
                 -p {wildcards.sample}_$REF \
-                -i $REF \
+                -i {wildcards.sample}_$REF \
                 -q {params.ivar_quality_threshold} \
                 -t {params.ivar_frequency_threshold} \
                 -m {params.ivar_min_depth} \
