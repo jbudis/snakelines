@@ -56,10 +56,11 @@ rule ivar__create_consensus_fasta:
                 -m {params.ivar_min_depth} \
                 1> {log.out} \
                 2>> {log.err}; \
-            out_file="{wildcards.sample}_$REF"; \
-            out_file+=".fa"; \
-            cat $out_file \
+            OUT_FILE="{wildcards.sample}_$REF".fa; \
+            QUAL_FILE="{wildcards.sample}_$REF".qual.txt; \
+            cat $OUT_FILE \
                 >> {output.fasta}; \
-            rm $out_file; \
+            rm $OUT_FILE; \
+            rm $QUAL_FILE; \
         done;
         '''
