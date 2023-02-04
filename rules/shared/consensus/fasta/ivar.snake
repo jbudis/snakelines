@@ -5,7 +5,9 @@ rule ivar__create_consensus_fasta:
     Calls 'samtools mpileup' piped into 'ivar consensus'.
 
     :input bam: mapping output in the final postprocessed stage.
-    :param count_orphans: True or False (def: False), whether to count anomalous read pairs in variant calling/
+    :input fai: indexed fasta to obtain regions.
+    :param count_orphans: True or False (def: False), whether to count anomalous read pairs in variant calling
+    :param no_base_alignment_quality: True or False (def: False), disable base alignment quality.
     :param max_depth: Int (def: 8000), limits the number of reads to load in memory per input file. Setting to 0 removes the limit.
     :param min_mapping_quality: Int (def: 0), minimum mapping quality for an alignment to be used.
     :param min_base_quality: Int (def: 13), minimum base quality for a base to be considered. Setting to 0 make the overlapping bases reappear, albeit with 0 quality.
@@ -16,7 +18,7 @@ rule ivar__create_consensus_fasta:
     """
     input:
         bam   = 'mapping/{{reference}}/{map_type}/{{sample}}.bam'.format(map_type=pipeline.postprocessed_map_type),
-        reference/{reference}/{reference}.fa.fai
+        fai   = 'reference/{reference}/{reference}.fa.fai',
     output:
         fasta = 'consensus/{reference}-{panel}/{sample}.fa'
     params:
@@ -34,7 +36,7 @@ rule ivar__create_consensus_fasta:
     conda:
         config['snakelines_dir'] + '/environments/ivar_consensus.yaml'
     shell:
-        """
+        '''
         for REF in `cut -f 1 {input.fai}`; do \
             samtools mpileup \
                 --region $REF \
@@ -47,15 +49,17 @@ rule ivar__create_consensus_fasta:
                 {input.bam} \
                 2> {log.err} \
             | ivar consensus \
-                -p $REF \
+                -p {wildcards.sample}_$REF \
                 -i $REF \
                 -q {params.ivar_quality_threshold} \
                 -t {params.ivar_frequency_threshold} \
                 -m {params.ivar_min_depth} \
                 1> {log.out} \
                 2>> {log.err}; \
-            cat ${REF}.fa \
+            out_file="{wildcards.sample}_$REF"; \
+            out_file+=".fa"; \
+            cat $out_file \
                 >> {output.fasta}; \
-            rm ${REF}.fa; \
+            rm $out_file; \
         done;
-        """
+        '''

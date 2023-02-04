@@ -1,11 +1,12 @@
-rule ivar__create_consensus_fasta:
+rule ivar__create_consensus_fasta_nonregional:
     """
     Create consensus sequence using samtools and ivar
 
     Calls 'samtools mpileup' piped into 'ivar consensus'.
 
     :input bam: mapping output in the final postprocessed stage.
-    :param count_orphans: True or False (def: False), whether to count anomalous read pairs in variant calling/
+    :param count_orphans: True or False (def: False), whether to count anomalous read pairs in variant calling
+    :param no_base_alignment_quality: True or False (def: False), disable base alignment quality.
     :param max_depth: Int (def: 8000), limits the number of reads to load in memory per input file. Setting to 0 removes the limit.
     :param min_mapping_quality: Int (def: 0), minimum mapping quality for an alignment to be used.
     :param min_base_quality: Int (def: 13), minimum base quality for a base to be considered. Setting to 0 make the overlapping bases reappear, albeit with 0 quality.
@@ -23,6 +24,7 @@ rule ivar__create_consensus_fasta:
         count_orphans = '--count-orphans' if method_config.get('count_orphans', False) else '',
         max_depth = method_config.get('max_depth', 8000),
         min_mapping_quality = method_config.get('min_mapping_quality', 0),
+        no_base_alignment_quality = '--no-BAQ' if method_config.get('no_base_alignment_quality', False) else '',
         min_base_quality = method_config.get('min_base_quality', 13),
         ivar_quality_threshold = method_config.get('ivar_quality_threshold', 20),
         ivar_frequency_threshold = method_config.get('ivar_frequency_threshold', 0),
@@ -35,6 +37,7 @@ rule ivar__create_consensus_fasta:
     shell:
         """
         samtools mpileup \
+            {params.no_base_alignment_quality} \
             -aa \
             {params.count_orphans} \
             --max-depth {params.max_depth} \
