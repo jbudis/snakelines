@@ -1,0 +1,43 @@
+rule qiime2__feature_table_transpose:
+    """
+    Import reference reads to obtain the qza artifact.
+
+    :input ref_reads: fasta reference file, e.g. reference/silva-16S/silva-16S.fa
+    :output ref_reads: qiime artifact of imported fasta file
+    """
+    input:
+        feature_table = 'qiime2/preprocess/denoise/{processing_step}/{reference}_table.qza',
+    output:
+        transposed_table = 'qiime2/preprocess/denoise/{processing_step}/{reference}_table_transposed.qza',
+    conda:
+        config['snakelines_dir'] + '/environments/qiime2.yaml'
+    shell:
+        '''
+        qiime feature-table transpose \
+            --i-table {input.feature_table} \
+            --o-transposed-feature-table {output.transposed_table}
+        '''
+
+rule qiime2__feature_table_taxa_summary:
+    """
+    Import reference reads to obtain the qza artifact.
+
+    :input ref_reads: fasta reference file, e.g. reference/silva-16S/silva-16S.fa
+    :output ref_reads: qiime artifact of imported fasta file
+    """
+    input:
+        taxonomy = 'qiime2/taxonomy/{reference}_tax.qza',
+        transposed_table = 'qiime2/preprocess/denoise/{processing_step}/{reference}_table_transposed.qza',
+        rep_seqs = 'qiime2/preprocess/denoise/{processing_step}/{reference}_rep-seqs.qza',
+    output:
+        merged_table = 'qiime2/analysis/taxonomy/{processing_step}/{reference}_seq_tax_table.qzv'
+    conda:
+        config['snakelines_dir'] + '/environments/qiime2.yaml'
+    shell:
+        '''
+        qiime metadata tabulate \
+            --m-input-file {input.rep_seqs} \
+            --m-input-file {input.taxonomy} \
+            --m-input-file {input.transposed_table} \
+            --o-visualization {output.merged_table}
+        '''
