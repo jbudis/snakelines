@@ -1,0 +1,76 @@
+include: config['snakelines_dir'] + '/rules/shared/mapping/mapper/indices/bwa_index.snake'
+
+rule bwa__filter_reads_from_reference:
+    """
+    Remove reads that do not map to the reference, and so may be caused by contamination in lab processing.
+    Alternatively, using keep: False configuration removes all fragments that belongs to reference, and so is suitable
+    to remove contamination caused by host with known genome, e.g. human fragments.
+    :input r1: Left side of sequenced fragments in gzipped fastq format
+    :input r2: Right side of sequenced fragments in gzipped fastq format
+    :input index_files: List of reference bwa databases
+    :output r1: Left side of filtered fragments in gzipped fastq format
+    :output r2: Right side of filtered fragments in gzipped fastq format
+    :params indices: Prefixes of reference bwa databases
+    :params keep_param: Determine if keep or remove sequences aligned to reference databases
+    """
+    input:
+        r1 = 'reads/%s/{sample}_R1.fastq.gz' % method_config['input_read_type'],
+        r2 = 'reads/%s/{sample}_R2.fastq.gz' % method_config['input_read_type'],
+        index_files = expand('reference/{ref}/bwa_index/{ref}.bwt', ref=method_config['references'])
+    output:
+        r1 = configured_temp('reads/decontaminated/{sample}_R1.fastq.gz'),
+        r2 = configured_temp('reads/decontaminated/{sample}_R2.fastq.gz')
+    params:
+        indices = expand('reference/{reference}/bwa_index/{reference}', reference=method_config['references']),
+        keep_param = '-f 2' if method_config.get('keep', False) else '-F 2',
+        tmp_dir = 'reads/decontaminated/tmp/{sample}'
+    threads:
+        int(config['threads'])
+    log:
+        prefix = 'reads/decontaminated/log/{sample}'
+    conda:
+        config['snakelines_dir'] + '/environments/bwa_samtools.yaml'
+    shell:
+        """
+        R1_IN={input.r1}
+        R2_IN={input.r2}
+
+        for INDEX in {params.indices}; do
+
+            REF=`basename $INDEX`
+            REF_DIR={params.tmp_dir}/$REF
+            mkdir -p $REF_DIR
+
+            BAM_OUT=$REF_DIR/{wildcards.sample}_out.bam
+            R1_OUT=$REF_DIR/{wildcards.sample}_R1.fastq.gz
+            R2_OUT=$REF_DIR/{wildcards.sample}_R2.fastq.gz
+
+            bwa mem \
+                -t {threads} \
+                $INDEX \
+                $R1_IN \
+                $R2_IN \
+            | \
+            samtools view \
+                -o $BAM_OUT;
+
+            samtools collate \
+                -u -O $BAM_OUT \
+            | \
+            samtools fastq \
+                -1 $R1_OUT \
+                -2 $R2_OUT \
+                {params.keep_param} \
+                -0 /dev/null \
+                -s /dev/null \
+                -n;
+
+            R1_IN=$R1_OUT
+            R2_IN=$R2_OUT
+        done
+
+        mv $R1_OUT {output.r1}
+        mv $R2_OUT {output.r2}
+
+        rm -rf {params.tmp_dir}
+        """
