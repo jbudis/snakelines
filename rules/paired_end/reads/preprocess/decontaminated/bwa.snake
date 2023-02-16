@@ -50,6 +50,7 @@ rule bwa__filter_reads_from_reference:
                 $INDEX \
                 $R1_IN \
                 $R2_IN \
+            2> {log.prefix}.$REF.log \
             | \
             samtools view \
                 -o $BAM_OUT;
@@ -63,6 +64,7 @@ rule bwa__filter_reads_from_reference:
                 {params.keep_param} \
                 -0 /dev/null \
                 -s /dev/null \
+                -t \
                 -n;
 
             R1_IN=$R1_OUT
