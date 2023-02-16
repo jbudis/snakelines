@@ -47,6 +47,7 @@ rule bwa__filter_reads_from_reference:
 
             bwa mem \
                 -t {threads} \
+                -C \
                 $INDEX \
                 $R1_IN \
                 $R2_IN \
