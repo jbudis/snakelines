@@ -157,7 +157,7 @@ rule qiime2__prepare_lefse_input:
         config['snakelines_dir'] + '/environments/lefse.yaml'
     shell:
         '''
-        lefse-format_input.py \
+        lefse_format_input.py \
             {input.prepared_table} \
             {output.lefse_input} \
             -c 1 -u 2 -o 1000000 \
@@ -186,7 +186,7 @@ rule qiime2__run_lefse:
         config['snakelines_dir'] + '/environments/lefse.yaml'
     shell:
         '''
-        run_lefse.py \
+        lefse_run.py \
             {input.lefse_input} \
             {output.lefse_result} \
             1> {log.out} \
@@ -214,7 +214,7 @@ rule qiime2__pdf_lefse_result:
         config['snakelines_dir'] + '/environments/lefse.yaml'
     shell:
         '''
-        lefse-plot_res.py \
+        lefse_plot_res.py \
             {input.lefse_result} \
             {output.lefse_result_pdf} \
             --format pdf  \
@@ -243,10 +243,10 @@ rule qiime2__lefse_cladogram:
         config['snakelines_dir'] + '/environments/lefse.yaml'
     shell:
         '''
-        src=$(which lefse-plot_cladogram.py)
+        src=$(which lefse_plot_cladogram.py)
         echo Preparing lefse cladogram $src
         sed -i --follow-symlinks 's/ax.bar(fr_0,/ax.bar((fr_0+fr_1)\*0.5,/g' $src
-        lefse-plot_cladogram.py \
+        lefse_plot_cladogram.py \
             {input.lefse_result} \
             {output.cladogram_out} \
             --format pdf  \
@@ -277,7 +277,7 @@ rule qiime2__lefse_plot_features:
         config['snakelines_dir'] + '/environments/lefse.yaml'
     shell:
         '''
-        lefse-plot_features.py \
+        lefse_plot_features.py \
             {input.lefse_input} \
             {input.lefse_result} \
             {output.lefse_out_dir} \
