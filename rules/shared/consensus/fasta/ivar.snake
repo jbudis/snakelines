@@ -60,8 +60,10 @@ rule ivar__create_consensus_fasta:
             OUT_FILE="{params.out_prefix}_$REF".fa; \
             QUAL_FILE="{params.out_prefix}_$REF".qual.txt; \
             cat $OUT_FILE \
-                >> {output.fasta}; \
+                >> {output.fasta} \
+                2>> {log.err};
             rm $OUT_FILE; \
             rm $QUAL_FILE; \
-        done;
+        done \
+            2>> {log.err};
         '''
