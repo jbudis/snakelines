@@ -277,10 +277,12 @@ rule qiime2__lefse_plot_features:
         config['snakelines_dir'] + '/environments/lefse.yaml'
     shell:
         '''
+        # workaround for the directory bug in LEFSE
+        mkdir {output.lefse_out_dir} 1> {log.out} 2> {log.err};
         lefse_plot_features.py \
             {input.lefse_input} \
             {input.lefse_result} \
-            {output.lefse_out_dir} \
-            1> {log.out} \
-            2> {log.err}
+            {output.lefse_out_dir}/ \
+            1>> {log.out} \
+            2>> {log.err};
         '''
