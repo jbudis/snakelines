@@ -2,7 +2,7 @@ rule nextclade__download_nextclade_dataset:
     output:
         sars_dataset = directory('reference/{reference}/nextclade/'),
     conda:
-        config['snakelines_dir'] + '/enviroments/nextclade.yaml'
+        config['snakelines_dir'] + '/environments/nextclade.yaml'
     log:
         out = 'reference/{reference}/log/nextclade.out',
         err = 'reference/{reference}/log/nextclade.err'
@@ -25,7 +25,7 @@ rule nextclade__run_nextclade:
     params:
         nextclade_tsv = 'consensus/{reference}-{panel}/nextclade_{sample}/nextclade.tsv',
     conda:
-        config['snakelines_dir'] + '/enviroments/nextclade.yaml'
+        config['snakelines_dir'] + '/environments/nextclade.yaml'
     log:
         out = 'consensus/{reference}-{panel}/nextclade_{sample}_log.out',
         err = 'consensus/{reference}-{panel}/nextclade_{sample}_log.err'
