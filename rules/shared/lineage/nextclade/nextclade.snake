@@ -1,3 +1,21 @@
+rule nextclade__download_nextclade_dataset:
+    output:
+        sars_dataset = directory('reference/{reference}/nextclade/'),
+    conda:
+        config['snakelines_dir'] + '/enviroments/nextclade.yaml'
+    log:
+        out = 'reference/{reference}/log/nextclade.out',
+        err = 'reference/{reference}/log/nextclade.err'
+    shell:
+        """
+        nextclade dataset get \
+            --name {wildcards.reference} \
+            --output-dir {output.sars_dataset} \
+            1> {log.out} \
+            2> {log.err};
+        """
+
+
 rule nextclade__run_nextclade:
     input:
         fasta = 'consensus/{reference}-{panel}/{sample}.fa',
