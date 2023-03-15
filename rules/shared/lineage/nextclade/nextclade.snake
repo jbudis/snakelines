@@ -1,0 +1,23 @@
+rule nextclade__run_nextclade:
+    input:
+        fasta = 'consensus/{reference}-{panel}/{sample}.fa',
+        sars_dataset = 'reference/{reference}/nextclade/',
+    output:
+        nextclade_dir = directory('consensus/{reference}-{panel}/nextclade_{sample}/'),
+    params:
+        nextclade_tsv = 'consensus/{reference}-{panel}/nextclade_{sample}/nextclade.tsv',
+    conda:
+        config['snakelines_dir'] + '/enviroments/nextclade.yaml'
+    log:
+        out = 'consensus/{reference}-{panel}/nextclade_{sample}_log.out',
+        err = 'consensus/{reference}-{panel}/nextclade_{sample}_log.err'
+    shell:
+        """
+        nextclade run \
+            --input-fasta {input.fasta} \
+            --input-dataset {input.sars_dataset} \
+            --output-tsv {params.nextclade_tsv} \
+            --output-dir {output.nextclade_dir} \
+            1> {log.out} \
+            2> {log.err};
+        """
