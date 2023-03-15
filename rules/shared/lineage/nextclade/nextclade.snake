@@ -34,10 +34,9 @@ rule nextclade__run_nextclade:
     shell:
         """
         nextclade run \
-            --input-fasta {input.fasta} \
-            --input-dataset {input.sars_dataset} \
-            --output-tsv {params.nextclade_tsv} \
-            --output-dir {output.nextclade_dir} \
+            --input-dataset={input.sars_dataset} \
+            --output-all={output.nextclade_dir} \
+            {input.fasta} \
             1> {log.out} \
             2> {log.err};
         """
