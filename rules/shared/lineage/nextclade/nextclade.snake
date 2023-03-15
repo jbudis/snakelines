@@ -1,6 +1,8 @@
 rule nextclade__download_nextclade_dataset:
     output:
         sars_dataset = directory('reference/{reference}/nextclade/'),
+    params:
+        ref_name = method_config.get('reference','unspecified'),
     conda:
         config['snakelines_dir'] + '/environments/nextclade.yaml'
     log:
@@ -9,7 +11,7 @@ rule nextclade__download_nextclade_dataset:
     shell:
         """
         nextclade dataset get \
-            --name {wildcards.reference} \
+            --name {params.ref_name} \
             --output-dir {output.sars_dataset} \
             1> {log.out} \
             2> {log.err};

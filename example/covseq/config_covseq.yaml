@@ -101,6 +101,7 @@ lineage:
         method: cat
     nextclade:
         method: nextclade
+        reference: sars-cov-2
 
 misc:
     mixed_positions:
