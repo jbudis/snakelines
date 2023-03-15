@@ -3,4 +3,4 @@ channels:
 - bioconda
 - nodefaults
 dependencies:
-- lefse=1.0.8
+- lefse=1.1.2
