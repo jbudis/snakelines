@@ -1,6 +1,6 @@
 channels:
 - conda-forge
 - bioconda
-- defaults
+- nodefaults
 dependencies:
-- pangolin=4.2
+- nextclade=2.12.0

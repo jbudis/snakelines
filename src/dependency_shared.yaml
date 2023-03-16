@@ -273,6 +273,7 @@ consensus:
 
               to: expand('{report_dir}/_summary/consensus-{sr.reference}-{sr.panel}.fa',
                 report_dir=config['report_dir'], sr=pipeline.sample_references)
+
 lineage:
     caller:
         output:
@@ -294,6 +295,16 @@ lineage:
                     type=['summary.csv', "subtotal.tsv"])
         depends:
             - lineage/caller
+
+    nextclade:
+        output:
+            nextclade:
+                from: expand('consensus/{sr.reference}-{sr.panel}/nextclade_{sr.sample}/',
+                    sr=pipeline.sample_references)
+                to: expand('{report_dir}/{sr.sample}/nextclade-{sr.reference}-{sr.panel}/',
+                    report_dir=config['report_dir'], sr=pipeline.sample_references)
+        depends:
+            - consensus/fasta
 
 misc:
     mixed_positions:

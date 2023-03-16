@@ -1,0 +1,42 @@
+rule nextclade__download_nextclade_dataset:
+    output:
+        sars_dataset = directory('reference/{reference}/nextclade/'),
+    params:
+        ref_name = method_config.get('reference','unspecified'),
+    conda:
+        config['snakelines_dir'] + '/environments/nextclade.yaml'
+    log:
+        out = 'reference/{reference}/log/nextclade.out',
+        err = 'reference/{reference}/log/nextclade.err'
+    shell:
+        """
+        nextclade dataset get \
+            --name {params.ref_name} \
+            --output-dir {output.sars_dataset} \
+            1> {log.out} \
+            2> {log.err};
+        """
+
+
+rule nextclade__run_nextclade:
+    input:
+        fasta = 'consensus/{reference}-{panel}/{sample}.fa',
+        sars_dataset = 'reference/{reference}/nextclade/',
+    output:
+        nextclade_dir = directory('consensus/{reference}-{panel}/nextclade_{sample}/'),
+    params:
+        nextclade_tsv = 'consensus/{reference}-{panel}/nextclade_{sample}/nextclade.tsv',
+    conda:
+        config['snakelines_dir'] + '/environments/nextclade.yaml'
+    log:
+        out = 'consensus/{reference}-{panel}/nextclade_{sample}_log.out',
+        err = 'consensus/{reference}-{panel}/nextclade_{sample}_log.err'
+    shell:
+        """
+        nextclade run \
+            --input-dataset={input.sars_dataset} \
+            --output-all={output.nextclade_dir} \
+            {input.fasta} \
+            1> {log.out} \
+            2> {log.err};
+        """
