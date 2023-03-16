@@ -22,7 +22,7 @@ rule deepvariant__call_germline_variants:
     threads:
         int(config['threads'])
     log:
-        log_dir = directory('variant/{reference}-{panel}/original/log/')
+        log_dir = directory('variant/{reference}-{panel}/original/log/{sample}'),
         out = 'variant/{reference}-{panel}/original/log/{sample}.deepvariant.vcf.out',
         err = 'variant/{reference}-{panel}/original/log/{sample}.deepvariant.vcf.err'
     benchmark:
