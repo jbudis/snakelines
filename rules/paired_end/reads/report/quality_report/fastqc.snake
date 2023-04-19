@@ -81,13 +81,6 @@ rule fastqc__quality_report:
         err = 'reads/{read_type}/stat{stats_type}/log/{fastq}.err',
     conda:
         config['snakelines_dir'] + '/environments/fastqc.yaml'
-    shell:
-        """
-        fastqc \
-            -o reads/{wildcards.read_type}/stat{wildcards.stats_type} \
-            --extract \
-            --threads {threads} \
-            {input.reads} \
-        >  {log.out} \
-        2> {log.err}
-        """
+    script:
+        "scripts/wrapper.py"
+
