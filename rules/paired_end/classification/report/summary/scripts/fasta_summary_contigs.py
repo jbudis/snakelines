@@ -1,3 +1,4 @@
+import os
 import sys
 import shutil
 import zlib
@@ -12,13 +13,15 @@ params_fasta = sys.argv[2]
 output_fasta_dir = sys.argv[3]
 output_seqinfo = sys.argv[4]
 
+os.makedirs(output_fasta_dir,exist_ok=True)
 shutil.copyfile(input_fasta, params_fasta)
 
 seqids, info_list = [], []
 for i, seq in enumerate(SeqIO.parse(input_fasta, 'fasta')):
 
     # Store each sequence in the fasta to the separate file
-    with open('%s/%s.fa' % (output_fasta_dir, seq.id), 'w') as out:
+    seq_path = os.path.join(output_fasta_dir, seq.id)
+    with open(seq_path, 'w') as out:
         SeqIO.write(seq, out, 'fasta')
 
     seqids.append(seq.id)
