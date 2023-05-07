@@ -11,8 +11,6 @@ rule picard__mark_duplicates:
         bai  = '{{mapper}}/{{reference}}/{map_type}/{{sample}}.bam.bai'.format(map_type=method_config['input_map_type'])
     output:
         bam  = configured_temp('{mapper}/{reference}/deduplicated/{sample}.bam')
-    params:
-        tmp_dir = config['tmp_dir']
     log:
         out  = '{mapper}/{reference}/deduplicated/log/{sample}.log',
         err  = '{mapper}/{reference}/deduplicated/log/{sample}.err',
