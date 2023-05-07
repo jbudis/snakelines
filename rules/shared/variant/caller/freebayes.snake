@@ -77,4 +77,3 @@ rule gatk__prepare_vcf:
         config['snakelines_dir'] + '/environments/gatk4.yaml'
     script:
         "scripts/gatk_select_variants.py"
-
