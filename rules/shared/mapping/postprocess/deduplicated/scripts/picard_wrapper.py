@@ -8,10 +8,11 @@ sys.stdout = open(snakemake.log.out, "w")
 
 with tempfile.TemporaryDirectory() as tmpdir:
     shell(
-        "gatk SelectVariants"
-        " --variant {snakemake.input.vcf}"
-        " --reference {snakemake.input.fasta}"
-        " --output {snakemake.output.vcf}"
-        " --tmp-dir {tmpdir}"
+        "picard MarkDuplicates"
+        " I={snakemake.input.bam}"
+        " O={snakemake.output.bam}"
+        " M={snakemake.log.stat}"
+        " TMP_DIR={tmpdir}"
+        " VALIDATION_STRINGENCY=SILENT"
         " 1>> {snakemake.log.out} 2>> {snakemake.log.err}"
     )
