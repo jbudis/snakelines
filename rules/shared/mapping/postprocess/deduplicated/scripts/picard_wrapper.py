@@ -15,4 +15,3 @@ with tempfile.TemporaryDirectory() as tmpdir:
         " TMP_DIR={tmpdir}"
         " VALIDATION_STRINGENCY=SILENT"
     )
-

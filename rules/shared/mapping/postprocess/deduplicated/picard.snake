@@ -18,9 +18,8 @@ rule picard__mark_duplicates:
         err  = '{mapper}/{reference}/deduplicated/log/{sample}.err',
         stat = '{mapper}/{reference}/deduplicated/log/{sample}.stats'
     benchmark:
-            '{mapper}/{reference}/deduplicated/log/{sample}.benchmark'
+        '{mapper}/{reference}/deduplicated/log/{sample}.benchmark'
     conda:
         config['snakelines_dir'] + '/environments/picard.yaml'
     script:
         "scripts/picard_wrapper.py"
-
