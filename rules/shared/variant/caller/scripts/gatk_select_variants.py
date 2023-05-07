@@ -13,5 +13,5 @@ with tempfile.TemporaryDirectory() as tmpdir:
         " --reference {snakemake.input.fasta}"
         " --output {snakemake.output.vcf}"
         " --tmp-dir {tmpdir}"
-        " 1>{snakemake.log.out} 2>{snakemake.log.err}"
+        " 1>> {snakemake.log.out} 2>> {snakemake.log.err}"
     )

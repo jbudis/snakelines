@@ -14,5 +14,5 @@ with tempfile.TemporaryDirectory() as tmpdir:
         " M={snakemake.log.stat}"
         " TMP_DIR={tmpdir}"
         " VALIDATION_STRINGENCY=SILENT"
-        " 1>{snakemake.log.out} 2>{snakemake.log.err}"
+        " 1>> {snakemake.log.out} 2>> {snakemake.log.err}"
     )
