@@ -17,6 +17,7 @@ rule ivar__create_consensus_fasta_nonregional:
     """
     input:
         bam   = 'mapping/{{reference}}/{map_type}/{{sample}}.bam'.format(map_type=pipeline.postprocessed_map_type),
+        bai   = 'mapping/{{reference}}/{map_type}/{{sample}}.bam.bai'.format(map_type=pipeline.postprocessed_map_type),
     output:
         fasta = 'consensus/{reference}-{panel}/{sample}.fa'
     params:
