@@ -81,12 +81,5 @@ rule gatk__prepare_vcf:
         err = 'variant/{reference}-{panel}/original/log/{sample}.err',
     conda:
         config['snakelines_dir'] + '/environments/gatk4.yaml'
-    shell:
-        """
-        gatk SelectVariants \
-            -V {input.vcf} \
-            -R {input.fasta} \
-            -O {output.vcf} \
-            1>{log.out} \
-            2>{log.err}
-        """
+    script:
+        "scripts/gatk_select_variants.py"
