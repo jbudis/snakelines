@@ -21,18 +21,6 @@ rule picard__mark_duplicates:
             '{mapper}/{reference}/deduplicated/log/{sample}.benchmark'
     conda:
         config['snakelines_dir'] + '/environments/picard.yaml'
-    shell:
-        """
-        TEMP_DIR=$(mktemp -d {params.tmp_dir}/XXXXXXXXXXX)
+    script:
+        "scripts/picard_wrapper.py"
 
-        picard MarkDuplicates \
-            I={input.bam} \
-            O={output.bam} \
-            M={log.stat} \
-            TMP_DIR=$TEMP_DIR \
-            VALIDATION_STRINGENCY=SILENT \
-        >  {log.out} \
-        2> {log.err}
-
-        rm -r $TEMP_DIR
-        """
