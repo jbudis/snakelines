@@ -1,3 +1,8 @@
+def parse_cutadapt_adapters(fasta: str):
+    if fasta:
+        return f"-b file:{fasta} -B file:{fasta}"
+    return ""
+
 rule cutadapt__trim_reads:
     """
         Adapter clipping focused trimming.
@@ -5,11 +10,11 @@ rule cutadapt__trim_reads:
     input:
         r1 = 'reads/%s/{sample}_R1.fastq.gz' % method_config['input_read_type'],
         r2 = 'reads/%s/{sample}_R2.fastq.gz' % method_config['input_read_type'],
-        fasta = method_config.get('fasta')
     output:
         r1 = configured_temp('reads/trimmed/{sample}_R1.fastq.gz'),
         r2 = configured_temp('reads/trimmed/{sample}_R2.fastq.gz'),
     params:
+        fasta = parse_cutadapt_adapters(method_config.get('fasta','')),
         overlap = method_config.get('overlap', 10),
         error_rate = method_config.get('error_rate', 0.1),
         minimum_length = method_config.get('minimum_length', 0),
@@ -27,8 +32,7 @@ rule cutadapt__trim_reads:
     shell:
         """
         cutadapt \
-            -b file:{input.fasta} \
-            -B file:{input.fasta} \
+            {params.fasta} \
             --output {output.r1} \
             --paired-output {output.r2} \
             --action trim \
